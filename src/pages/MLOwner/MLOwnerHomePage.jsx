@@ -56,7 +56,7 @@ const MLOwnerHomePage = () => {
       key: 'action',
       render: () => (
         <Space size="middle">
-          <Link to="/home/dispatchload">
+          <Link to="/mlowner/dispatchload">
             <Button 
               style={{ 
                 backgroundColor: '#FFA500', 
@@ -86,14 +86,44 @@ const MLOwnerHomePage = () => {
       status: 'ACTIVE',
       royalty: '45265.20',
     },
+    {
+      licenseNumber: 'IML/B/TEST/5178/LRS',
+      owner: 'Jayantha Perera',
+      location: 'Rathnapura',
+      capacity: 100,
+      used: 20,
+      remaining: 80,
+      startDate: '2023-01-01',
+      endDate: '2025-12-31',
+      status: 'ACTIVE',
+      royalty: '45265.20',
+    },
   ];
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f0f2f5' }}>
+    <div style={{ backgroundColor: '#f0f2f5',  height: '100%'  }}>
+      {/* Image centered in mobile view */}
+      <img 
+        src="https://th.bing.com/th/id/OIP.lXqWzX4gCjamrXtOz172qAHaHa?rs=1&pid=ImgDetMain" 
+        alt="Logo" 
+        style={{
+          width: '80px', 
+          height: '80px', 
+          borderRadius: '50%',  // Round effect for the image
+          display: 'block', 
+          margin: '0 auto', // Center the image horizontally
+          // Make it responsive for mobile screens
+          '@media (max-width: 768px)': {
+            marginBottom: '20px', // Add margin below on smaller screens for spacing
+          },
+        }} 
+      />
       {/* Content Section */}
       <div style={{ padding: '24px' }}>
         <Row gutter={16} justify="space-between" align="middle">
           <Col xs={24} sm={24} md={12} lg={12}>
+            {/* Image with round effect and proper sizing */}
+
             <Input
               placeholder="Search"
               prefix={<SearchOutlined />}
@@ -105,45 +135,41 @@ const MLOwnerHomePage = () => {
             />
           </Col>
           <Col xs={24} sm={24} md={12} lg={12} style={{ textAlign: 'center', marginTop: '16px' }}>
-  <Link to="/home/licenses">
-    <Button
-      type="primary"
-      style={{
-        backgroundColor: '#a52a2a',  // Initial color (brownish)
-        color: 'white',
-        borderColor: '#a52a2a',  // Match the border with the background color
-        borderRadius: '8px',
-        width: '100%',  // Full width on mobile
-        marginBottom: '12px',  // Spacing between buttons
-      }}
-      onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
-      onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
-    >
-      View Licenses
-    </Button>
-  </Link>
+            <Link to="/home/licenses">
+              <Button
+                type="primary"
+                style={{
+                  backgroundColor: '#a52a2a',  // Initial color (brownish)
+                  color: 'white',
+                  borderColor: '#a52a2a',  // Match the border with the background color
+                  borderRadius: '8px',
+                  width: '100%',  // Full width on mobile
+                  marginBottom: '12px',  // Spacing between buttons
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
+              >
+                View Licenses
+              </Button>
+            </Link>
 
-  <Link to="/home/history">
-    <Button
-      type="primary"
-      style={{
-        backgroundColor: '#a52a2a',  // Initial color (brownish)
-        color: 'white',
-        borderColor: '#a52a2a',  // Match the border with the background color
-        borderRadius: '8px',
-        width: '100%',  // Full width on mobile
-      }}
-      onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
-      onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
-    >
-      View History
-    </Button>
-  </Link>
-</Col>
-
-
-
-
+            <Link to="/home/history">
+              <Button
+                type="primary"
+                style={{
+                  backgroundColor: '#a52a2a',  // Initial color (brownish)
+                  color: 'white',
+                  borderColor: '#a52a2a',  // Match the border with the background color
+                  borderRadius: '8px',
+                  width: '100%',  // Full width on mobile
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
+              >
+                View History
+              </Button>
+            </Link>
+          </Col>
         </Row>
 
         <Table
