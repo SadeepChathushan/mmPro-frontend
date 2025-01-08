@@ -1,0 +1,33 @@
+/* src/styles/tailwind.css */
+
+:root {
+
+    /* /========== Colors ==========/ */
+    --white: #fff;
+    --red: #e30202;
+    --black: #262626;
+    --bg1: #f0f0f0;
+    --bg2: #F0EEED;
+
+    --blue: #0808c2;
+    --col1: #D5C6E0;
+    --col2: #AAA1C8;
+    --col3: #967aa1;
+    --col4: #192A51;
+
+    --pending: #f6dda9;
+
+    /* /========== Font and typography ==========/ */
+    --body-font: 'Roboto', sans-serif;
+    --h1-font-size: 1.5rem;
+    --normal-font-size: .938rem;
+    --tiny-font-size: .625rem;
+}
+
+* {
+    font-family: 'DM Sans', sans-serif;
+  }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

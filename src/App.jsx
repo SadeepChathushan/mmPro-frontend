@@ -1,0 +1,53 @@
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import 'antd/dist/reset.css';
+import Home from './pages/Home';
+import NotFound from './pages/NotFound';
+import AppLayout from './components/layout/AppLayout';
+import GSMBRoutes from './routes/GSMBRoutes';
+import PoliceOfficerRoutes from './routes/PoliceOfficerRoutes';
+import SignIn from './components/Auth/SignIn';
+import { useAuth } from './hooks/useAuth';
+import PrivateRoute from './routes/PrivateRoute';
+
+const App = () => {
+  const userRole = "GSMBOfficer";
+  localStorage.setItem("USERROLE", userRole);
+
+  // console.log('App user:', user); // Debug log to verify user
+  // console.log('App user role:', user?.role); // Debug log to verify user role
+
+  return (
+    <Router>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="*" element={<NotFound />} />
+
+        {/* Protected Routes */}
+        <Route
+          element={
+            <PrivateRoute
+              allowedRoles={['GSMBOfficer', 'PoliceOfficer']}
+            />
+          }
+        >
+          <Route path="/" element={<AppLayout />}>
+            {/* GSMB Officer Routes */}
+            <Route path="gsmb/*" element={<PrivateRoute allowedRoles={['GSMBOfficer']} />}>
+              <Route path="*" element={<GSMBRoutes />} />
+            </Route>
+
+            {/* Police Officer Routes */}
+            <Route path="police-officer/*" element={<PrivateRoute allowedRoles={['PoliceOfficer']} />}>
+              <Route path="*" element={<PoliceOfficerRoutes />} />
+            </Route>
+          </Route>
+        </Route>
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;
