@@ -29,13 +29,18 @@ const App = () => {
         <Route
           element={
             <PrivateRoute
-              allowedRoles={['GSMBOfficer', 'PoliceOfficer']}
+              allowedRoles={['GSMBOfficer', 'PoliceOfficer','MLOwner']}
             />
           }
         >
           <Route path="/" element={<AppLayout />}>
             {/* GSMB Officer Routes */}
             <Route path="gsmb/*" element={<PrivateRoute allowedRoles={['GSMBOfficer']} />}>
+              <Route path="*" element={<GSMBRoutes />} />
+            </Route>
+
+             {/* MLOwner Routes */}
+             <Route path="mlowner/*" element={<PrivateRoute allowedRoles={['MLOwner']} />}>
               <Route path="*" element={<GSMBRoutes />} />
             </Route>
 
