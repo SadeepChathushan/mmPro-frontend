@@ -3,7 +3,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 const PrivateRoute = ({ allowedRoles }) => {
-  const userRole = localStorage.getItem("USERROLE");
+  const userRole = localStorage.getItem("USERROLE"); 
 
   console.log("PrivateRoute11 user:", userRole);
   // if (!user) {
