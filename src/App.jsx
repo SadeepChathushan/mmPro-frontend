@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import AppLayout from './components/layout/AppLayout';
 import GSMBRoutes from './routes/GSMBRoutes';
+import MLOwnerRoutes from './routes/MLOwnerRoutes';
 import PoliceOfficerRoutes from './routes/PoliceOfficerRoutes';
 import SignIn from './components/Auth/SignIn';
 import { useAuth } from './hooks/useAuth';
@@ -29,7 +30,7 @@ const App = () => {
         <Route
           element={
             <PrivateRoute
-              allowedRoles={['GSMBOfficer', 'PoliceOfficer']}
+              allowedRoles={['GSMBOfficer', 'PoliceOfficer','MLOwner']}
             />
           }
         >
@@ -37,6 +38,11 @@ const App = () => {
             {/* GSMB Officer Routes */}
             <Route path="gsmb/*" element={<PrivateRoute allowedRoles={['GSMBOfficer']} />}>
               <Route path="*" element={<GSMBRoutes />} />
+            </Route>
+
+             {/* MLOwner Routes */}
+             <Route path="mlowner/*" element={<PrivateRoute allowedRoles={['MLOwner']} />}>
+              <Route path="*" element={<MLOwnerRoutes />} />
             </Route>
 
             {/* Police Officer Routes */}
