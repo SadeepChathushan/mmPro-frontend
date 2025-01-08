@@ -5,6 +5,12 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 const NewLicenseForm = () => {
   const [form] = Form.useForm();
 
+
+  const handleCancel = () => {
+    form.resetFields();
+  };
+
+
   const onFinish = (values) => {
     console.log("Form values: ", values);
   };
@@ -111,20 +117,35 @@ const NewLicenseForm = () => {
             </Form.Item>
           </Col>
           <Col xs={24}>
-            <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                style={{
-                  backgroundColor: "#b51c1c",
-                  borderColor: "#b51c1c",
-                  width: "100%",
-                }}
-              >
-                Create License
-              </Button>
-            </Form.Item>
-          </Col>
+  <Form.Item>
+    <div style={{ display: 'flex', gap: '10px' }}>
+      <Button
+        type="primary"
+        htmlType="submit"
+        style={{
+          backgroundColor: "#950C33",
+          borderColor: "#950C33",
+          width: "48%", // Adjust width to fit both buttons
+        }}
+      >
+        Create License
+      </Button>
+
+      <Button
+        type="default"
+        onClick={handleCancel}
+        style={{
+          width: "48%", // Adjust width to fit both buttons
+          borderColor: "#950C33",
+        }}
+      >
+        Cancel
+      </Button>
+    </div>
+  </Form.Item>
+</Col>
+
+        
         </Row>
       </Form>
     </div>
