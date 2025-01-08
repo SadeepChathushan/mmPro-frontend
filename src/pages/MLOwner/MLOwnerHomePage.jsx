@@ -135,7 +135,7 @@ const MLOwnerHomePage = () => {
             />
           </Col>
           <Col xs={24} sm={24} md={12} lg={12} style={{ textAlign: 'center', marginTop: '16px' }}>
-            <Link to="/home/licenses">
+            <Link to="/mlowner/viewlicenses">
               <Button
                 type="primary"
                 style={{
@@ -153,7 +153,7 @@ const MLOwnerHomePage = () => {
               </Button>
             </Link>
 
-            <Link to="/home/history">
+            <Link to="/mlowner/history">
               <Button
                 type="primary"
                 style={{
