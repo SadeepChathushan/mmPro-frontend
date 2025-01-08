@@ -1,11 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Input, Table, Row, Col } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
+
+
 const Dashboard = () => {
-  // Table columns
+  const [searchText, setSearchText] = useState('');
+  const [tableData, setTableData] = useState([
+    {
+      licenseId:"1",
+      licenseNumber: "IML/B/TEST/1578/LRS",
+      ownerName: "Jayantha Perera",
+      location: "Rathnapura",
+      capacity: 100,
+    },
+    {
+      licenseId:"2",
+      licenseNumber: "IML/B/TEST/1579/LRS",
+      ownerName: "Nimal Perera",
+      location: "Colombo",
+      capacity: 150,
+    },
+    // ... other data objects with unique keys
+  ]);
+
   const columns = [
+    {
+      title: "ID",
+      dataIndex: "licenseId",
+      key: "licenseId",
+    },
     {
       title: "LICENSE NUMBER",
       dataIndex: "licenseNumber",
@@ -17,44 +42,27 @@ const Dashboard = () => {
     {
       title: "Action",
       key: "action",
-      render: () => (
-        <Button
-          type="link"
-          style={{ backgroundColor: "#05CD99", color: "#000000" }}
+      render: (_, record) => (
+        <Link
+          to={`/gsmb/license/${record.licenseId}`}
+          state={{ license: record }} 
         >
-          View
-        </Button>
+          <Button type="link" style={{ backgroundColor: "#05CD99", color: "#000000" }}>
+            View
+          </Button>
+        </Link>
       ),
     },
   ];
 
-  // Table data
-  const data = [
-    {
-      licenseNumber: "01 IML/B/TEST/1578/LRS",
-      ownerName: "Jayantha Perera",
-      location: "Rathnapura",
-      capacity: 100,
-    },
-    {
-      licenseNumber: "02 IML/B/TEST/1578/LRS",
-      ownerName: "Jayantha Perera",
-      location: "Rathnapura",
-      capacity: 100,
-    },
-    {
-      licenseNumber: "01 IML/B/TEST/1578/LRS",
-      ownerName: "Jayantha Perera",
-      location: "Rathnapura",
-      capacity: 100,
-    },
-    {
-      licenseNumber: "02 IML/B/TEST/1578/LRS",
-      ownerName: "Jayantha Perera",
-      location: "Rathnapura",
-      capacity: 100,
-    },
-  ];
+  const handleSearch = (value) => {
+    setSearchText(value);
+    const filteredData = tableData.filter((item) => 
+      item.licenseNumber.toLowerCase().includes(value.toLowerCase()) || 
+      item.ownerName.toLowerCase().includes(value.toLowerCase()) 
+    );
+    setTableData(filteredData);
+  };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#f0f2f5" }}>
@@ -127,7 +135,7 @@ const Dashboard = () => {
         >
           <Table
             columns={columns}
-            dataSource={data}
+            dataSource={tableData}
             pagination={false}
             style={{ minWidth: "600px" }} // Ensure table doesn't shrink below this width
           />
