@@ -8,6 +8,7 @@ import GSMBRoutes from './routes/GSMBRoutes';
 import MLOwnerRoutes from './routes/MLOwnerRoutes';
 import PoliceOfficerRoutes from './routes/PoliceOfficerRoutes';
 import SignIn from './components/Auth/SignIn';
+import SignUp from './components/Auth/Signup';
 import { useAuth } from './hooks/useAuth';
 import PrivateRoute from './routes/PrivateRoute';
 
@@ -24,6 +25,7 @@ const App = () => {
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="*" element={<NotFound />} />
 
         {/* Protected Routes */}
