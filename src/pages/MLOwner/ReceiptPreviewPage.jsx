@@ -26,36 +26,52 @@ const ReceiptPage = () => {
 
   const handlePrintReceipt = () => {
     const doc = new jsPDF();
-
-    // Set font style for the header
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(16);
-
-    // Add the logo - center the image on top of the page
-    const imageUrl = "https://th.bing.com/th/id/OIP.lXqWzX4gCjamrXtOz172qAHaHa?rs=1&pid=ImgDetMain";
-    const imageWidth = 60;
-    const imageHeight = 60;
     const pageWidth = doc.internal.pageSize.width;
-    const imageX = (pageWidth - imageWidth) / 2; // Center image horizontally
-    doc.addImage(imageUrl, 'JPEG', imageX, 10, imageWidth, imageHeight);
-
-    // Add title and contact information
-    doc.setFontSize(20);
-    doc.text("Geological Survey and Mines Bureau", pageWidth / 2, 80, { align: "center" });
-    doc.setFontSize(12);
-    doc.text("Contact: 1921 / 011-288 7680", pageWidth / 2, 90, { align: "center" });
-
-    // Add receipt title
-    doc.setFontSize(14);
-    doc.text("License Owner's Receipt", pageWidth / 2, 100, { align: "center" });
-
-    // Add some space
-    doc.setFontSize(12);
     const marginLeft = 20;
-    const lineHeight = 10;
-    const startY = 110;
-
-    // Receipt details
+    const lineHeight = 8; // Reduced line height for compact spacing
+  
+    // Mock data or fallback values for missing fields
+    const receiptData = {
+      lorryNumber: "ND-1234",
+      reference: "REF123456",
+      mlNumber: "ML789",
+      mlOwner: "John Smith",
+      mlContact: "0771234567",
+      startLocation: "Anuradhapura",
+      mineralType: "Sand",
+      lorryContact: "077723456",
+      loadCube: "10",
+      destination: "Madampe",
+      validity: "01/01/2025 @ 12:55 pm to 01/05/2025 12:55 pm",
+      printedDate: "06/01/2025 @ 3:35 pm",
+    };
+  
+    // Helper function to add text with proper alignment
+    const addText = (text, x, y, size = 12, bold = false, align = 'left') => {
+      doc.setFontSize(size);
+      doc.setFont('helvetica', bold ? 'bold' : 'normal');
+      doc.text(text, x, y, { align });
+    };
+  
+    // Add Logo
+    const logoUrl = "https://th.bing.com/th/id/OIP.lXqWzX4gCjamrXtOz172qAHaHa?rs=1&pid=ImgDetMain";
+    const logoSize = 40;
+    const logoX = (pageWidth - logoSize) / 2;
+    doc.addImage(logoUrl, 'JPEG', logoX, 10, logoSize, logoSize);
+  
+    // Title and Contact Info
+    addText("Geological Survey and Mines Bureau", pageWidth / 2, 55, 16, true, 'center');
+    addText("Contact: 1921 / 011-288 7680", pageWidth / 2, 65, 12, false, 'center');
+  
+    // Line separator after contact info
+    doc.setDrawColor(0, 0, 0);
+    doc.line(marginLeft, 70, pageWidth - marginLeft, 70);
+  
+    // Receipt Title
+    addText("License Owner's Receipt", pageWidth / 2, 80, 14, true, 'center');
+  
+    // Receipt Details
+    const startY = 90;
     const details = [
       { label: "Lorry Number", value: receiptData.lorryNumber },
       { label: "Reference", value: receiptData.reference },
@@ -70,41 +86,37 @@ const ReceiptPage = () => {
       { label: "Validity", value: receiptData.validity },
       { label: "Printed Date", value: receiptData.printedDate },
     ];
-
-    // Loop through each detail and add it to the PDF
+  
     details.forEach((item, index) => {
-      const yPosition = startY + index * (lineHeight + 6);
-      doc.text(`${item.label}:`, marginLeft, yPosition);
-      doc.setFont('helvetica', 'bold');
-      doc.text(`${item.value}`, marginLeft + 80, yPosition);
-      doc.setFont('helvetica', 'normal'); // Reset font for the next label
+      const yPosition = startY + index * (lineHeight + 5); // Adjusted spacing
+      addText(`${item.label}:`, marginLeft, yPosition, 12, true);
+      addText(item.value, marginLeft + 60, yPosition, 12);
     });
-
-    // Add footer (Optional)
-    doc.setFontSize(10);
-    doc.text("Thank you for using our services!", pageWidth / 2, 280, { align: "center" });
-
-    // Check if a printer is available
-    const isPrinterAvailable = () => {
-      return window.matchMedia('print').matches;
-    };
-
+  
+    // Footer Content
+    const footerY = doc.internal.pageSize.height - 20; // Adjusted footer position
+    addText("Thank you for using our services!", pageWidth / 2, footerY, 10, true, 'center');
+    doc.line(marginLeft, footerY - 5, pageWidth - marginLeft, footerY - 5);
+  
+    // Copyright Text
+    addText("© 2025 Geological Survey and Mines Bureau. All rights reserved.", pageWidth / 2, footerY + 5, 8, false, 'center');
+  
+    // Check if printer is available
+    const isPrinterAvailable = () => window.matchMedia('print').matches;
+  
     if (isPrinterAvailable()) {
-      // Printer detected: open the print dialog
-      doc.autoPrint();
-      doc.output("dataurlnewwindow"); // Opens the print dialog
+      doc.autoPrint(); // Automatically open print dialog
+      doc.output("dataurlnewwindow");
     } else {
-      // No printer detected: download the PDF
-      doc.save("Receipt.pdf");
+      doc.save(`${receiptData.lorryContact}.pdf`);
 
-      // Show a notification that PDF is being downloaded
       notification.info({
         message: 'No printer detected',
         description: 'The receipt will be downloaded as a PDF.',
       });
     }
-};
-
+  };
+  
   const handleBackToHome = () => {
     navigate("/mlowner/home");
   };

@@ -107,10 +107,13 @@ const DispatchLoadPage = () => {
 
   const handlePrintReceipt = () => {
     // Navigate to the "Receipt" page
-    navigate('/mlowner/dispatchload/receipt');
+    navigate('/mlowner/home/dispatchload/receipt');
   };
 
   const handleBackToHome = () => {
+    navigate('/mlowner/home');
+  };
+  const handleCancel = () => {
     navigate('/mlowner/home');
   };
 
@@ -123,20 +126,6 @@ const DispatchLoadPage = () => {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Content style={{ padding: '24px' }}>
-        {/* Image centered over the title */}
-        <img 
-          src="https://th.bing.com/th/id/OIP.lXqWzX4gCjamrXtOz172qAHaHa?rs=1&pid=ImgDetMain" 
-          alt="Logo" 
-          style={{
-            width: '80px', 
-            height: '80px', 
-            borderRadius: '50%',  // Round effect for the image
-            display: 'block', 
-            margin: '0 auto',  // Center the image horizontally
-            marginBottom: '20px'  // Add margin below for spacing
-          }} 
-        />
-
         <Title level={3} style={{ textAlign: 'center', marginBottom: '20px' }}>
           Dispatch Your Load Here
         </Title>
@@ -261,6 +250,7 @@ const DispatchLoadPage = () => {
           <Col xs={24} sm={24} md={12} lg={12} style={{ display: 'flex', justifyContent: 'center' }}>
             <Button 
               type="primary" 
+              onClick={handleCancel}
               danger 
               style={{ 
                 marginRight: '16px', 
