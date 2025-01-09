@@ -54,7 +54,23 @@ const SignIn = () => {
           style={{ marginBottom:0, width: 120 }}
         />
         <h2 style={{ marginBottom: 20, color: '#a52a2a' }}>Sign In</h2>
-        <p style={{ marginBottom: 20 }}>Enter your email and password to sign in!</p>
+        {/* <p style={{ marginBottom: 20 }}>Enter your email and password to sign in!</p> */}
+        <p style={{ marginBottom: 20 }}>Don't have an account? 
+          <a 
+            href="/signup" 
+            style={{
+            fontWeight: "500", 
+            color: "#4f46e5", 
+            textDecoration: "none",
+            cursor: "pointer"
+          }} 
+          onMouseOver={(e) => e.target.style.color = "#6366f1"}
+          onMouseOut={(e) => e.target.style.color = "#4f46e5"}
+        >
+          Sign up
+        </a>
+        </p>
+        {/* <br></br> */}
         <Form
           name="signin"
           initialValues={{ remember: true }}
