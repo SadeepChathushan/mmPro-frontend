@@ -1,29 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Input, Table, Row, Col } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-
-
+import axios from "axios";
 
 const Dashboard = () => {
-  const [searchText, setSearchText] = useState('');
-  const [tableData, setTableData] = useState([
-    {
-      licenseId:"1",
-      licenseNumber: "IML/B/TEST/1578/LRS",
-      ownerName: "Jayantha Perera",
-      location: "Rathnapura",
-      capacity: 100,
-    },
-    {
-      licenseId:"2",
-      licenseNumber: "IML/B/TEST/1579/LRS",
-      ownerName: "Nimal Perera",
-      location: "Colombo",
-      capacity: 150,
-    },
-    // ... other data objects with unique keys
-  ]);
+  const [searchText, setSearchText] = useState("");
+  const [tableData, setTableData] = useState([]);
 
   const columns = [
     {
@@ -45,7 +28,7 @@ const Dashboard = () => {
       render: (_, record) => (
         <Link
           to={`/gsmb/license/${record.licenseId}`}
-          state={{ license: record }} 
+          state={{ license: record }}
         >
           <Button type="link" style={{ backgroundColor: "#05CD99", color: "#000000" }}>
             View
@@ -55,11 +38,50 @@ const Dashboard = () => {
     },
   ];
 
+  // Fetch data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const username = ""; // Replace with actual username
+        const password = ""; // Replace with actual password
+
+        const response = await axios.get(
+          "/api/projects/new-license/issues.json",
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            auth: {
+              username,
+              password,
+            },
+          }
+        );
+
+        // Transform the API response to match the table data structure
+        const transformedData = response.data.issues.map((issue) => ({
+          licenseId: issue.id,
+          licenseNumber: issue.custom_fields.find((field) => field.name === "License Number")?.value || "N/A",
+          ownerName: issue.custom_fields.find((field) => field.name === "Owner Name")?.value || "N/A",
+          location: issue.custom_fields.find((field) => field.name === "Location")?.value || "N/A",
+          capacity: issue.custom_fields.find((field) => field.name === "Capacity")?.value || "N/A",
+        }));
+
+        setTableData(transformedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const handleSearch = (value) => {
     setSearchText(value);
-    const filteredData = tableData.filter((item) => 
-      item.licenseNumber.toLowerCase().includes(value.toLowerCase()) || 
-      item.ownerName.toLowerCase().includes(value.toLowerCase()) 
+    const filteredData = tableData.filter(
+      (item) =>
+        item.licenseNumber.toLowerCase().includes(value.toLowerCase()) ||
+        item.ownerName.toLowerCase().includes(value.toLowerCase())
     );
     setTableData(filteredData);
   };
@@ -79,6 +101,7 @@ const Dashboard = () => {
                 borderRadius: "4px",
                 padding: "8px 16px",
               }}
+              onChange={(e) => handleSearch(e.target.value)}
             />
           </Col>
           {/* Buttons */}
@@ -102,7 +125,7 @@ const Dashboard = () => {
                     fontSize: "16px",
                   }}
                 >
-                + Register New Owner
+                  + Register New Owner
                 </Button>
               </Link>
               <Link to="/gsmb/add-new-license">
@@ -138,6 +161,7 @@ const Dashboard = () => {
             dataSource={tableData}
             pagination={false}
             style={{ minWidth: "600px" }} // Ensure table doesn't shrink below this width
+            rowKey="licenseId"
           />
         </div>
       </div>
