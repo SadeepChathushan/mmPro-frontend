@@ -19,7 +19,6 @@ const DispatchLoadPage = () => {
   const [cubes, setCubes] = useState(1);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [location, setLocation] = useState([6.9271, 79.8612]); // Default to Colombo coordinates
-  const [searchLocation, setSearchLocation] = useState('');
   const [locationSuggestions, setLocationSuggestions] = useState([]);
 
   const navigate = useNavigate();
@@ -107,22 +106,14 @@ const DispatchLoadPage = () => {
   };
 
   const handlePrintReceipt = () => {
-    const doc = new jsPDF();
-
-    doc.setFontSize(16);
-    doc.text('Dispatch Receipt', 20, 20);
-
-    doc.setFontSize(12);
-    doc.text(`License Number: ${licenseNumber}`, 20, 40);
-    doc.text(`Destination: ${destination}`, 20, 50);
-    doc.text(`Lorry Number: ${lorryNumber}`, 20, 60);
-    doc.text(`Driver Contact: ${driverContact}`, 20, 70);
-    doc.text(`Cubes: ${cubes}`, 20, 80);
-
-    doc.save('receipt.pdf');
+    // Navigate to the "Receipt" page
+    navigate('/mlowner/home/dispatchload/receipt');
   };
 
   const handleBackToHome = () => {
+    navigate('/mlowner/home');
+  };
+  const handleCancel = () => {
     navigate('/mlowner/home');
   };
 
@@ -171,8 +162,7 @@ const DispatchLoadPage = () => {
                   options={locationSuggestions.map(item => ({
                     value: item.value,
                     label: item.value
-                  }))}
-                >
+                  }))}>
                 </AutoComplete>
               </div>
             </div>
@@ -256,12 +246,36 @@ const DispatchLoadPage = () => {
         </Row>
 
         {/* Submit and Cancel Buttons */}
-        <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
-            <Button type="primary" danger style={{ marginRight: '16px' }}>
+        <Row gutter={16} justify="center">
+          <Col xs={24} sm={24} md={12} lg={12} style={{ display: 'flex', justifyContent: 'center' }}>
+            <Button 
+              type="primary" 
+              onClick={handleCancel}
+              danger 
+              style={{ 
+                marginRight: '16px', 
+                fontSize: '16px', 
+                padding: '10px 20px', 
+                backgroundColor: '#FFA500',  // Cancel button color (orange)
+                borderColor: '#FFA500',
+                color: 'white' 
+              }} 
+              size="large"
+            >
               Cancel
             </Button>
-            <Button type="primary" onClick={handleSubmit}>
+            <Button 
+              type="primary" 
+              onClick={handleSubmit} 
+              style={{ 
+                fontSize: '16px', 
+                padding: '10px 20px', 
+                backgroundColor: '#781424',  // Submit button color (dark red)
+                borderColor: '#781424',
+                color: 'white' 
+              }} 
+              size="large"
+            >
               Submit
             </Button>
           </Col>
@@ -275,15 +289,24 @@ const DispatchLoadPage = () => {
           style={{ textAlign: 'center' }}
           bodyStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}
         >
-          <div style={{ fontSize: '40px', color: 'green' }}>
+          <div style={{ fontSize: '40px', color: 'brown' }}>
             <IoIosDoneAll />
           </div>
           <p>Dispatched Successfully!</p>
-          <Button type="default" onClick={handlePrintReceipt} style={{ marginRight: '10px' }}>
-            Print Receipt
-          </Button>
-          <Button type="primary" onClick={handleBackToHome}>
+          <Button 
+            type="primary" 
+            onClick={handleBackToHome} 
+            style={{ backgroundColor: '#FFA500', color: 'white', borderColor: '#FFA500', marginRight: '20px' }}
+          >
             Back to Home
+          </Button>
+
+          <Button 
+            type="default" 
+            onClick={handlePrintReceipt} 
+            style={{ backgroundColor: '#781424', color: 'white', marginLeft: '20px' }}
+          >
+            Print Receipt
           </Button>
         </Modal>
 

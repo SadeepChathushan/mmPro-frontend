@@ -54,15 +54,18 @@ const MLOwnerHomePage = () => {
     {
       title: 'ACTION',
       key: 'action',
-      render: () => (
+      render: (_, record) => (
         <Space size="middle">
-          <Link to="/mlowner/dispatchload">
+          {/* Dispatch Load Button */}
+          <Link to="/mlowner/home/dispatchload">
             <Button 
               style={{ 
                 backgroundColor: '#FFA500', 
                 borderColor: '#FFA500', 
                 borderRadius: '10%' 
               }}
+              disabled={record.status === 'INACTIVE' || record.remaining === 0}  // Disable if Inactive or Remaining cubes = 0
+              title={record.status === 'INACTIVE' || record.remaining === 0 ? "Cannot dispatch: License inactive or no remaining cubes" : "Dispatch Load"}
             >
               Dispatch Load
             </Button>
@@ -91,11 +94,11 @@ const MLOwnerHomePage = () => {
       owner: 'Jayantha Perera',
       location: 'Rathnapura',
       capacity: 100,
-      used: 20,
-      remaining: 80,
+      used: 100,
+      remaining: 0,
       startDate: '2023-01-01',
       endDate: '2025-12-31',
-      status: 'ACTIVE',
+      status: 'INACTIVE',
       royalty: '45265.20',
     },
   ];
@@ -135,7 +138,7 @@ const MLOwnerHomePage = () => {
             />
           </Col>
           <Col xs={24} sm={24} md={12} lg={12} style={{ textAlign: 'center', marginTop: '16px' }}>
-            <Link to="/home/licenses">
+            <Link to="/mlowner/home/viewlicenses">
               <Button
                 type="primary"
                 style={{
@@ -153,7 +156,7 @@ const MLOwnerHomePage = () => {
               </Button>
             </Link>
 
-            <Link to="/home/history">
+            <Link to="/mlowner/history">
               <Button
                 type="primary"
                 style={{
