@@ -30,7 +30,13 @@ const Dashboard = () => {
           to={`/gsmb/license/${record.licenseId}`}
           state={{ license: record }}
         >
-          <Button type="link" style={{ backgroundColor: "#05CD99", color: "#000000" }}>
+          <Button
+           type="link"
+            style={{ backgroundColor: "#05CD99", color: "#000000" }}
+            onClick={() => {
+              console.log("License ID:", record.licenseId);
+            }}
+            >
             View
           </Button>
         </Link>
@@ -42,8 +48,8 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const username = ""; // Replace with actual username
-        const password = ""; // Replace with actual password
+        const username = "@achinthamihiran"; // Replace with actual username
+        const password = "Ab2#*De#"; // Replace with actual password
 
         const response = await axios.get(
           "/api/projects/new-license/issues.json",

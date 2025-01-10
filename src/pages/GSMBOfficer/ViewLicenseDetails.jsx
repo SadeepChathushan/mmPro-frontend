@@ -1,25 +1,108 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Card, Row, Col, Form, Input, DatePicker, Button } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import axios from "axios";
 
 const ViewLicenseDetails = () => {
-  // Hardcoded dummy data
-  const initialData = {
-    licenseNumber: "IML/B/TEST/1578/LRS",
-    ownerName: "Jayantha Perera",
-    location: "Rathnapura",
-    capacity: 100,
-    issueDate: dayjs("2024-07-05"), // Format dates with dayjs
-    expiryDate: dayjs("2025-07-04"),
-    mobile: "0711234567",
-  };
-
+  const { licenseId } = useParams(); // Get the license ID from the URL
+  const [licenseData, setLicenseData] = useState(null); // State for license data
+  const [loading, setLoading] = useState(true);
   const [form] = Form.useForm();
 
-  const handleUpdate = (values) => {
-    console.log("Updated values: ", values);
+  // Handle form submission and update data
+  const onFinish = async (values) => {
+    try {
+      const payload = {
+        issue: {
+          custom_fields: [
+            { id: 8, name: "License Number", value: values.licenseNumber },
+            { id: 2, name: "Owner Name", value: values.ownerName },
+            { id: 3, name: "Mobile Number", value: values.mobile },
+            { id: 5, name: "Capacity", value: values.capacity },
+            { id: 9, name: "Start Date", value: values.issueDate.format("YYYY-MM-DD") },
+            { id: 10, name: "End Date", value: values.expiryDate.format("YYYY-MM-DD") },
+            { id: 11, name: "Location", value: values.location },
+          ],
+        },
+      };
+
+      const username = "@achinthamihiran";
+      const password = "Ab2#*De#";
+
+      const response = await axios.put(
+        `/api/issues/${licenseId}.json`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          auth: {
+            username,
+            password,
+          },
+        }
+      );
+
+      console.log("Data updated successfully:", response.data);
+      alert("License details updated successfully!");
+    } catch (error) {
+      console.error("Error updating data:", error);
+      alert("Failed to update license details. Please try again.");
+    }
   };
+
+  // Fetch license data from the API
+  useEffect(() => {
+    const fetchLicenseData = async () => {
+      try {
+        const username = "@achinthamihiran";
+        const password = "Ab2#*De#";
+
+        const response = await axios.get(
+          `/api/issues/${licenseId}.json`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            auth: {
+              username,
+              password,
+            },
+          }
+        );
+
+        const issue = response.data.issue;
+        const transformedData = {
+          licenseNumber: issue.custom_fields.find((field) => field.name === "License Number")?.value || "",
+          ownerName: issue.custom_fields.find((field) => field.name === "Owner Name")?.value || "",
+          location: issue.custom_fields.find((field) => field.name === "Location")?.value || "",
+          capacity: issue.custom_fields.find((field) => field.name === "Capacity")?.value || "",
+          issueDate: dayjs(issue.custom_fields.find((field) => field.name === "Start Date")?.value),
+          expiryDate: dayjs(issue.custom_fields.find((field) => field.name === "End Date")?.value),
+          mobile: issue.custom_fields.find((field) => field.name === "Mobile Number")?.value || "",
+        };
+
+        setLicenseData(transformedData);
+        setLoading(false);
+        form.setFieldsValue(transformedData); // Set initial values in the form
+      } catch (error) {
+        console.error("Error fetching license data:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchLicenseData();
+  }, [licenseId, form]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!licenseData) {
+    return <div>No data available</div>;
+  }
 
   const handleCancel = () => {
     form.resetFields();
@@ -50,8 +133,7 @@ const ViewLicenseDetails = () => {
         <Form
           form={form}
           layout="vertical"
-          onFinish={handleUpdate}
-          initialValues={initialData}  // Directly passing the dummy data as initialValues
+          onFinish={onFinish}
         >
           <Row gutter={[16, 16]}>
             <Col xs={24} sm={12}>
@@ -136,7 +218,7 @@ const ViewLicenseDetails = () => {
               <Button
                 type="default"
                 onClick={handleCancel}
-                style={{ width: "100%",borderColor: "#950C33" }}
+                style={{ width: "100%", borderColor: "#950C33" }}
               >
                 Cancel
               </Button>
