@@ -42,8 +42,8 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const username = ""; // Replace with actual username
-        const password = ""; // Replace with actual password
+        const username = "@achinthamihiran"; // Replace with actual username
+        const password = "Ab2#*De#"; // Replace with actual password
 
         const response = await axios.get(
           "/api/projects/new-license/issues.json",
