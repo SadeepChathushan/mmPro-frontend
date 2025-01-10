@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col, Form, Input, DatePicker, Button, Spin } from "antd";
+import { useParams } from "react-router-dom";
+import { Card, Row, Col, Form, Input, DatePicker, Button } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 
 const ViewLicenseDetails = () => {
-  const { id } = useParams(); // Retrieve the id from the URL
-  const history = useHistory(); // For navigation
+  const { licenseId } = useParams(); // Get the license ID from the URL
+  const [licenseData, setLicenseData] = useState(null); // State for license data
+  const [loading, setLoading] = useState(true);
+
+  // Always declare hooks at the top level
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
-  const [initialData, setInitialData] = useState(null); // To hold fetched license data
 
   useEffect(() => {
-    const fetchLicenseDetails = async () => {
-      setLoading(true);
+    const fetchLicenseData = async () => {
       try {
         const username = "@achinthamihiran"; // Replace with actual username
         const password = "Ab2#*De#"; // Replace with actual password
 
         const response = await axios.get(
-          `/api/issues/${id}.json`, // Fetch details for the specific id
+          `/api/issues/${licenseId}.json`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -33,46 +33,46 @@ const ViewLicenseDetails = () => {
         );
 
         const issue = response.data.issue;
-        const licenseData = {
-          licenseNumber: issue.custom_fields.find((field) => field.name === "License Number")?.value || "N/A",
-          ownerName: issue.custom_fields.find((field) => field.name === "Owner Name")?.value || "N/A",
-          location: issue.custom_fields.find((field) => field.name === "Location")?.value || "N/A",
-          capacity: issue.custom_fields.find((field) => field.name === "Capacity")?.value || "N/A",
-          issueDate: issue.start_date ? dayjs(issue.start_date) : null,
-          expiryDate: issue.due_date ? dayjs(issue.due_date) : null,
-          mobile: issue.custom_fields.find((field) => field.name === "Mobile")?.value || "N/A",
+        const transformedData = {
+          licenseNumber:
+            issue.custom_fields.find((field) => field.name === "License Number")?.value || "N/A",
+          ownerName:
+            issue.custom_fields.find((field) => field.name === "Owner Name")?.value || "N/A",
+          location:
+            issue.custom_fields.find((field) => field.name === "Location")?.value || "N/A",
+          capacity:
+            issue.custom_fields.find((field) => field.name === "Capacity")?.value || "N/A",
+          issueDate: dayjs(issue.custom_fields.find((field) => field.name === "Stare Date")?.value || "N/A",),
+          expiryDate: dayjs(issue.custom_fields.find((field) => field.name === "End Date")?.value || "N/A",),
+          mobile: issue.custom_fields.find((field) => field.name === "Mobile Number")?.value || "N/A",
         };
 
-        setInitialData(licenseData);
-        form.setFieldsValue(licenseData); // Populate form with fetched data
+        setLicenseData(transformedData);
+        setLoading(false);
       } catch (error) {
-        console.error("Error fetching license details:", error);
-      } finally {
+        console.error("Error fetching license data:", error);
         setLoading(false);
       }
     };
 
-    if (id) {
-      fetchLicenseDetails();
-    }
-  }, [id, form]);
+    fetchLicenseData();
+  }, [licenseId]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!licenseData) {
+    return <div>No data available</div>;
+  }
 
   const handleUpdate = (values) => {
     console.log("Updated values: ", values);
-    // Perform the update API call here
   };
 
   const handleCancel = () => {
     form.resetFields();
   };
-
-  if (loading || !initialData) {
-    return (
-      <div style={{ textAlign: "center", marginTop: "50px" }}>
-        <Spin size="large" />
-      </div>
-    );
-  }
 
   return (
     <div
@@ -88,7 +88,7 @@ const ViewLicenseDetails = () => {
         type="link"
         icon={<ArrowLeftOutlined />}
         style={{ marginBottom: "16px", paddingLeft: 0, color: "#000000" }}
-        onClick={() => history.push("/gsmb/dashboard")}
+        href="/gsmb/dashboard"
       >
         Back
       </Button>
@@ -100,9 +100,9 @@ const ViewLicenseDetails = () => {
           form={form}
           layout="vertical"
           onFinish={handleUpdate}
-          initialValues={initialData} // Directly passing the fetched data
+          initialValues={licenseData}
         >
-          <Row gutter={[16, 16]}>
+            <Row gutter={[16, 16]}>
             <Col xs={24} sm={12}>
               <Form.Item
                 label="License Number"
