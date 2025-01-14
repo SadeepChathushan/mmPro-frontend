@@ -40,9 +40,10 @@ const Dashboard = () => {
 
       if (licenseExists) {
         navigate('/police-officer/valid');
+       // navigate(`/police-officer/valid/${licenseId}`);
       } else {
         navigate('/police-officer/invalid');
-      }
+      }                                                                   
     } catch (error) {
       console.error('Error checking license:', error);
       alert('An error occurred while checking the license number. Please try again.');
