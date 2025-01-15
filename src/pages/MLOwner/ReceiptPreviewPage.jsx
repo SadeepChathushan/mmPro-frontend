@@ -2,6 +2,8 @@ import React from "react";
 import { Button, Typography, Layout, Row, Col, notification } from "antd";
 import { jsPDF } from "jspdf";
 import { useNavigate } from "react-router-dom";
+import './ReceiptPage.css';  // Add this line at the top of your file
+
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -165,12 +167,13 @@ const ReceiptPage = () => {
               Back to Home
             </Button>
             <Button
-              type="primary"
-              onClick={handlePrintReceipt}
-              style={{ backgroundColor: "#781424", borderColor: "#781424" }}
-            >
-              Print Receipt
-            </Button>
+  type="primary"
+  onClick={handlePrintReceipt}
+  className="glitter-button"  // Apply the glitter button class
+>
+  Print Receipt
+</Button>
+
           </Col>
         </Row>
       </Content>
