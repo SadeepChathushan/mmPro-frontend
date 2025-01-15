@@ -63,7 +63,7 @@ const Auth = () => {
           width: isMobile ? "100%" : "80%", // Adjust width for mobile screens
           gap: isMobile ? "20px" : "0", // Add gap for mobile view
           padding: isMobile ? "20px" : "40px", // Add padding for mobile view
-          background: "rgb(255, 165, 0)", // Set background color for the main tile
+          background: "fcd5d0", // Set background color for the main tile
           borderRadius: 12,
           boxShadow: "0 6px 12px rgba(0, 0, 0, 0.1)",
         }}
