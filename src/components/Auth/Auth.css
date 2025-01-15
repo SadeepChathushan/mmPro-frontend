@@ -1,4 +1,4 @@
-.auth-container {
+/* .auth-container {
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -93,5 +93,9 @@
     .auth-form-section {
       width: 60%;
     }
+  } */
+  
+  .smooth-tabs .ant-tabs-tabpane {
+    transition: transform 0.5s ease-in-out;
   }
   
