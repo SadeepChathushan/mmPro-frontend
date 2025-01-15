@@ -1,21 +1,106 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form, Input, Button, Row, Col, Upload, message } from "antd";
-import { ArrowLeftOutlined } from "@ant-design/icons";
-import { UploadOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, UploadOutlined } from "@ant-design/icons";
+import axios from "axios";
+import uploadMediaToSupabase from "../../utils/imageUpload";
 
 const NewLicenseForm = () => {
   const [form] = Form.useForm();
+  const [uploading, setUploading] = useState({
+    lorryBook: false,
+    lorry: false,
+  });
 
-  const onFinish = (values) => {
-    console.log("Form values: ", values);
+  // Function to upload the first image (lorryBook)
+const uploadLorryBook = async (file) => {
+  setUploading((prev) => ({ ...prev, lorryBook: true }));
+  try {
+    const publicUrl = await uploadMediaToSupabase(file); // Get public URL for lorryBook
+    form.setFieldsValue({ lorryBook: publicUrl }); // Set the public URL in the form
+    console.log("Lorry Book URL:", publicUrl); // Log the URL for debugging
+    message.success(`${file.name} uploaded successfully!`);
+  } catch (err) {
+    message.error(`Upload failed: ${err}`);
+  } finally {
+    setUploading((prev) => ({ ...prev, lorryBook: false }));
+  }
+};
+
+// Function to upload the second image (lorry)
+const uploadLorry = async (file) => {
+  setUploading((prev) => ({ ...prev, lorry: true }));
+  try {
+    const publicUrl = await uploadMediaToSupabase(file); // Get public URL for lorry
+    form.setFieldsValue({ lorry: publicUrl }); // Set the public URL in the form
+    console.log("Lorry URL:", publicUrl); // Log the URL for debugging
+    message.success(`${file.name} uploaded successfully!`);
+  } catch (err) {
+    message.error(`Upload failed: ${err}`);
+  } finally {
+    setUploading((prev) => ({ ...prev, lorry: false }));
+  }
+};
+
+
+  // Handling the file upload sequence
+  const beforeUpload = (file, fieldName) => {
+    if (fieldName === "lorryBook") {
+      uploadLorryBook(file); // Upload lorryBook first
+    } else if (fieldName === "lorry") {
+      uploadLorry(file); // Upload lorry image second
+    }
+    return false; // Prevent default upload behavior
   };
 
-  const handleUploadChange = (info) => {
-    if (info.file.status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
+  const onFinish = async (values) => {
+    console.log("Form Values on Submit:", values); // Check form values before submitting
+  
+    try {
+      const payload = {
+        issue: {
+          project_id: 17,
+          tracker_id: 1,
+          subject: "New License Owner",
+          custom_fields: [
+            { id: 2, name: "Owner Name", value: values.ownerName },
+            { id: 3, name: "Mobile Number", value: values.mobile },
+            { id: 4, name: "Vehicle Number", value: values.vehicleNumber },
+            { id: 5, name: "Capacity", value: values.capacity },
+            { id: 17, name: "Lorry Book(image)", value: values.lorryBook }, // Correct lorryBook URL
+            { id: 18, name: "Lorry(image)", value: values.lorry }, // Correct lorry URL
+          ],
+        },
+      };
+  
+      const username = "@achinthamihiran"; // Replace with actual username
+      const password = "Ab2#*De#"; // Replace with actual password
+  
+      const response = await axios.post(
+        "/api/projects/add-new-license-owner/issues.json",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          auth: {
+            username,
+            password,
+          },
+        }
+      );
+  
+      message.success("License owner created successfully!");
+      form.resetFields();
+      console.log("API response:", response.data);
+    } catch (error) {
+      console.error("Error posting data:", error);
+      message.error("Failed to create license owner. Please try again.");
     }
+  };
+  
+
+  const handleCancel = () => {
+    form.resetFields();
   };
 
   return (
@@ -33,17 +118,14 @@ const NewLicenseForm = () => {
         icon={<ArrowLeftOutlined />}
         style={{ marginBottom: "16px", paddingLeft: 0, color: "#000000" }}
         href="/gsmb/dashboard"
-      ></Button>
+      >
+        Back
+      </Button>
 
       <h2 style={{ textAlign: "center", fontWeight: "bold", color: "#1a1a1a" }}>
-        Register New  License Owner
+        Register New License Owner
       </h2>
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        style={{ gap: "16px" }}
-      >
+      <Form form={form} layout="vertical" onFinish={onFinish}>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
@@ -63,7 +145,6 @@ const NewLicenseForm = () => {
               <Input />
             </Form.Item>
           </Col>
-          
           <Col xs={24} sm={24} md={12}>
             <Form.Item
               label="Vehicle Number"
@@ -89,12 +170,13 @@ const NewLicenseForm = () => {
               rules={[{ required: true, message: "Please upload the lorry book image!" }]}
             >
               <Upload
-                name="lorryBook"
+                beforeUpload={(file) => beforeUpload(file, "lorryBook")}
                 showUploadList={false}
-                action="/upload.do"
-                onChange={handleUploadChange}
+                disabled={uploading.lorryBook}
               >
-                <Button icon={<UploadOutlined />}>Upload Lorry Book</Button>
+                <Button icon={<UploadOutlined />} loading={uploading.lorryBook}>
+                  Upload Lorry Book
+                </Button>
               </Upload>
             </Form.Item>
           </Col>
@@ -105,28 +187,38 @@ const NewLicenseForm = () => {
               rules={[{ required: true, message: "Please upload the lorry image!" }]}
             >
               <Upload
-                name="lorry"
+                beforeUpload={(file) => beforeUpload(file, "lorry")}
                 showUploadList={false}
-                action="/upload.do"
-                onChange={handleUploadChange}
+                disabled={uploading.lorry}
               >
-                <Button icon={<UploadOutlined />}>Upload Lorry Image</Button>
+                <Button icon={<UploadOutlined />} loading={uploading.lorry}>
+                  Upload Lorry Image
+                </Button>
               </Upload>
             </Form.Item>
           </Col>
           <Col xs={24}>
             <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                style={{
-                  backgroundColor: "#b51c1c",
-                  borderColor: "#b51c1c",
-                  width: "100%",
-                }}
-              >
-                Create New license Owner
-              </Button>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{
+                    width: "48%",
+                    backgroundColor: "#950C33",
+                    borderColor: "#950C33",
+                  }}
+                >
+                  Create License
+                </Button>
+                <Button
+                  type="default"
+                  onClick={handleCancel}
+                  style={{ width: "48%", borderColor: "#950C33" }}
+                >
+                  Cancel
+                </Button>
+              </div>
             </Form.Item>
           </Col>
         </Row>
