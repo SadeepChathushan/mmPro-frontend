@@ -1,0 +1,97 @@
+.auth-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url("/path-to-your-background-image.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  
+  .auth-box {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .auth-logo-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .auth-logo {
+    width: 120px;
+    margin-bottom: 10px;
+  }
+  
+  .auth-title {
+    color: #a52a2a;
+    margin-bottom: 10px;
+  }
+  
+  .auth-subtitle {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .auth-form-section {
+    width: 100%;
+  }
+  
+  .auth-form-title {
+    margin-bottom: 20px;
+    color: #a52a2a;
+  }
+  
+  .auth-form-options {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .auth-forgot-password {
+    color: #a52a2a;
+  }
+  
+  .auth-submit-button {
+    background-color: #a52a2a;
+    border-color: #a52a2a;
+    margin-bottom: 10px;
+  }
+  
+  .auth-google-button {
+    background-color: #fff;
+    border-color: #d9d9d9;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  @media (max-width: 768px) {
+    .auth-box {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  
+    .auth-logo-section {
+      width: 40%;
+      margin-bottom: 0;
+      align-items: flex-start;
+    }
+  
+    .auth-form-section {
+      width: 60%;
+    }
+  }
+  
