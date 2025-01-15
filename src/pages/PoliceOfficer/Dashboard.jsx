@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../contexts/LanguageContext';
 import logo from '../../assets/images/gsmbLogo.jpg';
 
 const Dashboard = () => {
+  const { language } = useLanguage();
   const [input, setInput] = useState('');
   const navigate = useNavigate();
 
   const handleCheck = () => {
     if (/^\d+$/.test(input)) {
-      // If input is numeric
       navigate('/police-officer/valid');
     } else {
-      // If input contains non-numeric characters
       navigate('/police-officer/invalid');
     }
   };
@@ -23,7 +23,6 @@ const Dashboard = () => {
       minHeight: '100vh',
     },
     main: {
-      // flexGrow: 1,
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -32,7 +31,7 @@ const Dashboard = () => {
       padding: '2rem',
     },
     logo: {
-      width: '12rem',
+      width: '17rem',
       height: '12rem',
       marginBottom: '1.5rem',
     },
@@ -71,21 +70,14 @@ const Dashboard = () => {
   return (
     <div style={styles.container}>
       <main style={styles.main}>
-        {/* <img
-          src="/gsmbLogo.png"
-          alt="Geological Survey & Mines Bureau Logo"
-          style={styles.logoImg}
-        /> */}
-        <img
-          src={logo}
-          alt="Logo"
-          style={{ marginBottom:0, width: 350 }}
-        />
-        <h2 style={styles.title}>Geological Survey & Mines Bureau</h2>
+        <img src={logo} alt="Logo" style={styles.logo} />
+        <h2 style={styles.title}>
+          {language === 'en' ? 'Geological Survey & Mines Bureau' : 'භූ විද්‍යා සමීක්ෂණ හා පතල් කාර්යාංශය'}
+        </h2>
         <div style={styles.inputContainer}>
           <input
             type="text"
-            placeholder="Enter details"
+            placeholder={language === 'en' ? 'Enter vehicle number' : 'විස්තර ඇතුළත් කරන්න'}
             style={styles.inputBox}
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -97,7 +89,7 @@ const Dashboard = () => {
           onMouseOut={(e) => (e.target.style.backgroundColor = styles.checkButton.backgroundColor)}
           onClick={handleCheck}
         >
-          Check
+          {language === 'en' ? 'Check' : 'පරීක්ෂා කරන්න'}
         </button>
       </main>
     </div>
