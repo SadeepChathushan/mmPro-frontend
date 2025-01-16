@@ -20,7 +20,7 @@
     color: #59252dd6;
 }
 
-h1 {
+.notfound-title {
     font-size: 100px;
     display: flex;
     align-items: center;
@@ -29,21 +29,21 @@ h1 {
     
 }
 
-h2 {
+.notfound {
     font-size: 50px;
 }
 
-h1 span{
+.notfound-title span{
     font-size: 100px;
     font-weight: 700;
 }
 
 .gear{
-    animation: animate2 6s linear infinite alternate;
+    animation: animate2 20s linear infinite alternate;
 }
 
 .num{
-    animation: animate1 6s linear infinite alternate;
+    animation: animate1 20s linear infinite alternate;
 }
 
 @keyframes animate2 {

@@ -10,12 +10,12 @@ const NotFound = () => {
         <FaOilWell className="oilwell" />
       </div>
       <div className="notfound-middle">
-        <h1>
+        <h1 className="notfound-title">
           <span className="num">4</span>
           <FaGear className="gear" />
           <span className="num">4</span>
         </h1>
-        <h2>Page Not Found</h2>
+        <h2 className="notfound">Page Not Found</h2>
       </div>
     </div>
   );
