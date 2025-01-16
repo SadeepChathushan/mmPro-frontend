@@ -11,6 +11,7 @@ import SignIn from './components/Auth/SignIn';
 import { useAuth } from './hooks/useAuth';
 import PrivateRoute from './routes/PrivateRoute';
 import SignUp from './components/Auth/SignUp';
+import GeneralPublicRoutes from './routes/GeneralPublicRoutes';
 
 const App = () => {
   const userRole = "GSMBOfficer";
@@ -51,6 +52,12 @@ const App = () => {
             <Route path="police-officer/*" element={<PrivateRoute allowedRoles={['PoliceOfficer']} />}>
               <Route path="*" element={<PoliceOfficerRoutes />} />
             </Route>
+
+            {/* GeneralPublic Routes */}
+            <Route path="generalpublic/*" element={<PrivateRoute allowedRoles={['GeneralPublic']} />}>
+              <Route path="*" element={<GeneralPublicRoutes />} />
+            </Route>
+
           </Route>
         </Route>
       </Routes>
