@@ -8,9 +8,13 @@ import GSMBRoutes from './routes/GSMBRoutes';
 import MLOwnerRoutes from './routes/MLOwnerRoutes';
 import PoliceOfficerRoutes from './routes/PoliceOfficerRoutes';
 import SignIn from './components/Auth/SignIn';
+import SignUp from './components/Auth/Signup';
 import { useAuth } from './hooks/useAuth';
 import PrivateRoute from './routes/PrivateRoute';
 import SignUp from './components/Auth/SignUp';
+
+import SAppLayout from './components/layout/SAppLayout';
+
 
 const App = () => {
   const userRole = "GSMBOfficer";
@@ -52,6 +56,24 @@ const App = () => {
               <Route path="*" element={<PoliceOfficerRoutes />} />
             </Route>
           </Route>
+
+          <Route path="/" element={<SAppLayout />}>
+            {/* GSMB Officer Routes */}
+            <Route path="sgsmb/*" element={<PrivateRoute allowedRoles={['GSMBOfficer']} />}>
+              <Route path="*" element={<GSMBRoutes />} />
+            </Route>
+
+             {/* MLOwner Routes */}
+             <Route path="sml-owner/*" element={<PrivateRoute allowedRoles={['MLOwner']} />}>
+              <Route path="*" element={<MLOwnerRoutes />} />
+            </Route>
+
+            {/* Police Officer Routes */}
+            <Route path="spolice-officer/*" element={<PrivateRoute allowedRoles={['PoliceOfficer']} />}>
+              <Route path="*" element={<PoliceOfficerRoutes />} />
+            </Route>
+          </Route>
+
         </Route>
       </Routes>
     </Router>
