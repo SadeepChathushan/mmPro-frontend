@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Form, Input, Button, Checkbox, Tabs, Row, Col, message } from "antd";
 import { GoogleOutlined } from "@ant-design/icons";
 import logo from "../../assets/images/gsmbLogo.png"; // Transparent background logo
@@ -15,18 +15,16 @@ const Auth = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [activeTab, setActiveTab] = useState("1"); // Default to Sign In tab
 
+  const handleResize = useCallback(() => {
+    setIsMobile(window.innerWidth < 768);
+  }, []);
+
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
     window.addEventListener("resize", handleResize);
-
-    // Cleanup on component unmount
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [handleResize]);
 
   const onFinish = async (values) => {
     try {
@@ -87,10 +85,6 @@ const Auth = () => {
     }
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
-
   const onFinishSignUp = async (values) => {
     try {
       // Check if password and confirm password match
@@ -112,8 +106,6 @@ const Auth = () => {
       // If the sign-up is successful
       if (response.status === 201) {
         message.success("Your sign-up was successful! Please log in.");
-
-        // Redirect to the Sign In tab
         setActiveTab("1"); // Switch to the Sign In tab
       }
     } catch (error) {
@@ -129,9 +121,9 @@ const Auth = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#FFFFFF", // Main background color
-        padding: isMobile ? "20px 10px" : "0", // Add padding for mobile
-        overflowY: "scroll", // Ensure scrolling on mobile
+        backgroundColor: "#FFFFFF",
+        padding: isMobile ? "20px 10px" : "0",
+        overflowY: "scroll",
       }}
     >
       <div
@@ -139,34 +131,32 @@ const Auth = () => {
           display: "flex",
           flexDirection: isMobile ? "column" : "row",
           justifyContent: "center",
-          width: isMobile ? "100%" : "80%", // Adjust width for mobile screens
-          gap: isMobile ? "20px" : "0", // Add gap for mobile view
-          padding: isMobile ? "20px" : "40px", // Add padding for mobile view
-          background: "fcd5d0", // Set background color for the main tile
+          width: isMobile ? "100%" : "80%",
+          gap: isMobile ? "20px" : "0",
+          padding: isMobile ? "20px" : "40px",
+          background: "fcd5d0",
           borderRadius: 12,
           boxShadow: "0 6px 12px rgba(0, 0, 0, 0.1)",
         }}
       >
-        {/* Tile 1: Logo + Welcome Message with Conditionally Changing Background Image */}
         <div
           style={{
-            width: isMobile ? "100%" : "50%", // Adjust width of tiles to make them larger
-            background: `url(${activeTab === "2" ? signupImage : excavator}) center center/cover no-repeat`, // Conditionally set image based on active tab
+            width: isMobile ? "100%" : "50%",
+            background: `url(${activeTab === "2" ? signupImage : excavator}) center center/cover no-repeat`,
             padding: "40px",
             textAlign: "center",
-            color: "white", // Ensure the text is white for contrast
-            position: "relative", // Needed for overlay
-            minHeight: isMobile ? "300px" : "450px", // Set a minimum height for larger tiles
-            borderTopLeftRadius: 0, // Remove top-left border-radius
-            borderBottomLeftRadius: 0, // Remove bottom-left border-radius
-            boxShadow: "none", // Remove shadow from the left tile
+            color: "white",
+            position: "relative",
+            minHeight: isMobile ? "300px" : "450px",
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+            boxShadow: "none",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "center", // Vertically center the content
-            alignItems: "center", // Horizontally center the content
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          {/* Add a dark overlay to improve text contrast */}
           <div
             style={{
               position: "absolute",
@@ -174,24 +164,21 @@ const Auth = () => {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: "rgba(0, 0, 0, 0.4)", // Dark overlay
-              zIndex: -1, // Ensure it stays behind the text
+              backgroundColor: "rgba(0, 0, 0, 0.4)",
+              zIndex: -1,
             }}
           ></div>
-
-          {/* GSMB Logo */}
           <img
             src={logo}
             alt="GSMB Logo"
             style={{
-              width: isMobile ? "150px" : "250px", // Adjust logo size based on screen width
-              marginBottom: 20,
-              zIndex: 1, // Ensure the logo is above the overlay
-              position: "relative", // Make sure the logo remains on top of background
-              objectFit: "contain", // Prevent cropping
+              width: isMobile ? "150px" : "250px",
+              marginBottom: "0px",
+              zIndex: 1,
+              position: "relative",
+              objectFit: "contain",
             }}
           />
-
           <h2
             style={{
               fontSize: isMobile ? "24px" : "30px",
@@ -199,36 +186,76 @@ const Auth = () => {
               zIndex: 1,
               color: "rgb(13, 10, 11)",
               textAlign: "center",
+              lineHeight: "1.5",
+              textShadow: "2px 2px 4px rgba(255, 165, 0, 0.6), -2px -2px 4px rgba(255, 165, 0, 0.6)",
             }}
           >
-            Welcome to GSMB
+            Welcome to GSMB <br />
+            <span
+              style={{
+                fontSize: isMobile ? "22px" : "26px",
+                color: "rgb(13, 10, 11)",
+                fontFamily: "Noto Sans Sinhala, Arial, sans-serif",
+                textShadow: "2px 2px 4px rgba(255, 165, 0, 0.6), -2px -2px 4px rgba(255, 165, 0, 0.6)",
+              }}
+            >
+              GSMB වෙත සාදරයෙන් පිළිගනිමු
+            </span>
           </h2>
-
-          {/* Conditional Paragraphs for Sign In and Sign Up */}
-          <div style={{ textAlign: "left", color: "#f8f8f8", fontSize: "16px" }}>
+          <div style={{ textAlign: "left", color: "#f8f8f8", fontSize: "10px" }}>
             {activeTab === "1" ? (
-              <p style={{ marginBottom: "10px" }}>
-                To access your account, please provide your login credentials. Signing in allows you to view your personalized dashboard and manage your information.
-              </p>
+              <>
+                <p
+                  style={{
+                    marginBottom: "10px",
+                    textShadow: "1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black",
+                  }}
+                >
+                  To access your account, please provide your login credentials.
+                  Signing in allows you to view your personalized dashboard and manage your information.
+                </p>
+                <p
+                  style={{
+                    marginBottom: "10px",
+                    textShadow: "1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black",
+                  }}
+                >
+                  ඔබගේ ගිණුමට ප්‍රවේශ වීමට, කරුණාකර ඔබේ ලොග්-ඇන් ලිපිනයන් ලබා දෙන්න. ඔබේ ගිණුමට පිවිසීම මඟින් ඔබට පෞද්ගලික දැක්මක් ලබා ගැනීමට සහ ඔබේ තොරතුරු පරික්‍ෂා කළ හැක.
+                </p>
+              </>
             ) : (
-              <p style={{ marginBottom: "10px" }}>
-                Create an account to enjoy all the features of GSMB. Signing up is quick and easy. You just need to provide some basic information such as your name, email, and password.
-              </p>
+              <>
+                <p
+                  style={{
+                    marginBottom: "10px",
+                    textShadow: "1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black",
+                  }}
+                >
+                  Create an account to enjoy all the features of GSMB. Signing up is quick and easy. You just need to provide some basic information such as your name, email, and password.
+                </p>
+                <p
+                  style={{
+                    marginBottom: "10px",
+                    textShadow: "1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black",
+                  }}
+                >
+                  ගැසට් වෙබ් අඩවියට ලියාපදිංචි වීමෙන් ඔබට සියලුම විශේෂාංග ප්‍රවේශය ලැබෙනු ඇත. ලියාපදිංචි වීම ඉතා සුළු කාලයක් ගතකරයි. ඔබට නම, ඊ-තැපැල් ලිපිනය සහ රහස් පදය වැනි මූලික තොරතුරු ලබා දීමට කෙටි පියවර ගත යුතුය.
+                </p>
+              </>
             )}
           </div>
         </div>
 
-        {/* Tile 2: Sign In / Sign Up Forms */}
         <div
           style={{
-            width: isMobile ? "100%" : "50%", // Adjust width of tiles to make them larger
-            background: "#ffffff", // White background
+            width: isMobile ? "100%" : "50%",
+            background: "#ffffff",
             padding: "40px",
-            borderTopRightRadius: 0, // Remove top-right border-radius
-            borderBottomRightRadius: 0, // Remove bottom-right border-radius
-            boxShadow: "none", // Remove shadow from the right tile
-            overflowY: "scroll", // Allow scrolling if the content overflows
-            maxHeight: isMobile ? "70vh" : "none", // Limit height on mobile
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0,
+            boxShadow: "none",
+            overflowY: "scroll",
+            maxHeight: isMobile ? "70vh" : "none",
           }}
         >
           <Tabs
@@ -236,7 +263,7 @@ const Auth = () => {
             className="smooth-tabs"
             animated
             tabPosition="top"
-            onChange={(key) => setActiveTab(key)} // Track the active tab
+            onChange={(key) => setActiveTab(key)}
             style={{
               overflow: "hidden",
               position: "relative",
@@ -249,7 +276,6 @@ const Auth = () => {
                 name="signin"
                 initialValues={{ remember: true }}
                 onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
                 layout="vertical"
               >
                 <Form.Item
@@ -323,7 +349,6 @@ const Auth = () => {
                 layout="vertical"
               >
                 <Row gutter={16}>
-                  {/* First Name and Last Name on the same row */}
                   <Col span={12}>
                     <Form.Item
                       label="First Name"
@@ -343,8 +368,6 @@ const Auth = () => {
                     </Form.Item>
                   </Col>
                 </Row>
-
-                {/* Address in one row */}
                 <Form.Item
                   label="Address"
                   name="address"
@@ -352,8 +375,6 @@ const Auth = () => {
                 >
                   <Input placeholder="123 Main St, City, Country" />
                 </Form.Item>
-
-                {/* Phone Number in one row */}
                 <Form.Item
                   label="Phone Number"
                   name="phoneNumber"
@@ -361,8 +382,6 @@ const Auth = () => {
                 >
                   <Input placeholder="(123) 456-7890" />
                 </Form.Item>
-
-                {/* Email Field */}
                 <Form.Item
                   label="Email"
                   name="email"
@@ -370,8 +389,6 @@ const Auth = () => {
                 >
                   <Input placeholder="john@gmail.com" />
                 </Form.Item>
-
-                {/* Password Field */}
                 <Form.Item
                   label="Password"
                   name="password"
@@ -379,8 +396,6 @@ const Auth = () => {
                 >
                   <Input.Password placeholder="Enter your password" />
                 </Form.Item>
-
-                {/* Confirm Password Field */}
                 <Form.Item
                   label="Confirm Password"
                   name="confirmPassword"
@@ -388,7 +403,6 @@ const Auth = () => {
                 >
                   <Input.Password placeholder="Confirm your password" />
                 </Form.Item>
-
                 <Form.Item>
                   <Button
                     type="primary"
