@@ -93,9 +93,32 @@ const Auth = () => {
 
   const onFinishSignUp = async (values) => {
     try {
-      // SignUp logic here
+      // Check if password and confirm password match
+      if (values.password !== values.confirmPassword) {
+        message.error("Passwords do not match. Please check again.");
+        return;
+      }
+
+      // Example sign-up logic (replace this with your actual API call)
+      const response = await axios.post("/api/users/signup", {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        password: values.password,
+        address: values.address,
+        phoneNumber: values.phoneNumber,
+      });
+
+      // If the sign-up is successful
+      if (response.status === 201) {
+        message.success("Your sign-up was successful! Please log in.");
+
+        // Redirect to the Sign In tab
+        setActiveTab("1"); // Switch to the Sign In tab
+      }
     } catch (error) {
       console.log("Sign up failed:", error);
+      message.error("An error occurred while signing up. Please try again.");
     }
   };
 
@@ -407,61 +430,3 @@ const Auth = () => {
 };
 
 export default Auth;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
