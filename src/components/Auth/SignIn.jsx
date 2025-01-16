@@ -115,323 +115,93 @@ const Auth = () => {
   };
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#FFFFFF",
-        padding: isMobile ? "20px 10px" : "0",
-        overflowY: "scroll",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          justifyContent: "center",
-          width: isMobile ? "100%" : "80%",
-          gap: isMobile ? "20px" : "0",
-          padding: isMobile ? "20px" : "40px",
-          background: "fcd5d0",
-          borderRadius: 12,
-          boxShadow: "0 6px 12px rgba(0, 0, 0, 0.1)",
-        }}
-      >
+    <div className={`auth-container ${isMobile ? "mobile" : ""}`}>
+      <div className={`auth-box ${isMobile ? "" : "auth-box-desktop"}`}>
         <div
-          style={{
-            width: isMobile ? "100%" : "50%",
-            background: `url(${activeTab === "2" ? signupImage : excavator}) center center/cover no-repeat`,
-            padding: "40px",
-            textAlign: "center",
-            color: "white",
-            position: "relative",
-            minHeight: isMobile ? "300px" : "450px",
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-            boxShadow: "none",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+          className={`auth-image-container ${activeTab === "2" ? "auth-image-container-signup" : "auth-image-container-signin"} ${isMobile ? "" : "auth-image-container-desktop"}`}
+          style={{ backgroundImage: `url(${activeTab === "2" ? signupImage : excavator})` }}
         >
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0, 0, 0, 0.4)",
-              zIndex: -1,
-            }}
-          ></div>
-          <img
-            src={logo}
-            alt="GSMB Logo"
-            style={{
-              width: isMobile ? "150px" : "250px",
-              marginBottom: "0px",
-              zIndex: 1,
-              position: "relative",
-              objectFit: "contain",
-            }}
-          />
-          <h2
-            style={{
-              fontSize: isMobile ? "24px" : "30px",
-              marginBottom: 10,
-              zIndex: 1,
-              color: "rgb(13, 10, 11)",
-              textAlign: "center",
-              lineHeight: "1.5",
-              textShadow: "2px 2px 4px rgba(255, 165, 0, 0.6), -2px -2px 4px rgba(255, 165, 0, 0.6)",
-            }}
-          >
+          <div className="auth-image-overlay"></div>
+          <img src={logo} alt="GSMB Logo" className="auth-logo" />
+          <h2 className="auth-title">
             Welcome to GSMB <br />
-            <span
-              style={{
-                fontSize: isMobile ? "22px" : "26px",
-                color: "rgb(13, 10, 11)",
-                fontFamily: "Noto Sans Sinhala, Arial, sans-serif",
-                textShadow: "2px 2px 4px rgba(255, 165, 0, 0.6), -2px -2px 4px rgba(255, 165, 0, 0.6)",
-              }}
-            >
-              GSMB වෙත සාදරයෙන් පිළිගනිමු
-            </span>
+            <span className="auth-title-subtext">GSMB වෙත සාදරයෙන් පිළිගනිමු</span>
           </h2>
-          <div style={{ textAlign: "left", color: "#f8f8f8", fontSize: "10px" }}>
+          <div className="auth-description">
             {activeTab === "1" ? (
               <>
-                <p
-                  style={{
-                    marginBottom: "10px",
-                    textShadow: "1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black",
-                  }}
-                >
-                  To access your account, please provide your login credentials.
-                  Signing in allows you to view your personalized dashboard and manage your information.
-                </p>
-                <p
-                  style={{
-                    marginBottom: "10px",
-                    textShadow: "1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black",
-                  }}
-                >
-                  ඔබගේ ගිණුමට ප්‍රවේශ වීමට, කරුණාකර ඔබේ ලොග්-ඇන් ලිපිනයන් ලබා දෙන්න. ඔබේ ගිණුමට පිවිසීම මඟින් ඔබට පෞද්ගලික දැක්මක් ලබා ගැනීමට සහ ඔබේ තොරතුරු පරික්‍ෂා කළ හැක.
-                </p>
+                <p>To access your account, please provide your login credentials. Signing in allows you to view your personalized dashboard and manage your information.</p>
+                <p>ඔබගේ ගිණුමට ප්‍රවේශ වීමට, කරුණාකර ඔබේ ලොග්-ඇන් ලිපිනයන් ලබා දෙන්න. ඔබේ ගිණුමට පිවිසීම මඟින් ඔබට පෞද්ගලික දැක්මක් ලබා ගැනීමට සහ ඔබේ තොරතුරු පරික්‍ෂා කළ හැක.</p>
               </>
             ) : (
               <>
-                <p
-                  style={{
-                    marginBottom: "10px",
-                    textShadow: "1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black",
-                  }}
-                >
-                  Create an account to enjoy all the features of GSMB. Signing up is quick and easy. You just need to provide some basic information such as your name, email, and password.
-                </p>
-                <p
-                  style={{
-                    marginBottom: "10px",
-                    textShadow: "1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black",
-                  }}
-                >
-                  ගැසට් වෙබ් අඩවියට ලියාපදිංචි වීමෙන් ඔබට සියලුම විශේෂාංග ප්‍රවේශය ලැබෙනු ඇත. ලියාපදිංචි වීම ඉතා සුළු කාලයක් ගතකරයි. ඔබට නම, ඊ-තැපැල් ලිපිනය සහ රහස් පදය වැනි මූලික තොරතුරු ලබා දීමට කෙටි පියවර ගත යුතුය.
-                </p>
+                <p>Create an account to enjoy all the features of GSMB. Signing up is quick and easy. You just need to provide some basic information such as your name, email, and password.</p>
+                <p>ගැසට් වෙබ් අඩවියට ලියාපදිංචි වීමෙන් ඔබට සියලුම විශේෂාංග ප්‍රවේශය ලැබෙනු ඇත. ලියාපදිංචි වීම ඉතා සුළු කාලයක් ගතකරයි. ඔබට නම, ඊ-තැපැල් ලිපිනය සහ රහස් පදය වැනි මූලික තොරතුරු ලබා දීමට කෙටි පියවර ගත යුතුය.</p>
               </>
             )}
           </div>
         </div>
 
-        <div
-          style={{
-            width: isMobile ? "100%" : "50%",
-            background: "#ffffff",
-            padding: "40px",
-            borderTopRightRadius: 0,
-            borderBottomRightRadius: 0,
-            boxShadow: "none",
-            overflowY: "scroll",
-            maxHeight: isMobile ? "70vh" : "none",
-          }}
-        >
-          <Tabs
-            defaultActiveKey="1"
-            className="smooth-tabs"
-            animated
-            tabPosition="top"
-            onChange={(key) => setActiveTab(key)}
-            style={{
-              overflow: "hidden",
-              position: "relative",
-              zIndex: 1,
-            }}
-          >
+        <div className={`auth-form-container ${isMobile ? "" : "auth-form-container-desktop"}`}>
+          <Tabs defaultActiveKey="1" className="smooth-tabs" animated tabPosition="top" onChange={(key) => setActiveTab(key)}>
             <TabPane tab="Sign In" key="1">
-              <h2 style={{ marginBottom: 20, color: "#a52a2a", fontSize: "24px" }}>Sign In</h2>
-              <Form
-                name="signin"
-                initialValues={{ remember: true }}
-                onFinish={onFinish}
-                layout="vertical"
-              >
-                <Form.Item
-                  label="Email"
-                  name="email"
-                  rules={[{ required: true, message: "Please input your email address!" }]}
-                >
+              <h2 className="auth-form-header">Sign In</h2>
+              <Form name="signin" initialValues={{ remember: true }} onFinish={onFinish} layout="vertical">
+                <Form.Item label="Email" name="email" rules={[{ required: true, message: "Please input your email address!" }]}>
                   <Input placeholder="john@gmail.com" />
                 </Form.Item>
-                <Form.Item
-                  label="Password"
-                  name="password"
-                  rules={[{ required: true, message: "Please input your password!" }]}
-                >
+                <Form.Item label="Password" name="password" rules={[{ required: true, message: "Please input your password!" }]}>
                   <Input.Password placeholder="Enter your password" />
                 </Form.Item>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: 20,
-                  }}
-                >
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
                   <Form.Item name="remember" valuePropName="checked" noStyle>
                     <Checkbox>Keep me logged in</Checkbox>
                   </Form.Item>
-                  <a href="/forgot-password" style={{ color: "#a52a2a" }}>
-                    Forgot password?
-                  </a>
+                  <a href="/forgot-password" className="auth-forgot-password">Forgot password?</a>
                 </div>
                 <Form.Item>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    block
-                    style={{
-                      backgroundColor: "#a52a2a",
-                      borderColor: "#a52a2a",
-                      marginBottom: 10,
-                      fontSize: "16px",
-                      fontWeight: "500",
-                    }}
-                  >
-                    Sign In
-                  </Button>
+                  <Button type="primary" htmlType="submit" block className="auth-form-btn">Sign In</Button>
                 </Form.Item>
-                <Button
-                  icon={<GoogleOutlined />}
-                  block
-                  style={{
-                    backgroundColor: "#fff",
-                    borderColor: "#d9d9d9",
-                    color: "#000",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: "500",
-                  }}
-                >
+                <Button icon={<GoogleOutlined />} block className="auth-google-btn">
                   Sign in with Google
                 </Button>
               </Form>
             </TabPane>
 
             <TabPane tab="Sign Up" key="2">
-              <h2 style={{ marginBottom: 20, color: "#a52a2a", fontSize: "24px" }}>Sign Up</h2>
-              <Form
-                name="signup"
-                initialValues={{ remember: true }}
-                onFinish={onFinishSignUp}
-                layout="vertical"
-              >
+              <h2 className="auth-form-header">Sign Up</h2>
+              <Form name="signup" initialValues={{ remember: true }} onFinish={onFinishSignUp} layout="vertical">
                 <Row gutter={16}>
                   <Col span={12}>
-                    <Form.Item
-                      label="First Name"
-                      name="firstName"
-                      rules={[{ required: true, message: "Please input your first name!" }]}
-                    >
+                    <Form.Item label="First Name" name="firstName" rules={[{ required: true, message: "Please input your first name!" }]}>
                       <Input placeholder="John" />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
-                    <Form.Item
-                      label="Last Name"
-                      name="lastName"
-                      rules={[{ required: true, message: "Please input your last name!" }]}
-                    >
+                    <Form.Item label="Last Name" name="lastName" rules={[{ required: true, message: "Please input your last name!" }]}>
                       <Input placeholder="Doe" />
                     </Form.Item>
                   </Col>
                 </Row>
-                <Form.Item
-                  label="Address"
-                  name="address"
-                  rules={[{ required: true, message: "Please input your address!" }]}
-                >
+                <Form.Item label="Address" name="address" rules={[{ required: true, message: "Please input your address!" }]}>
                   <Input placeholder="123 Main St, City, Country" />
                 </Form.Item>
-                <Form.Item
-                  label="Phone Number"
-                  name="phoneNumber"
-                  rules={[{ required: true, message: "Please input your phone number!" }]}
-                >
+                <Form.Item label="Phone Number" name="phoneNumber" rules={[{ required: true, message: "Please input your phone number!" }]}>
                   <Input placeholder="(123) 456-7890" />
                 </Form.Item>
-                <Form.Item
-                  label="Email"
-                  name="email"
-                  rules={[{ required: true, message: "Please input your email address!" }]}
-                >
+                <Form.Item label="Email" name="email" rules={[{ required: true, message: "Please input your email address!" }]}>
                   <Input placeholder="john@gmail.com" />
                 </Form.Item>
-                <Form.Item
-                  label="Password"
-                  name="password"
-                  rules={[{ required: true, message: "Please input your password!" }]}
-                >
+                <Form.Item label="Password" name="password" rules={[{ required: true, message: "Please input your password!" }]}>
                   <Input.Password placeholder="Enter your password" />
                 </Form.Item>
-                <Form.Item
-                  label="Confirm Password"
-                  name="confirmPassword"
-                  rules={[{ required: true, message: "Please confirm your password!" }]}
-                >
+                <Form.Item label="Confirm Password" name="confirmPassword" rules={[{ required: true, message: "Please confirm your password!" }]}>
                   <Input.Password placeholder="Confirm your password" />
                 </Form.Item>
                 <Form.Item>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    block
-                    style={{
-                      backgroundColor: "#a52a2a",
-                      borderColor: "#a52a2a",
-                      marginBottom: 10,
-                      fontSize: "16px",
-                      fontWeight: "500",
-                    }}
-                  >
-                    Sign Up
-                  </Button>
+                  <Button type="primary" htmlType="submit" block className="auth-form-btn">Sign Up</Button>
                 </Form.Item>
-                <Button
-                  icon={<GoogleOutlined />}
-                  block
-                  style={{
-                    backgroundColor: "#fff",
-                    borderColor: "#d9d9d9",
-                    color: "#000",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: "500",
-                  }}
-                >
+                <Button icon={<GoogleOutlined />} block className="auth-google-btn">
                   Sign up with Google
                 </Button>
               </Form>
@@ -444,3 +214,6 @@ const Auth = () => {
 };
 
 export default Auth;
+
+
+
