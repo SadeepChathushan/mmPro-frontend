@@ -12,6 +12,9 @@ import SignUp from './components/Auth/Signup';
 import { useAuth } from './hooks/useAuth';
 import PrivateRoute from './routes/PrivateRoute';
 
+import SAppLayout from './components/layout/SAppLayout';
+
+
 const App = () => {
   const userRole = "GSMBOfficer";
   localStorage.setItem("USERROLE", userRole);
@@ -52,6 +55,24 @@ const App = () => {
               <Route path="*" element={<PoliceOfficerRoutes />} />
             </Route>
           </Route>
+
+          <Route path="/" element={<SAppLayout />}>
+            {/* GSMB Officer Routes */}
+            <Route path="sgsmb/*" element={<PrivateRoute allowedRoles={['GSMBOfficer']} />}>
+              <Route path="*" element={<GSMBRoutes />} />
+            </Route>
+
+             {/* MLOwner Routes */}
+             <Route path="sml-owner/*" element={<PrivateRoute allowedRoles={['MLOwner']} />}>
+              <Route path="*" element={<MLOwnerRoutes />} />
+            </Route>
+
+            {/* Police Officer Routes */}
+            <Route path="spolice-officer/*" element={<PrivateRoute allowedRoles={['PoliceOfficer']} />}>
+              <Route path="*" element={<PoliceOfficerRoutes />} />
+            </Route>
+          </Route>
+
         </Route>
       </Routes>
     </Router>

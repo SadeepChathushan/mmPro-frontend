@@ -3,10 +3,17 @@ import { Route, Routes } from 'react-router-dom';
 import MLOwnerHomePage from '../pages/MLOwner/MLOwnerHomePage';
 import DispatchLoadPage from '../pages/MLOwner/DispatchLoadPage';
 
+import SDispatchLoadPage from '../pages/MLOwner/Sinhala/DispatchLoadPage';
+import SMLOwnerHomePage from '../pages/MLOwner/Sinhala/MLOwnerHomePage';
+
 const MLOwnerRoutes = () => (
   <Routes>
     <Route path="home" element={<MLOwnerHomePage/>} />
     <Route path="dispatchload" element={<DispatchLoadPage />} />
+
+    <Route path="shome" element={<SMLOwnerHomePage/>} />
+    <Route path="sdispatchload" element={<SDispatchLoadPage />} />
+
   </Routes>
 );
 
