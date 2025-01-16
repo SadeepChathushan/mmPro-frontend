@@ -1,9 +1,24 @@
-import React from 'react'
+import React from "react";
+import { FaGear } from "react-icons/fa6";
+import { FaOilWell } from "react-icons/fa6";
+import "../styles/notfound.css"; // Import external CSS
 
 const NotFound = () => {
   return (
-    <div>NotFound</div>
-  )
-}
+    <div className="notfound-container">
+      <div className="notfound-top">
+        <FaOilWell className="oilwell" />
+      </div>
+      <div className="notfound-middle">
+        <h1>
+          <span className="num">4</span>
+          <FaGear className="gear" />
+          <span className="num">4</span>
+        </h1>
+        <h2>Page Not Found</h2>
+      </div>
+    </div>
+  );
+};
 
-export default NotFound
+export default NotFound;
