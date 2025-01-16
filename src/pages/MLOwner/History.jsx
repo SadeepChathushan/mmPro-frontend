@@ -4,8 +4,11 @@ import { SearchOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom'; // for navigation
 import moment from 'moment'; // For date formatting
 import { SiJinja } from 'react-icons/si';
+import { useLanguage } from "../../contexts/LanguageContext";
+
 
 const History = () => {
+  const { language } = useLanguage();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   
@@ -49,32 +52,32 @@ const History = () => {
 
   const columns = [
     {
-      title: 'License Number',
+      title: `${language == "en" ? 'License Number': 'බලපත්‍ර අංකය'}`,
       dataIndex: 'licenseNumber',
       key: 'licenseNumber',
     },
     {
-      title: 'Lorry Driver Contact Number',
+      title: `${language == "en" ? 'Lorry Driver Contact Number' : 'ලොරි රියදුරුගේ දුරකථන අංකය'}`,
       dataIndex: 'lorryDriverContact',
       key: 'lorryDriverContact',
     },
     {
-      title: 'Owner',
+      title: `${language == "en" ? 'Owner' : 'අයිතිකරු'}`,
       dataIndex: 'owner',
       key: 'owner',
     },
     {
-      title: 'Location',
+      title: `${language == "en" ? 'Location' : 'ස්ථානය'}`,
       dataIndex: 'location',
       key: 'location',
     },
     {
-      title: 'Cubes',
+      title: `${language == "en" ? 'Cubes' : 'කියුබ් ගණන'}`,
       dataIndex: 'cubes',
       key: 'cubes',
     },
     {
-      title: 'Dispatch Date',
+      title: `${language == "en" ? 'Dispatch Date' : 'යවන ලද දිනය'}`,
       dataIndex: 'dispatchDate',
       key: 'dispatchDate',
       render: (text) => <span>{moment(text).format('YYYY-MM-DD HH:mm:ss')}</span>, 
@@ -83,14 +86,14 @@ const History = () => {
 
   return (
     <div style={{ padding: '16px', backgroundColor: '#f0f2f5' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Dispatch History</h1>
+      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>{language == "en" ? "Dispatch History" : "පෙර යවන ලද ප්‍රමාණ"}</h1>
 
       <Row gutter={[16, 16]} style={{ marginBottom: '20px' }}>
         <Col xs={24} sm={12} md={6}>
-          <DatePicker onChange={handleStartDateChange} placeholder="Start Date" style={{ width: '100%' }} />
+          <DatePicker onChange={handleStartDateChange} placeholder={language == "en" ? "Start Date" : "ආරම්භක දිනය"} style={{ width: '100%' }} />
         </Col>
         <Col xs={24} sm={12} md={6}>
-          <DatePicker onChange={handleEndDateChange} placeholder="End Date" style={{ width: '100%' }} />
+          <DatePicker onChange={handleEndDateChange} placeholder={language == "en" ? "End Date" : "අවසාන දිනය"} style={{ width: '100%' }} />
         </Col>
       </Row>
 
@@ -117,7 +120,7 @@ const History = () => {
             onMouseEnter={(e) => (e.target.style.backgroundColor = 'rgb(211, 153, 61)')}
             onMouseLeave={(e) => (e.target.style.backgroundColor = '#FFA500')}
           >
-            Back to Home
+           {language == "en" ? "Back to Home" : "ආපසු"}
           </Button>
         </Link>
       </div>
