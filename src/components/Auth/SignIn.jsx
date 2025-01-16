@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Checkbox, Tabs, Row, Col } from "antd";
+import { Form, Input, Button, Checkbox, Tabs, Row, Col, message } from "antd";
 import { GoogleOutlined } from "@ant-design/icons";
 import logo from "../../assets/images/gsmbLogo.png"; // Transparent background logo
 import excavator from "../../assets/images/dump-truck-pit-mine.jpg"; // Default excavator image
 import signupImage from "../../assets/images/signup-image.jpg"; // New image for Sign Up tab
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import './Auth.css'; // Import custom CSS for transitions
 
 const { TabPane } = Tabs;
@@ -27,12 +28,67 @@ const Auth = () => {
     };
   }, []);
 
-  const onFinishSignIn = async (values) => {
+  const onFinish = async (values) => {
     try {
-      // SignIn logic here
+      // Step 1: Authenticate the user to get their user ID
+      const response = await axios.get("/api/users/current.json", {
+        auth: {
+          username: values.email,
+          password: values.password,
+        },
+      });
+
+      const userId = response.data.user.id; // Get user ID from response
+
+      // Step 2: Fetch roles for the user in the "sample" project
+      const membershipsResponse = await axios.get(
+        `/api/projects/GSMB/memberships.json`,
+        {
+          auth: {
+            username: values.email,
+            password: values.password,
+          },
+        }
+      );
+
+      // Step 3: Find the role based on user ID
+      const userMembership = membershipsResponse.data.memberships.find(
+        (membership) => membership.user.id === userId
+      );
+
+      if (!userMembership) {
+        throw new Error("User has no roles assigned in this project.");
+      }
+
+      const userRole = userMembership.roles[0].name; // Get role name (e.g., "General Public")
+      localStorage.setItem("userRole", userRole);
+      localStorage.setItem("authToken", response.data.user.api_key); // Assuming you're using API key for authentication
+
+      // Redirect based on the user's role
+      if (userRole === "GSMBOfficer") {
+        navigate("/gsmb/dashboard");
+      } else if (userRole === "MLOwner") {
+        navigate("/mlowner/home");
+      } else if (userRole === "PoliceOfficer") {
+        navigate("/police-officer/dashboard");
+      } else {
+        navigate("/dashboard/general-public");
+      }
     } catch (error) {
       console.log("Login failed:", error);
+
+      // Check if the error is due to incorrect credentials (401 status)
+      if (error.response && error.response.status === 401) {
+        message.error("Incorrect email or password. Please try again.");
+      } else {
+        // Handle other errors (e.g., network issues)
+        message.error("An error occurred. Please try again later.");
+      }
     }
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
   };
 
   const onFinishSignUp = async (values) => {
@@ -63,7 +119,7 @@ const Auth = () => {
           width: isMobile ? "100%" : "80%", // Adjust width for mobile screens
           gap: isMobile ? "20px" : "0", // Add gap for mobile view
           padding: isMobile ? "20px" : "40px", // Add padding for mobile view
-          background: "rgb(255, 165, 0)", // Set background color for the main tile
+          background: "fcd5d0", // Set background color for the main tile
           borderRadius: 12,
           boxShadow: "0 6px 12px rgba(0, 0, 0, 0.1)",
         }}
@@ -124,26 +180,17 @@ const Auth = () => {
           >
             Welcome to GSMB
           </h2>
-          {/* <p style={{ fontSize: 14, color: "#ddd", marginBottom: 30, zIndex: 1, textAlign: "center" }}>
-            {activeTab === "1" ? "This is your Sign In" : "This is your Sign Up"}
-          </p> */}
 
           {/* Conditional Paragraphs for Sign In and Sign Up */}
           <div style={{ textAlign: "left", color: "#f8f8f8", fontSize: "16px" }}>
             {activeTab === "1" ? (
-              <>
-                <p style={{ marginBottom: "10px" }}>
-                  To access your account, please provide your login credentials. Signing in allows you to view your personalized dashboard and manage your information.
-                </p>
-                
-              </>
+              <p style={{ marginBottom: "10px" }}>
+                To access your account, please provide your login credentials. Signing in allows you to view your personalized dashboard and manage your information.
+              </p>
             ) : (
-              <>
-                <p style={{ marginBottom: "10px" }}>
-                  Create an account to enjoy all the features of GSMB. Signing up is quick and easy. You just need to provide some basic information such as your name, email, and password.
-                </p>
-                
-              </>
+              <p style={{ marginBottom: "10px" }}>
+                Create an account to enjoy all the features of GSMB. Signing up is quick and easy. You just need to provide some basic information such as your name, email, and password.
+              </p>
             )}
           </div>
         </div>
@@ -178,7 +225,8 @@ const Auth = () => {
               <Form
                 name="signin"
                 initialValues={{ remember: true }}
-                onFinish={onFinishSignIn}
+                onFinish={onFinish}
+                onFinishFailed={onFinishFailed}
                 layout="vertical"
               >
                 <Form.Item
@@ -359,3 +407,61 @@ const Auth = () => {
 };
 
 export default Auth;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
