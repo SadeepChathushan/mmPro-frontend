@@ -10,6 +10,7 @@ import PoliceOfficerRoutes from './routes/PoliceOfficerRoutes';
 import SignIn from './components/Auth/SignIn';
 import { useAuth } from './hooks/useAuth';
 import PrivateRoute from './routes/PrivateRoute';
+import SignUp from './components/Auth/SignUp';
 
 const App = () => {
   const userRole = "GSMBOfficer";
@@ -24,6 +25,7 @@ const App = () => {
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="*" element={<NotFound />} />
 
         {/* Protected Routes */}
