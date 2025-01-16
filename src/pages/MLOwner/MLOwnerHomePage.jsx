@@ -106,7 +106,7 @@ const MLOwnerHomePage = () => {
   return (
     <div style={{ backgroundColor: '#f0f2f5',  height: '100%'  }}>
       {/* Image centered in mobile view */}
-      <img 
+      {/* <img 
         src="https://th.bing.com/th/id/OIP.lXqWzX4gCjamrXtOz172qAHaHa?rs=1&pid=ImgDetMain" 
         alt="Logo" 
         style={{
@@ -120,7 +120,7 @@ const MLOwnerHomePage = () => {
             marginBottom: '20px', // Add margin below on smaller screens for spacing
           },
         }} 
-      />
+      /> */}
       {/* Content Section */}
       <div style={{ padding: '24px' }}>
         <Row gutter={16} justify="space-between" align="middle">
