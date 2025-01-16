@@ -1,27 +1,31 @@
 import React from "react";
 import { Button, Typography } from "antd";
 import "antd/dist/reset.css";
+import Navbar from "../components/layout/Navbar";
 import logo from "../assets/images/gsmbLogo.jpg";
 
 const { Text } = Typography;
 
 const Home = () => {
   return (
+    
     <div
+    
       className="container"
       style={{
-        display: "flex",
+        // display: "flex",
         flexDirection: "row",
         minHeight: "100vh",
         backgroundColor: "#ffffff",
       }}
     >
+      <Navbar />
       {/* Left Section */}
       <div
         className ="left-section" 
         style={{
           width: "50%",
-          padding: "60px 40px",
+          padding: "50px 60px",
           textAlign: "left",
         }}
       >
