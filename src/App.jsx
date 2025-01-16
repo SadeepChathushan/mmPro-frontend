@@ -11,6 +11,7 @@ import SignIn from './components/Auth/SignIn';
 import { useAuth } from './hooks/useAuth';
 import PrivateRoute from './routes/PrivateRoute';
 import SignUp from './components/Auth/SignUp';
+import Footer from './components/layout/Footer';
 
 const App = () => {
   const userRole = "GSMBOfficer";
@@ -27,6 +28,7 @@ const App = () => {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/footer" element={<Footer />} />
 
         {/* Protected Routes */}
         <Route
