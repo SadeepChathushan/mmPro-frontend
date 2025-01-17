@@ -23,7 +23,7 @@ const Footer = () => {
             </div>
           </div>
           <div className="footer-related-links">
-            <h2>Related Links</h2>
+            <h3>Related and Useful Links</h3>
             <div className="footer-related-links-list">
               <a
                 href="https://env.gov.lk/web/index.php/en/"
@@ -52,11 +52,6 @@ const Footer = () => {
               <a href="https://wrb.lk/" target="_blank" rel="noreferrer">
                 Water Resources Board
               </a>
-            </div>
-          </div>
-          <div className="footer-related-links">
-            <h2>Useful links</h2>
-            <div className="footer-related-links-list">
               <a
                 href="https://www.usgs.gov/programs/earthquake-hazards/national-earthquake-information-center-neic"
                 target="_blank"
@@ -82,11 +77,10 @@ const Footer = () => {
                 Japan Meteorological Agency (JMA)
               </a>
             </div>
+            
           </div>
-        </div>
-        <div className="footer-top-bottom">
           <div className="footer-contactus">
-            <h2>Contact Us</h2>
+            <h3>Contact Us</h3>
             <div className="footer-contactus-details">
               <div className="footer-contactus-lebel">
                 <h5>Phone:</h5>
@@ -101,8 +95,8 @@ const Footer = () => {
               </div>
             </div>
           </div>
-          <div className="footer-related-links">
-            <h2>Follow Us</h2>
+          <div className="footer-followus">
+            <h3>Follow Us</h3>
             <div className="footer-social-media-list">
               <a
                 href="https://web.facebook.com/GSMBMEDIAUNIT?_rdc=1&_rdr#"
@@ -126,13 +120,11 @@ const Footer = () => {
                 <FaLinkedin />
               </a>
             </div>
-          </div>
-          <div className="footer-related-links">
-            <h2>Hotline</h2>
+            <h3 className="footer-hotline">Hotline</h3>
             <div className="footer-social-media-list">
               <p>1921</p>
             </div>
-          </div>
+          </div>  
         </div>
 
         <div className="footer-divider"></div>
@@ -141,7 +133,7 @@ const Footer = () => {
             © {new Date().getFullYear()} Geological survey & mines bureau. All
             Rights Reserved.
           </h6>
-          <h6 className="footer-text">Designed and Developed by Aasa IT</h6>
+          <h6 className="footer-text-ii">Designed and Developed by Aasa IT</h6>
         </div>
       </div>
     </footer>
