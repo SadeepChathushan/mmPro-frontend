@@ -2,7 +2,7 @@ import React from 'react';
 import logo from '../../assets/images/gsmbLogo.jpg';
 import { useLanguage } from '../../contexts/LanguageContext';
 
-const Dashboard = () => {
+const ValidPage = () => {
   const { language } = useLanguage();
   const isSinhala = language === 'si';
 
@@ -145,7 +145,7 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default ValidPage;
 
 
 

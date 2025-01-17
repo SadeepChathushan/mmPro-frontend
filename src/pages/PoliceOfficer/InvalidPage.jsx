@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import logo from '../../assets/images/gsmbLogo.jpg';
 import { useLanguage } from '../../contexts/LanguageContext'; // Language context for dynamic switching
 
-const Dashboard = () => {
+const InvalidPage = () => {
   const { language } = useLanguage(); // Fetch language preference
   const isSinhala = language === 'si';
 
@@ -128,7 +128,7 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default InvalidPage;
 
 // import React, { useState } from 'react';
 // import logo from '../../assets/images/gsmbLogo.jpg';
