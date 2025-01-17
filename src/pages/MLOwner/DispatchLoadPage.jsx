@@ -161,7 +161,7 @@ const DispatchLoadPage = () => {
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: "16px" }}>
-              <span style={{ fontWeight: "bold" }}>DATE & TIME:</span>
+              <span style={{ fontWeight: "bold" }}>{language == "en" ? "DATE & TIME:" : "දිනය සහ වේලාව:"}</span>
               <Input value={currentDateTime} disabled />
             </div>
           </Col>
