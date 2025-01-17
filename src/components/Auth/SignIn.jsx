@@ -4,11 +4,31 @@ import { GoogleOutlined } from "@ant-design/icons";
 import logo from "../../assets/images/gsmbLogo.png"; // Transparent background logo
 import excavator from "../../assets/images/dump-truck-pit-mine.jpg"; // Default excavator image
 import signupImage from "../../assets/images/signup-image.jpg"; // New image for Sign Up tab
+import google from "../../assets/images/google_icon.png"
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import './Auth.css'; // Import custom CSS for transitions
+import "@fontsource/noto-sans-sinhala";
+
 
 const { TabPane } = Tabs;
+
+const MyComponent = () => {
+  const items = [
+    {
+      key: '1',
+      label: 'Tab 1',
+      children: 'Content of Tab 1',
+    },
+    {
+      key: '2',
+      label: 'Tab 2',
+      children: 'Content of Tab 2',
+    },
+  ];
+
+  return <Tabs defaultActiveKey="1" items={items} />;
+};
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -122,41 +142,52 @@ const Auth = () => {
     }
   };
 
+  const SignInWithGoogleButton = () => {
+    const [hover, setHover] = useState(false);
+  
+    const handleMouseEnter = () => setHover(true);
+    const handleMouseLeave = () => setHover(false);
+  };
+
   return (
     <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#FFFFFF", // Main background color
-        padding: isMobile ? "20px 10px" : "0", // Add padding for mobile
-        overflowY: "scroll", // Ensure scrolling on mobile
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          justifyContent: "center",
-          width: isMobile ? "100%" : "80%", // Adjust width for mobile screens
-          gap: isMobile ? "20px" : "0", // Add gap for mobile view
-          padding: isMobile ? "20px" : "40px", // Add padding for mobile view
-          background: "fcd5d0", // Set background color for the main tile
-          borderRadius: 12,
-          boxShadow: "0 6px 12px rgba(0, 0, 0, 0.1)",
-        }}
-      >
+  style={{
+    height: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "white", // Gradient background
+    backgroundSize: "cover", // Ensure the background covers the whole container
+    backgroundPosition: "center", // Center the background
+    padding: isMobile ? "5px 2px" : "0", // Add padding for mobile
+    overflowY: "scroll", // Ensure scrolling on mobile
+    fontFamily: "'Noto Sans Sinhala', sans-serif",
+  }}
+>
+
+<div
+  style={{
+    display: "flex",
+    flexDirection: isMobile ? "column" : "row",
+    justifyContent: "center",
+    width: isMobile ? "100%" : "95%", // Adjust width for mobile screens
+    gap: isMobile ? "20px" : "0", // Add gap for mobile view
+    padding: isMobile ? "2px" : "10px", // Add padding for mobile view
+    background: "linear-gradient(135deg, rgb(223, 223, 223) 0%, rgb(190, 190, 190) 100%)", // Dark red gradient
+    borderRadius: 12,
+    boxShadow: "0 6px 12px rgba(0, 0, 0, 0.1)",
+  }}
+>
         {/* Tile 1: Logo + Welcome Message with Conditionally Changing Background Image */}
         <div
           style={{
             width: isMobile ? "100%" : "50%", // Adjust width of tiles to make them larger
             background: `url(${activeTab === "2" ? signupImage : excavator}) center center/cover no-repeat`, // Conditionally set image based on active tab
-            padding: "40px",
+            padding: "10px",
             textAlign: "center",
             color: "white", // Ensure the text is white for contrast
             position: "relative", // Needed for overlay
-            minHeight: isMobile ? "300px" : "450px", // Set a minimum height for larger tiles
+            minHeight: isMobile ? "300px" : "550px", // Set a minimum height for larger tiles
             borderTopLeftRadius: 0, // Remove top-left border-radius
             borderBottomLeftRadius: 0, // Remove bottom-left border-radius
             boxShadow: "none", // Remove shadow from the left tile
@@ -179,50 +210,82 @@ const Auth = () => {
             }}
           ></div>
 
-          {/* GSMB Logo */}
-          <img
-            src={logo}
-            alt="GSMB Logo"
-            style={{
-              width: isMobile ? "150px" : "250px", // Adjust logo size based on screen width
-              marginBottom: 20,
-              zIndex: 1, // Ensure the logo is above the overlay
-              position: "relative", // Make sure the logo remains on top of background
-              objectFit: "contain", // Prevent cropping
-            }}
-          />
+{/* GSMB Logo */}
+<div
+  style={{
+    backgroundColor: "rgba(255, 255, 255, 0.5)", // White background with 80% opacity
+    padding: "20px", // Padding around the content
+    borderRadius: "12px", // Rounded corners for a softer look
+    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)", // Add a subtle shadow for depth
+    textAlign: "center", // Center the content horizontally
+    width: isMobile ? "100%" : "80%", // Increased width for both mobile and desktop
+    margin: "0 auto", // Center the square within its parent
+  }}
+>
+  <img
+    src={logo}
+    alt="GSMB Logo"
+    style={{
+      width: isMobile ? "150px" : "250px", // Adjust logo size based on screen width
+      marginBottom: 20,
+      zIndex: 1, // Ensure the logo is above the overlay
+      position: "relative", // Make sure the logo remains on top of background
+      objectFit: "contain", // Prevent cropping
+    }}
+  />
 
-          <h2
-            style={{
-              fontSize: isMobile ? "24px" : "30px",
-              marginBottom: 10,
-              zIndex: 1,
-              color: "rgb(13, 10, 11)",
-              textAlign: "center",
-            }}
-          >
-            Welcome to GSMB
-          </h2>
+<h2
+  style={{
+    fontSize: isMobile ? "24px" : "30px",
+    marginBottom: 10,
+    zIndex: 1,
+    color: "rgb(13, 10, 11)",
+    textAlign: "center",
+  }}
+>
+  <span style={{ fontFamily: "'Noto Sans Sinhala', sans-serif" }}>ආයුබෝවන්</span>
+  <br />
+  வணக்கம்
+  <br />
+  Welcome to GSMB
+</h2>
 
-          {/* Conditional Paragraphs for Sign In and Sign Up */}
-          <div style={{ textAlign: "left", color: "#f8f8f8", fontSize: "16px" }}>
-            {activeTab === "1" ? (
-              <p style={{ marginBottom: "10px" }}>
-                To access your account, please provide your login credentials. Signing in allows you to view your personalized dashboard and manage your information.
-              </p>
-            ) : (
-              <p style={{ marginBottom: "10px" }}>
-                Create an account to enjoy all the features of GSMB. Signing up is quick and easy. You just need to provide some basic information such as your name, email, and password.
-              </p>
-            )}
-          </div>
+
+  {/* Conditional Paragraphs for Sign In and Sign Up */}S
+  <div
+    style={{
+      textAlign: "left",
+      color: "#333333", // Adjusted text color for contrast
+      fontSize: "16px",
+      backgroundColor: "#ffc3c3", // Light grey background with 90% opacity
+      padding: "10px", // Add padding for better spacing
+      borderRadius: "8px", // Rounded corners for a softer look
+    }}
+  >
+    {activeTab === "1" ? (
+      <p style={{ marginBottom: "10px" }}>
+        To access your account, please provide your login credentials. Signing
+        in allows you to view your personalized dashboard and manage your
+        information.
+      </p>
+    ) : (
+      <p style={{ marginBottom: "10px" }}>
+        Create an account to enjoy all the features of GSMB. Signing up is quick
+        and easy. You just need to provide some basic information such as your
+        name, email, and password.
+        <br />
+       
+      </p>
+    )}
+  </div>
+
+</div>
         </div>
-
         {/* Tile 2: Sign In / Sign Up Forms */}
         <div
           style={{
             width: isMobile ? "100%" : "50%", // Adjust width of tiles to make them larger
-            background: "#ffffff", // White background
+            background: 'radial-gradient(circle, rgb(241, 241, 241) 0%, rgb(220, 220, 220) 100%)',
             padding: "40px",
             borderTopRightRadius: 0, // Remove top-right border-radius
             borderBottomRightRadius: 0, // Remove bottom-right border-radius
@@ -241,10 +304,28 @@ const Auth = () => {
               overflow: "hidden",
               position: "relative",
               zIndex: 1,
+
             }}
           >
-            <TabPane tab="Sign In" key="1">
-              <h2 style={{ marginBottom: 20, color: "#a52a2a", fontSize: "24px" }}>Sign In</h2>
+           <TabPane
+    tab={<span style={{
+       fontSize: "14px", 
+       fontWeight: "300", 
+       textAlign: "left", 
+       
+        }}>SIGN IN</span>}
+    key="1"
+  >
+            <h2 style={{
+    marginBottom: 20,
+    fontSize: "18px",
+    fontWeight: "bold",
+    textAlign: "center",
+    background: "linear-gradient(to right, #8b0000, #4b0000)", 
+    WebkitBackgroundClip: "text",
+    color: "transparent",
+    fontFamily: "'Noto Sans Sinhala', sans-serif"
+}}>Sign In / පුරන්න / உள்நுழைக</h2>
               <Form
                 name="signin"
                 initialValues={{ remember: true }}
@@ -252,20 +333,64 @@ const Auth = () => {
                 onFinishFailed={onFinishFailed}
                 layout="vertical"
               >
-                <Form.Item
-                  label="Email"
-                  name="email"
-                  rules={[{ required: true, message: "Please input your email address!" }]}
-                >
-                  <Input placeholder="john@gmail.com" />
-                </Form.Item>
-                <Form.Item
-                  label="Password"
-                  name="password"
-                  rules={[{ required: true, message: "Please input your password!" }]}
-                >
-                  <Input.Password placeholder="Enter your password" />
-                </Form.Item>
+              <Form.Item
+  label={
+    <span
+      style={{
+        fontSize: '14px',
+        fontFamily: "'Noto Sans Sinhala', sans-serif",
+      }}
+    >
+      Email / විද්‍යුත් තැපෑල / மின்னஞ்சல்
+    </span>
+  }
+  name="email"
+  rules={[
+    {
+      required: true,
+      message: "Please input your email address!",
+    },
+  ]}
+  labelCol={{
+    style: {
+      fontSize: '16px',
+    },
+  }}
+>
+  <Input
+    placeholder="Enter your email address"
+    style={{
+      fontFamily: "'Noto Sans Sinhala', sans-serif",
+    }}
+  />
+</Form.Item>
+<Form.Item
+  label={
+    <span
+      style={{
+        fontSize: '14px',
+        fontFamily: "'Noto Sans Sinhala', sans-serif",
+      }}
+    >
+      Password / මුරපදය / கடவுச்சொல்
+    </span>
+  }
+  name="password"
+  rules={[
+    {
+      required: true,
+      message: "Please input your password!",
+    },
+  ]}
+>
+  <Input.Password
+    placeholder="Enter your password"
+    style={{
+      fontFamily: "'Noto Sans Sinhala', sans-serif",
+    }}
+  />
+</Form.Item>
+
                 <div
                   style={{
                     display: "flex",
@@ -286,10 +411,10 @@ const Auth = () => {
                     htmlType="submit"
                     block
                     style={{
-                      backgroundColor: "#a52a2a",
-                      borderColor: "#a52a2a",
+                      backgroundColor: "#4f0000",
+                      borderColor: "#400000",
                       marginBottom: 10,
-                      fontSize: "16px",
+                      fontSize: "18px",
                       fontWeight: "500",
                     }}
                   >
@@ -297,32 +422,49 @@ const Auth = () => {
                   </Button>
                 </Form.Item>
                 <Button
-                  icon={<GoogleOutlined />}
-                  block
-                  style={{
-                    backgroundColor: "#fff",
-                    borderColor: "#d9d9d9",
-                    color: "#000",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: "500",
-                  }}
-                >
-                  Sign in with Google
-                </Button>
+  icon={<img src={google} alt="Google Icon" style={{ width: '20px', marginRight: '10px' }} />}
+  block
+  style={{
+    background: 'radial-gradient(circle, rgb(0, 25, 149) 0%, rgb(4, 0, 80) 100%)', // Gradient background
+    borderColor: '#d9d9d9',
+    color: '#fff', // Changed to white for better contrast on the gradient
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: '500',
+    fontSize: '16px',
+    padding: '10px 20px', // Padding for a better button feel
+  }}
+>
+  Sign in with Google
+</Button>
               </Form>
             </TabPane>
 
-            <TabPane tab="Sign Up" key="2">
-              <h2 style={{ marginBottom: 20, color: "#a52a2a", fontSize: "24px" }}>Sign Up</h2>
+            <TabPane tab="SIGN UP" key="2">
+              <h2 style={{
+    marginBottom: 20,
+    fontSize: "18px",
+    fontWeight: "bold",
+    textAlign: "center",
+    background: "linear-gradient(to right, #8b0000, #4b0000)", 
+    WebkitBackgroundClip: "text",
+    color: "transparent",
+    fontFamily: "'Noto Sans Sinhala', sans-serif",
+
+}}>Sign Up / ලියාපදිංචි වන්න / பதிவு செய்யவும்</h2>
               <Form
-                name="signup"
-                initialValues={{ remember: true }}
-                onFinish={onFinishSignUp}
-                layout="vertical"
+               name="signup"
+               initialValues={{ remember: true }}
+               onFinish={onFinishSignUp}
+               layout="vertical"
+               style={{
+                padding: '10px',
+                borderRadius: '8px' // Optional: For rounded corners
+              }}
+              
               >
-                <Row gutter={16}>
+                <Row gutter= {[8, 0]}>
                   {/* First Name and Last Name on the same row */}
                   <Col span={12}>
                     <Form.Item
@@ -389,37 +531,52 @@ const Auth = () => {
                   <Input.Password placeholder="Confirm your password" />
                 </Form.Item>
 
-                <Form.Item>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    block
-                    style={{
-                      backgroundColor: "#a52a2a",
-                      borderColor: "#a52a2a",
-                      marginBottom: 10,
-                      fontSize: "16px",
-                      fontWeight: "500",
-                    }}
-                  >
-                    Sign Up
-                  </Button>
-                </Form.Item>
-                <Button
-                  icon={<GoogleOutlined />}
-                  block
-                  style={{
-                    backgroundColor: "#fff",
-                    borderColor: "#d9d9d9",
-                    color: "#000",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: "500",
-                  }}
-                >
-                  Sign up with Google
-                </Button>
+                <Row gutter={[16, 0]} justify="center">
+  {/* Sign Up Button */}
+  <Col span={12}>
+    <Button
+      type="primary"
+      htmlType="submit"
+      block
+      style={{
+        background: "linear-gradient(135deg, #8B0000, #a52a2a)",
+        borderColor: "#a52a2a",
+        fontSize: "18px",
+        fontWeight: "500",
+        color: "white",
+      }}
+    >
+      Sign Up
+    </Button>
+  </Col>
+
+  {/* Sign Up with Google Button */}
+  <Col span={12}>
+    <Button
+      icon={
+        <img
+          src={google}
+          alt="Google Icon"
+          style={{ width: "20px", marginRight: "10px" }}
+        />
+      }
+      block
+      style={{
+        background: "radial-gradient(circle, rgb(0, 21, 123) 0%, rgb(4, 0, 80) 100%)",
+        borderColor: "#d9d9d9",
+        color: "#fff",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontWeight: "500",
+        fontSize: "16px",
+        padding: "10px 20px",
+      }}
+    >
+      Sign up with Google
+    </Button>
+  </Col>
+</Row>
               </Form>
             </TabPane>
           </Tabs>

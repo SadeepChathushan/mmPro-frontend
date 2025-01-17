@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "vite",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
@@ -11,6 +12,11 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@fontsource/noto-sans-sinhala": "^5.1.1",
+    "@mui/icons-material": "^6.4.0",
+    "@mui/material": "^6.4.0",
     "@supabase/supabase-js": "^2.47.14",
     "antd": "^5.23.0",
     "axios": "^1.7.9",
