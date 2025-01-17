@@ -1,17 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Input, Table, Row, Col, Space, Typography } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import axios from 'axios'; // Import axios for API requests
 import { useLanguage } from "../../contexts/LanguageContext";
 
 const { Title } = Typography;
 
 const MLOwnerHomePage = () => {
   const { language } = useLanguage();
+  const [data, setData] = useState([]);
+
   // Table columns
   const columns = [
     {
-      title: `${language == "en" ? 'LICENSE NUMBER': 'බලපත්‍ර අංකය'}`,
+      title: `${language == "en" ? 'LICENSE NUMBER' : 'බලපත්‍ර අංකය'}`,
       dataIndex: 'licenseNumber',
       key: 'licenseNumber',
       render: (text) => <span style={{ fontWeight: 'bold' }}>{text}</span>,
@@ -77,60 +80,53 @@ const MLOwnerHomePage = () => {
     },
   ];
 
-  // Table data
-  const data = [
-    {
-      licenseNumber: 'IML/B/TEST/5178/LRS',
-      owner: 'Jayantha Perera',
-      location: 'Rathnapura',
-      capacity: 100,
-      used: 20,
-      remaining: 80,
-      startDate: '2023-01-01',
-      endDate: '2025-12-31',
-      status: 'ACTIVE',
-      royalty: '45265.20',
-    },
-    {
-      licenseNumber: 'IML/B/TEST/5178/LRS',
-      owner: 'Jayantha Perera',
-      location: 'Rathnapura',
-      capacity: 100,
-      used: 100,
-      remaining: 0,
-      startDate: '2023-01-01',
-      endDate: '2025-12-31',
-      status: 'INACTIVE',
-      royalty: '45265.20',
-    },
-  ];
+  // Fetch data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const username = "@achinthamihiran"; // Replace with actual username
+        const password = "Ab2#*De#"; // Replace with actual password
+
+        const response = await axios.get('/api/projects/gsmb-officer/issues.json', {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          auth: {
+            username,
+            password,
+          },
+        });
+
+        // Filter issues with tracker name 'ML'
+        const filteredData = response.data.issues.filter(issue => issue.tracker.name === 'ML').map(issue => ({
+          licenseNumber: issue.custom_fields.find(field => field.name === 'License Number')?.value,
+          owner: issue.custom_fields.find(field => field.name === 'Owner Name')?.value,
+          location: issue.custom_fields.find(field => field.name === 'Location')?.value,
+          startDate: issue.custom_fields.find(field => field.name === 'Start Date')?.value,
+          endDate: issue.custom_fields.find(field => field.name === 'End Date')?.value,
+          capacity: 100, // Example value, replace as needed
+          used: 20, // Example value, replace as needed
+          remaining: 80, // Example value, replace as needed
+          status: 'ACTIVE', // Example value, replace as needed
+          royalty: '45265.20', // Example value, replace as needed
+        }));
+
+        setData(filteredData); // Set filtered data to state
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []); // Empty dependency array means this effect runs once when the component mounts
 
   return (
-    <div style={{ backgroundColor: '#f0f2f5',  height: '100%'  }}>
-      {/* Image centered in mobile view */}
-      {/* <img 
-        src="https://th.bing.com/th/id/OIP.lXqWzX4gCjamrXtOz172qAHaHa?rs=1&pid=ImgDetMain" 
-        alt="Logo" 
-        style={{
-          width: '80px', 
-          height: '80px', 
-          borderRadius: '50%',  // Round effect for the image
-          display: 'block', 
-          margin: '0 auto', // Center the image horizontally
-          // Make it responsive for mobile screens
-          '@media (max-width: 768px)': {
-            marginBottom: '20px', // Add margin below on smaller screens for spacing
-          },
-        }} 
-      /> */}
-      {/* Content Section */}
+    <div style={{ backgroundColor: '#f0f2f5', height: '100%' }}>
       <div style={{ padding: '24px' }}>
         <Row gutter={16} justify="space-between" align="middle">
           <Col xs={24} sm={24} md={12} lg={12}>
-            {/* Image with round effect and proper sizing */}
-
             <Input
-              placeholder= {language == "en" ? "Search" : "සොයන්න"}
+              placeholder={language == "en" ? "Search" : "සොයන්න"}
               prefix={<SearchOutlined />}
               style={{
                 width: '100%',
@@ -144,12 +140,12 @@ const MLOwnerHomePage = () => {
               <Button
                 type="primary"
                 style={{
-                  backgroundColor: '#a52a2a',  // Initial color (brownish)
+                  backgroundColor: '#a52a2a',  
                   color: 'white',
-                  borderColor: '#a52a2a',  // Match the border with the background color
+                  borderColor: '#a52a2a',  
                   borderRadius: '8px',
-                  width: '100%',  // Full width on mobile
-                  marginBottom: '12px',  // Spacing between buttons
+                  width: '100%',  
+                  marginBottom: '12px',  
                 }}
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
@@ -162,11 +158,11 @@ const MLOwnerHomePage = () => {
               <Button
                 type="primary"
                 style={{
-                  backgroundColor: '#a52a2a',  // Initial color (brownish)
+                  backgroundColor: '#a52a2a',  
                   color: 'white',
-                  borderColor: '#a52a2a',  // Match the border with the background color
+                  borderColor: '#a52a2a',  
                   borderRadius: '8px',
-                  width: '100%',  // Full width on mobile
+                  width: '100%',  
                 }}
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
@@ -187,7 +183,7 @@ const MLOwnerHomePage = () => {
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
             marginTop: '24px',
           }}
-          scroll={{ x: 'max-content' }}  // Ensure table scrolls horizontally on small screens
+          scroll={{ x: 'max-content' }}  
         />
       </div>
     </div>
