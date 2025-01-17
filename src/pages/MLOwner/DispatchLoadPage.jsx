@@ -1,28 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Button, Input, Row, Col, Typography, Modal, AutoComplete } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
-import { jsPDF } from 'jspdf';
-import { IoIosDoneAll } from 'react-icons/io';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import axios from 'axios';
-import 'leaflet/dist/leaflet.css';
+import {
+  Layout,
+  Button,
+  Input,
+  Row,
+  Col,
+  Typography,
+  Modal,
+  AutoComplete,
+} from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import { jsPDF } from "jspdf";
+import { IoIosDoneAll } from "react-icons/io";
+import { IoIosCloseCircle } from "react-icons/io";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import axios from "axios";
+import "leaflet/dist/leaflet.css";
 import { useLanguage } from "../../contexts/LanguageContext";
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 const DispatchLoadPage = () => {
-
   const { language } = useLanguage();
-  const [licenseNumber, setLicenseNumber] = useState('');
-  const [destination, setDestination] = useState('');
-  const [lorryNumber, setLorryNumber] = useState('');
-  const [driverContact, setDriverContact] = useState('');
-  const [cubes, setCubes] = useState(1);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isErrModalVisible, setIsErrModalVisible] = useState(false);
   const [location, setLocation] = useState([6.9271, 79.8612]); // Default to Colombo coordinates
   const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [formData, setFormData] = useState({
+    DateTime: "",
+    licenseNumber: "",
+    destination: "",
+    lorryNumber: "",
+    driverContact: "",
+    cubes: 1,
+  });
 
   const navigate = useNavigate();
 
@@ -68,57 +81,69 @@ const DispatchLoadPage = () => {
     }
 
     setLocation([lat, lon]); // Update the map center
-    setDestination(value); // Set the destination field with the selected location
+    setFormData({ ...formData, destination: value }); // Set the destination field with the selected location
   };
 
   const handleLicenseNumberChange = (e) => {
-    setLicenseNumber(e.target.value);
+    setFormData({ ...formData, licenseNumber: e.target.value });
   };
 
   const handleLorryNumberChange = (e) => {
-    setLorryNumber(e.target.value);
+    setFormData({ ...formData, lorryNumber: e.target.value });
   };
 
   const handleDriverContactChange = (e) => {
-    setDriverContact(e.target.value);
+    setFormData({ ...formData, driverContact: e.target.value });
+  };
+  const handleDatetime = (e) => {
+    setFormData({ ...formData, DateTime: e.target.value });
   };
 
   const handleCubesChange = (e) => {
     const value = parseInt(e.target.value, 10);
     if (!isNaN(value) && value >= 1) {
-      setCubes(value);
+      setFormData({ ...formData, cubes: value });
     }
   };
 
   const incrementCubes = () => {
-    setCubes((prevCubes) => prevCubes + 1);
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      cubes: prevFormData.cubes + 1
+    }));
   };
 
   const decrementCubes = () => {
-    setCubes((prevCubes) => (prevCubes > 1 ? prevCubes - 1 : 1));
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      cubes: prevFormData.cubes > 1 ? prevFormData.cubes - 1 : 1
+    }));
   };
 
   const handleSubmit = () => {
-    console.log({
-      licenseNumber,
-      destination,
-      lorryNumber,
-      driverContact,
-      cubes,
-    });
+    if (
+      !formData.licenseNumber.trim() ||
+      !formData.destination.trim() ||
+      !formData.lorryNumber.trim() ||
+      !formData.driverContact.trim()
+    ) {
+      setIsErrModalVisible(true);
+    } else {
+      
+      setFormData({ ...formData, DateTime: currentDateTime });
+      setFormData({ ...formData }); // Store form data
+      console.log(formData);
 
-    setLicenseNumber("");
-    setDestination("");
-    setLorryNumber("");
-    setDriverContact("");
-    setCubes(1);
+      
 
-    setIsModalVisible(true);
+      setIsModalVisible(true);
+    }
   };
 
   const handlePrintReceipt = () => {
     // Navigate to the "Receipt" page
-    navigate("/mlowner/home/dispatchload/receipt");
+    navigate("/mlowner/home/dispatchload/receipt", { state: { formData } });
+    
   };
 
   const handleBackToHome = () => {
@@ -134,7 +159,7 @@ const DispatchLoadPage = () => {
     return null;
   };
 
-  const [currentDateTime, setCurrentDateTime] = useState("");
+   const [currentDateTime, setCurrentDateTime] = useState("");
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -151,18 +176,22 @@ const DispatchLoadPage = () => {
   }, []);
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Content style={{ padding: '24px' }}>
-        <Title level={3} style={{ textAlign: 'center', marginBottom: '20px' }}>
-          {language == "en" ? "Dispatch Your Load Here" : "යැවිය යුතු ප්‍රමාණ පිළිබඳ මෙහි සටහන් කරන්න"}
+    <Layout style={{ minHeight: "100vh" }}>
+      <Content style={{ padding: "24px" }}>
+        <Title level={3} style={{ textAlign: "center", marginBottom: "20px" }}>
+          {language == "en"
+            ? "Dispatch Your Load Here"
+            : "යැවිය යුතු ප්‍රමාණ පිළිබඳ මෙහි සටහන් කරන්න"}
         </Title>
 
         {/* Current Date%Time (Read-Only) */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: "16px" }}>
-              <span style={{ fontWeight: "bold" }}>{language == "en" ? "DATE & TIME:" : "දිනය සහ වේලාව:"}</span>
-              <Input value={currentDateTime} disabled />
+              <span style={{ fontWeight: "bold" }}>
+                {language == "en" ? "DATE & TIME:" : "දිනය සහ වේලාව:"}
+              </span>
+              <Input value={currentDateTime} onChange={handleDatetime} disabled/>
             </div>
           </Col>
         </Row>
@@ -170,12 +199,15 @@ const DispatchLoadPage = () => {
         {/* License Number Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div style={{ marginBottom: '16px' }}>
-              <span style={{ fontWeight: 'bold' }}>{language == "en" ? "LICENSE NUMBER:" : "බලපත්‍ර අංකය:"}</span>
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
+                {language == "en" ? "LICENSE NUMBER:" : "බලපත්‍ර අංකය:"}
+              </span>
               <Input
-                value={licenseNumber}
+                value={formData.licenseNumber}
                 onChange={handleLicenseNumberChange}
                 style={{ width: "100%" }}
+                required
               />
             </div>
           </Col>
@@ -184,14 +216,16 @@ const DispatchLoadPage = () => {
         {/* Destination Input with Map Search */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div style={{ marginBottom: '16px' }}>
-              <span style={{ fontWeight: 'bold' }}>{language == "en" ? "DESTINATION:" : "ගමනාන්තය"} </span>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <SearchOutlined style={{ marginRight: '8px' }} />
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
+                {language == "en" ? "DESTINATION:" : "ගමනාන්තය"}{" "}
+              </span>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <SearchOutlined style={{ marginRight: "8px" }} />
                 <AutoComplete
-                  value={destination}
+                  value={formData.destination}
                   onChange={(value) => {
-                    setDestination(value);
+                    setFormData({ ...formData, destination: value });
                     fetchLocationSuggestions(value); // Fetch suggestions on change
                   }}
                   onSelect={handleLocationSelect}
@@ -218,7 +252,7 @@ const DispatchLoadPage = () => {
                 <MapViewUpdater />
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <Marker position={location}>
-                  <Popup>Selected Location: {destination}</Popup>
+                  <Popup>Selected Location: {formData.destination}</Popup>
                 </Marker>
               </MapContainer>
             </div>
@@ -228,10 +262,12 @@ const DispatchLoadPage = () => {
         {/* Lorry Number Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div style={{ marginBottom: '16px' }}>
-              <span style={{ fontWeight: 'bold' }}>{language == "en" ? "LORRY NUMBER:" : "ලොරි අංකය:" }</span>
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
+                {language == "en" ? "LORRY NUMBER:" : "ලොරි අංකය:"}
+              </span>
               <Input
-                value={lorryNumber}
+                value={formData.lorryNumber}
                 onChange={handleLorryNumberChange}
                 style={{ width: "100%" }}
               />
@@ -242,10 +278,14 @@ const DispatchLoadPage = () => {
         {/* Driver Contact Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div style={{ marginBottom: '16px' }}>
-              <span style={{ fontWeight: 'bold' }}>{language == "en" ? "DRIVER CONTACT:" : "රියදුරුගේ දුරකථන අංකය:"}</span>
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
+                {language == "en"
+                  ? "DRIVER CONTACT:"
+                  : "රියදුරුගේ දුරකථන අංකය:"}
+              </span>
               <Input
-                value={driverContact}
+                value={formData.driverContact}
                 onChange={handleDriverContactChange}
                 style={{ width: "100%" }}
               />
@@ -256,18 +296,20 @@ const DispatchLoadPage = () => {
         {/* Cubes Input with Increment and Decrement Buttons */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div style={{ marginBottom: '16px' }}>
-              <span style={{ fontWeight: 'bold' }}>{language == "en" ? "CUBES:" : "කියුබ් ගණන"}</span>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
+                {language == "en" ? "CUBES:" : "කියුබ් ගණන"}
+              </span>
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <Button
                   onClick={decrementCubes}
                   style={{ marginRight: "8px" }}
-                  disabled={cubes <= 1}
+                  disabled={formData.cubes <= 1}
                 >
                   -
                 </Button>
                 <Input
-                  value={cubes}
+                  value={formData.cubes}
                   onChange={handleCubesChange}
                   style={{ width: "60px", textAlign: "center" }}
                 />
@@ -333,12 +375,17 @@ const DispatchLoadPage = () => {
             <IoIosDoneAll />
           </div>
           <p>{language == "en" ? "Dispatched Successfully!" : "සාර්ථකයි!"}</p>
-          <Button 
-            type="primary" 
-            onClick={handleBackToHome} 
-            style={{ backgroundColor: '#FFA500', color: 'white', borderColor: '#FFA500', marginRight: '20px' }}
+          <Button
+            type="primary"
+            onClick={handleBackToHome}
+            style={{
+              backgroundColor: "#FFA500",
+              color: "white",
+              borderColor: "#FFA500",
+              marginRight: "20px",
+            }}
           >
-            {language == "en" ? "Back to Home" : "ආපසු" }
+            {language == "en" ? "Back to Home" : "ආපසු"}
           </Button>
 
           <Button
@@ -352,6 +399,24 @@ const DispatchLoadPage = () => {
           >
             {language == "en" ? "Print Receipt" : "රිසිට් පත මුද්‍රණය කරන්න"}
           </Button>
+        </Modal>
+
+        {/* Error Modal */}
+        <Modal
+          visible={isErrModalVisible}
+          onCancel={() => setIsErrModalVisible(false)}
+          footer={null}
+          style={{ textAlign: "center" }}
+          bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+        >
+          <div style={{ fontSize: "40px", color: "brown" }}>
+            <IoIosCloseCircle />
+          </div>
+          <h3>
+            {language == "en"
+              ? "All field are required !"
+              : "සියලුම ක්ෂේත්ර අවශ්ය වේ !"}
+          </h3>
         </Modal>
       </Content>
     </Layout>
