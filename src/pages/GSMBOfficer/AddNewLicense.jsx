@@ -2,8 +2,10 @@ import React, { useEffect } from "react";
 import { Form, Input, Button, DatePicker, Row, Col } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const NewLicenseForm = () => {
+  const { language } = useLanguage();
   const [form] = Form.useForm();
 
   // Handle form submission and post data
@@ -13,7 +15,7 @@ const NewLicenseForm = () => {
         issue: {
           project: { id: 18 },
           tracker: { id: 5 },
-          subject: "New License",
+          subject: language === "en" ? "New License" : "නව බලපත්‍රය",
           custom_fields: [
             { id: 8, name: "License Number", value: values.licenseNumber },
             { id: 2, name: "Owner Name", value: values.ownerName },
@@ -32,7 +34,7 @@ const NewLicenseForm = () => {
       // Post the data to the API
       const response = await axios.post(
         "/api/projects/new-license/issues.json",
-        payload, // Use payload here instead of postData
+        payload,
         {
           headers: {
             "Content-Type": "application/json",
@@ -73,7 +75,7 @@ const NewLicenseForm = () => {
       ></Button>
 
       <h2 style={{ textAlign: "center", fontWeight: "bold", color: "#1a1a1a" }}>
-        New License
+        {language === "en" ? "New License" : "නව බලපත්‍රය"}
       </h2>
       <Form
         form={form}
@@ -84,63 +86,63 @@ const NewLicenseForm = () => {
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label="License Number"
+              label={language === "en" ? "License Number" : "බලපත්‍රය අංකය"}
               name="licenseNumber"
-              rules={[{ required: true, message: "Please input the license number!" }]}
+              rules={[{ required: true, message: language === "en" ? "Please input the license number!" : "කරුණාකර අවසරපත්‍ර අංකය ඇතුළත් කරන්න!" }]}
             >
               <Input />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label="Owner Name"
+              label={language === "en" ? "Owner Name" : "අයිතිකරුගේ නම"}
               name="ownerName"
-              rules={[{ required: true, message: "Please input the owner name!" }]}
+              rules={[{ required: true, message: language === "en" ? "Please input the owner name!" : "කරුණාකර අයිතිකරුගේ නම ඇතුළත් කරන්න!" }]}
             >
               <Input />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label="Validity Start"
+              label={language === "en" ? "Validity Start" : "වලංගුතාව ආරම්භක දිනය"}
               name="validityStart"
-              rules={[{ required: true, message: "Please select the start date!" }]}
+              rules={[{ required: true, message: language === "en" ? "Please select the start date!" : "කරුණාකර ආරම්භක දිනය තෝරන්න!" }]}
             >
               <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label="Valid Until"
+              label={language === "en" ? "Valid Until" : "අවලංගු වන දිනය"}
               name="endDate"
-              rules={[{ required: true, message: "Please select the end date!" }]}
+              rules={[{ required: true, message: language === "en" ? "Please select the end date!" : "කරුණාකර අවසාන දිනය තෝරන්න!" }]}
             >
               <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label="Capacity (Cubes)"
+              label={language === "en" ? "Capacity (Cubes)" : "කියුබ්ස් ගණන"}
               name="capacity"
-              rules={[{ required: true, message: "Please input the capacity!" }]}
+              rules={[{ required: true, message: language === "en" ? "Please input the capacity!" : "කරුණාකර කියුබ්ස් ගණන ඇතුළත් කරන්න!" }]}
             >
               <Input />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label="Mobile"
+              label={language === "en" ? "Mobile" : "ජංගම දුරකථන අංකය"}
               name="mobile"
-              rules={[{ required: true, message: "Please input the mobile number!" }]}
+              rules={[{ required: true, message: language === "en" ? "Please input the mobile number!" : "කරුණාකර ජංගම අංකය ඇතුළත් කරන්න!" }]}
             >
               <Input />
             </Form.Item>
           </Col>
           <Col xs={24}>
             <Form.Item
-              label="Location"
+              label={language === "en" ? "Location" : "ස්ථානය"}
               name="location"
-              rules={[{ required: true, message: "Please input the location!" }]}
+              rules={[{ required: true, message: language === "en" ? "Please input the location!" : "කරුණාකර ස්ථානය ඇතුළත් කරන්න!" }]}
             >
               <Input />
             </Form.Item>
@@ -157,7 +159,7 @@ const NewLicenseForm = () => {
                     width: "48%",
                   }}
                 >
-                  Create License
+                  {language === "en" ? "Create License" : "බලපත්‍රය සාදන්න"}
                 </Button>
 
                 <Button
@@ -168,7 +170,7 @@ const NewLicenseForm = () => {
                     borderColor: "#950C33",
                   }}
                 >
-                  Cancel
+                  {language === "en" ? "Cancel" : "අවලංගු කරන්න"}
                 </Button>
               </div>
             </Form.Item>
@@ -180,6 +182,3 @@ const NewLicenseForm = () => {
 };
 
 export default NewLicenseForm;
-
-
-

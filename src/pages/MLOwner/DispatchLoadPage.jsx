@@ -7,11 +7,13 @@ import { IoIosDoneAll } from 'react-icons/io';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 const DispatchLoadPage = () => {
+  const { language } = useLanguage();
   const [licenseNumber, setLicenseNumber] = useState('');
   const [destination, setDestination] = useState('');
   const [lorryNumber, setLorryNumber] = useState('');
@@ -127,14 +129,14 @@ const DispatchLoadPage = () => {
     <Layout style={{ minHeight: '100vh' }}>
       <Content style={{ padding: '24px' }}>
         <Title level={3} style={{ textAlign: 'center', marginBottom: '20px' }}>
-          Dispatch Your Load Here
+          {language == "en" ? "Dispatch Your Load Here" : "යැවිය යුතු ප්‍රමාණ පිළිබඳ මෙහි සටහන් කරන්න"}
         </Title>
 
         {/* License Number Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: '16px' }}>
-              <span style={{ fontWeight: 'bold' }}>LICENSE NUMBER:</span>
+              <span style={{ fontWeight: 'bold' }}>{language == "en" ? "LICENSE NUMBER:" : "බලපත්‍ර අංකය:"}</span>
               <Input
                 value={licenseNumber}
                 onChange={handleLicenseNumberChange}
@@ -148,7 +150,7 @@ const DispatchLoadPage = () => {
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: '16px' }}>
-              <span style={{ fontWeight: 'bold' }}>DESTINATION:</span>
+              <span style={{ fontWeight: 'bold' }}>{language == "en" ? "DESTINATION:" : "ගමනාන්තය"} </span>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <SearchOutlined style={{ marginRight: '8px' }} />
                 <AutoComplete
@@ -192,7 +194,7 @@ const DispatchLoadPage = () => {
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: '16px' }}>
-              <span style={{ fontWeight: 'bold' }}>LORRY NUMBER:</span>
+              <span style={{ fontWeight: 'bold' }}>{language == "en" ? "LORRY NUMBER:" : "ලොරි අංකය:" }</span>
               <Input
                 value={lorryNumber}
                 onChange={handleLorryNumberChange}
@@ -206,7 +208,7 @@ const DispatchLoadPage = () => {
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: '16px' }}>
-              <span style={{ fontWeight: 'bold' }}>DRIVER CONTACT:</span>
+              <span style={{ fontWeight: 'bold' }}>{language == "en" ? "DRIVER CONTACT:" : "රියදුරුගේ දුරකථන අංකය:"}</span>
               <Input
                 value={driverContact}
                 onChange={handleDriverContactChange}
@@ -220,7 +222,7 @@ const DispatchLoadPage = () => {
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: '16px' }}>
-              <span style={{ fontWeight: 'bold' }}>CUBES:</span>
+              <span style={{ fontWeight: 'bold' }}>{language == "en" ? "CUBES:" : "කියුබ් ගණන"}</span>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Button
                   onClick={decrementCubes}
@@ -262,7 +264,7 @@ const DispatchLoadPage = () => {
               }} 
               size="large"
             >
-              Cancel
+              {language == "en" ? "Cancel" : "අවලංගු කරන්න"}
             </Button>
             <Button 
               type="primary" 
@@ -276,7 +278,7 @@ const DispatchLoadPage = () => {
               }} 
               size="large"
             >
-              Submit
+              {language == "en" ? "Submit" : "සටහන් කරන්න"}
             </Button>
           </Col>
         </Row>
@@ -292,13 +294,13 @@ const DispatchLoadPage = () => {
           <div style={{ fontSize: '40px', color: 'brown' }}>
             <IoIosDoneAll />
           </div>
-          <p>Dispatched Successfully!</p>
+          <p>{language == "en" ? "Dispatched Successfully!" : "සාර්ථකයි!"}</p>
           <Button 
             type="primary" 
             onClick={handleBackToHome} 
             style={{ backgroundColor: '#FFA500', color: 'white', borderColor: '#FFA500', marginRight: '20px' }}
           >
-            Back to Home
+            {language == "en" ? "Back to Home" : "ආපසු" }
           </Button>
 
           <Button 
@@ -306,7 +308,7 @@ const DispatchLoadPage = () => {
             onClick={handlePrintReceipt} 
             style={{ backgroundColor: '#781424', color: 'white', marginLeft: '20px' }}
           >
-            Print Receipt
+            {language == "en" ? "Print Receipt" : "රිසිට් පත මුද්‍රණය කරන්න"}
           </Button>
         </Modal>
 
