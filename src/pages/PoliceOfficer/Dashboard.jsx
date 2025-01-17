@@ -33,7 +33,7 @@ const Dashboard = () => {
     pageContainer: {
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '50vh',
+      minHeight: '70vh',
       backgroundImage: `url(${backgroundImage})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
