@@ -2,9 +2,7 @@ import React from "react";
 import { Button, Typography, Layout, Row, Col, notification } from "antd";
 import { jsPDF } from "jspdf";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import './ReceiptPage.css';  // Add this line at the top of your file
-
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -12,25 +10,23 @@ const { Title } = Typography;
 const ReceiptPage = () => {
   const navigate = useNavigate();
 
-  const location = useLocation();
-  const formData = location.state?.formData || []; 
-
+  // Dynamically set the printed date to the current date and time
   const currentDate = new Date();
-  const printedDate = currentDate.toLocaleString();
+  const printedDate = currentDate.toLocaleString();  // Format as per the locale
 
   const receiptData = {
-    lorryNumber: formData.lorryNumber,
+    lorryNumber: "LE-8595",
     reference: "892426242",
     mlNumber: "IML/01/TEST/5178/LRS",
     mlOwner: "Jayantha",
     mlContact: "0777173789",
     startLocation: "Rathnapura",
     mineralType: "Sand",
-    lorryContact: formData.lorryNumber,
-    loadCube: formData.cubes,
-    destination: formData.destination,
+    lorryContact: "077723456",
+    loadCube: 10,
+    destination: "Madampe",
     validity: "01/01/2025 @ 12:55 pm to 01/05/2025 12:55 pm",
-     printedDate: printedDate,
+    printedDate: printedDate,  // Dynamically set printed date
   };
 
   const handlePrintReceipt = () => {
@@ -38,24 +34,6 @@ const ReceiptPage = () => {
     const pageWidth = doc.internal.pageSize.width;
     const marginLeft = 20;
     const lineHeight = 8; // Reduced line height for compact spacing
-  
-    const currentDate = new Date();
-  const printedDate = currentDate.toLocaleString();
-    // Mock data or fallback values for missing fields
-    const receiptData = {
-      lorryNumber: formData.lorryNumber,
-      reference: "892426242",
-      mlNumber: "IML/01/TEST/5178/LRS",
-      mlOwner: "Jayantha",
-      mlContact: "0777173789",
-      startLocation: "Rathnapura",
-      mineralType: "Sand",
-      lorryContact: formData.lorryNumber,
-      loadCube: formData.cubes,
-      destination: formData.destination,
-      validity: "01/01/2025 @ 12:55 pm to 01/05/2025 12:55 pm",
-      printedDate: printedDate, 
-    };
   
     // Helper function to add text with proper alignment
     const addText = (text, x, y, size = 12, bold = false, align = 'left') => {
@@ -95,7 +73,7 @@ const ReceiptPage = () => {
       { label: "Load (Cube)", value: receiptData.loadCube },
       { label: "Destination", value: receiptData.destination },
       { label: "Validity", value: receiptData.validity },
-      { label: "Printed Date", value: receiptData.printedDate },
+      { label: "Printed Date", value: receiptData.printedDate },  // Display the dynamic printed date
     ];
   
     details.forEach((item, index) => {
@@ -152,7 +130,7 @@ const ReceiptPage = () => {
               />
             </div>
 
-            <p><strong>Lorry Number:</strong> {formData.lorryNumber}</p>
+            <p><strong>Lorry Number:</strong> {receiptData.lorryNumber}</p>
             <p><strong>Reference:</strong> {receiptData.reference}</p>
             <p><strong>ML Number:</strong> {receiptData.mlNumber}</p>
             <p><strong>ML Owner:</strong> {receiptData.mlOwner}</p>
@@ -176,13 +154,12 @@ const ReceiptPage = () => {
               Back to Home
             </Button>
             <Button
-  type="primary"
-  onClick={handlePrintReceipt}
-  className="glitter-button"  // Apply the glitter button class
->
-  Print Receipt
-</Button>
-
+              type="primary"
+              onClick={handlePrintReceipt}
+              className="glitter-button"  // Apply the glitter button class
+            >
+              Print Receipt
+            </Button>
           </Col>
         </Row>
       </Content>

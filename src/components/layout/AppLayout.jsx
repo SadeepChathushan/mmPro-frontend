@@ -19,7 +19,7 @@ const AppLayout = () => (
     >
       <Outlet />
     </Content>
-    <Footer /> {/* Use your custom Footer here */}
+    <Footer /> {/* Replace the default Footer with your custom Footer */}
   </Layout>
 );
 
