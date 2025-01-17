@@ -3,6 +3,7 @@ import { Button, Typography } from "antd";
 import "antd/dist/reset.css";
 import Navbar from "../components/layout/Navbar";
 import logo from "../assets/images/gsmbLogo.jpg";
+import HomeFooter from "../components/layout/HomeFooter";
 
 const { Text } = Typography;
 
@@ -143,7 +144,9 @@ const Home = () => {
      
         
         </div>
+        {/* <HomeFooter/> */}
     </div>
+    
     
     
   );
