@@ -3,8 +3,10 @@ import { Form, Input, Button, Row, Col, Upload, message } from "antd";
 import { ArrowLeftOutlined, UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import uploadMediaToSupabase from "../../utils/imageUpload";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const NewLicenseForm = () => {
+  const { language } = useLanguage();
   const [form] = Form.useForm();
   const [uploading, setUploading] = useState({
     lorryBook: false,
@@ -18,9 +20,9 @@ const uploadLorryBook = async (file) => {
     const publicUrl = await uploadMediaToSupabase(file); // Get public URL for lorryBook
     form.setFieldsValue({ lorryBook: publicUrl }); // Set the public URL in the form
     console.log("Lorry Book URL:", publicUrl); // Log the URL for debugging
-    message.success(`${file.name} uploaded successfully!`);
+    message.success(`${file.name} ${language === "en" ? "uploaded successfully!" : "සාර්ථකව උඩුගත කරන ලදී!"}`);
   } catch (err) {
-    message.error(`Upload failed: ${err}`);
+    message.error(`${language === "en" ? "Upload failed:" : "උඩුගත කිරීම අසාර්ථකයි:"} ${err}`);
   } finally {
     setUploading((prev) => ({ ...prev, lorryBook: false }));
   }
@@ -33,9 +35,9 @@ const uploadLorry = async (file) => {
     const publicUrl = await uploadMediaToSupabase(file); // Get public URL for lorry
     form.setFieldsValue({ lorry: publicUrl }); // Set the public URL in the form
     console.log("Lorry URL:", publicUrl); // Log the URL for debugging
-    message.success(`${file.name} uploaded successfully!`);
+    message.success(`${file.name} ${language === "en" ? "uploaded successfully!" : "සාර්ථකව උඩුගත කරන ලදී!"}`);
   } catch (err) {
-    message.error(`Upload failed: ${err}`);
+    message.error(`${language === "en" ? "Upload failed:" : "උඩුගත කිරීම අසාර්ථකයි:"} ${err}`);
   } finally {
     setUploading((prev) => ({ ...prev, lorry: false }));
   }
@@ -60,7 +62,7 @@ const uploadLorry = async (file) => {
         issue: {
           project_id: 17,
           tracker_id: 1,
-          subject: "New License Owner",
+          subject: language === "en" ? "New License Owner" : "නව බලපත්‍ර අයිතිකරු",
           custom_fields: [
             { id: 2, name: "Owner Name", value: values.ownerName },
             { id: 3, name: "Mobile Number", value: values.mobile },
@@ -89,7 +91,7 @@ const uploadLorry = async (file) => {
         }
       );
   
-      message.success("License owner created successfully!");
+      message.success(language === "en" ? "License owner created successfully!" : "බලපත්‍ර අයිතිකරු සාර්ථකව නිර්මාණය කර ඇත!");
       form.resetFields();
       console.log("API response:", response.data);
     } catch (error) {
@@ -119,55 +121,55 @@ const uploadLorry = async (file) => {
         style={{ marginBottom: "16px", paddingLeft: 0, color: "#000000" }}
         href="/gsmb/dashboard"
       >
-        Back
+        {language === "en" ? "Back" : "ආපසු"}
       </Button>
 
       <h2 style={{ textAlign: "center", fontWeight: "bold", color: "#1a1a1a" }}>
-        Register New License Owner
+      {language === "en" ? "Register New License Owner" : "නව බලපත්‍ර අයිතිකරු ලියාපදිංචි කරන්න"}
       </h2>
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label="Owner Name"
+              label={language === "en" ? "Owner Name" : "අයිතිකරුගේ නම"}
               name="ownerName"
-              rules={[{ required: true, message: "Please input the owner name!" }]}
+              rules={[{ required: true, message: language === "en" ? "Please input the owner name!" : "අයිතිකරුගේ නම ඇතුළත් කරන්න!" }]}
             >
               <Input />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label="Mobile Number"
+              label={language === "en" ? "Mobile Number" : "ජංගම දුරකථන අංකය"}
               name="mobile"
-              rules={[{ required: true, message: "Please input the mobile number!" }]}
+              rules={[{ required: true, message: language === "en" ? "Please input the mobile number!" : "ජංගම දුරකථන අංකය ඇතුළත් කරන්න!" }]}
             >
               <Input />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label="Vehicle Number"
+              label={language === "en" ? "Vehicle Number" : "වාහන අංකය"}
               name="vehicleNumber"
-              rules={[{ required: true, message: "Please input the vehicle number!" }]}
+              rules={[{ required: true, message: language === "en" ? "Please input the vehicle number!" : "වාහන අංකය ඇතුළත් කරන්න!"}]}
             >
               <Input />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label="Capacity (Cubes)"
+              label={language === "en" ? "Capacity (Cubes)" : "කියුබ් ගණන"}
               name="capacity"
-              rules={[{ required: true, message: "Please input the capacity!" }]}
+              rules={[{ required: true, message: language === "en" ? "Please input the capacity!" : "කියුබ් ගණන ඇතුළත් කරන්න!" }]}
             >
               <Input />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label="Lorry Book"
+              label={language === "en" ? "Lorry Book" : "ලොරි පොත"}
               name="lorryBook"
-              rules={[{ required: true, message: "Please upload the lorry book image!" }]}
+              rules={[{ required: true, message: language === "en" ? "Please upload the lorry book image!" : "කරුණාකර ලොරි පොත උඩුගත කරන්න!" }]}
             >
               <Upload
                 beforeUpload={(file) => beforeUpload(file, "lorryBook")}
@@ -175,16 +177,16 @@ const uploadLorry = async (file) => {
                 disabled={uploading.lorryBook}
               >
                 <Button icon={<UploadOutlined />} loading={uploading.lorryBook}>
-                  Upload Lorry Book
+                {language === "en" ? "Upload Lorry Book" : "ලොරි පොත උඩුගත කරන්න"}
                 </Button>
               </Upload>
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label="Lorry"
+              label={language === "en" ? "Lorry" : "ලොරිය"}
               name="lorry"
-              rules={[{ required: true, message: "Please upload the lorry image!" }]}
+              rules={[{ required: true, message: language === "en" ? "Please upload the lorry image!" : "කරුණාකර ලොරි රූපය උඩුගත කරන්න!" }]}
             >
               <Upload
                 beforeUpload={(file) => beforeUpload(file, "lorry")}
@@ -192,7 +194,7 @@ const uploadLorry = async (file) => {
                 disabled={uploading.lorry}
               >
                 <Button icon={<UploadOutlined />} loading={uploading.lorry}>
-                  Upload Lorry Image
+                  {language === "en" ? "Upload Lorry Image" : "ලොරි රූපය උඩුගත කරන්න"}
                 </Button>
               </Upload>
             </Form.Item>
@@ -209,14 +211,14 @@ const uploadLorry = async (file) => {
                     borderColor: "#950C33",
                   }}
                 >
-                  Create License
+                  {language == "en" ? "Create License" : "බලපත්‍රය නිර්මාණය කරන්න"}
                 </Button>
                 <Button
                   type="default"
                   onClick={handleCancel}
                   style={{ width: "48%", borderColor: "#950C33" }}
                 >
-                  Cancel
+                  {language == "en" ? "Cancel" : "අවලංගු කරන්න"}
                 </Button>
               </div>
             </Form.Item>

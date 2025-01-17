@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import logo from '../../assets/images/gsmbLogo.jpg';
 import { useLanguage } from '../../contexts/LanguageContext';
 
@@ -31,58 +31,116 @@ const Dashboard = () => {
     ],
   };
 
+  const styles = {
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '70vh',
+      padding: '20px',
+      backgroundColor: 'white',
+      color: '#333',
+    },
+    header: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: '20px',
+    },
+    logo: {
+      width: '100px',
+      height: 'auto',
+      marginRight: '20px',
+    },
+    title: {
+      fontSize: '1.75rem',
+      fontWeight: 'bold',
+      color: '#800000',
+      textAlign: 'center',
+    },
+    validBadge: {
+      backgroundColor: 'green',
+      color: '#fff',
+      padding: '10px 30px',
+      borderRadius: '20px',
+      fontSize: '1.25rem',
+      marginBottom: '20px',
+      textAlign: 'center',
+    },
+    content: {
+      width: '100%',
+      maxWidth: '1000px',
+      backgroundColor: '#fff',
+      borderRadius: '10px',
+      boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+      padding: '20px',
+    },
+    sectionTitle: {
+      color: '#8B0000',
+      textAlign: 'center',
+      marginBottom: '30px',
+      fontSize: '1.5rem',
+    },
+    fieldsContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px',
+    },
+    row: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '20px',
+    },
+    field: {
+      flex: '1 1 calc(50% - 10px)',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    label: {
+      fontSize: '14px',
+      fontWeight: 'bold',
+      color: '#333',
+      marginBottom: '5px',
+    },
+    input: {
+      padding: '10px',
+      border: '1px solid #ccc',
+      borderRadius: '5px',
+      fontSize: '14px',
+      backgroundColor: '#f9f9f9',
+      width: '100%',
+    },
+    '@media (max-width: 768px)': {
+      field: {
+        flex: '1 1 100%',
+      },
+    },
+  };
+  
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem' }}>
-        <img src={logo} alt="Logo" style={{ marginBottom: '1.5rem', width: '17rem', height: 'auto' }} />
-        <h2 style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#800000', marginBottom: '2rem' }}>
-          {textContent.title}
-        </h2>
-        <div style={{ marginBottom: '1.5rem' }}>
-        <div
-            style={{
-              backgroundColor: 'green',
-              color: '#fff',
-              padding: '0.75rem 2rem',
-              border: 'none',
-              borderRadius: '1.5rem',
-              fontSize: '1rem',
-              width: '16rem',
-              maxWidth: '100%',
-              margin: '0 auto',
-              textAlign: 'center',
-            }}
-          >
-            {textContent.validText}
-          </div>
+    <div style={styles.container}>
+      <div style={styles.header}>
+        <img src={logo} alt="Logo" style={styles.logo} />
+        <h2 style={styles.title}>{textContent.title}</h2>
+      </div>
+      <div style={styles.validBadge}>{textContent.validText}</div>
+      <div style={styles.content}>
+        <h1 style={styles.sectionTitle}>{textContent.licenseTitle}</h1>
+        <div style={styles.fieldsContainer}>
+          {textContent.fields.map((row, i) => (
+            <div key={i} style={styles.row}>
+              {row.map((field, j) => (
+                <div key={j} style={styles.field}>
+                  <label style={styles.label}>{field.label}</label>
+                  <input type="text" value={field.value} readOnly style={styles.input} />
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
-        <div style={{ maxWidth: '800px', width: '100%', margin: '40px auto', padding: '20px' }}>
-          <h1 style={{ color: '#8B0000', textAlign: 'center', marginBottom: '30px' }}>{textContent.licenseTitle}</h1>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {textContent.fields.map((row, i) => (
-              <div key={i} style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-                {row.map((field, j) => (
-                  <div key={j} style={{ flex: '1 1 calc(50% - 10px)', display: 'flex', flexDirection: 'column' }}>
-                    <label style={{ fontSize: '14px', color: '#333' }}>{field.label}</label>
-                    <input
-                      type="text"
-                      value={field.value}
-                      readOnly
-                      style={{
-                        padding: '8px',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                        fontSize: '14px',
-                        backgroundColor: '#f9f9f9',
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-      </main>
+      </div>
     </div>
   );
 };
@@ -90,204 +148,148 @@ const Dashboard = () => {
 export default Dashboard;
 
 
-// import React, { useState } from 'react';
+
+
+// import React from 'react';
 // import logo from '../../assets/images/gsmbLogo.jpg';
 
 // const Dashboard = () => {
-//   const [input, setInput] = useState('');
+//   const fields = [
+//     [
+//       { label: 'License Number', value: 'TN/JN/P/B/2024/03/005' },
+//       { label: 'Location (District)', value: 'Colombo' },
+//     ],
+//     [
+//       { label: 'Expires', value: '2024-01-19' },
+//       { label: 'Limited Share/Time', value: 'USD' },
+//     ],
+//     [
+//       { label: 'Quantity', value: '100' },
+//       { label: 'Due Share/Time', value: '9456' },
+//     ],
+//     [
+//       { label: 'Load Number', value: '8456' },
+//       { label: 'Destination', value: 'Kandy' },
+//     ],
+//     [{ label: 'License Holder', value: 'Kamal' }],
+//   ];
 
 //   return (
-//     <div
-//       style={{
-//         display: 'flex',
-//         flexDirection: 'column',
-//         minHeight: '100vh',
-//       }}
-//     >
-//       <main
-//         style={{
-//           display: 'flex',
-//           flexDirection: 'column',
-//           alignItems: 'center',
-//           justifyContent: 'center',
-//           textAlign: 'center',
-//           padding: '2rem',
-//         }}
-//       >
-//         <img
-//           src={logo}
-//           alt="Logo"
-//           style={{
-//             marginBottom: '0',
-//             width: '350px',
-//             maxWidth: '100%',
-//             height: 'auto',
-//           }}
-//         />
-//         <h2
-//           style={{
-//             fontSize: '1.75rem',
-//             fontWeight: 'bold',
-//             color: '#800000',
-//             margin: '2rem 0',
-//             textAlign: 'center',
-//           }}
-//         >
-//           Geological Survey & Mines Bureau
-//         </h2>
-
-//         <div
-//           style={{
-//             marginBottom: '1.5rem',
-//           }}
-//         >
-          // <div
-          //   style={{
-          //     backgroundColor: 'green',
-          //     color: '#fff',
-          //     padding: '0.75rem 2rem',
-          //     border: 'none',
-          //     borderRadius: '1.5rem',
-          //     fontSize: '1rem',
-          //     width: '16rem',
-          //     maxWidth: '100%',
-          //     margin: '0 auto',
-          //   }}
-          // >
-//             Valid
-//           </div>
+//     <div style={styles.container}>
+//       <div style={styles.header}>
+//         <img src={logo} alt="Logo" style={styles.logo} />
+//         <h2 style={styles.title}>Geological Survey & Mines Bureau</h2>
+//       </div>
+//       <div style={styles.validBadge}>Valid</div>
+//       <div style={styles.content}>
+//         <h1 style={styles.sectionTitle}>Sand Mining License</h1>
+//         <div style={styles.fieldsContainer}>
+//           {fields.map((row, i) => (
+//             <div key={i} style={styles.row}>
+//               {row.map((field, j) => (
+//                 <div key={j} style={styles.field}>
+//                   <label style={styles.label}>{field.label}</label>
+//                   <input
+//                     type="text"
+//                     value={field.value}
+//                     readOnly
+//                     style={styles.input}
+//                   />
+//                 </div>
+//               ))}
+//             </div>
+//           ))}
 //         </div>
-
-//         <div
-//           style={{
-//             maxWidth: '800px',
-//             width: '100%',
-//             margin: '40px auto',
-//             padding: '20px',
-//           }}
-//         >
-//           <h1
-//             style={{
-//               color: '#8B0000',
-//               textAlign: 'center',
-//               marginBottom: '30px',
-//               fontSize: '24px',
-//             }}
-//           >
-//             Sand Mining License
-//           </h1>
-
-//           <div
-//             style={{
-//               display: 'flex',
-//               flexDirection: 'column',
-//               gap: '20px',
-//             }}
-//           >
-//             {[
-//               [
-//                 { label: 'License Number', value: 'TN/JN/P/B/2024/03/005' },
-//                 { label: 'Location (District)', value: 'Colombo' },
-//               ],
-//               [
-//                 { label: 'Expires', value: '2024-01-19' },
-//                 { label: 'Limited Share/Time', value: 'USD' },
-//               ],
-//               [
-//                 { label: 'Quantity', value: '100' },
-//                 { label: 'Due Share/Time', value: '9456' },
-//               ],
-//               [
-//                 { label: 'Load Number', value: '8456' },
-//                 { label: 'Destination', value: 'Kandy' },
-//               ],
-//               [{ label: 'License Holder', value: 'Kamal' }],
-//             ].map((row, i) => (
-//               <div
-//                 key={i}
-//                 style={{
-//                   display: 'flex',
-//                   flexWrap: 'wrap',
-//                   justifyContent: 'space-between',
-//                   gap: '20px',
-//                 }}
-//               >
-//                 {row.map((field, j) => (
-//                   <div
-//                     key={j}
-//                     style={{
-//                       flex: '1 1 calc(50% - 10px)', // Two in a row on desktop
-//                       display: 'flex',
-//                       flexDirection: 'column',
-//                       gap: '5px',
-//                     }}
-//                   >
-//                     <label
-//                       style={{
-//                         fontSize: '14px',
-//                         color: '#333',
-//                         textAlign: 'left',
-//                       }}
-//                     >
-//                       {field.label}
-//                     </label>
-//                     <input
-//                       type="text"
-//                       value={field.value}
-//                       readOnly
-//                       style={{
-//                         padding: '8px',
-//                         border: '1px solid #ccc',
-//                         borderRadius: '4px',
-//                         fontSize: '14px',
-//                         backgroundColor: '#f9f9f9',
-//                         width: '100%',
-//                       }}
-//                     />
-//                   </div>
-//                 ))}
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       </main>
+//       </div>
 //     </div>
- 
 //   );
 // };
 
-// export default Dashboard;
-
-// // Add media queries for responsive design
 // const styles = {
 //   container: {
 //     display: 'flex',
 //     flexDirection: 'column',
-//     minHeight: '100vh',
-//   },
-//   main: {
-//     display: 'flex',
-//     flexDirection: 'column',
 //     alignItems: 'center',
 //     justifyContent: 'center',
-//     textAlign: 'center',
-//     padding: '2rem',
+//     height: '70vh',
+//     padding: '20px',
+//     backgroundColor: 'white',
+//     color: '#333',
 //   },
-//   licenseDetails: {
+//   header: {
+//     display: 'flex',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     marginBottom: '20px',
+//   },
+//   logo: {
+//     width: '100px',
+//     height: 'auto',
+//     marginRight: '20px',
+//   },
+//   title: {
+//     fontSize: '1.75rem',
+//     fontWeight: 'bold',
+//     color: '#800000',
+//     textAlign: 'center',
+//   },
+//   validBadge: {
+//     backgroundColor: 'green',
+//     color: '#fff',
+//     padding: '10px 30px',
+//     borderRadius: '20px',
+//     fontSize: '1.25rem',
+//     marginBottom: '20px',
+//     textAlign: 'center',
+//   },
+//   content: {
+//     width: '100%',
+//     maxWidth: '1000px',
+//     backgroundColor: '#fff',
+//     borderRadius: '10px',
+//     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+//     padding: '20px',
+//   },
+//   sectionTitle: {
+//     color: '#8B0000',
+//     textAlign: 'center',
+//     marginBottom: '30px',
+//     fontSize: '1.5rem',
+//   },
+//   fieldsContainer: {
+//     display: 'flex',
+//     flexDirection: 'column',
+//     gap: '20px',
+//   },
+//   row: {
 //     display: 'flex',
 //     flexWrap: 'wrap',
-//     justifyContent: 'space-between',
 //     gap: '20px',
 //   },
 //   field: {
-//     flex: '1 1 calc(50% - 10px)', // Two in a row on desktop
+//     flex: '1 1 calc(50% - 10px)',
 //     display: 'flex',
 //     flexDirection: 'column',
-//     gap: '5px',
+//   },
+//   label: {
+//     fontSize: '14px',
+//     fontWeight: 'bold',
+//     color: '#333',
+//     marginBottom: '5px',
+//   },
+//   input: {
+//     padding: '10px',
+//     border: '1px solid #ccc',
+//     borderRadius: '5px',
+//     fontSize: '14px',
+//     backgroundColor: '#f9f9f9',
+//     width: '100%',
 //   },
 //   '@media (max-width: 768px)': {
 //     field: {
-//       flex: '1 1 100%', // One in a row on mobile
+//       flex: '1 1 100%',
 //     },
 //   },
 // };
+
+// export default Dashboard;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Form, Input, Button, Checkbox, Tabs, Row, Col, message } from "antd";
 import { GoogleOutlined } from "@ant-design/icons";
 import logo from "../../assets/images/gsmbLogo.png"; // Transparent background logo
@@ -35,18 +35,16 @@ const Auth = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [activeTab, setActiveTab] = useState("1"); // Default to Sign In tab
 
+  const handleResize = useCallback(() => {
+    setIsMobile(window.innerWidth < 768);
+  }, []);
+
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
     window.addEventListener("resize", handleResize);
-
-    // Cleanup on component unmount
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [handleResize]);
 
   const onFinish = async (values) => {
     try {
@@ -107,10 +105,6 @@ const Auth = () => {
     }
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
-
   const onFinishSignUp = async (values) => {
     try {
       // Check if password and confirm password match
@@ -132,8 +126,6 @@ const Auth = () => {
       // If the sign-up is successful
       if (response.status === 201) {
         message.success("Your sign-up was successful! Please log in.");
-
-        // Redirect to the Sign In tab
         setActiveTab("1"); // Switch to the Sign In tab
       }
     } catch (error) {
@@ -401,9 +393,7 @@ const Auth = () => {
                   <Form.Item name="remember" valuePropName="checked" noStyle>
                     <Checkbox>Keep me logged in</Checkbox>
                   </Form.Item>
-                  <a href="/forgot-password" style={{ color: "#a52a2a" }}>
-                    Forgot password?
-                  </a>
+                  <a href="/forgot-password" className="auth-forgot-password">Forgot password?</a>
                 </div>
                 <Form.Item>
                   <Button
@@ -466,70 +456,34 @@ const Auth = () => {
               >
                 <Row gutter= {[8, 0]}>
                   {/* First Name and Last Name on the same row */}
+
                   <Col span={12}>
-                    <Form.Item
-                      label="First Name"
-                      name="firstName"
-                      rules={[{ required: true, message: "Please input your first name!" }]}
-                    >
+                    <Form.Item label="First Name" name="firstName" rules={[{ required: true, message: "Please input your first name!" }]}>
                       <Input placeholder="John" />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
-                    <Form.Item
-                      label="Last Name"
-                      name="lastName"
-                      rules={[{ required: true, message: "Please input your last name!" }]}
-                    >
+                    <Form.Item label="Last Name" name="lastName" rules={[{ required: true, message: "Please input your last name!" }]}>
                       <Input placeholder="Doe" />
                     </Form.Item>
                   </Col>
                 </Row>
-
-                {/* Address in one row */}
-                <Form.Item
-                  label="Address"
-                  name="address"
-                  rules={[{ required: true, message: "Please input your address!" }]}
-                >
+                <Form.Item label="Address" name="address" rules={[{ required: true, message: "Please input your address!" }]}>
                   <Input placeholder="123 Main St, City, Country" />
                 </Form.Item>
-
-                {/* Phone Number in one row */}
-                <Form.Item
-                  label="Phone Number"
-                  name="phoneNumber"
-                  rules={[{ required: true, message: "Please input your phone number!" }]}
-                >
+                <Form.Item label="Phone Number" name="phoneNumber" rules={[{ required: true, message: "Please input your phone number!" }]}>
                   <Input placeholder="(123) 456-7890" />
                 </Form.Item>
-
-                {/* Email Field */}
-                <Form.Item
-                  label="Email"
-                  name="email"
-                  rules={[{ required: true, message: "Please input your email address!" }]}
-                >
+                <Form.Item label="Email" name="email" rules={[{ required: true, message: "Please input your email address!" }]}>
                   <Input placeholder="john@gmail.com" />
                 </Form.Item>
-
-                {/* Password Field */}
-                <Form.Item
-                  label="Password"
-                  name="password"
-                  rules={[{ required: true, message: "Please input your password!" }]}
-                >
+                <Form.Item label="Password" name="password" rules={[{ required: true, message: "Please input your password!" }]}>
                   <Input.Password placeholder="Enter your password" />
                 </Form.Item>
-
-                {/* Confirm Password Field */}
-                <Form.Item
-                  label="Confirm Password"
-                  name="confirmPassword"
-                  rules={[{ required: true, message: "Please confirm your password!" }]}
-                >
+                <Form.Item label="Confirm Password" name="confirmPassword" rules={[{ required: true, message: "Please confirm your password!" }]}>
                   <Input.Password placeholder="Confirm your password" />
                 </Form.Item>
+
 
                 <Row gutter={[16, 0]} justify="center">
   {/* Sign Up Button */}
@@ -577,6 +531,7 @@ const Auth = () => {
     </Button>
   </Col>
 </Row>
+
               </Form>
             </TabPane>
           </Tabs>
@@ -585,5 +540,6 @@ const Auth = () => {
     </div>
   );
 };
+
 
 export default Auth;

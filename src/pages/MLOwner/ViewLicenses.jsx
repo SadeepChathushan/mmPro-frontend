@@ -3,8 +3,10 @@ import { Table, Row, Col, DatePicker, Button } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom'; // for navigation
 import moment from 'moment';
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const Licenses = () => {
+  const { language } = useLanguage();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [licenses, setLicenses] = useState([
@@ -58,34 +60,34 @@ const Licenses = () => {
 
   const columns = [
     {
-      title: 'License Number',
+      title: `${language == "en" ? 'License Number': 'බලපත්‍ර අංකය'}`,
       dataIndex: 'licenseNumber',
       key: 'licenseNumber',
     },
     {
-      title: 'Owner',
+      title: `${language == "en" ? 'Owner' : 'අයිතිකරු'}`,
       dataIndex: 'owner',
       key: 'owner',
     },
     {
-      title: 'Location',
+      title: `${language == "en" ? 'Location' : 'ස්ථානය'}`,
       dataIndex: 'location',
       key: 'location',
     },
     {
       title: 'Start Date',
-      dataIndex: 'startDate',
+      dataIndex: `${language == "en" ? 'start Date' : 'ආරම්භක දිනය'}`,
       key: 'startDate',
       render: (text) => <span>{moment(text).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: 'End Date',
+      title: `${language == "en" ? 'End Date' : 'අවලංගු වන දිනය'}`,
       dataIndex: 'endDate',
       key: 'endDate',
       render: (text) => <span>{moment(text).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: 'Status',
+      title: `${language == "en" ? 'Status' : 'තත්වය'}`,
       key: 'status',
       render: (text, record) => (
         <span style={{ color: getStatus(record.endDate) === 'ACTIVE' ? 'green' : 'red' }}>
@@ -103,14 +105,14 @@ const Licenses = () => {
         <Col xs={24} sm={12} md={6}>
           <DatePicker
             onChange={handleStartDateChange}
-            placeholder="Start Date"
+            placeholder={language == "en" ? "Start Date" : "ආරම්භක දිනය"}
             style={{ width: '100%' }}
           />
         </Col>
         <Col xs={24} sm={12} md={6}>
           <DatePicker
             onChange={handleEndDateChange}
-            placeholder="End Date"
+            placeholder={language == "en" ? "End Date" : "අවසාන දිනය"}
             style={{ width: '100%' }}
           />
         </Col>
@@ -139,7 +141,7 @@ const Licenses = () => {
             onMouseEnter={(e) => (e.target.style.backgroundColor = 'rgb(211, 153, 61)')}
             onMouseLeave={(e) => (e.target.style.backgroundColor = '#FFA500')}
           >
-            Back to Home
+            {language == "en" ? "Back to Home" : "ආපසු"}
           </Button>
         </Link>
       </div>

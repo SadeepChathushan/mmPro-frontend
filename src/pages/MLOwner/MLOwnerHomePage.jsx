@@ -2,25 +2,27 @@ import React from 'react';
 import { Button, Input, Table, Row, Col, Space, Typography } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const { Title } = Typography;
 
 const MLOwnerHomePage = () => {
+  const { language } = useLanguage();
   // Table columns
   const columns = [
     {
-      title: 'LICENSE NUMBER',
+      title: `${language == "en" ? 'LICENSE NUMBER': 'බලපත්‍ර අංකය'}`,
       dataIndex: 'licenseNumber',
       key: 'licenseNumber',
       render: (text) => <span style={{ fontWeight: 'bold' }}>{text}</span>,
     },
-    { title: 'OWNER', dataIndex: 'owner', key: 'owner' },
-    { title: 'LOCATION', dataIndex: 'location', key: 'location' },
-    { title: 'START DATE', dataIndex: 'startDate', key: 'startDate' },
-    { title: 'VALID TILL', dataIndex: 'endDate', key: 'endDate' },
-    { title: 'CAPACITY (CUBES)', dataIndex: 'capacity', key: 'capacity' },
+    { title: `${language == "en" ? 'OWNER' : 'අයිතිකරු'}`, dataIndex: 'owner', key: 'owner' },
+    { title: `${language == "en" ? 'LOCATION' : 'ස්ථානය'}`, dataIndex: 'location', key: 'location' },
+    { title: `${language == "en" ? 'START DATE' : 'ආරම්භක දිනය'}`, dataIndex: 'startDate', key: 'startDate' },
+    { title: `${language == "en" ? 'VALID TILL' : 'අවලංගු වන දිනය'}`, dataIndex: 'endDate', key: 'endDate' },
+    { title: `${language == "en" ? 'CAPACITY (CUBES)' : 'කියුබ් ගණන'}`, dataIndex: 'capacity', key: 'capacity' },
     {
-      title: 'USED',
+      title: `${language == "en" ? 'USED' : 'භාවිතය'}`,
       dataIndex: 'used',
       key: 'used',
       render: (text) => (
@@ -28,7 +30,7 @@ const MLOwnerHomePage = () => {
       ),
     },
     {
-      title: 'REMAINING',
+      title: `${language == "en" ? 'REMAINING' : 'ඉතිරි'}`,
       dataIndex: 'remaining',
       key: 'remaining',
       render: (text) => (
@@ -36,7 +38,7 @@ const MLOwnerHomePage = () => {
       ),
     },
     {
-      title: 'STATUS',
+      title: `${language == "en" ? 'STATUS' : 'තත්වය'}`,
       dataIndex: 'status',
       key: 'status',
       render: (text) => (
@@ -44,7 +46,7 @@ const MLOwnerHomePage = () => {
       ),
     },
     {
-      title: 'ROYALTY (SAND) DUE',
+      title: `${language == "en" ? 'ROYALTY (SAND) DUE' : 'රෝයල්ටි'}`,
       dataIndex: 'royalty',
       key: 'royalty',
       render: (text) => (
@@ -52,7 +54,7 @@ const MLOwnerHomePage = () => {
       ),
     },
     {
-      title: 'ACTION',
+      title: `${language == "en" ? 'ACTION' : 'ක්‍රියාමාර්ග'}`,
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
@@ -67,7 +69,7 @@ const MLOwnerHomePage = () => {
               disabled={record.status === 'INACTIVE' || record.remaining === 0}  // Disable if Inactive or Remaining cubes = 0
               title={record.status === 'INACTIVE' || record.remaining === 0 ? "Cannot dispatch: License inactive or no remaining cubes" : "Dispatch Load"}
             >
-              Dispatch Load
+              {language == "en" ? "Dispatch Load" : "යවන ලද ප්‍රමාණය"}
             </Button>
           </Link>
         </Space>
@@ -106,7 +108,7 @@ const MLOwnerHomePage = () => {
   return (
     <div style={{ backgroundColor: '#f0f2f5',  height: '100%'  }}>
       {/* Image centered in mobile view */}
-      <img 
+      {/* <img 
         src="https://th.bing.com/th/id/OIP.lXqWzX4gCjamrXtOz172qAHaHa?rs=1&pid=ImgDetMain" 
         alt="Logo" 
         style={{
@@ -120,7 +122,7 @@ const MLOwnerHomePage = () => {
             marginBottom: '20px', // Add margin below on smaller screens for spacing
           },
         }} 
-      />
+      /> */}
       {/* Content Section */}
       <div style={{ padding: '24px' }}>
         <Row gutter={16} justify="space-between" align="middle">
@@ -128,7 +130,7 @@ const MLOwnerHomePage = () => {
             {/* Image with round effect and proper sizing */}
 
             <Input
-              placeholder="Search"
+              placeholder= {language == "en" ? "Search" : "සොයන්න"}
               prefix={<SearchOutlined />}
               style={{
                 width: '100%',
@@ -152,7 +154,7 @@ const MLOwnerHomePage = () => {
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
               >
-                View Licenses
+                {language == "en" ? "View Licenses" : "බලපත්‍ර බලන්න"}
               </Button>
             </Link>
 
@@ -169,7 +171,7 @@ const MLOwnerHomePage = () => {
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
               >
-                View History
+                {language == "en" ? "View History" : "පෙර යවන ලද ප්‍රමාණ බලන්න"}
               </Button>
             </Link>
           </Col>
