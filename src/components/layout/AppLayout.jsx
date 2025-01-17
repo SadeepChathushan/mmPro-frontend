@@ -10,7 +10,12 @@ const AppLayout = () => (
   <Layout style={{ minHeight: "100vh" }}>
     <AppHeader />
     <Content
-      style={{ margin: "24px 16px", padding: 24, background: "#fff", flex: 1 }}
+      style={{
+        margin: "24px 16px",
+        padding: 24,
+        background: "#fff",
+        flex: 1,
+      }}
     >
       <Outlet />
     </Content>

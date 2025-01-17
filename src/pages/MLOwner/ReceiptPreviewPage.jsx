@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Typography, Layout, Row, Col, notification } from "antd";
 import { jsPDF } from "jspdf";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import './ReceiptPage.css';  // Add this line at the top of your file
 
 
@@ -11,21 +12,23 @@ const { Title } = Typography;
 const ReceiptPage = () => {
   const navigate = useNavigate();
 
+  const location = useLocation();
+  const formData = location.state?.formData || []; 
 
   const currentDate = new Date();
   const printedDate = currentDate.toLocaleString();
 
   const receiptData = {
-    lorryNumber: "LE-8595",
+    lorryNumber: formData.lorryNumber,
     reference: "892426242",
     mlNumber: "IML/01/TEST/5178/LRS",
     mlOwner: "Jayantha",
     mlContact: "0777173789",
     startLocation: "Rathnapura",
     mineralType: "Sand",
-    lorryContact: "077723456",
-    loadCube: 10,
-    destination: "Madampe",
+    lorryContact: formData.lorryNumber,
+    loadCube: formData.cubes,
+    destination: formData.destination,
     validity: "01/01/2025 @ 12:55 pm to 01/05/2025 12:55 pm",
      printedDate: printedDate,
   };
@@ -40,16 +43,16 @@ const ReceiptPage = () => {
   const printedDate = currentDate.toLocaleString();
     // Mock data or fallback values for missing fields
     const receiptData = {
-      lorryNumber: "ND-1234",
-      reference: "REF123456",
-      mlNumber: "ML789",
-      mlOwner: "John Smith",
-      mlContact: "0771234567",
-      startLocation: "Anuradhapura",
+      lorryNumber: formData.lorryNumber,
+      reference: "892426242",
+      mlNumber: "IML/01/TEST/5178/LRS",
+      mlOwner: "Jayantha",
+      mlContact: "0777173789",
+      startLocation: "Rathnapura",
       mineralType: "Sand",
-      lorryContact: "077723456",
-      loadCube: "10",
-      destination: "Madampe",
+      lorryContact: formData.lorryNumber,
+      loadCube: formData.cubes,
+      destination: formData.destination,
       validity: "01/01/2025 @ 12:55 pm to 01/05/2025 12:55 pm",
       printedDate: printedDate, 
     };
@@ -149,7 +152,7 @@ const ReceiptPage = () => {
               />
             </div>
 
-            <p><strong>Lorry Number:</strong> {receiptData.lorryNumber}</p>
+            <p><strong>Lorry Number:</strong> {formData.lorryNumber}</p>
             <p><strong>Reference:</strong> {receiptData.reference}</p>
             <p><strong>ML Number:</strong> {receiptData.mlNumber}</p>
             <p><strong>ML Owner:</strong> {receiptData.mlOwner}</p>
