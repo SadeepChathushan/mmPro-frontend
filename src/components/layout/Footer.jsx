@@ -35,20 +35,6 @@ const Footer = () => {
               <a href="https://www.cea.lk/" target="_blank" rel="noreferrer">
                 Central Environmental Authority
               </a>
-              {/* <a
-                  href="http://www.mines.gov.lk/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Disaster Management Division
-                </a> */}
-              <a
-                href="https://nbro.gov.lk/index.php?lang=en"
-                target="_blank"
-                rel="noreferrer"
-              >
-                National Building Research Organization
-              </a>
               <a href="https://wrb.lk/" target="_blank" rel="noreferrer">
                 Water Resources Board
               </a>
@@ -59,25 +45,7 @@ const Footer = () => {
               >
                 National Earthquake Information Center
               </a>
-              <a href="https://www.bgs.ac.uk/" target="_blank" rel="noreferrer">
-                British Geological Survry (BGS)
-              </a>
-              <a
-                href="https://www.tsunami.gov/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Pacific Tsunami Warning Center (PTWC)
-              </a>
-              <a
-                href="https://www.jma.go.jp/jma/indexe.html"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Japan Meteorological Agency (JMA)
-              </a>
             </div>
-            
           </div>
           <div className="footer-contactus">
             <h3>Contact Us</h3>
@@ -96,35 +64,39 @@ const Footer = () => {
             </div>
           </div>
           <div className="footer-followus">
-            <h3>Follow Us</h3>
-            <div className="footer-social-media-list">
-              <a
-                href="https://web.facebook.com/GSMBMEDIAUNIT?_rdc=1&_rdr#"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <FaFacebook />
-              </a>
-              <a
-                href="https://www.gsmb.gov.lk/index.php?lang=en#"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <FaInstagram />
-              </a>
-              <a
-                href="https://www.gsmb.gov.lk/index.php?lang=en#"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <FaLinkedin />
-              </a>
+            <div className="footer-followus-part">
+              <h3>Follow Us</h3>
+              <div className="footer-social-media-list">
+                <a
+                  href="https://web.facebook.com/GSMBMEDIAUNIT?_rdc=1&_rdr#"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <FaFacebook />
+                </a>
+                <a
+                  href="https://www.gsmb.gov.lk/index.php?lang=en#"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <FaInstagram />
+                </a>
+                <a
+                  href="https://www.gsmb.gov.lk/index.php?lang=en#"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <FaLinkedin />
+                </a>
+              </div>
             </div>
-            <h3 className="footer-hotline">Hotline</h3>
-            <div className="footer-social-media-list">
-              <p>1921</p>
+            <div className="footer-followus-part">
+              <h3 className="footer-hotline">Hotline</h3>
+              <div className="footer-social-media-list">
+                <p>1921</p>
+              </div>
             </div>
-          </div>  
+          </div>
         </div>
 
         <div className="footer-divider"></div>
