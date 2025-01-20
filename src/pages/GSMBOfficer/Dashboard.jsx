@@ -20,7 +20,7 @@ const Dashboard = () => {
   const tabs = [
     { key: "ML", label: language === "en" ? "Mining License" : "බලපත්‍ර" },
     { key: "TPL", label: language === "en" ? "Transport License" : "ප්‍රවාහන බලපත්‍ර" },
-    { key: "CMPLN", label: language === "en" ? "Complains" : "පැමිණිලි" },
+    { key: "CMPLN", label: language === "en" ? "Complaints" : "පැමිණිලි" },
   ];
 
   useEffect(() => {
@@ -100,7 +100,7 @@ const Dashboard = () => {
             color: "#408220",
           },
           {
-            title: language === "en" ? "Complains" : "පැමිණිලි",
+            title: language === "en" ? "Complaints" : "පැමිණිලි",
             count: tableData.filter((item) => item.tracker === "CMPLN").length,
             color: "#950C33",
           },

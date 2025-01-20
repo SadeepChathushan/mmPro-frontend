@@ -130,6 +130,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { message } from 'antd';  // Import message for notifications
+import axios from 'axios';  // Import axios for API requests
 import logo from '../../assets/images/gsmbLogo.png';
 import backgroundImage from '../../assets/images/dump-truck-pit-mine.jpg';
 
@@ -140,6 +142,54 @@ const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);  // Modal state
   const navigate = useNavigate();
 
+
+  const handleReport = async () => {
+    if (!input.trim()) {
+      // If input is empty, show a warning and return early
+      message.error(language === "en" ? "Please enter a vehicle number!" : "කරුණාකර වාහන අංකයක් ඇතුළු කරන්න!");
+      return;
+    }
+  
+    try {
+      const payload = {
+        issue: {
+          project_id: 31,
+          tracker_id: 26,
+          subject: language === "en" ? "New Complaint" : "නව පැමිණිල්ලක්",
+          custom_fields: [
+            { id: 13, name: "Lorry Number", value: input }, 
+            { id: 68, name: "Role", value: "Police Officer" },
+          ],
+        },
+      };
+  
+      const username = "Dilmi_123";
+      const password = "dIlmI@99";
+  
+      const response = await axios.post(
+        "/api/projects/gsmb/issues.json",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          auth: {
+            username,
+            password,
+          },
+        }
+      );
+  
+      // Validation
+      message.success(language === "en" ? "Report Submitted successfully!" : "පැමිණිල්ල සාර්ථකව ඉදිරිපත් කරන ලදී.");
+      closeModal(); // Close modal after success
+      console.log("API response:", response.data);
+    } catch (error) {
+      console.error("Error posting data:", error);
+      message.error(language === "en" ? "Report Submission Failed! Please try again." : "පැමිණිල්ල ඉදිරිපත් කිරීම අසාර්ථකයි. නැවත උත්සාහ කරන්න.");
+    }
+  };
+  
   const handleCheck = () => {
     if (/^\d+$/.test(input)) {
       navigate('/police-officer/valid');
@@ -321,11 +371,6 @@ const Dashboard = () => {
       </button>
 
       {/* Emergency Contact Heading */}
-      {/* <h3 style={{ marginBottom: '1rem' }}>
-        {language === 'en' ? 'Emergency Contacts' : 'අත්‍යවශ්‍ය දුරකථන අංක'}
-      </h3> */}
-
-      {/* Contact Numbers */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
         {textContent.contacts.map((contact, index) => (
           <div
@@ -348,12 +393,38 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* Close Button */}
+      {/* Report Button */}
       <button
-        style={styles.modalButton}
+        style={{
+          backgroundColor: '#800000',
+          color: '#fff',
+          padding: '0.75rem 2rem',
+          border: 'none',
+          borderRadius: '1.5rem',
+          cursor: 'pointer',
+          fontSize: '1rem',
+          margin: '1rem 0',
+        }}
+        onClick={handleReport} // This calls the handleReport function
+      >
+        {language === 'en' ? 'Report to GSMB' : 'GSMB වෙත පැමිණිලි කරන්න'}
+      </button>
+
+      {/* Close Button with X Icon */}
+      <button
+        style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          backgroundColor: 'transparent',
+          border: 'none',
+          fontSize: '1.5rem',
+          cursor: 'pointer',
+          color: '#FF0000',
+        }}
         onClick={closeModal}
       >
-        {language === 'en' ? 'Close' : 'වසන්න'}
+        &times; {/* This is the X (close) icon */}
       </button>
     </div>
   </div>
