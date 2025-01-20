@@ -112,8 +112,11 @@ const Home = () => {
               />
              
             </div>
+            
          
       </div>
+      {/* <HomeFooter/> */}
+      
 
     
     </Layout>

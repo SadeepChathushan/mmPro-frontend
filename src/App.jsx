@@ -11,6 +11,7 @@ import SignIn from './components/Auth/SignIn';
 import { useAuth } from './hooks/useAuth';
 import PrivateRoute from './routes/PrivateRoute';
 import SignUp from './components/Auth/SignUp';
+import GSMBManagementRoutes from './routes/GSMBManagementRoutes';
 
 const App = () => {
   const userRole = "GSMBOfficer";
@@ -32,7 +33,7 @@ const App = () => {
         <Route
           element={
             <PrivateRoute
-              allowedRoles={['GSMBOfficer', 'PoliceOfficer','MLOwner']}
+              allowedRoles={['GSMBOfficer', 'PoliceOfficer','MLOwner','GSMBManagement']}
             />
           }
         >
@@ -50,6 +51,11 @@ const App = () => {
             {/* Police Officer Routes */}
             <Route path="police-officer/*" element={<PrivateRoute allowedRoles={['PoliceOfficer']} />}>
               <Route path="*" element={<PoliceOfficerRoutes />} />
+            </Route>
+            {/* GSMB management routes*/}
+            <Route path="gsmbmanagement/*" element={<PrivateRoute allowedRoles={['GSMBManagement']}/>}>
+              <Route path="*" element={<GSMBManagementRoutes/>}/>
+
             </Route>
           </Route>
         </Route>
