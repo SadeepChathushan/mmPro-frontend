@@ -1,89 +1,123 @@
-import React from 'react';
-import { Layout, Row, Col, Typography, Input, Button } from 'antd';
-import { FacebookOutlined, LinkedinOutlined, InstagramOutlined, TwitterOutlined, YoutubeOutlined } from '@ant-design/icons';
+import React from "react";
+import "../../styles/footer.css"; // Import external CSS
+import logo from "../../assets/images/gsmblogo2.png"; // Import image
+import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 
-const { Footer } = Layout;
-const { Text } = Typography;
-
-const HomeFooter = () => {
+const Footer = () => {
   return (
-    <HomeFooter style={{ textAlign: 'center', backgroundColor: '#781424', color: '#fff', padding: '20px 0' }}>
-      <Row justify="space-between">
-        <Col xs={24} sm={24} md={6} style={{ flex: 1 }}> 
-          <div>
-            <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '10px' }}>mmPro</h1>
-            <p style={{marginTop:'20px', color: '#B2A6A7'}}>mmPro is Your trusted partner in managing <br></br>natural resources and supporting economic<br></br> growth.</p>
-            <div style={{ marginTop: '30px' }}>
-              <FacebookOutlined style={{ marginRight: '10px' }} />
-              <LinkedinOutlined style={{ marginRight: '10px' }} />
-              <InstagramOutlined style={{ marginRight: '10px' }} />
-              <TwitterOutlined style={{ marginRight: '10px' }} />
-              <YoutubeOutlined />
+    <footer
+      id="h-footer"
+      className="footer"
+      style={{
+        backgroundColor: "#FFF",
+        paddingTop: "10px",
+        borderTop: "1px solid #781424",
+      }}
+    >
+      <div className="footer-container">
+        <div className="footer-top">
+          <div className="footer-logo-area">
+            <div className="footer-logo">
+              <img src={logo} alt="gsmblogo" />
+            </div>
+            <div className="footer-logo-text-area">
+              <h6 className="footer-text">Geological Survey & Mines Bureau</h6>
+              <h6 className="footer-text">
+                භූ විද්‍යා සමීක්ෂණ සහ පතල් කාර්යාංශය
+              </h6>
+              <h6 className="footer-text">
+                புவியியல் ஆய்வு மற்றும் சுரங்கப் பணியகம்
+              </h6>
             </div>
           </div>
-        </Col>
-
-        <Col xs={24} sm={24} md={4} style={{ flex: 1 ,marginTop:'10px'}}> 
-          <h4 style={{ marginBottom: '10px' }}>Hot Line</h4>
-          <p style={{fontSize:'64px'}}>1921</p>
-        </Col>
-
-        <Col xs={24} sm={24} md={4} style={{ flex: 1 ,marginTop:'10px'}}> 
-          <h4 style={{ marginBottom: '10px' }}>Helpful Links</h4>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            <li>Ministry of Environment</li>
-            <li><br></br>Central Environmental Authority</li>
-            <li><br></br>Disaster Management Division</li>
-            <li><br></br>Water Resources Board</li>
-          </ul>
-        </Col>
-
-        <Col xs={24} sm={24} md={4} style={{ flex: 1 ,marginTop:'10px' }}> 
-          <h4 style={{ marginBottom: '10px' }}>Address</h4>
-          <p>Geological Survey and Mines Bureau,</p>
-          <p>569, Epitomulla Road,</p>
-          <p>Pitakotte,</p>
-          <p>Sri Lanka.</p>
-        </Col>
-
-        <Col xs={24} sm={24} md={4} style={{ flex: 1 ,marginRight:"20px",marginTop:'10px'}}> 
-          <h4 style={{ marginBottom: '10px' }}>Contact</h4>
-          <p>+94-11-2888289 / +94-112 886290</p>
-          <p>info@gsmb.gov.lk</p>
-          <div style={{ marginTop: '15px' }}>
-            
-            <Button type="primary" style={{ backgroundColor: '#fff', color: '#781424', border: '1px solid #fff' }}>Subscribe</Button>
+          <div className="footer-related-links">
+            <h3>Related and Useful Links</h3>
+            <div className="footer-related-links-list">
+              <a
+                href="https://env.gov.lk/web/index.php/en/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Ministry of Environment
+              </a>
+              <a href="https://www.cea.lk/" target="_blank" rel="noreferrer">
+                Central Environmental Authority
+              </a>
+              <a href="https://wrb.lk/" target="_blank" rel="noreferrer">
+                Water Resources Board
+              </a>
+              <a
+                href="https://www.usgs.gov/programs/earthquake-hazards/national-earthquake-information-center-neic"
+                target="_blank"
+                rel="noreferrer"
+              >
+                National Earthquake Information Center
+              </a>
+            </div>
           </div>
-        </Col>
-      </Row>
-      {/* <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center'}}> 
-        <Text style={{color: '#fff'}}>-----------------------------------------------------------------------</Text>
-      </div> */}
-        
-     
-      <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center'}}> 
-        <Text style={{color: '#BA3838'}}>Copyright © 2025 Geological Survey & Mines Bureau. All Rights Reserved.</Text>
+          <div className="footer-contactus">
+            <h3>Contact Us</h3>
+            <div className="footer-contactus-details">
+              <div className="footer-contactus-lebel">
+                <h5>Phone:</h5>
+                <h5>Email:</h5>
+                <h5>Address: </h5>
+              </div>
+              <div className="footer-contactus-lebel-details">
+                <h5>+94-11-2886289 / +94-112 886290</h5>
+                <h5>info@gsmb.gov.lk</h5>
+                <h5>Geological Survey and Mines Bureau,</h5>
+                <h5> 569, Epitamulla Road, Pitakotte, Sri Lanka.</h5>
+              </div>
+            </div>
+          </div>
+          <div className="footer-followus">
+            <div className="footer-followus-part">
+              <h3>Follow Us</h3>
+              <div className="footer-social-media-list">
+                <a
+                  href="https://web.facebook.com/GSMBMEDIAUNIT?_rdc=1&_rdr#"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <FaFacebook />
+                </a>
+                <a
+                  href="https://www.gsmb.gov.lk/index.php?lang=en#"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <FaInstagram />
+                </a>
+                <a
+                  href="https://www.gsmb.gov.lk/index.php?lang=en#"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <FaLinkedin />
+                </a>
+              </div>
+            </div>
+            <div className="footer-followus-part">
+              <h3 className="footer-hotline">Hotline</h3>
+              <div className="footer-social-media-list">
+                <p>1921</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="footer-divider"></div>
+        <div className="footer-bottom">
+          <h6 className="footer-text">
+            © {new Date().getFullYear()} Geological survey & mines bureau. All
+            Rights Reserved.
+          </h6>
+          <h6 className="footer-text-ii">Designed and Developed by Aasa IT</h6>
+        </div>
       </div>
-      {/* <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}> 
-        <Text>FAQ | Privacy Policy | Terms & Conditions</Text>
-      </div> */}
-      {/* <Row justify="end">
-        <Col xs={24} sm={24} md={12}>
-          <Text>FAQ | Privacy Policy | Terms & Conditions</Text>
-        </Col>
-      </Row> */}
-
-
-
-      {/* <div style={{ marginTop: '20px' , marginBottom:'5px'  }}>
-        <Text style={{color: '#B2A6A7'}}>Copyright © 2025 Geological Survey & Mines Bureau. All Rights Reserved.</Text>
-      </div>
-      <div style={{ marginTop: '10px' , display:'flex' ,padding:'20px'}}>
-        <Text style={{color:'#B2A6A7'}}>FAQ | Privacy Policy | Terms & Conditions</Text>
-      </div> */}
-    </HomeFooter>
-    
+    </footer>
   );
 };
 
-export default HomeFooter;
+export default Footer;

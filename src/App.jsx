@@ -30,7 +30,6 @@ const App = () => {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="*" element={<NotFound />} />
-        <Route path="/footer" element={<Footer />} />
 
         {/* Protected Routes */}
         <Route

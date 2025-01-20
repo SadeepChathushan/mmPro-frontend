@@ -1,0 +1,71 @@
+.nav-list {
+    width: 40%;
+  }
+  
+  .n-mmprologo {
+    height: auto;
+    width: 150%;
+  }
+  
+  .n-button {
+    width: 30%;
+  }
+  
+
+  
+  #about {
+    height: 100vh;
+  }
+  
+  .h-about-content{
+      padding: "40px";
+      display: "flex";
+      flex-direction: "row";
+      align-items: "center";
+      justify-content: "space-between";
+      width: "100%";
+  }
+  
+  @media (max-width: 1161px) {
+    .nav-list {
+      display: none;
+    }
+    .n-button {
+      width: 50%;
+      display: flex;
+      justify-content: right;
+      align-items: center;
+    }
+    #service {
+      height: auto;
+    }
+    #about {
+      height: auto;
+    }
+  }
+  @media (max-width: 662px) {
+    .nav-list {
+      display: none;
+    }
+    .n-button {
+      width: 60%;
+      display: flex;
+      justify-content: right;
+      align-items: center;
+    }
+  }
+  
+  @media (max-width: 442px) {
+    .nav-list {
+    }
+    .n-mmprologo {
+      display: none;
+    }
+    .n-button {
+      width: 100%;
+      display: flex;
+      justify-content: right;
+      align-items: center;
+    }
+  }
+  
