@@ -167,7 +167,6 @@ const Dashboard = () => {
     pageContainer: {
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '70vh',
       backgroundImage: `url(${backgroundImage})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
@@ -238,44 +237,43 @@ const Dashboard = () => {
       padding: '3rem',
       borderRadius: '12px',
       textAlign: 'center',
-
-      // backgroundColor: '#fff',
-      // padding: '3rem', // Increased padding for more space
-      // borderRadius: '12px', // Slightly larger border radius for a modern look
-      // textAlign: 'center',
-      // width: '0%', // Increase width to make it larger
-      // maxWidth: '600px', // Set a maximum width for responsiveness
-      // fontSize: '1.25rem', // Increase font size for larger text
+      position: 'relative',
     },
-    modalButton: {
-      backgroundColor: '#800000',
-      color: '#fff',
-      padding: '0.75rem 2rem',
+    modalCloseButton: {
+      position: 'absolute',
+      top: '10px',
+      right: '10px',
+      backgroundColor: 'transparent',
       border: 'none',
-      borderRadius: '1.5rem',
+      fontSize: '1.5rem',
       cursor: 'pointer',
-      fontSize: '1rem',
-    }
+      color: '#000',
+    },
+    // modalButton: {
+    //   backgroundColor: '#800000',
+    //   color: '#fff',
+    //   padding: '0.75rem 2rem',
+    //   border: 'none',
+    //   borderRadius: '1.5rem',
+    //   cursor: 'pointer',
+    //   fontSize: '1rem',
+    // }
   };
 
   const textContent = {
-    // title: language === 'en' ? 'Geological Survey & Mines Bureau' : 'භූ විද්‍යා සමීක්ෂණ හා පතල් කාර්යාංශය',
-    // invalidText: language === 'en' ? 'Invalid' : 'අවලංගුයි',
-    reportButton: language === 'en' ? 'Report to GSMB' : 'GSMB වෙත වාර්තා කරන්න',
+    // reportButton: language === 'en' ? 'Report to GSMB' : 'GSMB වෙත වාර්තා කරන්න',
     contacts: [
-      { number: '+94-11-2886289', icon: '📞' },
-      { number: '+94-11-2886290', icon: '📞' },
-      { number: '901', icon: '📞' },
+      { number: '+94-11-2886289', icon: ' 📞' },
+      { number: '+94-11-2886290', icon: ' 📞' },
+      { number: '901', icon: ' 📞' },
     ],
   };
 
   return (
     <div style={styles.pageContainer}>
-      {/* Header */}
       <header style={styles.header}>
         <img src={logo} alt="Logo" style={styles.headerLogo} />
       </header>
-      {/* Main Content */}
       <main style={styles.mainContent}>
         <h2 style={styles.title}>{textContent.title}</h2>
         <div style={styles.inputContainer}>
@@ -296,72 +294,77 @@ const Dashboard = () => {
           {language === 'en' ? 'Check' : 'පරීක්ෂා කරන්න'}
         </button>
       </main>
-
-      {/* Modal for Invalid Input */}
       {isModalOpen && (
-  <div style={styles.modal}>
-    <div style={styles.modalContent}>
-      {/* Invalid Message */}
-      <h2>{textContent.invalidText}</h2>
+        <div style={styles.modal}>
+          <div style={styles.modalContent}>
+            <button
+              style={styles.modalCloseButton}
+              onClick={closeModal}
+            >
+              &times;
+            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <input
+                type="text"
+                value={language === 'en' ? 'Invalid' : 'අවලංගු'}
+                readOnly
+                style={{
+                  backgroundColor: '#FF0000',
+                  color: '#fff',
+                  padding: '0.75rem 2rem',
+                  border: 'none',
+                  borderRadius: '1.5rem',
+                  fontSize: '1rem',
+                  textAlign: 'center',
+                  width: '200px',
+                  height: '50px',
+                }}
+              />
 
-      {/* Invalid Button */}
-      <button
-        style={{
-          backgroundColor: '#FF0000',
-          color: '#fff',
-          padding: '0.75rem 2rem',
-          border: 'none',
-          borderRadius: '1.5rem',
-          cursor: 'pointer',
-          fontSize: '1rem',
-          margin: '1rem 0',
-        }}
-      >
-        {language === 'en' ? 'Invalid' : 'අවලංගු'}
-      </button>
-
-      {/* Emergency Contact Heading */}
-      {/* <h3 style={{ marginBottom: '1rem' }}>
-        {language === 'en' ? 'Emergency Contacts' : 'අත්‍යවශ්‍ය දුරකථන අංක'}
-      </h3> */}
-
-      {/* Contact Numbers */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
-        {textContent.contacts.map((contact, index) => (
-          <div
-            key={index}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '8px 16px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              fontSize: '14px',
-              backgroundColor: '#f9f9f9',
-              color: 'black',
-            }}
-          >
-            <span>{contact.icon}</span>
-            <span>{contact.number}</span>
+              <button
+                style={{
+                  backgroundColor: '#fff',
+                  color: '#FF0000',
+                  border: '2px solid #FF0000',
+                  padding: '0.75rem 2rem',
+                  borderRadius: '1.5rem',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  margin: '1rem 0',
+                  width: '200px',
+                  height: '50px',
+                }}
+              >
+                {language === 'en' ? 'Report to GSMB' : 'GSMB වෙත වාර්තා කරන්න'}
+              </button>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
+              {textContent.contacts.map((contact, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 16px',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    fontSize: '14px',
+                    backgroundColor: '#f9f9f9',
+                    color: 'black',
+                  }}
+                >                 
+                  <span>{contact.number}</span>
+                  <span>{contact.icon}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
-      </div>
-
-      {/* Close Button */}
-      <button
-        style={styles.modalButton}
-        onClick={closeModal}
-      >
-        {language === 'en' ? 'Close' : 'වසන්න'}
-      </button>
-    </div>
-  </div>
-)}
-
+        </div>
+      )}
     </div>
   );
 };
-
 
 export default Dashboard;
