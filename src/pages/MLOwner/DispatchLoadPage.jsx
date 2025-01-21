@@ -107,16 +107,16 @@ const DispatchLoadPage = () => {
   };
 
   const incrementCubes = () => {
-    setFormData(prevFormData => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
-      cubes: prevFormData.cubes + 1
+      cubes: prevFormData.cubes + 1,
     }));
   };
 
   const decrementCubes = () => {
-    setFormData(prevFormData => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
-      cubes: prevFormData.cubes > 1 ? prevFormData.cubes - 1 : 1
+      cubes: prevFormData.cubes > 1 ? prevFormData.cubes - 1 : 1,
     }));
   };
 
@@ -129,12 +129,9 @@ const DispatchLoadPage = () => {
     ) {
       setIsErrModalVisible(true);
     } else {
-      
       setFormData({ ...formData, DateTime: currentDateTime });
       setFormData({ ...formData }); // Store form data
       console.log(formData);
-
-      
 
       setIsModalVisible(true);
     }
@@ -143,7 +140,6 @@ const DispatchLoadPage = () => {
   const handlePrintReceipt = () => {
     // Navigate to the "Receipt" page
     navigate("/mlowner/home/dispatchload/receipt", { state: { formData } });
-    
   };
 
   const handleBackToHome = () => {
@@ -159,7 +155,7 @@ const DispatchLoadPage = () => {
     return null;
   };
 
-   const [currentDateTime, setCurrentDateTime] = useState("");
+  const [currentDateTime, setCurrentDateTime] = useState("");
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -179,9 +175,11 @@ const DispatchLoadPage = () => {
     <Layout style={{ minHeight: "100vh" }}>
       <Content style={{ padding: "24px" }}>
         <Title level={3} style={{ textAlign: "center", marginBottom: "20px" }}>
-          {language == "en"
+          {language === "en"
             ? "Dispatch Your Load Here"
-            : "යැවිය යුතු ප්‍රමාණ පිළිබඳ මෙහි සටහන් කරන්න"}
+            : language === "si"
+            ? "යැවිය යුතු ප්‍රමාණ පිළිබඳ මෙහි සටහන් කරන්න"
+            : "உங்கள் சுமையை இங்கே அனுப்பவும்"}
         </Title>
 
         {/* Current Date%Time (Read-Only) */}
@@ -189,9 +187,17 @@ const DispatchLoadPage = () => {
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: "16px" }}>
               <span style={{ fontWeight: "bold" }}>
-                {language == "en" ? "DATE & TIME:" : "දිනය සහ වේලාව:"}
+                {language === "en"
+                  ? "DATE & TIME:"
+                  : language === "si"
+                  ? "දිනය සහ වේලාව:"
+                  : "தேதி & நேரம்:"}
               </span>
-              <Input value={currentDateTime} onChange={handleDatetime} disabled/>
+              <Input
+                value={currentDateTime}
+                onChange={handleDatetime}
+                disabled
+              />
             </div>
           </Col>
         </Row>
@@ -201,7 +207,11 @@ const DispatchLoadPage = () => {
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: "16px" }}>
               <span style={{ fontWeight: "bold" }}>
-                {language == "en" ? "LICENSE NUMBER:" : "බලපත්‍ර අංකය:"}
+                {language === "en"
+                  ? "LICENSE NUMBER:"
+                  : language === "si"
+                  ? "බලපත්‍ර අංකය:"
+                  : "உரிம எண்:"}
               </span>
               <Input
                 value={formData.licenseNumber}
@@ -218,7 +228,11 @@ const DispatchLoadPage = () => {
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: "16px" }}>
               <span style={{ fontWeight: "bold" }}>
-                {language == "en" ? "DESTINATION:" : "ගමනාන්තය"}{" "}
+                {language === "en"
+                  ? "DESTINATION:"
+                  : language === "si"
+                  ? "ගමනාන්තය:"
+                  : "சேருமிடம்:"}
               </span>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <SearchOutlined style={{ marginRight: "8px" }} />
@@ -264,7 +278,11 @@ const DispatchLoadPage = () => {
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: "16px" }}>
               <span style={{ fontWeight: "bold" }}>
-                {language == "en" ? "LORRY NUMBER:" : "ලොරි අංකය:"}
+                {language === "en"
+                  ? "LORRY NUMBER:"
+                  : language === "si"
+                  ? "ලොරි අංකය:"
+                  : "லாரி எண்:"}
               </span>
               <Input
                 value={formData.lorryNumber}
@@ -280,9 +298,11 @@ const DispatchLoadPage = () => {
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: "16px" }}>
               <span style={{ fontWeight: "bold" }}>
-                {language == "en"
+                {language === "en"
                   ? "DRIVER CONTACT:"
-                  : "රියදුරුගේ දුරකථන අංකය:"}
+                  : language === "si"
+                  ? "රියදුරුගේ දුරකථන අංකය:"
+                  : "ஓட்டுனர் தொடர்பு:"}
               </span>
               <Input
                 value={formData.driverContact}
@@ -298,7 +318,11 @@ const DispatchLoadPage = () => {
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: "16px" }}>
               <span style={{ fontWeight: "bold" }}>
-                {language == "en" ? "CUBES:" : "කියුබ් ගණන"}
+                {language === "en"
+                  ? "CUBES:"
+                  : language === "si"
+                  ? "කියුබ් ගණන:"
+                  : "க்யூப்ஸ்:"}
               </span>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <Button
@@ -344,7 +368,11 @@ const DispatchLoadPage = () => {
               }}
               size="large"
             >
-              {language == "en" ? "Cancel" : "අවලංගු කරන්න"}
+              {language === "en"
+                ? "Cancel"
+                : language === "si"
+                ? "අවලංගු කරන්න"
+                : "ரத்து செய்"}
             </Button>
             <Button
               type="primary"
@@ -358,7 +386,11 @@ const DispatchLoadPage = () => {
               }}
               size="large"
             >
-              {language == "en" ? "Submit" : "සටහන් කරන්න"}
+              {language === "en"
+                ? "Submit"
+                : language === "si"
+                ? "සටහන් කරන්න"
+                : "சமர்ப்பிக்கவும்"}
             </Button>
           </Col>
         </Row>
@@ -374,7 +406,13 @@ const DispatchLoadPage = () => {
           <div style={{ fontSize: "40px", color: "brown" }}>
             <IoIosDoneAll />
           </div>
-          <p>{language == "en" ? "Dispatched Successfully!" : "සාර්ථකයි!"}</p>
+          <p>
+            {language === "en"
+              ? "Dispatched Successfully!"
+              : language === "si"
+              ? "සාර්ථකයි!"
+              : "வெற்றிகரமாக அனுப்பப்பட்டது!"}
+          </p>
           <Button
             type="primary"
             onClick={handleBackToHome}
@@ -385,7 +423,11 @@ const DispatchLoadPage = () => {
               marginRight: "20px",
             }}
           >
-            {language == "en" ? "Back to Home" : "ආපසු"}
+            {language === "en"
+              ? "Back to Home"
+              : language === "si"
+              ? "ආපසු"
+              : "முகப்புக்குத் திரும்பு"}
           </Button>
 
           <Button
@@ -397,7 +439,11 @@ const DispatchLoadPage = () => {
               marginLeft: "20px",
             }}
           >
-            {language == "en" ? "Print Receipt" : "රිසිට් පත මුද්‍රණය කරන්න"}
+            {language === "en"
+              ? "Print Receipt"
+              : language === "si"
+              ? "රිසිට් පත මුද්‍රණය කරන්න"
+              : "அச்சு ரசீது"}
           </Button>
         </Modal>
 
@@ -413,9 +459,11 @@ const DispatchLoadPage = () => {
             <IoIosCloseCircle />
           </div>
           <h3>
-            {language == "en"
+            {language === "en"
               ? "All field are required !"
-              : "සියලුම ක්ෂේත්ර අවශ්ය වේ !"}
+              : language === "si"
+              ? "සියලුම ක්ෂේත්ර අවශ්ය වේ !"
+              : "அனைத்து துறைகளும் தேவை!"}
           </h3>
         </Modal>
       </Content>
