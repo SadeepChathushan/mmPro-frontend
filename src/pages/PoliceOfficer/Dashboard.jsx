@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { message } from 'antd';  // Import message for notifications
+import axios from 'axios';  // Import axios for API requests
 import logo from '../../assets/images/gsmbLogo.png';
 import backgroundImage from '../../assets/images/dump-truck-pit-mine.jpg';
 import axios from 'axios';
@@ -14,6 +16,54 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]); // All data fetched from API
 
+
+  const handleReport = async () => {
+    if (!input.trim()) {
+      // If input is empty, show a warning and return early
+      message.error(language === "en" ? "Please enter a vehicle number!" : "කරුණාකර වාහන අංකයක් ඇතුළු කරන්න!");
+      return;
+    }
+  
+    try {
+      const payload = {
+        issue: {
+          project_id: 31,
+          tracker_id: 26,
+          subject: language === "en" ? "New Complaint" : "නව පැමිණිල්ලක්",
+          custom_fields: [
+            { id: 13, name: "Lorry Number", value: input }, 
+            { id: 68, name: "Role", value: "Police Officer" },
+          ],
+        },
+      };
+  
+      const username = "Dilmi_123";
+      const password = "dIlmI@99";
+  
+      const response = await axios.post(
+        "/api/projects/gsmb/issues.json",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          auth: {
+            username,
+            password,
+          },
+        }
+      );
+  
+      // Validation
+      message.success(language === "en" ? "Report Submitted successfully!" : "පැමිණිල්ල සාර්ථකව ඉදිරිපත් කරන ලදී.");
+      closeModal(); // Close modal after success
+      console.log("API response:", response.data);
+    } catch (error) {
+      console.error("Error posting data:", error);
+      message.error(language === "en" ? "Report Submission Failed! Please try again." : "පැමිණිල්ල ඉදිරිපත් කිරීම අසාර්ථකයි. නැවත උත්සාහ කරන්න.");
+    }
+  };
+  
   const handleCheck = () => {
     // const isValid = data.some(
     //   (item) => item.vehicleNumber && item.vehicleNumber === input.trim()
@@ -226,48 +276,90 @@ const Dashboard = () => {
                 }}
               />
 
-              <button
-                style={{
-                  backgroundColor: '#fff',
-                  color: '#FF0000',
-                  border: '2px solid #FF0000',
-                  padding: '0.75rem 2rem',
-                  borderRadius: '1.5rem',
-                  cursor: 'pointer',
-                  fontSize: '1rem',
-                  margin: '1rem 0',
-                  width: '200px',
-                  height: '50px',
-                }}
-              >
-                {language === 'en' ? 'Report to GSMB' : 'GSMB වෙත වාර්තා කරන්න'}
-              </button>
-            </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
-              {textContent.contacts.map((contact, index) => (
-                <div
-                  key={index}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '8px 16px',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                    fontSize: '14px',
-                    backgroundColor: '#f9f9f9',
-                    color: 'black',
-                  }}
-                >                 
-                  <span>{contact.number}</span>
-                  <span>{contact.icon}</span>
-                </div>
-              ))}
-            </div>
+      {/* Modal for Invalid Input */}
+      {isModalOpen && (
+  <div style={styles.modal}>
+    <div style={styles.modalContent}>
+      {/* Invalid Message */}
+      <h2>{textContent.invalidText}</h2>
+
+      {/* Invalid Button */}
+      <button
+        style={{
+          backgroundColor: '#FF0000',
+          color: '#fff',
+          padding: '0.75rem 2rem',
+          border: 'none',
+          borderRadius: '1.5rem',
+          cursor: 'pointer',
+          fontSize: '1rem',
+          margin: '1rem 0',
+        }}
+      >
+        {language === 'en' ? 'Invalid' : 'අවලංගු'}
+      </button>
+
+      {/* Emergency Contact Heading */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
+        {textContent.contacts.map((contact, index) => (
+          <div
+            key={index}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '8px 16px',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              fontSize: '14px',
+              backgroundColor: '#f9f9f9',
+              color: 'black',
+            }}
+          >
+            <span>{contact.icon}</span>
+            <span>{contact.number}</span>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
+
+      {/* Report Button */}
+      <button
+        style={{
+          backgroundColor: '#800000',
+          color: '#fff',
+          padding: '0.75rem 2rem',
+          border: 'none',
+          borderRadius: '1.5rem',
+          cursor: 'pointer',
+          fontSize: '1rem',
+          margin: '1rem 0',
+        }}
+        onClick={handleReport} // This calls the handleReport function
+      >
+        {language === 'en' ? 'Report to GSMB' : 'GSMB වෙත පැමිණිලි කරන්න'}
+      </button>
+
+      {/* Close Button with X Icon */}
+      <button
+        style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          backgroundColor: 'transparent',
+          border: 'none',
+          fontSize: '1.5rem',
+          cursor: 'pointer',
+          color: '#FF0000',
+        }}
+        onClick={closeModal}
+      >
+        &times; {/* This is the X (close) icon */}
+      </button>
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };

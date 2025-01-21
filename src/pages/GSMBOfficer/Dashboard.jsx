@@ -7,6 +7,7 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import StatsBox from "../../components/GSMBOfficer/StatsBox";
 import TabSection from "../../components/GSMBOfficer/TabSection";
 import LicenseTable from "../../components/GSMBOfficer/LicenseTable";
+import ComplaintTable from "../../components/GSMBOfficer/ComplaintTable";
 
 const { Text } = Typography;
 
@@ -20,7 +21,7 @@ const Dashboard = () => {
   const tabs = [
     { key: "ML", label: language === "en" ? "Mining License" : "බලපත්‍ර" },
     { key: "TPL", label: language === "en" ? "Transport License" : "ප්‍රවාහන බලපත්‍ර" },
-    { key: "CMPLN", label: language === "en" ? "Complains" : "පැමිණිලි" },
+    { key: "CMPLN", label: language === "en" ? "Complaints" : "පැමිණිලි" },
   ];
 
   useEffect(() => {
@@ -100,7 +101,7 @@ const Dashboard = () => {
             color: "#408220",
           },
           {
-            title: language === "en" ? "Complains" : "පැමිණිලි",
+            title: language === "en" ? "Complaints" : "පැමිණිලි",
             count: tableData.filter((item) => item.tracker === "CMPLN").length,
             color: "#950C33",
           },
@@ -168,7 +169,11 @@ const Dashboard = () => {
           marginTop: "16px",
         }}
       >
-        <LicenseTable data={filteredData} />
+         {activeTab === "CMPLN" ? (
+          <ComplaintTable data={filteredData} />
+        ) : (
+          <LicenseTable data={filteredData} />
+        )}
       </div>
     </div>
   );
