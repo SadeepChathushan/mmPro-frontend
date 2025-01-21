@@ -157,7 +157,7 @@ const Home = () => {
         </div>
 
 
-              }}>
+            
                 
                 <Paragraph>
                 mmPro delivers a robust suite of services tailored to meet the unique demands of the mining and mineral production sector. Our real-time monitoring feature allows the Geological Survey and Mines Bureau (GSMB) to track mining activities and production levels with precision, ensuring efficient oversight of operations. This system enhances transparency by providing instant updates, helping to identify issues early and improve overall operational performance.
@@ -185,7 +185,7 @@ const Home = () => {
             
          
 
-      </div>
+      
       {/* <HomeFooter/> */}
       
 
