@@ -36,7 +36,7 @@ const SignInPage = () => {
           navigate("/police-officer/dashboard");
           break;
         case "GeneralPublic":
-          navigate("/generalpublic/home");
+          navigate("/generalpublic/dashboard");
           break;
         default:
           navigate("/");
