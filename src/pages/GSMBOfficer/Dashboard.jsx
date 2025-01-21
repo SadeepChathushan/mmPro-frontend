@@ -27,8 +27,8 @@ const Dashboard = () => {
     console.log("Fetching data for the dashboard...");
     const fetchData = async () => {
       try {
-        const username = "";
-        const password = "";
+        const username = "Sadeep";
+        const password = "Chathushan UCSC";
   
         // Updated API call
         const response = await axios.get("/api/projects/gsmb-officer/issues.json", {
