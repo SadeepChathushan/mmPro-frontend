@@ -19,7 +19,7 @@ const SignInPage = () => {
 
     const response = await authService.login(username, password);
 
-    console.log(response);  // Add this line to inspect the response
+    console.log(response); // Add this line to inspect the response
 
     if (response.success) {
       message.success("Login successful!");
@@ -30,13 +30,16 @@ const SignInPage = () => {
           navigate("/gsmb/dashboard");
           break;
         case "MLOwner":
-          navigate("/mlowner/dashboard");
+          navigate("/mlowner/home");
           break;
         case "PoliceOfficer":
           navigate("/police-officer/dashboard");
           break;
         case "GeneralPublic":
           navigate("/generalpublic/dashboard");
+          break;
+        case "GSMBManagement":
+          navigate("/gsmbmanagement/dashboard");
           break;
         default:
           navigate("/");
@@ -116,9 +119,7 @@ const SignInPage = () => {
 
             <Form.Item
               label={
-                <span style={{ color: "#ffffff" }}>
-                  Username  / பயனர் பெயர்
-                </span>
+                <span style={{ color: "#ffffff" }}>Username / பயனர் பெயர்</span>
               }
               name="username"
               rules={[
