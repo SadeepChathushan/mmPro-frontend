@@ -1,0 +1,232 @@
+.footer {
+  background-color: #fcd5d0; /* Tailwind's bg-gray-900 */
+  text-align: center;
+  padding-top: 10px;
+}
+
+.footer-container {
+  max-width: 90%; /* Equivalent to container mx-auto */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.footer-top-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.footer-logo-area {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 320px;
+  height: 100px;
+}
+
+.footer-logo img {
+  border-radius: 25%;
+  display: flex;
+  flex-direction: column;
+  height: 60px;
+}
+
+.footer-logo-text-area {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 3px;
+}
+
+.footer-logo-text-area h6 {
+  align-items: left;
+  font-size: 10px;
+  color: #59252dd6;
+}
+
+.footer-text {
+  font-size: 12px; /* Equivalent to text-sm */
+  color: black; /* Equivalent to text-gray-400 */
+}
+
+.footer-contactus {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 320px;
+}
+
+.footer-related-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width:250px;
+}
+
+.footer-followus {
+  display: flex;
+  flex-direction: column;
+  height: 100px;
+  
+}
+
+.footer-followus-part {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.footer-social-media-list {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-top: -5px;
+}
+
+.footer-social-media-list a {
+  font-size: 20px;
+  color: #781424;
+  text-decoration: none;
+}
+
+.footer-hotline{
+  margin-top:10px ;
+}
+
+.footer-social-media-list p {
+  font-size: 25px;
+  font-weight: 800;
+  font-style: italic;
+  color: #781424;
+  text-decoration: none;
+  margin-top: -5px;
+}
+
+.footer-social-media-list a:hover {
+  color: #59252dd6;
+}
+
+.footer-contactus h3,
+.footer-related-links h3, .footer-followus h3{
+  color: #59252dd6;
+  font-weight: 600;
+}
+
+.footer-contactus-details {
+  display: flex;
+  /* flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem; */
+}
+.footer-contactus-lebel {
+  font-size: 14px;
+  color: #59252dd6;
+  min-width: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.footer-contactus-lebel-details,
+.footer-related-links-list {
+  font-size: 14px;
+  color: #781424;
+  /* max-width: 300px; */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.footer-related-links-list a {
+  font-size: 12px;
+  color: #781424;
+  text-decoration: none;
+}
+
+.footer-related-links-list a:hover {
+  color: #59252dd6;
+}
+
+.footer-divider {
+  width: 100%;
+  margin-top: 10px;
+  border-top: 2px solid #781424; /* Equivalent to border-t border-gray-700 */
+}
+
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 5px;
+}
+
+.footer-text-ii{
+  margin-top: -5px;
+}
+.footer-text{
+  font-size: 11px;
+}
+
+@media (min-width: 988px) and (max-width: 1081px) {
+  .footer-followus {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 2rem;
+    height: 100px;
+    margin-right: 155px;
+    
+  }
+  .footer-hotline{
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+
+}
+@media (max-width: 988px) {
+  .footer-followus {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: 100px;
+    margin-right: 155px;
+    
+  }
+}
+
+@media (max-width: 648px) {
+  .footer-top {
+    display: flex;
+    flex-wrap: column;
+    justify-content: start;
+    align-items: flex-start;
+    margin: 0 auto;
+    gap: 1rem;
+  }
+  .footer-followus {
+    margin-left: 0px;
+    
+  }
+  .footer-followus {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 2rem;
+    
+  }
+  .footer-hotline{
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+}

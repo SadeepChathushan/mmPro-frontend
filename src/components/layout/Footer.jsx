@@ -5,15 +5,7 @@ import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer
-      id="h-footer"
-      className="footer"
-      style={{
-        backgroundColor: "#FFF",
-        paddingTop: "10px",
-        borderTop: "1px solid #781424",
-      }}
-    >
+    <footer className="footer">
       <div className="footer-container">
         <div className="footer-top">
           <div className="footer-logo-area">

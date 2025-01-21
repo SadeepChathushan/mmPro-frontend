@@ -1,31 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Row, Col, DatePicker, Button } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom'; // for navigation
 import moment from 'moment'; // For date formatting
+import axios from 'axios'; // Make sure to install axios or use any other method for fetching data
 
 const History = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  
-  const [dispatchHistory, setDispatchHistory] = useState([
-    {
-      licenseNumber: "LE-8595",
-      owner: "Jayantha",
-      location: "Madampe",
-      cubes: 10,
-      dispatchDate: "2023-10-10 12:00:00",
-      lorryDriverContact: "0771234567", // Added contact number
-    },
-    {
-      licenseNumber: "LE-8595",
-      owner: "Jayantha",
-      location: "Anuradhapura",
-      cubes: 20,
-      dispatchDate: "2023-10-12 15:30:00",
-      lorryDriverContact: "0782345678", // Added contact number
-    },
-  ]);
+  const [dispatchHistory, setDispatchHistory] = useState([]);
+
+  // Fetch dispatch history from the API
+  useEffect(() => {
+    const fetchDispatchHistory = async () => {
+      try {
+        const username = "@achinthamihiran"; // Replace with actual username
+        const password = "Ab2#*De#"; // Replace with actual password
+
+        const response = await axios.get('/api/projects/dispatching-history/issues.json', {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          auth: {
+            username,
+            password,
+          },
+        });
+
+        console.log('API Response:', response); // Log the entire response to inspect its structure
+
+        if (response.data && response.data.issues) {
+          const issues = response.data.issues;
+
+          const formattedDispatchHistory = issues.map((issue) => {
+            const customFields = issue.custom_fields.reduce((acc, field) => {
+              acc[field.name] = field.value;
+              return acc;
+            }, {});
+
+            return {
+              licenseNumber: customFields['License Number'] || '',
+              owner: customFields['Owner Name'] || '', // Use the Owner Name directly from backend
+              location: customFields['Location'] || '',
+              cubes: customFields['Cubes'] || '',
+              dispatchDate: customFields['Dispatched Date'] || '',
+              lorryDriverContact: customFields['Driver Contact'] || '',
+            };
+          });
+
+          setDispatchHistory(formattedDispatchHistory);
+        } else {
+          console.error('No issues found in the response');
+        }
+      } catch (error) {
+        console.error('Error fetching dispatch history:', error);
+        // If the response is HTML, it's possible the URL or authentication is wrong.
+        if (error.response && error.response.data) {
+          console.error('Received HTML response:', error.response.data);
+        }
+      }
+    };
+
+    fetchDispatchHistory();
+  }, []); // Empty dependency array means this will run only once on component mount
 
   const handleStartDateChange = (date) => {
     setStartDate(date ? moment(date).format('YYYY-MM-DD') : null);
@@ -76,7 +112,7 @@ const History = () => {
       title: 'Dispatch Date',
       dataIndex: 'dispatchDate',
       key: 'dispatchDate',
-      render: (text) => <span>{moment(text).format('YYYY-MM-DD HH:mm:ss')}</span>, 
+      render: (text) => <span>{moment(text).format('YYYY-MM-DD HH:mm:ss')}</span>,
     },
   ];
 
@@ -97,7 +133,12 @@ const History = () => {
         dataSource={filteredDispatchHistory}
         columns={columns}
         scroll={{ x: 'max-content' }} // Enable horizontal scroll for small screens
-        style={{ marginBottom: '20px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}
+        style={{
+          marginBottom: '20px',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        }}
         pagination={false} // Disable pagination (optional)
       />
 
