@@ -11,18 +11,17 @@ import {
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { jsPDF } from "jspdf";
 import { IoIosDoneAll } from "react-icons/io";
 import { IoIosCloseCircle } from "react-icons/io";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import axios from "axios";
-import "leaflet/dist/leaflet.css";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { useParams } from 'react-router-dom';
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 const DispatchLoadPage = () => {
+  const { licenceNumber } = useParams(); 
   const { language } = useLanguage();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isErrModalVisible, setIsErrModalVisible] = useState(false);
@@ -30,14 +29,25 @@ const DispatchLoadPage = () => {
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [formData, setFormData] = useState({
     DateTime: "",
-    licenseNumber: "",
+    licenseNumber: "{licenceNumber}",
     destination: "",
     lorryNumber: "",
     driverContact: "",
     cubes: 1,
   });
-
+  const [previousSearches, setPreviousSearches] = useState([]);
+  
   const navigate = useNavigate();
+
+  // Load previous searches from localStorage when component mounts
+  useEffect(() => {
+
+
+
+    
+    const savedSearches = JSON.parse(localStorage.getItem("previousSearches")) || [];
+    setPreviousSearches(savedSearches);
+  }, []);
 
   // Fetch location suggestions from Nominatim API, restricted to Sri Lanka
   const fetchLocationSuggestions = async (value) => {
@@ -51,7 +61,6 @@ const DispatchLoadPage = () => {
         `https://nominatim.openstreetmap.org/search?format=json&q=${value}&addressdetails=1&countrycodes=LK&limit=5`
       );
 
-      // Check the API response and ensure lat/lon are valid numbers
       const validSuggestions = response.data.filter((item) => {
         const lat = parseFloat(item.lat);
         const lon = parseFloat(item.lon);
@@ -61,8 +70,8 @@ const DispatchLoadPage = () => {
       setLocationSuggestions(
         validSuggestions.map((item) => ({
           value: item.display_name,
-          lat: parseFloat(item.lat), // Ensure lat is a number
-          lon: parseFloat(item.lon), // Ensure lon is a number
+          lat: parseFloat(item.lat),
+          lon: parseFloat(item.lon),
         }))
       );
     } catch (error) {
@@ -80,8 +89,14 @@ const DispatchLoadPage = () => {
       return;
     }
 
-    setLocation([lat, lon]); // Update the map center
+    setLocation([lat, lon]); // Update the map center (we won't show the map anymore)
     setFormData({ ...formData, destination: value }); // Set the destination field with the selected location
+
+    // Update the previous searches in localStorage
+    const updatedSearches = [value, ...previousSearches.filter((search) => search !== value)];
+    if (updatedSearches.length > 5) updatedSearches.pop(); // Limit to the last 5 searches
+    setPreviousSearches(updatedSearches);
+    localStorage.setItem("previousSearches", JSON.stringify(updatedSearches)); // Save to localStorage
   };
 
   const handleLicenseNumberChange = (e) => {
@@ -95,6 +110,7 @@ const DispatchLoadPage = () => {
   const handleDriverContactChange = (e) => {
     setFormData({ ...formData, driverContact: e.target.value });
   };
+
   const handleDatetime = (e) => {
     setFormData({ ...formData, DateTime: e.target.value });
   };
@@ -107,16 +123,16 @@ const DispatchLoadPage = () => {
   };
 
   const incrementCubes = () => {
-    setFormData(prevFormData => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
-      cubes: prevFormData.cubes + 1
+      cubes: prevFormData.cubes + 1,
     }));
   };
 
   const decrementCubes = () => {
-    setFormData(prevFormData => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
-      cubes: prevFormData.cubes > 1 ? prevFormData.cubes - 1 : 1
+      cubes: prevFormData.cubes > 1 ? prevFormData.cubes - 1 : 1,
     }));
   };
 
@@ -129,39 +145,46 @@ const DispatchLoadPage = () => {
     ) {
       setIsErrModalVisible(true);
     } else {
-      
       setFormData({ ...formData, DateTime: currentDateTime });
       setFormData({ ...formData }); // Store form data
       console.log(formData);
-
-      
 
       setIsModalVisible(true);
     }
   };
 
   const handlePrintReceipt = () => {
-    // Navigate to the "Receipt" page
     navigate("/mlowner/home/dispatchload/receipt", { state: { formData } });
-    
   };
 
   const handleBackToHome = () => {
     navigate("/mlowner/home");
   };
+
   const handleCancel = () => {
     navigate("/mlowner/home");
   };
 
-  const MapViewUpdater = () => {
-    const map = useMap();
-    map.setView(location, map.getZoom()); // Update the map view to the new location
-    return null;
-  };
 
-   const [currentDateTime, setCurrentDateTime] = useState("");
 
   useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const licenseNumber = queryParams.get("licenseNumber"); // Adjust the key if needed
+    if (licenseNumber) {
+      setFormData((prevData) => ({ ...prevData, licenseNumber }));
+    }
+  }, [location.search]);
+
+
+  
+
+  const [currentDateTime, setCurrentDateTime] = useState("");
+
+  useEffect(() => {
+
+
+
+    
     const updateDateTime = () => {
       const now = new Date();
       const formattedDateTime = now.toLocaleString(); // Formats: "MM/DD/YYYY, HH:MM:SS AM/PM"
@@ -174,6 +197,7 @@ const DispatchLoadPage = () => {
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
+  
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -184,24 +208,24 @@ const DispatchLoadPage = () => {
             : "යැවිය යුතු ප්‍රමාණ පිළිබඳ මෙහි සටහන් කරන්න"}
         </Title>
 
-        {/* Current Date%Time (Read-Only) */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: "16px" }}>
               <span style={{ fontWeight: "bold" }}>
                 {language == "en" ? "DATE & TIME:" : "දිනය සහ වේලාව:"}
               </span>
-              <Input value={currentDateTime} onChange={handleDatetime} disabled/>
+              <Input value={currentDateTime} onChange={handleDatetime} disabled />
             </div>
           </Col>
         </Row>
 
         {/* License Number Input */}
+        {/* License Number Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: "16px" }}>
               <span style={{ fontWeight: "bold" }}>
-                {language == "en" ? "LICENSE NUMBER:" : "බලපත්‍ර අංකය:"}
+                {language === "en" ? "LICENSE NUMBER:" : "බලපත්‍ර අංකය:"}
               </span>
               <Input
                 value={formData.licenseNumber}
@@ -213,7 +237,8 @@ const DispatchLoadPage = () => {
           </Col>
         </Row>
 
-        {/* Destination Input with Map Search */}
+
+        {/* Destination Input with Search Options */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
             <div style={{ marginBottom: "16px" }}>
@@ -234,27 +259,15 @@ const DispatchLoadPage = () => {
                     value: item.value,
                     label: item.value,
                   }))}
-                ></AutoComplete>
+                >
+                  <AutoComplete.Option
+                    value={formData.destination}
+                    key={formData.destination}
+                  >
+                    {formData.destination}
+                  </AutoComplete.Option>
+                </AutoComplete>
               </div>
-            </div>
-          </Col>
-        </Row>
-
-        {/* Map Display */}
-        <Row gutter={16}>
-          <Col span={24}>
-            <div style={{ height: "300px", width: "100%" }}>
-              <MapContainer
-                center={location}
-                zoom={10}
-                style={{ height: "100%", width: "100%" }}
-              >
-                <MapViewUpdater />
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <Marker position={location}>
-                  <Popup>Selected Location: {formData.destination}</Popup>
-                </Marker>
-              </MapContainer>
             </div>
           </Col>
         </Row>
