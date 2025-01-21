@@ -119,6 +119,14 @@ const uploadLorry = async (file) => {
         type="link"
         icon={<ArrowLeftOutlined />}
         style={{ marginBottom: "10px", paddingLeft: 0, color: "#000000" }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = "#EFE29C"; // Hover color
+          e.currentTarget.style.borderColor = "#EFE29C"; // Hover border
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = "#ffffff"; // Default color
+          e.currentTarget.style.borderColor = "#ffffff"; // Default border
+        }}
         href="/gsmb/dashboard"
       >
         {language === "en" ? "Back" : "ආපසු"}
