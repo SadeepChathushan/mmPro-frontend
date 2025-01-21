@@ -7,6 +7,7 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import StatsBox from "../../components/GSMBOfficer/StatsBox";
 import TabSection from "../../components/GSMBOfficer/TabSection";
 import LicenseTable from "../../components/GSMBOfficer/LicenseTable";
+import ComplaintTable from "../../components/GSMBOfficer/ComplaintTable";
 
 const { Text } = Typography;
 
@@ -27,8 +28,8 @@ const Dashboard = () => {
     console.log("Fetching data for the dashboard...");
     const fetchData = async () => {
       try {
-        const username = "";
-        const password = "";
+        const username = "Sadeep";
+        const password = "Chathushan UCSC";
   
         // Updated API call
         const response = await axios.get("/api/projects/gsmb-officer/issues.json", {
@@ -168,7 +169,11 @@ const Dashboard = () => {
           marginTop: "16px",
         }}
       >
-        <LicenseTable data={filteredData} />
+         {activeTab === "CMPLN" ? (
+          <ComplaintTable data={filteredData} />
+        ) : (
+          <LicenseTable data={filteredData} />
+        )}
       </div>
     </div>
   );
