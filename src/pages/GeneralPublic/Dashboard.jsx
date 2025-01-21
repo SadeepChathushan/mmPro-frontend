@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import logo from '../../assets/images/gsmbLogo.png';
-import backgroundImage from '../../assets/images/Transport-image.jpeg';
+import backgroundImage from '../../assets/images/generalpublic.jpg';
 import axios from 'axios';
 
 const Dashboard = () => {
