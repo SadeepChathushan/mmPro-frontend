@@ -7,6 +7,7 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import StatsBox from "../../components/GSMBOfficer/StatsBox";
 import TabSection from "../../components/GSMBOfficer/TabSection";
 import LicenseTable from "../../components/GSMBOfficer/LicenseTable";
+import ComplaintTable from "../../components/GSMBOfficer/ComplaintTable";
 
 const { Text } = Typography;
 
@@ -20,53 +21,72 @@ const Dashboard = () => {
   const tabs = [
     { key: "ML", label: language === "en" ? "Mining License" : "බලපත්‍ර" },
     { key: "TPL", label: language === "en" ? "Transport License" : "ප්‍රවාහන බලපත්‍ර" },
-    { key: "CMPLN", label: language === "en" ? "Complains" : "පැමිණිලි" },
+    { key: "CMPLN", label: language === "en" ? "Complaints" : "පැමිණිලි" },
   ];
 
   useEffect(() => {
     console.log("Fetching data for the dashboard...");
     const fetchData = async () => {
       try {
-        const username = "";
-        const password = "";
-  
-        // Updated API call
-        const response = await axios.get("/api/projects/gsmb-officer/issues.json", {
-          headers: { "Content-Type": "application/json" },
-          auth: { username, password },
+        // Retrieve API Key from localStorage
+        const apiKey = localStorage.getItem("API_Key");
+
+        console.log("API Key from localStorage:", apiKey);
+
+        if (!apiKey) {
+          console.error("API Key not found in localStorage");
+          return;
+        }
+
+        // Fetch data from API with API Key in Authorization header
+        const response = await axios.get("/api/projects/gsmb/issues.json", {
+          headers: { 
+            "Content-Type": "application/json",
+            "X-Redmine-API-Key": apiKey, // Pass the API Key in the header
+          },
         });
-  
+
         console.log("Raw data from API:", response.data);
-  
-        // Transform the data into a format suitable for your table
-        const transformedData = response.data.issues.map((issue) => ({
-          id: issue.id,
-          tracker: issue.tracker.name,
-          licenseNumber: issue.custom_fields.find((field) => field.name === "License Number")?.value || "N/A",
-          ownerName: issue.custom_fields.find((field) => field.name === "Owner Name")?.value || "N/A",
-          location: issue.custom_fields.find((field) => field.name === "Location")?.value || "N/A",
-        }));
-  
-        console.log("Transformed data:", transformedData);
-  
-        setTableData(transformedData);
-        setFilteredData(transformedData.filter((item) => item.tracker === "ML"));
+
+        // Check if the 'issues' array exists and is valid
+        if (Array.isArray(response.data.issues)) {
+          const transformedData = response.data.issues.map((issue) => ({
+            id: issue.id,
+            tracker: issue.tracker.name === "Complaints"
+              ? "CMPLN"
+              : issue.tracker.name === "TPL"
+              ? "TPL"
+              : "ML",
+            licenseNumber: issue.custom_fields.find((field) => field.name === "License Number")?.value || "N/A",
+            ownerName: issue.custom_fields.find((field) => field.name === "Owner Name")?.value || "N/A",
+            mobileNumber: issue.custom_fields.find((field) => field.name === "Mobile Number")?.value || "N/A",
+            lorryNumber: issue.custom_fields.find((field) => field.name === "Lorry Number")?.value || "N/A",
+            assignee: issue.custom_fields.find((field) => field.name === "Assignee")?.value || "N/A",
+          }));
+          console.log("Transformed data:", transformedData);
+
+
+          console.log("Transformed data:", transformedData);
+
+          setTableData(transformedData);
+          setFilteredData(transformedData.filter((item) => item.tracker === "ML"));
+        } else {
+          console.error("Issues data is not an array:", response.data.issues);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-  
+
     fetchData();
   }, []);
-  
 
   useEffect(() => {
-    console.log("Active tab changed:", activeTab);
     const filtered = tableData.filter((item) => item.tracker === activeTab);
-    console.log("Filtered data based on active tab:", filtered);
+    console.log(`Filtered data for tab ${activeTab}:`, filtered); // Debug log
     setFilteredData(filtered);
   }, [activeTab, tableData]);
-
+  
   const handleSearch = (value) => {
     console.log("Search input value:", value);
     setSearchText(value);
@@ -88,6 +108,7 @@ const Dashboard = () => {
     >
       {/* Stats Section */}
       <Row gutter={[16, 16]} justify="space-around">
+
         {[
           {
             title: language === "en" ? "Total Licenses" : "මුළු බලපත්‍ර",
@@ -100,10 +121,11 @@ const Dashboard = () => {
             color: "#408220",
           },
           {
-            title: language === "en" ? "Complains" : "පැමිණිලි",
+            title: language === "en" ? "Complaints" : "පැමිණිලි",
             count: tableData.filter((item) => item.tracker === "CMPLN").length,
             color: "#950C33",
           },
+
         ].map((box, index) => (
           <Col xs={24} sm={12} md={8} lg={6} key={index}>
             <StatsBox title={box.title} count={box.count} color={box.color} />
@@ -168,10 +190,11 @@ const Dashboard = () => {
           marginTop: "16px",
         }}
       >
-        <LicenseTable data={filteredData} />
+
+        <LicenseTable data={filteredData} tracker={activeTab} />
+
       </div>
     </div>
   );
 };
-
 export default Dashboard;

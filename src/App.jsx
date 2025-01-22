@@ -7,7 +7,7 @@ import AppLayout from './components/layout/AppLayout';
 import GSMBRoutes from './routes/GSMBRoutes';
 import MLOwnerRoutes from './routes/MLOwnerRoutes';
 import PoliceOfficerRoutes from './routes/PoliceOfficerRoutes';
-import SignIn from './components/Auth/SignIn';
+import SignInPage from './components/Auth/SignIn';
 import { useAuth } from './hooks/useAuth';
 import PrivateRoute from './routes/PrivateRoute';
 import SignUp from './components/Auth/SignUp';
@@ -16,31 +16,28 @@ import GeneralPublicRoutes from './routes/GeneralPublicRoutes';
 import Footer from './components/layout/Footer';
 
 
+
 import GSMBManagementRoutes from './routes/GSMBManagementRoutes';
 
 
 const App = () => {
-  const userRole = "GSMBOfficer";
-  localStorage.setItem("USERROLE", userRole);
-
-  // console.log('App user:', user); // Debug log to verify user
-  // console.log('App user role:', user?.role); // Debug log to verify user role
-
   return (
     <Router>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
-        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="*" element={<NotFound />} />
 
         {/* Protected Routes */}
         <Route
           element={
+
             <PrivateRoute
-              allowedRoles={['GSMBOfficer', 'PoliceOfficer','MLOwner','GSMBManagement']}
+              allowedRoles={['GSMBOfficer', 'PoliceOfficer','MLOwner','GSMBManagement','GeneralPublic']}
             />
+
           }
         >
           <Route path="/" element={<AppLayout />}>
@@ -49,8 +46,8 @@ const App = () => {
               <Route path="*" element={<GSMBRoutes />} />
             </Route>
 
-             {/* MLOwner Routes */}
-             <Route path="mlowner/*" element={<PrivateRoute allowedRoles={['MLOwner']} />}>
+            {/* MLOwner Routes */}
+            <Route path="mlowner/*" element={<PrivateRoute allowedRoles={['MLOwner']} />}>
               <Route path="*" element={<MLOwnerRoutes />} />
             </Route>
 
@@ -71,6 +68,7 @@ const App = () => {
               <Route path="*" element={<GSMBManagementRoutes/>}/>
 
             </Route>
+
 
           </Route>
         </Route>
