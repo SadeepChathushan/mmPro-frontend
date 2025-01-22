@@ -22,7 +22,7 @@ const ValidPage = () => {
       ],
       [
 
-        { label: isSinhala ? 'කල් ඉකුත්වන දිනය' :  isTamil? 'காலாவதியாகிறது' :'Expires', value: '2024-01-19' },
+        { label: isSinhala ? 'කල් ඉකුත්වන දිනය' :  isTamil? 'காலாவதியாகிறது' :'Expires', dataIndex: 'expire' },
         { label: isSinhala ? 'පැටවූ දිනය / වේලාව' :  isTamil? 'ஏற்றப்பட்ட தேதி/நேரம்' :'Loaded date/time', dataIndex: 'start'},
 
       ],
@@ -32,7 +32,7 @@ const ValidPage = () => {
       ],
       [
 
-        { label: isSinhala ? 'පැටවුම් අංකය' :  isTamil? 'சுமை எண்' :'Load Number', value: '8456' },
+        { label: isSinhala ? 'පැටවුම් අංකය' :  isTamil? 'சுமை எண்' :'Load Number', dataIndex: 'loadNumber' },
         { label: isSinhala ? 'ගමනාන්තය' :  isTamil? 'சேருமிடம்' :'Destination', dataIndex: 'destination'},
 
       ],
