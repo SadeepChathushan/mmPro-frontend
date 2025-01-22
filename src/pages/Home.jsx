@@ -18,7 +18,7 @@ const Home = () => {
       <Content className="h-hero-content">
       
          
-        <Title level={2} style={{color:'#fff',textAlign:'center'}}>
+        <Title level={1} style={{color:'#fff',textAlign:'center'}}>
           {language === 'en'? 'WELCOME' :language === 'si'? 'සාදරයෙන් පිළිගනිමු':'வரவேற்பு'}
           
           <Paragraph style={{color:'#fff',textAlign:'center',marginTop:'30px' ,fontSize:'18px'}}>

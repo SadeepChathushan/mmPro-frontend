@@ -62,7 +62,7 @@
 
 .h-hero-content {
   padding: 50px;
-  background-image: url("../../assets/images/truck.jpg"); /* Image inside public folder */
+  background-image: url("../../assets/images/truck.png"); /* Image inside public folder */
   background-size: cover;
   background-position: center;
   min-height: 500px;
