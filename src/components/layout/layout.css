@@ -18,6 +18,7 @@
 }
 
 #service {
+  padding: 10px;
   height: 100vh;
 }
 
@@ -26,7 +27,7 @@
 }
 
 .h-about-content {
-  padding: 40px;
+  padding: 30px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -61,14 +62,18 @@
 
 .h-hero-content {
   padding: 50px;
-  background-image: url("https://img.freepik.com/free-photo/wide-angle-shot-small-lake-surrounded-by-mountains-greenery-daytime_181624-9415.jpg?t=st=1737098936~exp=1737102536~hmac=c44152b4578ef1c49b4583b1321a02234c746e8d794cdc50eabd52c0f400dedf&w=996");
+  background-image: url("../../assets/images/truck.jpg"); /* Image inside public folder */
   background-size: cover;
   background-position: center;
   min-height: 500px;
   display: flex;
   align-items: center;
   justify-content: center;
+ 
+
+  
 }
+
 
 .user-header-logo{
      display: flex;
