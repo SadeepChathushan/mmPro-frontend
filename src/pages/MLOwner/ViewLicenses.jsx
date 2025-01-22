@@ -17,26 +17,33 @@ const Licenses = () => {
   const [filteredLicenses, setFilteredLicenses] = useState([]);
 
   // Function to fetch licenses data
-  const fetchLicenses = async () => {
-    try {
-      const username = "@achinthamihiran"; // Replace with actual username
-      const password = "Ab2#*De#"; // Replace with actual password
+  // Function to fetch licenses data
+const fetchLicenses = async () => {
+  try {
+    const username = "@achinthamihiran"; // Replace with actual username
+    const password = "Ab2#*De#"; // Replace with actual password
 
-      const response = await axios.get('/api/projects/gsmb/issues.json', {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        auth: {
-          username,
-          password,
-        },
-      });
+    const response = await axios.get('/api/projects/gsmb/issues.json', {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      auth: {
+        username,
+        password,
+      },
+    });
 
-      if (response.data && response.data.issues) {
-        const issues = response.data.issues;
+    if (response.data && response.data.issues) {
+      const issues = response.data.issues;
 
-        // Map the API data to the table format
-        const formattedLicenses = issues.map((issue) => {
+      // Map and filter the API data to the table format
+      const formattedLicenses = issues
+        .filter(issue => {
+          // Filter by tracker name "ML" and capacity >= 0
+          const capacity = issue.custom_fields.find(field => field.name === 'Capacity')?.value;
+          return issue.tracker.name === "ML" && parseInt(capacity, 10) >= 0;
+        })
+        .map((issue) => {
           const customFields = issue.custom_fields.reduce((acc, field) => {
             acc[field.name] = field.value;
             return acc;
@@ -51,28 +58,28 @@ const Licenses = () => {
           const isActive = currentDate <= new Date(dueDate); // Active if current date is before or on the due date
 
           return {
-            licenseNumber: issue.custom_fields.find(field => field.name === 'License Number')?.value,
-            owner: issue.custom_fields.find(field => field.name === 'Owner Name')?.value,
-            location: issue.custom_fields.find(field => field.name === 'Address')?.value, // Using Address for location
+            licenseNumber: customFields['License Number'],
+            owner: customFields['Owner Name'],
+            location: customFields['Address'], // Using Address for location
             startDate: issue.start_date,
             endDate: issue.due_date,
-            capacity: issue.custom_fields.find(field => field.name === 'Capacity')?.value,
-            dispatchedCubes: issue.custom_fields.find(field => field.name === 'Used')?.value, // Mapped to Used for dispatched cubes
-            remainingCubes: issue.custom_fields.find(field => field.name === 'Remaining')?.value, // Using Remaining field for cubes
-            royalty: issue.custom_fields.find(field => field.name === 'Royalty(sand)due')?.value, // Added royalty mapping
+            capacity: customFields['Capacity'],
+            dispatchedCubes: customFields['Used'], // Mapped to Used for dispatched cubes
+            remainingCubes: customFields['Remaining'], // Using Remaining field for cubes
+            royalty: customFields['Royalty(sand)due'], // Added royalty mapping
             status: isActive ? 'Active' : 'Inactive', // Active if current date is before or on the due date
           };
         });
 
-        setLicenses(formattedLicenses);
-        setFilteredLicenses(formattedLicenses);
-      } else {
-        console.error('No issues found in the response');
-      }
-    } catch (error) {
-      console.error('Error fetching issues:', error);
+      setLicenses(formattedLicenses);
+      setFilteredLicenses(formattedLicenses);
+    } else {
+      console.error('No issues found in the response');
     }
-  };
+  } catch (error) {
+    console.error('Error fetching issues:', error);
+  }
+};
 
   // Fetch licenses when the component mounts
   useEffect(() => {
