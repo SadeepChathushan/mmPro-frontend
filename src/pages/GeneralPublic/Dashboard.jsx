@@ -1,94 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { message } from 'antd'; // <-- Add this import
 import logo from '../../assets/images/gsmbLogo.png';
-import backgroundImage from '../../assets/images/Transport-image.jpeg';
-import axios from 'axios'; 
-
-// Apply global styles to prevent scrolling
-const preventScrollStyles = `
-  html, body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    height: 100%;
-  }
-`;
+import backgroundImage from '../../assets/images/generalpublic.jpg';
+import axios from 'axios';
 
 const Dashboard = () => {
   const { language } = useLanguage();
   const [input, setInput] = useState('');
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [validModalVisible, setValidModalVisible] = useState(false); // Valid modal visibility state
-  const [invalidModalVisible, setInvalidModalVisible] = useState(false); // Invalid modal visibility state
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [modalMessage, setModalMessage] = useState(''); // Modal message
+  const [data, setData] = useState([]); // All data fetched from API
 
-const handleReport = async () => {
-  if (!input.trim()) {
-    // If input is empty, show a warning and return early
-    message.error(language === "en" ? "Please enter a vehicle number!" : "කරුණාකර වාහන අංකයක් ඇතුළු කරන්න!");
-    return;
-  }
+  const isSinhala = language === 'si';
+  const textContent = {
+    reportButton: isSinhala ? 'GSMB වෙත වාර්තා කරන්න' : 'Report to GSMB',
+    vehiclePlaceholder: isSinhala ? 'උදා : LA 1234' : 'e.g : LA 1234',
+    contacts: [
+      { number: '+94-11-2886289', icon: '📞' },
+      { number: '+94-11-2886290', icon: '📞' },
+      { number: '901', icon: '📞' },
+    ],
+  };
 
-  try {
-    const payload = {
-      issue: {
-        project_id: 31,
-        tracker_id: 26,
-        subject: language === "en" ? "New Complaint" : "නව පැමිණිල්ලක්",
-        custom_fields: [
-          { id: 13, name: "Lorry Number", value: input }, 
-          { id: 68, name: "Role", value: "General Public" },
-        ],
-      },
-    };
+  const handleCheck = () => {
+    const validVehicle = data.find(item => item.vehicleNumber === input.trim());
 
-    const username = "Dilmi_123";
-    const password = "dIlmI@99";
-
-    const response = await axios.post(
-      "/api/projects/gsmb/issues.json",
-      payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        auth: {
-          username,
-          password,
-        },
-      }
-    );
-
-  // Validation
-    message.success(language === "en" ? "Report Submitted successfully!" : "පැමිණිල්ල සාර්ථකව ඉදිරිපත් කරන ලදී.");
-    closeModals(); // Close modals after success
-    console.log("API response:", response.data);
-  } catch (error) {
-    console.error("Error posting data:", error);
-    message.error(language === "en" ? "Report Submition Failed!. Please try again." : "පැමිණිල්ල ඉදිරිපත් කිරීම අසාර්ථකයි. නැවත උත්සාහ කරන්න.");
-  }
-};
-
-
-  const navigate = useNavigate();
-  
-  const handleCheck = () => {  
-    if (/^\d+$/.test(input)) {
-      // If input is valid (numbers only)
-      setValidModalVisible(true);
+    if (validVehicle) {
+      setModalMessage(language === 'en' ? 'Valid Load' : 'වලංගු පැටවීම');
+      setIsModalOpen(true);
     } else {
-      // If input is invalid
-      setInvalidModalVisible(true);
+      setModalMessage(language === 'en' ? 'Invalid Load' : 'අවලංගු බලපත් අංකය');
+      setIsModalOpen(true);
     }
   };
 
-  const closeModals = () => {
-    setValidModalVisible(false);
-    setInvalidModalVisible(false);
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
-  // Update isMobile state on window resize
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -100,57 +50,67 @@ const handleReport = async () => {
     };
   }, []);
 
-  const textContent = {
-    title: language === 'si' ? 'භූ විද්‍යා සමීක්ෂණ සහ පතල් කාර්යාංශය' : 'Geological Survey & Mines Bureau',
-    invalidText: language === 'si' ? 'අවලංගුයි' : 'Invalid',
-    reportButton: language === 'si' ? 'GSMB වෙත වාර්තා කරන්න' : 'Report to GSMB',
-    contacts: [
-      { number: '+94-11-2886289', icon: '📞' },
-      { number: '+94-11-2886290', icon: '📞' },
-      { number: '901', icon: '📞' },
-    ],
-  }; 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const apiKey = "32b545985bf4c8dc6475bcc7a12c39ceec49ff3d";
+        const response = await axios.get('/api/projects/gsmb/issues.json', {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Redmine-API-Key': apiKey, // Use the API key here
+          },
+        });
+
+        const mappedData = response.data.issues.map((issue) => ({
+          vehicleNumber: issue.custom_fields.find((field) => field.name === 'Lorry Number')?.value,
+        }));
+
+        setData(mappedData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const styles = {
-    container: {
+    pageContainer: {
       display: 'flex',
-      flexDirection: 'row',
-      width: '100%',
-      maxWidth: '100vw',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    },
-    leftPanel: {
-      flex: 1,
+      flexDirection: 'column',
       backgroundImage: `url(${backgroundImage})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat',
+      color: '#fff',
     },
-    rightPanel: {
-      flex: 1,
+    header: {
+      padding: '1rem',
+      textAlign: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    },
+    headerLogo: {
+      width: isMobile ? '120px' : '180px',
+    },
+    mainContent: {
+      flex: '1 0 auto',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#f4f4f4',
-      color: '#333',
-      padding: isMobile ? '1rem' : '2rem',
-    },
-    logo: {
-      width: isMobile ? '150px' : '250px',
-      marginBottom: '1rem',
-      objectFit: 'contain',
+      justifyContent: 'center',
+      padding: '2rem',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     title: {
       fontSize: isMobile ? '1.5rem' : '2rem',
       fontWeight: 'bold',
-      textAlign: 'center',
-      marginBottom: '2rem',
+      marginBottom: '1.5rem',
     },
     inputContainer: {
+      marginBottom: '1.5rem',
       width: '100%',
       maxWidth: '20rem',
-      marginBottom: '1.5rem',
+      color: 'black',
     },
     inputBox: {
       width: '100%',
@@ -170,186 +130,134 @@ const handleReport = async () => {
       width: '100%',
       maxWidth: '20rem',
     },
-    modalOverlay: {
+    modal: {
       position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
+      top: '0',
+      left: '0',
+      right: '0',
+      bottom: '0',
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
       display: 'flex',
-      justifyContent: 'center',
       alignItems: 'center',
+      justifyContent: 'center',
     },
     modalContent: {
       backgroundColor: '#fff',
-      padding: '2rem',
-      borderRadius: '8px',
-      width: isMobile ? '90%' : '400px',
+      padding: '3rem',
+      borderRadius: '12px',
       textAlign: 'center',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      position: 'relative',
     },
-    closeModalButton: {
-      backgroundColor: '#800000',
-      color: '#fff',
-      padding: '0.5rem 1rem',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      marginTop: '1rem',
-    },
-    successButton: {
-      backgroundColor: '#28a745', // Green background
-      color: '#fff', // White text
-      padding: isMobile ? '0.6rem 1.5rem' : '0.75rem 2rem',
-      border: 'none',
-      borderRadius: '1rem', // Rounded corners
-      fontSize: isMobile ? '0.9rem' : '1rem',
-      cursor: 'pointer',
-      width: '100%',
-      maxWidth: '15rem',
-      textAlign: 'center',
-      marginTop: '1rem',
-    },
-    button: {
-      backgroundColor: 'white',
-      color: '#FF0000',
-      border: '1px solid #FF0000',
-      padding: '0.75rem 2rem',
-      borderRadius: '1rem',
-      cursor: 'pointer',
-      fontSize: '1rem',
-      width: '16rem',
-      marginBottom: '1rem',
-    },
-    Invalidbutton: {
-      backgroundColor: '#FF0000',
-      color: 'white',
-      border: '1px solid #FF0000',
-      padding: '0.75rem 2rem',
-      borderRadius: '1rem',
-      cursor: 'pointer',
-      fontSize: '1rem',
-      width: '16rem',
-      marginBottom: '1rem',
-    },
-    contactContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '10px',
-      width: '100%',
-      maxWidth: '400px',
-      marginTop: '1rem',
-    },
-    contactInput: {
-      width: '100%',
-      padding: '8px',
-      border: '1px solid #ccc',
-      borderRadius: '4px',
-      fontSize: '14px',
-      backgroundColor: 'white',
-      cursor: 'default',
-    },
-    contactIcon: {
+    modalCloseButton: {
       position: 'absolute',
-      right: '8px',
-      fontSize: '16px',
+      top: '10px',
+      right: '10px',
+      backgroundColor: 'transparent',
+      border: 'none',
+      fontSize: '1.5rem',
+      cursor: 'pointer',
+      color: '#000',
     },
   };
 
   return (
-    <>
-      {/* Inject global styles */}
-      <style>{preventScrollStyles}</style>
-
-      <div style={styles.container}>
-        {/* Left Panel with Background Image */}
-        <div style={styles.leftPanel}></div>
-
-        {/* Right Panel with Content */}
-        <div style={styles.rightPanel}>
-          <img src={logo} alt="Logo" style={styles.logo} />
-          <h2 style={styles.title}>
-            {language === 'en'
-              ? 'Transport License Verification'
-              : 'භූ විද්‍යා සමීක්ෂණ හා පතල් කාර්යාංශය'}
-          </h2>
-          <div style={styles.inputContainer}>
-            <input
-              type="text"
-              placeholder={
-                language === 'en'
-                  ? 'Enter vehicle number'
-                  : 'වාහන අංකය ඇතුලු කරන්න'
-              }                                 
-              style={styles.inputBox}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-            />
-          </div>
-          <button
-            style={styles.checkButton}
-            onMouseOver={(e) => (e.target.style.backgroundColor = '#5a0000')}
-            onMouseOut={(e) => (e.target.style.backgroundColor = '#800000')}
-            onClick={handleCheck} // Trigger check on click
-          >
-            {language === 'en' ? 'Check' : 'පරීක්ෂා කරන්න'}
-          </button>
+    <div style={styles.pageContainer}>
+      <header style={styles.header}>
+        <img src={logo} alt="Logo" style={styles.headerLogo} />
+      </header>
+      <main style={styles.mainContent}>
+        <h2 style={styles.title}>Enter Vehicle Number</h2>
+        <div style={styles.inputContainer}>
+          <input
+            type="text"
+            placeholder={language === 'en' ? 'e.g : LA 1234' : 'උදා : LA 1234'}
+            style={styles.inputBox}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
         </div>
-      </div>
-                                                          
-      {/* Valid Modal */}
-      {validModalVisible && (
-        <div style={styles.modalOverlay}>
+        <button
+          style={styles.checkButton}
+          onMouseOver={(e) => (e.target.style.backgroundColor = '#5a0000')}
+          onMouseOut={(e) => (e.target.style.backgroundColor = '#800000')}
+          onClick={handleCheck}
+        >
+          {language === 'en' ? 'Check' : 'පරීක්ෂා කරන්න'}
+        </button>
+      </main>
+
+      {isModalOpen && (
+        <div style={styles.modal}>
           <div style={styles.modalContent}>
-            <button style={styles.successButton}>{language === 'en' ? 'The Vehicle is valid!' : 'අංකය වලංගු වේ!'}</button>
-            <br></br>
             <button
-              style={styles.closeModalButton}
-              onClick={closeModals} // Close modal on click
+              style={styles.modalCloseButton}
+              onClick={closeModal}
             >
-              {language === 'en' ? 'Close' : 'වසන්න'}
+              &times;
             </button>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <input
+                type="text"
+                value={modalMessage}
+                readOnly
+                style={{
+                  backgroundColor: modalMessage === 'Valid Load' ? '#28a745' : '#FF0000',
+                  color: '#fff',
+                  padding: '0.75rem 2rem',
+                  border: 'none',
+                  borderRadius: '1.5rem',
+                  fontSize: '1rem',
+                  textAlign: 'center',
+                  width: '200px',
+                  height: '50px',
+                }}
+              />
+              {modalMessage === (language === 'en' ? 'Invalid Load' : 'අවලංගු බලපත් අංකය') && (
+                <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                  <button
+                    style={{
+                      backgroundColor: '#fff',
+                      color: '#FF0000',
+                      border: '2px solid #FF0000',
+                      padding: '0.75rem 2rem',
+                      borderRadius: '1.5rem',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      margin: '1rem 0',
+                      width: '200px',
+                      height: '50px',
+                    }}
+                  >
+                    {language === 'en' ? 'Report to GSMB' : 'GSMB වෙත වාර්තා කරන්න'}
+                  </button>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
+                    {textContent.contacts.map((contact, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '8px 16px',
+                          border: '1px solid #ccc',
+                          borderRadius: '4px',
+                          fontSize: '14px',
+                          backgroundColor: '#f9f9f9',
+                          color: 'black',
+                        }}
+                      >
+                        <span>{contact.number}</span>
+                        <span>{contact.icon}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
-     
-       {/* Invalid Modal */}
-    {invalidModalVisible && (
-      <div style={styles.modalOverlay}>
-        <div style={styles.modalContent}>
-          <button style={styles.Invalidbutton}>
-            {language === 'en' ? 'The number is invalid!' : 'අංකය අවලංගු වේ!'}
-          </button>
-          <br></br>
-          {/* Report GSMB Button */}
-          <button
-            style={styles.button}
-            onClick={handleReport} // Trigger report submission on click
-          >
-            {language === 'en' ? 'Report GSMB' : 'GSMB වෙත පැමිණිලි කරන්න'}
-          </button>
-          <br></br>
-          {/* Contact List */}
-          <div style={styles.contactContainer}>
-            {textContent.contacts.map((contact, index) => (
-              <div key={index} style={{ position: 'relative', marginBottom: '10px' }}>
-                <input type="text" value={contact.number} readOnly style={styles.contactInput} />
-                <span style={styles.contactIcon}>{contact.icon}</span>
-              </div>
-            ))}
-          </div>
-          <br></br>
-          <button
-            style={styles.closeModalButton}
-            onClick={closeModals} // Close modal on click
-          >
-            {language === 'en' ? 'Close' : 'වසන්න'}
-          </button>
-        </div>
-      </div>
-    )}
-    </>
+    </div>
   );
 };
 
