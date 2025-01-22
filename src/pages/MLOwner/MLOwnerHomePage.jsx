@@ -106,7 +106,7 @@ const MLOwnerHomePage = () => {
       try {
         const username = "@achinthamihiran"; // Replace with actual username
         const password = "Ab2#*De#"; // Replace with actual password
-
+  
         const response = await axios.get('/api/projects/gsmb/issues.json', {
           headers: {
             "Content-Type": "application/json",
@@ -116,41 +116,47 @@ const MLOwnerHomePage = () => {
             password,
           },
         });
-
+  
         // Map the API data to the table format
-        const mappedData = response.data.issues.map(issue => {
-          const currentDate = new Date();
-          const dueDate = new Date(issue.due_date);
-          const isActive = currentDate <= dueDate;
-
-          return {
-            licenseNumber: issue.custom_fields.find(field => field.name === 'License Number')?.value,
-            owner: issue.custom_fields.find(field => field.name === 'Owner Name')?.value,
-            location: issue.custom_fields.find(field => field.name === 'Address')?.value, // Using Address for location
-            startDate: issue.start_date,
-            dueDate: issue.due_date,
-            capacity: issue.custom_fields.find(field => field.name === 'Capacity')?.value,
-            dispatchedCubes: issue.custom_fields.find(field => field.name === 'Used')?.value, // Mapped to Used for dispatched cubes
-            remainingCubes: issue.custom_fields.find(field => field.name === 'Remaining')?.value, // Using Remaining field for cubes
-            royalty: issue.custom_fields.find(field => field.name === 'Royalty(sand)due')?.value, // Added royalty mapping
-            status: isActive ? 'Active' : 'Inactive', // Active if not overdue, inactive otherwise
-          };
-        });
-
+        const mappedData = response.data.issues
+          .filter(issue => {
+            // Filter by tracker name "ML" and capacity >= 0
+            const capacity = issue.custom_fields.find(field => field.name === 'Capacity')?.value;
+            return issue.tracker.name === "ML" && (parseInt(capacity, 10) >= 0);
+          })
+          .map(issue => {
+            const currentDate = new Date();
+            const dueDate = new Date(issue.due_date);
+            const isActive = currentDate <= dueDate;
+  
+            return {
+              licenseNumber: issue.custom_fields.find(field => field.name === 'License Number')?.value,
+              owner: issue.custom_fields.find(field => field.name === 'Owner Name')?.value,
+              location: issue.custom_fields.find(field => field.name === 'Address')?.value, // Using Address for location
+              startDate: issue.start_date,
+              dueDate: issue.due_date,
+              capacity: issue.custom_fields.find(field => field.name === 'Capacity')?.value,
+              dispatchedCubes: issue.custom_fields.find(field => field.name === 'Used')?.value, // Mapped to Used for dispatched cubes
+              remainingCubes: issue.custom_fields.find(field => field.name === 'Remaining')?.value, // Using Remaining field for cubes
+              royalty: issue.custom_fields.find(field => field.name === 'Royalty(sand)due')?.value, // Added royalty mapping
+              status: isActive ? 'Active' : 'Inactive', // Active if not overdue, inactive otherwise
+            };
+          });
+  
         // Sort the data by due date (most recent first) and then take only the first 5 records
         const sortedData = mappedData.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
         const recentData = sortedData.slice(0, 5);
-
+  
         setData(recentData); // Set all filtered data
         setFilteredData(recentData); // Set filtered data for initial display
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-
+  
     fetchData();
   }, []); // Empty dependency array means this effect runs once when the component mounts
-
+  
   // Handle search input change
   const handleSearch = (value) => {
     setSearchText(value);
