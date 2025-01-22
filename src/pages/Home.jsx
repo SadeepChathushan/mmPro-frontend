@@ -1,7 +1,7 @@
 import React from "react";
 import { Layout, Row, Col, Typography, Image } from "antd";
 import Navbar from "../components/layout/Navbar";
-import HomeFooter from "../components/layout/HomeFooter";
+import Footer from "../components/layout/Footer";
 import { useLanguage } from "../contexts/LanguageContext";
 
 const { Content } = Layout;
@@ -156,8 +156,6 @@ const Home = () => {
           </div>
         </div>
 
-
-            
                 
                 <Paragraph>
                 mmPro delivers a robust suite of services tailored to meet the unique demands of the mining and mineral production sector. Our real-time monitoring feature allows the Geological Survey and Mines Bureau (GSMB) to track mining activities and production levels with precision, ensuring efficient oversight of operations. This system enhances transparency by providing instant updates, helping to identify issues early and improve overall operational performance.
@@ -185,13 +183,13 @@ const Home = () => {
             
          
 
-      
-      {/* <HomeFooter/> */}
-      
+            <Footer/>
+      </Layout>
+           
 
-      <HomeFooter />
-    </Layout>
-  );
+      
+    
+            );
 };
 
 export default Home;

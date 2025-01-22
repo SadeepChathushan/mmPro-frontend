@@ -4,8 +4,11 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { message } from 'antd';  // Import message for notifications
 import axios from 'axios';  // Import axios for API requests
 import logo from '../../assets/images/gsmbLogo.png';
-import backgroundImage from '../../assets/images/dump-truck-pit-mine.jpg';
-import axios from 'axios';
+
+import backgroundImage from '../../assets/images/machinery.jpg';
+import { display, height, textAlign, width } from '@mui/system';
+import { lang } from 'moment/moment';
+
 
 const Dashboard = () => {
   const { language } = useLanguage();
@@ -132,11 +135,30 @@ const Dashboard = () => {
   const styles = {
     pageContainer: {
       display: 'flex',
-      flexDirection: 'column',
+      flexDirection: 'row',
+      justifyContent: 'space-between', // Space between left and right sections
+      alignItems: 'center',
+      height:'60vh',
+      // height: '100vh', // Full page height
+      backgroundColor: '#fff', // Fallback color if background image fails
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row',
+    },
+   
+    backgroundSection: {
+      flex: '1',
       backgroundImage: `url(${backgroundImage})`,
       backgroundSize: 'cover',
-      backgroundPosition: 'center',
+      backgroundPosition: 'left center', // Align the image to the left
       backgroundRepeat: 'no-repeat',
+
+      height: '100%',
+      width:'100%',
+      display: isMobile ? 'none' : 'block',
+    },
+    mainContent: {
+      flex: '1 1 ', // Allow main content to grow but not shrink
+
       color: '#fff',
     },
     header: {
@@ -149,13 +171,29 @@ const Dashboard = () => {
     },
     mainContent: {
       flex: '1 0 auto',
+
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '2rem',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+
+      padding: '40px',
+      backgroundColor: '#fff', // Overlay for better contrast
+      marginBottom: 'auto',
+      boxSizing: 'border-box', 
+      // Include padding in height calculation
     },
+     header: {
+      padding: '10px',
+      textAlign: 'right',
+      backgroundColor: '#fff', 
+      
+    },
+    headerLogo: {
+      width: isMobile ? '200px' : '250px',
+
+    },
+
     title: {
       fontSize: isMobile ? '1.5rem' : '2rem',
       fontWeight: 'bold',
@@ -165,7 +203,10 @@ const Dashboard = () => {
       marginBottom: '1.5rem',
       width: '100%',
       maxWidth: '20rem',
-      color: 'black',
+
+      color:'black',
+      textAlign:'center',
+
     },
     inputBox: {
       width: '100%',
@@ -184,7 +225,9 @@ const Dashboard = () => {
       cursor: 'pointer',
       width: '100%',
       maxWidth: '20rem',
+      
     },
+    
     modal: {
       position: 'fixed',
       top: '0',
@@ -214,9 +257,21 @@ const Dashboard = () => {
       color: '#000',
     },
   };
+  
+
+useEffect(() => {
+  const handleResize = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
+  window.addEventListener('resize', handleResize);
+  return () => {
+    window.removeEventListener('resize', handleResize);
+  };
+}, []);
 
   const textContent = {
     // reportButton: language === 'en' ? 'Report to GSMB' : 'GSMB වෙත වාර්තා කරන්න',
+   
     contacts: [
       { number: '+94-11-2886289', icon: ' 📞' },
       { number: '+94-11-2886290', icon: ' 📞' },
@@ -226,15 +281,27 @@ const Dashboard = () => {
 
   return (
     <div style={styles.pageContainer}>
-      <header style={styles.header}>
+      <div style={styles.backgroundSection}></div>
+     
+      <main style={styles.mainContent}>
+
+        <h2 style={styles.title}>{textContent.title}</h2>
+         <header style={styles.header} >
         <img src={logo} alt="Logo" style={styles.headerLogo} />
       </header>
-      <main style={styles.mainContent}>
-        <h2 style={styles.title}></h2>
+      <h3 style={{fontFamily:"inherit",fontWeight:'bold',color:'#950C33'}}>
+        {language === 'en' ? 'GEOL0GICAL SURVEY & MINES BUREAU' : language === 'si' ? 'භූගෝලීය සමීක්ෂණ සහ පතල් කාර්යාංශය' :'புவியியல் ஆய்வு மற்றும் சுரங்கப் பணியகம்'}  </h3>
+      <p style={{color:'#444242',marginTop:'5px',fontSize:"14px" , textAlign:'center',marginTop:"10px"}}>
+        {language == 'en' ? ' Police officers to verify a vehicles validity by entering its registration number. The system checks thedetails against the database and provides an instant result, confirming whether the vehicle is  valid or invalid, ensuring compliance and road safety.' :language === 'si' ? 'පොලිස් නිලධාරීන් වාහනයක ලියාපදිංචි අංකය ඇතුළත් කිරීමෙන් එහි වලංගුභාවය සත්‍යාපනය කළ යුතුය. පද්ධතිය දත්ත සමුදායට අනුව විස්තර පරීක්ෂා කර ක්ෂණික ප්‍රතිඵලයක් ලබා දෙන අතර, වාහනය වලංගුද අවලංගුද යන්න තහවුරු කරයි, අනුකූලතාව සහ මාර්ග ආරක්ෂාව සහතික කරයි.' :'காவல்துறை அதிகாரிகள் ஒரு வாகனத்தின் பதிவு எண்ணை உள்ளிட்டு அதன் செல்லுபடியை சரிபார்க்க வேண்டும். இந்த அமைப்பு தரவுத்தளத்துடன் விவரங்களைச் சரிபார்த்து, வாகனம் செல்லுபடியாகுமா அல்லது செல்லாததா என்பதை உறுதிசெய்து, உடனடி முடிவை வழங்குகிறது, இணக்கத்தையும் சாலை பாதுகாப்பையும் உறுதி செய்கிறது.'}
+       
+        </p>
+        
+      {/* <Text>hjegwfjguuregsthth</Text> */}
         <div style={styles.inputContainer}>
           <input
             type="text"
-            placeholder={language === 'en' ? 'Enter vehicle number' : 'වාහන අංකය ඇතුලත් කරන්න'}
+            placeholder={language === 'en' ? 'Enter vehicle number' :language === 'si' ? 'විස්තර ඇතුළත් කරන්න' :'வாகன எண்ணை உள்ளிடவும்'}
+
             style={styles.inputBox}
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -246,7 +313,7 @@ const Dashboard = () => {
           onMouseOut={(e) => (e.target.style.backgroundColor = '#800000')}
           onClick={handleCheck}
         >
-          {language === 'en' ? 'Check' : 'පරීක්ෂා කරන්න'}
+          {language === 'en' ? 'Check' : language === 'si'? 'පරීක්ෂා කරන්න':'சரிபார்க்கவும்'}
         </button>
       </main>
  {isModalOpen && (
@@ -261,7 +328,7 @@ const Dashboard = () => {
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <input
                 type="text"
-                value={language === 'en' ? 'Invalid' : 'අවලංගු'}
+                value={language === 'en' ? 'Invalid' :language === 'si'? 'අවලංගු':'தவறானது'}
                 readOnly
                 style={{
                   backgroundColor: '#FF0000',
@@ -275,6 +342,51 @@ const Dashboard = () => {
                   height: '50px',
                 }}
               />
+
+
+              <button
+                style={{
+                  backgroundColor: '#fff',
+                  color: '#FF0000',
+                  border: '2px solid #FF0000',
+                  padding: '0.75rem 2rem',
+                  borderRadius: '1.5rem',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  margin: '1rem 0',
+                  width: '200px',
+                  height: '50px',
+                }}
+              >
+                {language === 'en' ? 'Report to GSMB' : language === 'si'? 'GSMB වෙත වාර්තා කරන්න' :'GSMB-க்கு புகாரளிக்கவும்'}
+              </button>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
+              {textContent.contacts.map((contact, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 16px',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    fontSize: '14px',
+                    backgroundColor: '#f9f9f9',
+                    color: 'black',
+                  }}
+                >                 
+                  <span>{contact.number}</span>
+                  <span>{contact.icon}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    
 
       {/* Modal for Invalid Input */}
       {isModalOpen && (
