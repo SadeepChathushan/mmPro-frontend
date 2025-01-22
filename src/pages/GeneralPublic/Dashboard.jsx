@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { message } from 'antd'; // <-- Add this import
 import logo from '../../assets/images/gsmbLogo.png';
 import backgroundImage from '../../assets/images/Transport-image.jpeg';
-import axios from 'axios'; 
 
 // Apply global styles to prevent scrolling
 const preventScrollStyles = `
@@ -22,54 +20,6 @@ const Dashboard = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [validModalVisible, setValidModalVisible] = useState(false); // Valid modal visibility state
   const [invalidModalVisible, setInvalidModalVisible] = useState(false); // Invalid modal visibility state
-
-const handleReport = async () => {
-  if (!input.trim()) {
-    // If input is empty, show a warning and return early
-    message.error(language === "en" ? "Please enter a vehicle number!" : "කරුණාකර වාහන අංකයක් ඇතුළු කරන්න!");
-    return;
-  }
-
-  try {
-    const payload = {
-      issue: {
-        project_id: 31,
-        tracker_id: 26,
-        subject: language === "en" ? "New Complaint" : "නව පැමිණිල්ලක්",
-        custom_fields: [
-          { id: 13, name: "Lorry Number", value: input }, 
-          { id: 68, name: "Role", value: "General Public" },
-        ],
-      },
-    };
-
-    const username = "Dilmi_123";
-    const password = "dIlmI@99";
-
-    const response = await axios.post(
-      "/api/projects/gsmb/issues.json",
-      payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        auth: {
-          username,
-          password,
-        },
-      }
-    );
-
-  // Validation
-    message.success(language === "en" ? "Report Submitted successfully!" : "පැමිණිල්ල සාර්ථකව ඉදිරිපත් කරන ලදී.");
-    closeModals(); // Close modals after success
-    console.log("API response:", response.data);
-  } catch (error) {
-    console.error("Error posting data:", error);
-    message.error(language === "en" ? "Report Submition Failed!. Please try again." : "පැමිණිල්ල ඉදිරිපත් කිරීම අසාර්ථකයි. නැවත උත්සාහ කරන්න.");
-  }
-};
-
 
   const navigate = useNavigate();
   
@@ -314,41 +264,33 @@ const handleReport = async () => {
         </div>
       )}
      
-       {/* Invalid Modal */}
-    {invalidModalVisible && (
-      <div style={styles.modalOverlay}>
-        <div style={styles.modalContent}>
-          <button style={styles.Invalidbutton}>
-            {language === 'en' ? 'The number is invalid!' : 'අංකය අවලංගු වේ!'}
-          </button>
-          <br></br>
-          {/* Report GSMB Button */}
-          <button
-            style={styles.button}
-            onClick={handleReport} // Trigger report submission on click
-          >
-            {language === 'en' ? 'Report GSMB' : 'GSMB වෙත පැමිණිලි කරන්න'}
-          </button>
-          <br></br>
-          {/* Contact List */}
-          <div style={styles.contactContainer}>
-            {textContent.contacts.map((contact, index) => (
-              <div key={index} style={{ position: 'relative', marginBottom: '10px' }}>
-                <input type="text" value={contact.number} readOnly style={styles.contactInput} />
-                <span style={styles.contactIcon}>{contact.icon}</span>
-              </div>
-            ))}
+      {/* Invalid Modal */}
+      {invalidModalVisible && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <button style={styles.Invalidbutton}>{language === 'en' ? 'The number is invalid!' : 'අංකය අවලංගු වේ!'}</button>
+            <br></br>
+            <button style={styles.button}>{language === 'en' ? 'Report GSMB' : 'අංකය අවලංගු වේ!'}</button>
+            <br></br>
+            {/* Contact List */}
+            <div style={styles.contactContainer}>
+              {textContent.contacts.map((contact, index) => (
+                <div key={index} style={{ position: 'relative', marginBottom: '10px' }}>
+                  <input type="text" value={contact.number} readOnly style={styles.contactInput} />
+                  <span style={styles.contactIcon}>{contact.icon}</span>
+                </div>
+              ))}
+            </div>
+            <br></br>
+            <button
+              style={styles.closeModalButton}
+              onClick={closeModals} // Close modal on click
+            >
+              {language === 'en' ? 'Close' : 'වසන්න'}
+            </button>
           </div>
-          <br></br>
-          <button
-            style={styles.closeModalButton}
-            onClick={closeModals} // Close modal on click
-          >
-            {language === 'en' ? 'Close' : 'වසන්න'}
-          </button>
-        </div>
-      </div>
-    )}
+        </div>   
+      )}
     </>
   );
 };

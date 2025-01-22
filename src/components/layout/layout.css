@@ -75,6 +75,11 @@
      align-items: center;
 }
 
+.user-header-rest{
+  display: flex;
+  gap: 8px;
+}
+
 @media (max-width: 1161px) {
   .nav-list {
     display: none;
@@ -142,6 +147,11 @@
 @media (max-width: 515px) {
     .user-header-logo{
         display: none;
+    }
+    .user-header-rest{
+      width: 500px;
+      display: flex;
+      justify-content: space-between;
     }
   }
 

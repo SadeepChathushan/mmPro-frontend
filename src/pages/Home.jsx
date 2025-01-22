@@ -146,7 +146,6 @@ const Home = () => {
             </Paragraph>
           </div>
 
-
           <div className="h-about-img-div">
             <Image
               src="https://img.freepik.com/free-photo/heavy-excavator-digging-day-light_23-2149194835.jpg?t=st=1737107358~exp=1737110958~hmac=fd65b47146397b1710edb5c1e319a156a5fcff697dcf6a52c0852be438f64f04&w=996"
@@ -155,39 +154,7 @@ const Home = () => {
             />
           </div>
         </div>
-
-
-            
-                
-                <Paragraph>
-                mmPro delivers a robust suite of services tailored to meet the unique demands of the mining and mineral production sector. Our real-time monitoring feature allows the Geological Survey and Mines Bureau (GSMB) to track mining activities and production levels with precision, ensuring efficient oversight of operations. This system enhances transparency by providing instant updates, helping to identify issues early and improve overall operational performance.
-                </Paragraph>
-                <Paragraph>
-                Our advanced data analytics and reporting tools generate detailed insights into mining activities, enabling GSMB to make informed decisions and optimize production processes. From tracking resource extraction to analyzing production trends, these features ensure that every decision is backed by reliable data.
-                </Paragraph>
-                <Paragraph>
-                In addition to operational benefits, mmPro supports regulatory compliance by ensuring all mining activities adhere to established industry standards. This not only promotes responsible resource management but also aligns with sustainability goals, helping GSMB balance productivity with environmental responsibility.
-                </Paragraph>
-                <Paragraph>
-                To further enhance usability, mmPro provides customizable dashboards that allow users to tailor their experience to specific needs. Combined with user-friendly interfaces and ongoing training and support, mmPro ensures that GSMB staff can effectively manage mining operations with confidence and ease.
-                </Paragraph>
-              </div>
-        
-            <div style={{ flex:'1', maxWidth:'50%' }}>
-              <Image 
-                src="https://img.freepik.com/free-photo/heavy-excavator-digging-day-light_23-2149194835.jpg?t=st=1737107358~exp=1737110958~hmac=fd65b47146397b1710edb5c1e319a156a5fcff697dcf6a52c0852be438f64f04&w=996" 
-                alt="Service mmPro" 
-                 
-                style={{ marginRight: '20px', height:'auto' , width:'100%' }} 
-              />
-             
-            </div>
-            
-         
-
-      
-      {/* <HomeFooter/> */}
-      
+      </div>
 
       <HomeFooter />
     </Layout>

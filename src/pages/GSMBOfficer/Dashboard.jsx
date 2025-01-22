@@ -7,7 +7,6 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import StatsBox from "../../components/GSMBOfficer/StatsBox";
 import TabSection from "../../components/GSMBOfficer/TabSection";
 import LicenseTable from "../../components/GSMBOfficer/LicenseTable";
-import ComplaintTable from "../../components/GSMBOfficer/ComplaintTable";
 
 const { Text } = Typography;
 
@@ -21,15 +20,15 @@ const Dashboard = () => {
   const tabs = [
     { key: "ML", label: language === "en" ? "Mining License" : "බලපත්‍ර" },
     { key: "TPL", label: language === "en" ? "Transport License" : "ප්‍රවාහන බලපත්‍ර" },
-    { key: "CMPLN", label: language === "en" ? "Complaints" : "පැමිණිලි" },
+    { key: "CMPLN", label: language === "en" ? "Complains" : "පැමිණිලි" },
   ];
 
   useEffect(() => {
     console.log("Fetching data for the dashboard...");
     const fetchData = async () => {
       try {
-        const username = "Sadeep";
-        const password = "Chathushan UCSC";
+        const username = "";
+        const password = "";
   
         // Updated API call
         const response = await axios.get("/api/projects/gsmb-officer/issues.json", {
@@ -101,7 +100,7 @@ const Dashboard = () => {
             color: "#408220",
           },
           {
-            title: language === "en" ? "Complaints" : "පැමිණිලි",
+            title: language === "en" ? "Complains" : "පැමිණිලි",
             count: tableData.filter((item) => item.tracker === "CMPLN").length,
             color: "#950C33",
           },
@@ -169,11 +168,7 @@ const Dashboard = () => {
           marginTop: "16px",
         }}
       >
-         {activeTab === "CMPLN" ? (
-          <ComplaintTable data={filteredData} />
-        ) : (
-          <LicenseTable data={filteredData} />
-        )}
+        <LicenseTable data={filteredData} />
       </div>
     </div>
   );
