@@ -13,7 +13,7 @@ const LicenseTable = ({ data, tracker }) => {
     ],
     TPL: [
       { title: "ID", dataIndex: "id" },
-      { title: "Assignee", dataIndex: "assignee" },
+      { title: "Mining Owner", dataIndex: "ownerName" },
       { title: "License Number", dataIndex: "licenseNumber" },
       { title: "Lorry Number", dataIndex: "lorryNumber" },
       { title: "Action", render: (_, record) => renderAction(record, "license") },
@@ -22,8 +22,9 @@ const LicenseTable = ({ data, tracker }) => {
       { title: "ID", dataIndex: "id" },
       { title: "Mobile Number", dataIndex: "mobileNumber" },
       { title: "Lorry Number", dataIndex: "lorryNumber" },
-      { title: "Complaint ID", dataIndex: "complaintId" },
-      { title: "Action", render: (_, record) => renderAction(record, "complaint") },
+      { title: "Complaint ID", dataIndex: "complaintID" },
+      { title: "Complaint Date", dataIndex: "start_date" },
+      // { title: "Action", render: (_, record) => renderAction(record, "complaint") },
     ],
   };
   
