@@ -107,35 +107,44 @@ const uploadLorry = async (file) => {
 
   return (
     <div
-      style={{
-        maxWidth: "800px",
-        margin: "0 auto",
-        padding: "20px",
-        background: "#f0f2f5",
-        borderRadius: "10px",
-      }}
+      // style={{
+      //   maxWidth: "800px",
+      //   margin: "0 auto",
+      //   padding: "20px",
+      //   background: "#f0f2f5",
+      //   borderRadius: "10px",
+      // }}
     >
       <Button
         type="link"
         icon={<ArrowLeftOutlined />}
-        style={{ marginBottom: "16px", paddingLeft: 0, color: "#000000" }}
+        style={{ marginBottom: "10px", paddingLeft: 0, color: "#000000" }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = "#EFE29C"; // Hover color
+          e.currentTarget.style.borderColor = "#EFE29C"; // Hover border
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = "#ffffff"; // Default color
+          e.currentTarget.style.borderColor = "#ffffff"; // Default border
+        }}
         href="/gsmb/dashboard"
       >
         {language === "en" ? "Back" : "ආපසු"}
       </Button>
 
-      <h2 style={{ textAlign: "center", fontWeight: "bold", color: "#1a1a1a" }}>
+      <h2 style={{ textAlign: "center", fontWeight: "bold", color: "#1a1a1a" , fontSize:"32px" }}>
       {language === "en" ? "Register New License Owner" : "නව බලපත්‍ර අයිතිකරු ලියාපදිංචි කරන්න"}
       </h2>
       <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Row gutter={[16, 16]}>
+        <Row  gutter={[16, 16]} >
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "Owner Name" : "අයිතිකරුගේ නම"}
+              style={{fontSize:"32px"}}
+              label={language === "en" ? "Owner Name" : "අයිතිකරුගේ නම" }
               name="ownerName"
               rules={[{ required: true, message: language === "en" ? "Please input the owner name!" : "අයිතිකරුගේ නම ඇතුළත් කරන්න!" }]}
             >
-              <Input />
+              <Input style={{fontSize:"24px"}}/>
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
@@ -144,7 +153,7 @@ const uploadLorry = async (file) => {
               name="mobile"
               rules={[{ required: true, message: language === "en" ? "Please input the mobile number!" : "ජංගම දුරකථන අංකය ඇතුළත් කරන්න!" }]}
             >
-              <Input />
+              <Input style={{fontSize:"24px"}}/>
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
@@ -153,7 +162,7 @@ const uploadLorry = async (file) => {
               name="vehicleNumber"
               rules={[{ required: true, message: language === "en" ? "Please input the vehicle number!" : "වාහන අංකය ඇතුළත් කරන්න!"}]}
             >
-              <Input />
+              <Input style={{fontSize:"24px"}}/>
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
@@ -162,7 +171,7 @@ const uploadLorry = async (file) => {
               name="capacity"
               rules={[{ required: true, message: language === "en" ? "Please input the capacity!" : "කියුබ් ගණන ඇතුළත් කරන්න!" }]}
             >
-              <Input />
+              <Input style={{fontSize:"24px"}}/>
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
@@ -201,14 +210,34 @@ const uploadLorry = async (file) => {
           </Col>
           <Col xs={24}>
             <Form.Item>
-              <div style={{ display: "flex", gap: "10px" }}>
+              <div style={{ 
+                marginLeft:"10px",
+                display: "flex", 
+                flexDirection:"row",
+                justifyContent:"center",
+                alignItems:"center",
+                gap: "50px", 
+                alignItems:"center"
+                }}>
                 <Button
                   type="primary"
                   htmlType="submit"
                   style={{
-                    width: "48%",
+                    flex:"1 1 48%",
+                    maxWidth:"300px",
+                    // width: "48%",
                     backgroundColor: "#950C33",
                     borderColor: "#950C33",
+                    height:"40px"
+                    
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#FFE143"; // Hover color
+                    e.currentTarget.style.borderColor = "#FFE143"; // Hover border
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "#950C33"; // Default color
+                    e.currentTarget.style.borderColor = "#950C33"; // Default border
                   }}
                 >
                   {language == "en" ? "Create License" : "බලපත්‍රය නිර්මාණය කරන්න"}
@@ -216,7 +245,22 @@ const uploadLorry = async (file) => {
                 <Button
                   type="default"
                   onClick={handleCancel}
-                  style={{ width: "48%", borderColor: "#950C33" }}
+                  style={{ 
+                    flex:"1 1 48%",
+                    maxWidth:"300px",
+                    // width: "48%",
+                    borderColor: "#950C33" ,
+                    backgroundColor:"#FFFFFF", 
+                    height:"40px"}}
+
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#950C33"; // Hover color
+                    e.currentTarget.style.borderColor = "#950C33"; // Hover border
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "#FFFFFF"; // Default color
+                    e.currentTarget.style.borderColor = "#950C33"; // Default border
+                  }}
                 >
                   {language == "en" ? "Cancel" : "අවලංගු කරන්න"}
                 </Button>

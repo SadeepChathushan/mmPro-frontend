@@ -28,23 +28,23 @@ const NewLicenseForm = () => {
         },
       };
 
-      const username = "@achinthamihiran"; // Replace with actual username
-      const password = "Ab2#*De#"; // Replace with actual password
+      // Retrieve API Key from localStorage
+      const apiKey = localStorage.getItem("API_Key");
+
+      console.log("API Key from localStorage:", apiKey);
+
+      if (!apiKey) {
+        console.error("API Key not found in localStorage");
+        return;
+      }
 
       // Post the data to the API
-      const response = await axios.post(
-        "/api/projects/new-license/issues.json",
-        payload,
-        {
+      const response = await axios.post( "/api/projects/new-license/issues.json",{
           headers: {
             "Content-Type": "application/json",
+            "X-Redmine-API-Key": apiKey, // Pass the API Key in the header
           },
-          auth: {
-            username,
-            password,
-          },
-        }
-      );
+      });
 
       console.log("Data posted successfully:", response.data);
     } catch (error) {
@@ -59,38 +59,50 @@ const NewLicenseForm = () => {
 
   return (
     <div
-      style={{
-        maxWidth: "800px",
-        margin: "0 auto",
-        padding: "20px",
-        background: "#f0f2f5",
-        borderRadius: "10px",
-      }}
+      // style={{
+      //   maxWidth: "800px",
+      //   margin: "0 auto",
+      //   padding: "20px",
+      //   background: "#f0f2f5",
+      //   borderRadius: "10px",
+      // }}
     >
       <Button
         type="link"
         icon={<ArrowLeftOutlined />}
-        style={{ marginBottom: "16px", paddingLeft: 0, color: "#000000" }}
+        style={{ marginBottom: "10px", paddingLeft: 0, color: "#000000" }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = "#EFE29C"; // Hover color
+          e.currentTarget.style.borderColor = "#EFE29C"; // Hover border
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = "#ffffff"; // Default color
+          e.currentTarget.style.borderColor = "#ffffff"; // Default border
+        }}
         href="/gsmb/dashboard"
-      ></Button>
+      >
+         {language === "en" ? "Back" : "ආපසු"}
+      </Button>
 
-      <h2 style={{ textAlign: "center", fontWeight: "bold", color: "#1a1a1a" }}>
+      <h2 style={{ textAlign: "center", fontWeight: "bold", color: "#1a1a1a" ,fontSize:"32px" }}>
         {language === "en" ? "New License" : "නව බලපත්‍රය"}
       </h2>
       <Form
+      
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        style={{ gap: "16px" }}
+        // style={{ gap: "16px" }}
       >
-        <Row gutter={[16, 16]}>
-          <Col xs={24} sm={24} md={12}>
+        <Row gutter={[16, 16]} >
+          <Col xs={24} sm={24} md={12} >
             <Form.Item
+              
               label={language === "en" ? "License Number" : "බලපත්‍රය අංකය"}
               name="licenseNumber"
               rules={[{ required: true, message: language === "en" ? "Please input the license number!" : "කරුණාකර අවසරපත්‍ර අංකය ඇතුළත් කරන්න!" }]}
             >
-              <Input />
+              <Input  style={{fontSize:"24px"}}/>
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
@@ -99,16 +111,17 @@ const NewLicenseForm = () => {
               name="ownerName"
               rules={[{ required: true, message: language === "en" ? "Please input the owner name!" : "කරුණාකර අයිතිකරුගේ නම ඇතුළත් කරන්න!" }]}
             >
-              <Input />
+              <Input style={{fontSize:"24px"}}/>
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
+            
               label={language === "en" ? "Validity Start" : "වලංගුතාව ආරම්භක දිනය"}
               name="validityStart"
               rules={[{ required: true, message: language === "en" ? "Please select the start date!" : "කරුණාකර ආරම්භක දිනය තෝරන්න!" }]}
             >
-              <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
+              <DatePicker format="DD/MM/YYYY" style={{ width: "100%" , fontSize:"24px" }} />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
@@ -117,7 +130,7 @@ const NewLicenseForm = () => {
               name="endDate"
               rules={[{ required: true, message: language === "en" ? "Please select the end date!" : "කරුණාකර අවසාන දිනය තෝරන්න!" }]}
             >
-              <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
+              <DatePicker format="DD/MM/YYYY" style={{ width: "100%" ,fontSize:"24px"}} />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
@@ -126,7 +139,7 @@ const NewLicenseForm = () => {
               name="capacity"
               rules={[{ required: true, message: language === "en" ? "Please input the capacity!" : "කරුණාකර කියුබ්ස් ගණන ඇතුළත් කරන්න!" }]}
             >
-              <Input />
+              <Input style={{fontSize:"24px"}}/>
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12}>
@@ -135,28 +148,54 @@ const NewLicenseForm = () => {
               name="mobile"
               rules={[{ required: true, message: language === "en" ? "Please input the mobile number!" : "කරුණාකර ජංගම අංකය ඇතුළත් කරන්න!" }]}
             >
-              <Input />
+              <Input style={{fontSize:"24px"}}/>
             </Form.Item>
           </Col>
-          <Col xs={24}>
+          <Col xs={24} sm={24} md={12}
+           style={{fontSize:'32px' , justifyContent:"center"}}>
             <Form.Item
-              label={language === "en" ? "Location" : "ස්ථානය"}
+             label=
+              
+             {language === "en" ? "Location" : "ස්ථානය"}
               name="location"
               rules={[{ required: true, message: language === "en" ? "Please input the location!" : "කරුණාකර ස්ථානය ඇතුළත් කරන්න!" }]}
+              
             >
-              <Input />
+              <Input style={{fontSize:"24px"}}/>
             </Form.Item>
           </Col>
+
+
+
           <Col xs={24}>
             <Form.Item>
-              <div style={{ display: "flex", gap: "10px" }}>
+              <div style={{ 
+                marginLeft:"10px",
+                display: "flex", 
+                flexDirection:"row",
+                justifyContent:"center",
+                alignItems:"center",
+                gap: "50px", 
+                alignItems:"center"
+                }}>
                 <Button
                   type="primary"
                   htmlType="submit"
                   style={{
+                    flex:"1 1 48%",
+                    maxWidth: "300px",
                     backgroundColor: "#950C33",
                     borderColor: "#950C33",
-                    width: "48%",
+                    height:"40px",
+                    // width: "48%",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#FFE143"; // Hover color
+                    e.currentTarget.style.borderColor = "#FFE143"; // Hover border
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "#950C33"; // Default color
+                    e.currentTarget.style.borderColor = "#950C33"; // Default border
                   }}
                 >
                   {language === "en" ? "Create License" : "බලපත්‍රය සාදන්න"}
@@ -166,8 +205,20 @@ const NewLicenseForm = () => {
                   type="default"
                   onClick={handleCancel}
                   style={{
-                    width: "48%",
+                    flex:"1 1 48%",
+                    maxWidth:"300px",
+                    // width: "48%",
+                    backgroundColor:"#FFFFFF",
                     borderColor: "#950C33",
+                    height:"40px"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#950C33"; // Hover color
+                    e.currentTarget.style.borderColor = "#950C33"; // Hover border
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "#FFFFFF"; // Default color
+                    e.currentTarget.style.borderColor = "#950C33"; // Default border
                   }}
                 >
                   {language === "en" ? "Cancel" : "අවලංගු කරන්න"}

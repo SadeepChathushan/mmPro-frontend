@@ -1,17 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Table, Row, Col, Space, Typography, AutoComplete } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios'; // Import axios for API requests
 import { useLanguage } from "../../contexts/LanguageContext";
+import authService from '../../services/authService'; // Import auth service
 
 const { Title } = Typography;
 
 const MLOwnerHomePage = () => {
   const { language } = useLanguage();
+  const location = useLocation(); // Get the current location (which includes the search query)
   const [data, setData] = useState([]); // All data fetched from API
   const [filteredData, setFilteredData] = useState([]); // Filtered data for table display
   const [searchText, setSearchText] = useState(""); // State to handle search input
+  const [licenseNumberQuery, setLicenseNumberQuery] = useState(""); // Store the license number from query
+  const [user, setUser] = useState(null); // State to store the logged-in user
+
+  // Fetch the current logged-in user from local storage or auth service
+  useEffect(() => {
+    const currentUser = authService.getCurrentUser();
+    if (currentUser) {
+      setUser(currentUser);
+    }
+  }, []);
+
+  // Get the license number from the URL query (if any)
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const licenseNumber = queryParams.get('licenseNumber');
+    if (licenseNumber) {
+      setLicenseNumberQuery(licenseNumber); // Set the license number from the URL query
+    }
+  }, [location.search]);
 
   // Table columns
   const columns = [
@@ -83,14 +104,18 @@ const MLOwnerHomePage = () => {
           </Link>
 
           {/* History Button */}
-          <Link to="/mlowner/history">
+          <Link
+            to={{
+              pathname: "/mlowner/history",
+              search: `?licenseNumber=${record.licenseNumber}`, // Pass license number as query param
+            }}
+          >
             <Button
               style={{
-                backgroundColor: '#0066cc', // Blue background color for History button
+                backgroundColor: '#0066cc',
                 borderColor: '#0066cc',
                 borderRadius: '10%',
               }}
-              title="View History"
             >
               {language === "en" ? "History" : "ඉතිහාසය"}
             </Button>
@@ -106,7 +131,7 @@ const MLOwnerHomePage = () => {
       try {
         const username = "@achinthamihiran"; // Replace with actual username
         const password = "Ab2#*De#"; // Replace with actual password
-
+  
         const response = await axios.get('/api/projects/gsmb/issues.json', {
           headers: {
             "Content-Type": "application/json",
@@ -116,41 +141,53 @@ const MLOwnerHomePage = () => {
             password,
           },
         });
-
+  
         // Map the API data to the table format
-        const mappedData = response.data.issues.map(issue => {
-          const currentDate = new Date();
-          const dueDate = new Date(issue.due_date);
-          const isActive = currentDate <= dueDate;
-
-          return {
-            licenseNumber: issue.custom_fields.find(field => field.name === 'License Number')?.value,
-            owner: issue.custom_fields.find(field => field.name === 'Owner Name')?.value,
-            location: issue.custom_fields.find(field => field.name === 'Address')?.value, // Using Address for location
-            startDate: issue.start_date,
-            dueDate: issue.due_date,
-            capacity: issue.custom_fields.find(field => field.name === 'Capacity')?.value,
-            dispatchedCubes: issue.custom_fields.find(field => field.name === 'Used')?.value, // Mapped to Used for dispatched cubes
-            remainingCubes: issue.custom_fields.find(field => field.name === 'Remaining')?.value, // Using Remaining field for cubes
-            royalty: issue.custom_fields.find(field => field.name === 'Royalty(sand)due')?.value, // Added royalty mapping
-            status: isActive ? 'Active' : 'Inactive', // Active if not overdue, inactive otherwise
-          };
-        });
-
+        let mappedData = response.data.issues
+          .filter(issue => {
+            // Filter by tracker name "ML" and capacity >= 0
+            const capacity = issue.custom_fields.find(field => field.name === 'Capacity')?.value;
+            return issue.tracker.name === "ML" && (parseInt(capacity, 10) >= 0);
+          })
+          .map(issue => {
+            const currentDate = new Date();
+            const dueDate = new Date(issue.due_date);
+            const isActive = currentDate <= dueDate;
+  
+            return {
+              licenseNumber: issue.custom_fields.find(field => field.name === 'License Number')?.value,
+              owner: issue.custom_fields.find(field => field.name === 'Owner Name')?.value,
+              location: issue.custom_fields.find(field => field.name === 'Address')?.value, // Using Address for location
+              startDate: issue.start_date,
+              dueDate: issue.due_date,
+              capacity: issue.custom_fields.find(field => field.name === 'Capacity')?.value,
+              dispatchedCubes: issue.custom_fields.find(field => field.name === 'Used')?.value, // Mapped to Used for dispatched cubes
+              remainingCubes: issue.custom_fields.find(field => field.name === 'Remaining')?.value, // Using Remaining field for cubes
+              royalty: issue.custom_fields.find(field => field.name === 'Royalty(sand)due')?.value, // Added royalty mapping
+              status: isActive ? 'Active' : 'Inactive', // Active if not overdue, inactive otherwise
+            };
+          });
+  
+        // **New**: Filter licenses by the logged-in user's full name
+        if (user && user.firstname && user.lastname) {
+          const fullName = `${user.firstname} ${user.lastname}`; // Construct full name
+          mappedData = mappedData.filter(item => item.owner === fullName);
+        }
+  
         // Sort the data by due date (most recent first) and then take only the first 5 records
         const sortedData = mappedData.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
         const recentData = sortedData.slice(0, 5);
-
+  
         setData(recentData); // Set all filtered data
         setFilteredData(recentData); // Set filtered data for initial display
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-
+  
     fetchData();
-  }, []); // Empty dependency array means this effect runs once when the component mounts
-
+  }, [user]); // Re-fetch when user changes
+  
   // Handle search input change
   const handleSearch = (value) => {
     setSearchText(value);

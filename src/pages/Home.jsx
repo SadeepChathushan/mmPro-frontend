@@ -1,8 +1,11 @@
 import React from "react";
 import { Layout, Row, Col, Typography, Image } from "antd";
 import Navbar from "../components/layout/Navbar";
-import HomeFooter from "../components/layout/HomeFooter";
+import Footer from "../components/layout/Footer";
 import { useLanguage } from "../contexts/LanguageContext";
+import backgroundImage from "../assets/images/ocean.jpg";
+import aboutImage from "../assets/images/engineer.jpg";
+import serviceImage from "../assets/images/constructor.jpg";
 
 const { Content } = Layout;
 const { Title, Paragraph } = Typography;
@@ -12,11 +15,18 @@ const Home = () => {
   return (
     <Layout>
       <Navbar />
-      <Content className="h-hero-content"
-      >
-        <Title level={2} style={{ color: "#fff" }}>
-          WELCOME
+      <Content className="h-hero-content">
+      
+         
+        <Title level={2} style={{color:'#fff',textAlign:'center'}}>
+          {language === 'en'? 'WELCOME' :language === 'si'? 'සාදරයෙන් පිළිගනිමු':'வரவேற்பு'}
+          
+          <Paragraph style={{color:'#fff',textAlign:'center',marginTop:'30px' ,fontSize:'18px'}}>
+            {language === 'en'? 'Welcome to mmPro, the advanced solution for efficient mining and mineral production monitoring. This platform is designed to provide seamless tracking, data analysis, and reporting, helping the Geological Survey and Mines Bureau (GSMB) manage mining operations with precision. Whether you’re overseeing resource extraction, ensuring regulatory compliance, or improving productivity, mmPro equips you with the tools to make informed decisions and drive sustainable mining practices. Let’s work together to enhance the future of mining and ensure a transparent and responsible industry.'
+            :language ==='si'? 'කාර්යක්ෂම පතල් කැණීම් සහ ඛනිජ නිෂ්පාදන අධීක්ෂණය සඳහා උසස් විසඳුම වන mmPro වෙත සාදරයෙන් පිළිගනිමු. මෙම වේදිකාව නිර්මාණය කර ඇත්තේ බාධාවකින් තොරව ලුහුබැඳීම, දත්ත විශ්ලේෂණය සහ වාර්තාකරණය සැපයීම සඳහා වන අතර, භූ විද්‍යා සමීක්ෂණ සහ පතල් කාර්යාංශයට (GSMB) පතල් මෙහෙයුම් නිරවද්‍යතාවයෙන් කළමනාකරණය කිරීමට උපකාරී වේ. ඔබ සම්පත් නිස්සාරණය අධීක්ෂණය කරන්නේද, නියාමන අනුකූලතාව සහතික කරන්නේද, නැතහොත් ඵලදායිතාව වැඩි දියුණු කරන්නේද යන්න නොසලකා, දැනුවත් තීරණ ගැනීමට සහ තිරසාර පතල් භාවිතයන් මෙහෙයවීමට mmPro ඔබට මෙවලම් සපයයි. පතල් කැණීමේ අනාගතය වැඩිදියුණු කිරීමට සහ විනිවිද පෙනෙන සහ වගකිවයුතු කර්මාන්තයක් සහතික කිරීමට අපි එක්ව කටයුතු කරමු.' 
+            :'திறமையான சுரங்க மற்றும் கனிம உற்பத்தி கண்காணிப்புக்கான மேம்பட்ட தீர்வான mmPro-விற்கு வருக. இந்த தளம் தடையற்ற கண்காணிப்பு, தரவு பகுப்பாய்வு மற்றும் அறிக்கையிடலை வழங்க வடிவமைக்கப்பட்டுள்ளது, இது புவியியல் ஆய்வு மற்றும் சுரங்கப் பணியகம் (GSMB) சுரங்க நடவடிக்கைகளை துல்லியமாக நிர்வகிக்க உதவுகிறது. நீங்கள் வள பிரித்தெடுப்பை மேற்பார்வையிடுகிறீர்களோ, ஒழுங்குமுறை இணக்கத்தை உறுதிசெய்கிறீர்களோ, அல்லது உற்பத்தித்திறனை மேம்படுத்துகிறீர்களோ, தகவலறிந்த முடிவுகளை எடுப்பதற்கும் நிலையான சுரங்க நடைமுறைகளை இயக்குவதற்கும் mmPro உங்களுக்கு கருவிகளை வழங்குகிறது. சுரங்கத்தின் எதிர்காலத்தை மேம்படுத்தவும், வெளிப்படையான மற்றும் பொறுப்பான தொழிலை உறுதி செய்யவும் ஒன்றிணைந்து செயல்படுவோம்.'}</Paragraph>
         </Title>
+        
       </Content>
 
       <div id="about">
@@ -30,7 +40,7 @@ const Home = () => {
           {language === "en" ? "ABOUT" : language === "si" ? "පිළිබඳ" : "பற்றி"}
           <p
             style={{
-              fontSize: "12px",
+              fontSize: "16px",
               fontFamily: "inherit",
               marginTop: "5px",
               marginBottom: "5px",
@@ -49,7 +59,7 @@ const Home = () => {
           <div className="h-about-img-div"
           >
             <Image
-              src="https://img.freepik.com/free-photo/engineer-helmet-standing-by-factory_1157-35548.jpg?t=st=1737099796~exp=1737103396~hmac=301b1c2d5d08182cf62e5e4e95be749448747bcdb66253dde0cc4d6616c71922&w=996"
+              src={aboutImage}
               alt="About mmPro"
               style={{
                 height: "auto",
@@ -60,21 +70,21 @@ const Home = () => {
           </div>
           <div className="h-about-content-div"
           >
-            <Paragraph className="h-paragraph" style={language === "ta" ? { fontSize: "11px" } : {}}>
+            <Paragraph className="h-paragraph" style={language === "ta" ? { fontSize: "12px" } : {}}>
               {language === "en"
                 ? "mmPro is an advanced solution designed specifically for the Geological Survey and Mines Bureau (GSMB) to transform how mining and mineral production are managed. Leveraging cutting-edge technology, mmPro provides real-time monitoring, precise data collection, and actionable insights to streamline operations and improve decision-making. It ensures GSMB has complete oversight of mining activities, enabling greater efficiency and accuracy in resource management while reducing operational bottlenecks."
                 : language === "si"
                 ? "mmPro යනු පතල් කැණීම් සහ ඛනිජ නිෂ්පාදනය කළමනාකරණය කරන ආකාරය පරිවර්තනය කිරීම සඳහා භූ විද්‍යා සමීක්ෂණ හා පතල් කාර්යාංශය (GSMB) සඳහා විශේෂයෙන් නිර්මාණය කර ඇති උසස් විසඳුමකි. අති නවීන තාක්‍ෂණය උපයෝගී කර ගනිමින්, mmPro මෙහෙයුම් විධිමත් කිරීමට සහ තීරණ ගැනීම වැඩිදියුණු කිරීමට තත්‍ය කාලීන නිරීක්‍ෂණය, නිරවද්‍ය දත්ත රැස් කිරීම සහ ක්‍රියාකාරී අවබෝධය සපයයි. එය GSMB හට පතල් කැණීම් කටයුතු පිළිබඳ පූර්ණ අධීක්‍ෂණයක් ඇති බව සහතික කරයි, මෙහෙයුම් බාධක අඩු කරන අතරම සම්පත් කළමනාකරණයේ වැඩි කාර්යක්ෂමතාවයක් සහ නිරවද්‍යතාවයක් ඇති කරයි."
                 : "mmPro என்பது புவியியல் ஆய்வு மற்றும் சுரங்கப் பணியகம் (GSMB) சுரங்கம் மற்றும் கனிம உற்பத்தி எவ்வாறு நிர்வகிக்கப்படுகிறது என்பதை மாற்றியமைக்க வடிவமைக்கப்பட்ட ஒரு மேம்பட்ட தீர்வாகும். அதிநவீன தொழில்நுட்பத்தை மேம்படுத்துவதன் மூலம், mmPro நிகழ்நேர கண்காணிப்பு, துல்லியமான தரவு சேகரிப்பு மற்றும் செயல்பாடுகளை நெறிப்படுத்தவும் முடிவெடுப்பதை மேம்படுத்தவும் செயல்படக்கூடிய நுண்ணறிவுகளை வழங்குகிறது. சுரங்க நடவடிக்கைகளின் முழுமையான மேற்பார்வையை GSMB உறுதிப்படுத்துகிறது, மேலும் செயல்பாட்டுத் தடைகளைக் குறைக்கும் அதே வேளையில் வள நிர்வாகத்தில் அதிக செயல்திறன் மற்றும் துல்லியத்தை செயல்படுத்துகிறது."}
             </Paragraph>
-            <Paragraph className="h-paragraph" style={language === "ta" ? { fontSize: "11px" } : {}}>
+            <Paragraph className="h-paragraph" style={language === "ta" ? { fontSize: "12px" } : {}}>
               {language === "en"
                 ? "With sustainability and compliance at its core, mmPro empowers GSMB to meet regulatory requirements, enforce industry standards, and promote environmentally responsible mining practices. Its intuitive and user-friendly interface, combined with customizable dashboards, ensures a seamless experience for users across various roles. By bridging the gap between technology and resource management, mmPro not only enhances transparency and productivity but also establishes a foundation for long-term sustainability in the mining industry."
                 : language === "si"
                 ? "තිරසාරත්වය සහ අනුකූලතාවය එහි හරය සමඟින්, නියාමන අවශ්‍යතා සපුරාලීමට, කර්මාන්ත ප්‍රමිතීන් බලාත්මක කිරීමට සහ පාරිසරික වශයෙන් වගකිව යුතු පතල් කැණීම් ප්‍රවර්ධනය කිරීමට mmPro GSMB වෙත බලය ලබා දෙයි. එහි බුද්ධිමය සහ පරිශීලක-හිතකාමී අතුරුමුහුණත, අභිරුචිකරණය කළ හැකි උපකරණ පුවරු සමඟ ඒකාබද්ධව, විවිධ භූමිකාවන් හරහා පරිශීලකයින්ට බාධාවකින් තොර අත්දැකීමක් සහතික කරයි. තාක්‍ෂණය සහ සම්පත් කළමනාකරණය අතර පරතරය පියවීමෙන්, mmPro විනිවිදභාවය සහ ඵලදායිතාව වැඩි දියුණු කරනවා පමණක් නොව පතල් කර්මාන්තයේ දිගුකාලීන තිරසාරභාවය සඳහා පදනමක් ද ස්ථාපිත කරයි."
                 : "அதன் மையத்தில் நிலைத்தன்மை மற்றும் இணக்கத்துடன், எம்எம்பிரோ, ஜிஎஸ்எம்பிக்கு ஒழுங்குமுறைத் தேவைகளைப் பூர்த்தி செய்யவும், தொழில் தரங்களைச் செயல்படுத்தவும், சுற்றுச்சூழலுக்குப் பொறுப்பான சுரங்க நடைமுறைகளை மேம்படுத்தவும் உதவுகிறது. அதன் உள்ளுணர்வு மற்றும் பயனர் நட்பு இடைமுகம், தனிப்பயனாக்கக்கூடிய டாஷ்போர்டுகளுடன் இணைந்து, பல்வேறு பாத்திரங்களில் பயனர்களுக்கு தடையற்ற அனுபவத்தை உறுதி செய்கிறது. தொழில்நுட்பம் மற்றும் வள மேலாண்மைக்கு இடையே உள்ள இடைவெளியைக் குறைப்பதன் மூலம், mmPro வெளிப்படைத்தன்மை மற்றும் உற்பத்தித்திறனை அதிகரிப்பது மட்டுமல்லாமல், சுரங்கத் தொழிலில் நீண்டகால நிலைத்தன்மைக்கான அடித்தளத்தையும் நிறுவுகிறது."}
             </Paragraph>
-            <Paragraph className="h-paragraph" style={language === "ta" ? { fontSize: "11px" } : {}}>
+            <Paragraph className="h-paragraph" style={language === "ta" ? { fontSize: "12px" } : {}}>
               {language === "en"
                 ? "Whether it's tracking resource extraction, generating detailed reports, or facilitating collaboration across teams, mmPro is the ultimate tool to modernize and optimize mining operations. With mmPro, GSMB can confidently lead the mining sector into a future that balances innovation, productivity, and environmental stewardship."
                 : language === "si"
@@ -89,7 +99,7 @@ const Home = () => {
         <Title
           level={4}
           style={{
-            marginTop: "20px",
+            marginTop: "10px",
             color: "#781424",
             textAlign: "center",
             fontSize: "24px",
@@ -98,7 +108,7 @@ const Home = () => {
           {language === "en" ? "SERVICE" : language === "si" ? "සේවාව" : "சேவை"}
           <p
             style={{
-              fontSize: "12px",
+              fontSize: "16px",
               fontFamily: "inherit",
               marginTop: "5px",
             }}
@@ -149,31 +159,29 @@ const Home = () => {
 
           <div className="h-about-img-div">
             <Image
-              src="https://img.freepik.com/free-photo/heavy-excavator-digging-day-light_23-2149194835.jpg?t=st=1737107358~exp=1737110958~hmac=fd65b47146397b1710edb5c1e319a156a5fcff697dcf6a52c0852be438f64f04&w=996"
+              src={serviceImage}
               alt="Service mmPro"
-              style={{ padding: "20px", height: "auto", width: "100%" }}
+              style={{ padding: "10px", height: "auto", width: "100%" }}
             />
           </div>
         </div>
 
-
-            
                 
                 <Paragraph>
-                mmPro delivers a robust suite of services tailored to meet the unique demands of the mining and mineral production sector. Our real-time monitoring feature allows the Geological Survey and Mines Bureau (GSMB) to track mining activities and production levels with precision, ensuring efficient oversight of operations. This system enhances transparency by providing instant updates, helping to identify issues early and improve overall operational performance.
+               
                 </Paragraph>
                 <Paragraph>
-                Our advanced data analytics and reporting tools generate detailed insights into mining activities, enabling GSMB to make informed decisions and optimize production processes. From tracking resource extraction to analyzing production trends, these features ensure that every decision is backed by reliable data.
+                
                 </Paragraph>
                 <Paragraph>
-                In addition to operational benefits, mmPro supports regulatory compliance by ensuring all mining activities adhere to established industry standards. This not only promotes responsible resource management but also aligns with sustainability goals, helping GSMB balance productivity with environmental responsibility.
+                
                 </Paragraph>
                 <Paragraph>
-                To further enhance usability, mmPro provides customizable dashboards that allow users to tailor their experience to specific needs. Combined with user-friendly interfaces and ongoing training and support, mmPro ensures that GSMB staff can effectively manage mining operations with confidence and ease.
+                
                 </Paragraph>
               </div>
         
-            <div style={{ flex:'1', maxWidth:'50%' }}>
+            {/* <div style={{ flex:'1', maxWidth:'50%' }}>
               <Image 
                 src="https://img.freepik.com/free-photo/heavy-excavator-digging-day-light_23-2149194835.jpg?t=st=1737107358~exp=1737110958~hmac=fd65b47146397b1710edb5c1e319a156a5fcff697dcf6a52c0852be438f64f04&w=996" 
                 alt="Service mmPro" 
@@ -181,17 +189,17 @@ const Home = () => {
                 style={{ marginRight: '20px', height:'auto' , width:'100%' }} 
               />
              
-            </div>
+            </div> */}
             
          
 
-      
-      {/* <HomeFooter/> */}
-      
+            <Footer/>
+      </Layout>
+           
 
-      <HomeFooter />
-    </Layout>
-  );
+      
+    
+            );
 };
 
 export default Home;
