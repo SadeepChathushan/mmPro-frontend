@@ -7,6 +7,7 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import StatsBox from "../../components/GSMBOfficer/StatsBox";
 import TabSection from "../../components/GSMBOfficer/TabSection";
 import LicenseTable from "../../components/GSMBOfficer/LicenseTable";
+import ComplaintTable from "../../components/GSMBOfficer/ComplaintTable";
 
 const { Text } = Typography;
 
@@ -20,7 +21,7 @@ const Dashboard = () => {
   const tabs = [
     { key: "ML", label: language === "en" ? "Mining License" : "බලපත්‍ර" },
     { key: "TPL", label: language === "en" ? "Transport License" : "ප්‍රවාහන බලපත්‍ර" },
-    { key: "CMPLN", label: language === "en" ? "Complains" : "පැමිණිලි" },
+    { key: "CMPLN", label: language === "en" ? "Complaints" : "පැමිණිලි" },
   ];
 
   useEffect(() => {
@@ -107,21 +108,24 @@ const Dashboard = () => {
     >
       {/* Stats Section */}
       <Row gutter={[16, 16]} justify="space-around">
-        {[{
-          title: language === "en" ? "Total Licenses" : "මුළු බලපත්‍ර",
-          count: tableData.filter((item) => item.tracker === "ML").length,
-          color: "#1890ff",
-        },
-        {
-          title: language === "en" ? "Transport Licenses" : "ප්‍රවාහන බලපත්‍ර",
-          count: tableData.filter((item) => item.tracker === "TPL").length,
-          color: "#408220",
-        },
-        {
-          title: language === "en" ? "Complains" : "පැමිණිලි",
-          count: tableData.filter((item) => item.tracker === "CMPLN").length,
-          color: "#950C33",
-        },
+
+        {[
+          {
+            title: language === "en" ? "Total Licenses" : "මුළු බලපත්‍ර",
+            count: tableData.filter((item) => item.tracker === "ML").length,
+            color: "#1890ff",
+          },
+          {
+            title: language === "en" ? "Transport Licenses" : "ප්‍රවාහන බලපත්‍ර",
+            count: tableData.filter((item) => item.tracker === "TPL").length,
+            color: "#408220",
+          },
+          {
+            title: language === "en" ? "Complaints" : "පැමිණිලි",
+            count: tableData.filter((item) => item.tracker === "CMPLN").length,
+            color: "#950C33",
+          },
+
         ].map((box, index) => (
           <Col xs={24} sm={12} md={8} lg={6} key={index}>
             <StatsBox title={box.title} count={box.count} color={box.color} />
@@ -186,7 +190,9 @@ const Dashboard = () => {
           marginTop: "16px",
         }}
       >
+
         <LicenseTable data={filteredData} tracker={activeTab} />
+
       </div>
     </div>
   );
