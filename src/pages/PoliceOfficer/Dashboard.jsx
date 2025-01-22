@@ -146,7 +146,7 @@ const Dashboard = () => {
     },
    
     backgroundSection: {
-      flex: '1',
+      flex: '1 1 0% ',
       backgroundImage: `url(${backgroundImage})`,
       backgroundSize: 'cover',
       backgroundPosition: 'left center', // Align the image to the left
@@ -156,11 +156,11 @@ const Dashboard = () => {
       width:'100%',
       display: isMobile ? 'none' : 'block',
     },
-    mainContent: {
-      flex: '1 1 ', // Allow main content to grow but not shrink
+    // mainContent: {
+    //   flex: '1 1 0 ', // Allow main content to grow but not shrink
 
-      color: '#fff',
-    },
+    //   color: '#fff',
+    // },
     header: {
       padding: '1rem',
       textAlign: 'center',
@@ -170,7 +170,7 @@ const Dashboard = () => {
       width: isMobile ? '120px' : '180px',
     },
     mainContent: {
-      flex: '1 0 auto',
+      flex: '1 1 ',
 
       display: 'flex',
       flexDirection: 'column',
@@ -283,7 +283,7 @@ useEffect(() => {
     <div style={styles.pageContainer}>
       <div style={styles.backgroundSection}></div>
      
-      <main style={styles.mainContent}>
+          <main style={styles.mainContent}>
 
         <h2 style={styles.title}>{textContent.title}</h2>
          <header style={styles.header} >
