@@ -21,16 +21,20 @@ const ValidPage = () => {
         { label: isSinhala ? 'ආරම්භක ස්ථානය' :  isTamil? 'இடம் தொடங்கியது' : 'Location Started', dataIndex: 'location'},
       ],
       [
+
         { label: isSinhala ? 'කල් ඉකුත්වන දිනය' :  isTamil? 'காலாவதியாகிறது' :'Expires', value: '2024-01-19' },
         { label: isSinhala ? 'පැටවූ දිනය / වේලාව' :  isTamil? 'ஏற்றப்பட்ட தேதி/நேரம்' :'Loaded date/time', dataIndex: 'start'},
+
       ],
       [
         { label: isSinhala ? 'කියුබ් ගණන' :  isTamil? 'கொள்ளளவு (கனசதுரங்கள்)' :'Capacity(Cubes)', dataIndex: 'capacity'},
         { label: isSinhala ? 'අවලංගු දිනය/ වේලාව' : isTamil? 'நிலுவைத் தேதி/நேரம்' : 'Due date/Time', dataIndex: 'dueDate'},
       ],
       [
+
         { label: isSinhala ? 'පැටවුම් අංකය' :  isTamil? 'சுமை எண்' :'Load Number', value: '8456' },
         { label: isSinhala ? 'ගමනාන්තය' :  isTamil? 'சேருமிடம்' :'Destination', dataIndex: 'destination'},
+
       ],
       [{ label: isSinhala ? 'බලපත්‍ර හිමිකරු' :  isTamil? 'உரிமம் வைத்திருப்பவர்' :'License Holder', dataIndex: 'owner'}],
     ],
@@ -226,19 +230,52 @@ const ValidPage = () => {
           },
         });
 
-        const mappedData = response.data.issues.map((issue) => ({
+        
+        // Separate issues by tracker
+        const tplIssues = response.data.issues.filter(issue => issue.tracker.name === 'TPL');
+        const mlIssues = response.data.issues.filter(issue => issue.tracker.name === 'ML');
+
+
+        // Map TPL issues
+        const tplData = tplIssues.map((issue) => ({
           vehicleNumber: issue.custom_fields.find((field) => field.name === 'Lorry Number')?.value,
           licenseNumber: issue.custom_fields.find((field) => field.name === 'License Number')?.value,
-          owner: issue.custom_fields.find((field) => field.name === 'Assignee')?.value,
-          start: issue.custom_fields.find((field) => field.name === 'Start date')?.value,
-          dueDate: issue.custom_fields.find((field) => field.name === 'Due date')?.value,
-          capacity: issue.custom_fields.find((field) => field.name === 'Cubes')?.value,
-          destination: issue.custom_fields.find((field) => field.name === 'Destination')?.value,
-          location: issue.custom_fields.find((field) => field.name === 'Location')?.value,
+          start: issue.start_date, // Using standard field
+          dueDate: issue.due_date, 
+          capacity: issue.custom_fields.find((field) => field.name === 'Cubes')?.value,    
+          destination: issue.custom_fields.find((field) => field.name === 'Destination')?.value,  
+          loadNumber: issue.id.toString(), // Get TPL issue number for Load Number        
         }));
+ 
+        const hardcodedLocation = "Kegalla";
 
-        const filteredData = mappedData.find((item) => item.vehicleNumber === vehicleNumber);
-        setData(filteredData);
+        // Find the matching TPL issue based on vehicle number
+        const matchingTplData = tplData.find((item) => item.vehicleNumber === vehicleNumber);
+
+        if (matchingTplData) {
+          // Find corresponding ML issue using License Number
+          const matchingMlIssue = mlIssues.find(issue => 
+            issue.custom_fields.find(field => 
+              field.name === 'License Number'
+            )?.value === matchingTplData.licenseNumber
+          );
+
+          // Get owner from ML issue
+          const owner = matchingMlIssue?.custom_fields.find(field => field.name === 'Owner Name')?.value;
+
+          const expire = matchingMlIssue?.due_date; // Get expiry date from ML standard field
+
+          // Combine TPL and ML data
+          setData({
+            ...matchingTplData,
+            owner: owner || 'N/A',
+            expire: expire || 'N/A',
+            location: hardcodedLocation,
+          });
+        } else {
+          setData(null);
+        }       
+
       } catch (error) {
         console.error('Error fetching data:', error);
       }
