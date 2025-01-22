@@ -4,6 +4,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios'; // Import axios for API requests
 import { useLanguage } from "../../contexts/LanguageContext";
+import authService from '../../services/authService'; // Import auth service
 
 const { Title } = Typography;
 
@@ -14,6 +15,15 @@ const MLOwnerHomePage = () => {
   const [filteredData, setFilteredData] = useState([]); // Filtered data for table display
   const [searchText, setSearchText] = useState(""); // State to handle search input
   const [licenseNumberQuery, setLicenseNumberQuery] = useState(""); // Store the license number from query
+  const [user, setUser] = useState(null); // State to store the logged-in user
+
+  // Fetch the current logged-in user from local storage or auth service
+  useEffect(() => {
+    const currentUser = authService.getCurrentUser();
+    if (currentUser) {
+      setUser(currentUser);
+    }
+  }, []);
 
   // Get the license number from the URL query (if any)
   useEffect(() => {
@@ -133,7 +143,7 @@ const MLOwnerHomePage = () => {
         });
   
         // Map the API data to the table format
-        const mappedData = response.data.issues
+        let mappedData = response.data.issues
           .filter(issue => {
             // Filter by tracker name "ML" and capacity >= 0
             const capacity = issue.custom_fields.find(field => field.name === 'Capacity')?.value;
@@ -158,9 +168,10 @@ const MLOwnerHomePage = () => {
             };
           });
   
-        // Filter by license number if passed in the query
-        if (licenseNumberQuery) {
-          mappedData = mappedData.filter(item => item.licenseNumber === licenseNumberQuery);
+        // **New**: Filter licenses by the logged-in user's full name
+        if (user && user.firstname && user.lastname) {
+          const fullName = `${user.firstname} ${user.lastname}`; // Construct full name
+          mappedData = mappedData.filter(item => item.owner === fullName);
         }
   
         // Sort the data by due date (most recent first) and then take only the first 5 records
@@ -175,7 +186,7 @@ const MLOwnerHomePage = () => {
     };
   
     fetchData();
-  }, [licenseNumberQuery]); // Re-fetch when licenseNumberQuery changes
+  }, [user]); // Re-fetch when user changes
   
   // Handle search input change
   const handleSearch = (value) => {
