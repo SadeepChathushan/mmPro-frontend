@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Table, Row, Col, Space, Typography, AutoComplete } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios'; // Import axios for API requests
 import { useLanguage } from "../../contexts/LanguageContext";
 
@@ -9,9 +9,20 @@ const { Title } = Typography;
 
 const MLOwnerHomePage = () => {
   const { language } = useLanguage();
+  const location = useLocation(); // Get the current location (which includes the search query)
   const [data, setData] = useState([]); // All data fetched from API
   const [filteredData, setFilteredData] = useState([]); // Filtered data for table display
   const [searchText, setSearchText] = useState(""); // State to handle search input
+  const [licenseNumberQuery, setLicenseNumberQuery] = useState(""); // Store the license number from query
+
+  // Get the license number from the URL query (if any)
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const licenseNumber = queryParams.get('licenseNumber');
+    if (licenseNumber) {
+      setLicenseNumberQuery(licenseNumber); // Set the license number from the URL query
+    }
+  }, [location.search]);
 
   // Table columns
   const columns = [
@@ -83,14 +94,18 @@ const MLOwnerHomePage = () => {
           </Link>
 
           {/* History Button */}
-          <Link to="/mlowner/history">
+          <Link
+            to={{
+              pathname: "/mlowner/history",
+              search: `?licenseNumber=${record.licenseNumber}`, // Pass license number as query param
+            }}
+          >
             <Button
               style={{
-                backgroundColor: '#0066cc', // Blue background color for History button
+                backgroundColor: '#0066cc',
                 borderColor: '#0066cc',
                 borderRadius: '10%',
               }}
-              title="View History"
             >
               {language === "en" ? "History" : "ඉතිහාසය"}
             </Button>
@@ -143,6 +158,11 @@ const MLOwnerHomePage = () => {
             };
           });
   
+        // Filter by license number if passed in the query
+        if (licenseNumberQuery) {
+          mappedData = mappedData.filter(item => item.licenseNumber === licenseNumberQuery);
+        }
+  
         // Sort the data by due date (most recent first) and then take only the first 5 records
         const sortedData = mappedData.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
         const recentData = sortedData.slice(0, 5);
@@ -155,7 +175,7 @@ const MLOwnerHomePage = () => {
     };
   
     fetchData();
-  }, []); // Empty dependency array means this effect runs once when the component mounts
+  }, [licenseNumberQuery]); // Re-fetch when licenseNumberQuery changes
   
   // Handle search input change
   const handleSearch = (value) => {
