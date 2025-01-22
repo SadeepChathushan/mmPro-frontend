@@ -7,7 +7,7 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import StatsBox from "../../components/GSMBOfficer/StatsBox";
 import TabSection from "../../components/GSMBOfficer/TabSection";
 import LicenseTable from "../../components/GSMBOfficer/LicenseTable";
-import ComplaintTable from "../../components/GSMBOfficer/ComplaintTable";
+// import ComplaintTable from "../../components/GSMBOfficer/ComplaintTable";
 
 const { Text } = Typography;
 
@@ -62,6 +62,10 @@ const Dashboard = () => {
             mobileNumber: issue.custom_fields.find((field) => field.name === "Mobile Number")?.value || "N/A",
             lorryNumber: issue.custom_fields.find((field) => field.name === "Lorry Number")?.value || "N/A",
             assignee: issue.custom_fields.find((field) => field.name === "Assignee")?.value || "N/A",
+            complaintID: issue.custom_fields.find((field) => field.name === "Complaint ID")?.value || "N/A",
+            start_date: issue.custom_fields.find((field) => field.name === "startDate")?.value || issue.start_date || "N/A",
+          
+
           }));
           console.log("Transformed data:", transformedData);
 
