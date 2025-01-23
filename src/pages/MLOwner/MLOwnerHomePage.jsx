@@ -37,20 +37,20 @@ const MLOwnerHomePage = () => {
   // Table columns
   const columns = [
     {
-      title: `${language === "en" ? 'LICENSE NUMBER' : 'බලපත්‍ර අංකය'}`,
+      title: `${language === "en" ? 'LICENSE NUMBER' : language == "si" ? 'බලපත්‍ර අංකය' : ''}`,
       dataIndex: 'licenseNumber',
       key: 'licenseNumber',
       render: (text) => <span style={{ fontWeight: 'bold' }}>{text}</span>,
     },
-    { title: `${language === "en" ? 'OWNER' : 'අයිතිකරු'}`, dataIndex: 'owner', key: 'owner' },
-    { title: `${language === "en" ? 'LOCATION' : 'ස්ථානය'}`, dataIndex: 'location', key: 'location' },
-    { title: `${language === "en" ? 'START DATE' : 'ආරම්භක දිනය'}`, dataIndex: 'startDate', key: 'startDate' },
-    { title: `${language === "en" ? 'DUE DATE' : 'අවශ්‍ය වන දිනය'}`, dataIndex: 'dueDate', key: 'dueDate' },
-    { title: `${language === "en" ? 'CAPACITY (CUBES)' : 'කියුබ් ගණන'}`, dataIndex: 'capacity', key: 'capacity' },
-    { title: `${language === "en" ? 'DISPATCHED (CUBES)' : 'යවන ලද ප්‍රමාණය'}`, dataIndex: 'dispatchedCubes', key: 'dispatchedCubes' },
-    { title: `${language === "en" ? 'REMAINING CUBES' : 'ඉතිරි ප්‍රමාණය'}`, dataIndex: 'remainingCubes', key: 'remainingCubes' },
+    { title: `${language === "en" ? 'OWNER' : language == "si" ? 'අයිතිකරු' : ''}`, dataIndex: 'owner', key: 'owner' },
+    { title: `${language === "en" ? 'LOCATION' : language == "si" ? 'ස්ථානය' : ''}`, dataIndex: 'location', key: 'location' },
+    { title: `${language === "en" ? 'START DATE' : language == "si" ? 'ආරම්භක දිනය' : ''}`, dataIndex: 'startDate', key: 'startDate' },
+    { title: `${language === "en" ? 'DUE DATE' : language == "si" ? 'අවශ්‍ය වන දිනය' : ''}`, dataIndex: 'dueDate', key: 'dueDate' },
+    { title: `${language === "en" ? 'CAPACITY (CUBES)' : language == "si" ? 'කියුබ් ගණන' : ''}`, dataIndex: 'capacity', key: 'capacity' },
+    { title: `${language === "en" ? 'DISPATCHED (CUBES)' : language == "si" ? 'යවන ලද ප්‍රමාණය' : ''}`, dataIndex: 'dispatchedCubes', key: 'dispatchedCubes' },
+    { title: `${language === "en" ? 'REMAINING CUBES' : language == "si" ? 'ඉතිරි ප්‍රමාණය' : ''}`, dataIndex: 'remainingCubes', key: 'remainingCubes' },
     {
-      title: `${language === "en" ? 'ROYALTY(SAND) DUE [RS.]' : 'රෝයල්ටි '}`,
+      title: `${language === "en" ? 'ROYALTY(SAND) DUE [RS.]' : language == "si" ? 'රෝයල්ටි (රු.)' : ''}`,
       dataIndex: 'royalty',
       key: 'royalty',
       render: (text) => {
@@ -60,7 +60,7 @@ const MLOwnerHomePage = () => {
       },
     },
     {
-      title: `${language === "en" ? 'STATUS' : 'තත්වය'}`,
+      title: `${language === "en" ? 'STATUS' : language == 'si' ? 'තත්වය' : ''}`,
       dataIndex: 'status',
       key: 'status',
       render: (text, record) => {
@@ -75,16 +75,13 @@ const MLOwnerHomePage = () => {
       },
     },
     {
-      title: `${language === "en" ? 'ACTION' : 'ක්‍රියාමාර්ග'}`,
+      title: `${language === "en" ? 'ACTION' : language == 'si' ? 'ක්‍රියාමාර්ග': ''}`,
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
           {/* Dispatch Load Button */}
           <Link
-            to={{
-              pathname: "/mlowner/home/dispatchload",
-              state: { licenseNumber: record.licenseNumber }, // Pass the license number in state
-            }}
+            to={`/mlowner/home/dispatchload/${record.licenseNumber}`}
           >
             <Button
               style={{
@@ -99,7 +96,7 @@ const MLOwnerHomePage = () => {
                   : "Dispatch Load"
               }
             >
-              {language === "en" ? "Dispatch Load" : "යවන ලද ප්‍රමාණය"}
+              {language === "en" ? "Dispatch Load" : language == 'si' ? "යවන ලද ප්‍රමාණය" : ''}
             </Button>
           </Link>
 
@@ -117,7 +114,7 @@ const MLOwnerHomePage = () => {
                 borderRadius: '10%',
               }}
             >
-              {language === "en" ? "History" : "ඉතිහාසය"}
+              {language === "en" ? "History" : language == 'si' ? "ඉතිහාසය" : ''}
             </Button>
           </Link>
         </Space>
@@ -129,16 +126,21 @@ const MLOwnerHomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const username = "@achinthamihiran"; // Replace with actual username
-        const password = "Ab2#*De#"; // Replace with actual password
+        // Retrieve the API Key from localStorage
+        const apiKey = localStorage.getItem("API_Key");
   
+        console.log("API Key from localStorage:", apiKey);
+  
+        if (!apiKey) {
+          console.error("API Key not found in localStorage");
+          return;
+        }
+  
+        // Fetch data from API with API Key in Authorization header
         const response = await axios.get('/api/projects/gsmb/issues.json', {
           headers: {
             "Content-Type": "application/json",
-          },
-          auth: {
-            username,
-            password,
+            "X-Redmine-API-Key": apiKey, // Pass the API Key in the header
           },
         });
   
@@ -157,7 +159,7 @@ const MLOwnerHomePage = () => {
             return {
               licenseNumber: issue.custom_fields.find(field => field.name === 'License Number')?.value,
               owner: issue.custom_fields.find(field => field.name === 'Owner Name')?.value,
-              location: issue.custom_fields.find(field => field.name === 'Address')?.value, // Using Address for location
+              location: issue.custom_fields.find(field => field.name === 'Location')?.value, // Using Address for location
               startDate: issue.start_date,
               dueDate: issue.due_date,
               capacity: issue.custom_fields.find(field => field.name === 'Capacity')?.value,
@@ -168,18 +170,23 @@ const MLOwnerHomePage = () => {
             };
           });
   
+        // **New**: Filter only active licenses
+        mappedData = mappedData.filter(item => item.status === 'Active');
+  
         // **New**: Filter licenses by the logged-in user's full name
         if (user && user.firstname && user.lastname) {
           const fullName = `${user.firstname} ${user.lastname}`; // Construct full name
           mappedData = mappedData.filter(item => item.owner === fullName);
         }
   
-        // Sort the data by due date (most recent first) and then take only the first 5 records
+        // Sort the data by due date (most recent first)
         const sortedData = mappedData.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
-        const recentData = sortedData.slice(0, 5);
   
-        setData(recentData); // Set all filtered data
-        setFilteredData(recentData); // Set filtered data for initial display
+        // **New**: Take only the top 5 most recent active licenses
+        const recentActiveData = sortedData.slice(0, 5);
+  
+        setData(recentActiveData); // Set all filtered data
+        setFilteredData(recentActiveData); // Set filtered data for initial display
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -188,6 +195,7 @@ const MLOwnerHomePage = () => {
     fetchData();
   }, [user]); // Re-fetch when user changes
   
+   
   // Handle search input change
   const handleSearch = (value) => {
     setSearchText(value);
@@ -220,7 +228,7 @@ const MLOwnerHomePage = () => {
             >
               <Input
                 prefix={<SearchOutlined />}
-                placeholder={language === "en" ? "Search License Number" : "සොයන්න"}
+                placeholder={language === "en" ? "Search License Number" : language == 'si' ? "සොයන්න" : ''}
               />
             </AutoComplete>
           </Col>
@@ -239,7 +247,7 @@ const MLOwnerHomePage = () => {
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
               >
-                {language === "en" ? "View Licenses" : "බලපත්‍ර බලන්න"}
+                {language === "en" ? "View Licenses" : language == 'si' ? "බලපත්‍ර බලන්න" : ""}
               </Button>
             </Link>
           </Col>
