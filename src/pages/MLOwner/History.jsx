@@ -51,6 +51,7 @@ const History = () => {
               licenseNumber: customFields['License Number'] || '',
               owner: customFields['Owner Name'] || '',
               location: customFields['Location'] || '',
+              Destination: customFields['Destination'] || '',
               cubes: customFields['Cubes'] || '',
               dispatchDate: issue.start_date || '',
               lorryDriverContact: customFields['Driver Contact'] || '',
@@ -92,6 +93,7 @@ const History = () => {
     { title: 'Driver Contact', dataIndex: 'lorryDriverContact', key: 'lorryDriverContact' },
     { title: 'Owner', dataIndex: 'owner', key: 'owner' },
     { title: 'Location', dataIndex: 'location', key: 'location' },
+    { title: 'Destination', dataIndex: 'Destination', key: 'Destination' },
     { title: 'Cubes', dataIndex: 'cubes', key: 'cubes' },
     { title: 'Dispatched Date', dataIndex: 'dispatchDate', key: 'dispatchDate', render: (text) => <span>{moment(text).format('YYYY-MM-DD HH:mm:ss')}</span> },
   ];
