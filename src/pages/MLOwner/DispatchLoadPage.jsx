@@ -815,7 +815,7 @@ const DispatchLoadPage = () => {
             {language === "en"
               ? `Not enough cubes available. Please adjust the quantity.`
               : language === "si"
-              ? "Not enough cubes available. Please adjust the quantity."
+              ? "අවශ්‍ය කියුබ් ලබා ගත නොහැක. ප්‍රමාණය සංවේදය කරන්න."
               : "போதுமான க்யூப்ஸ் கிடைக்கவில்லை. அளவை சரிசெய்யவும்."}
           </h3>
         </Modal>
