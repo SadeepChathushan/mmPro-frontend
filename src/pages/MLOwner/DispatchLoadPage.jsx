@@ -35,8 +35,8 @@ const DispatchLoadPage = () => {
     setIsModalVisible(false);
     setFormData({
       DateTime: "",
-      destination: "",
       licenseNumber: l_number,
+      destination: "",
       lorryNumber: "",
       driverContact: "",
       dueDate: "",
@@ -64,7 +64,7 @@ const DispatchLoadPage = () => {
   const [isContErrModalVisible, setIsContErrModalVisible] = useState(false);
   const [location, setLocation] = useState([6.9271, 79.8612]); // Default to Colombo coordinates
   const [locationSuggestions, setLocationSuggestions] = useState([]);
-  const [mLId, setmId] = useState("");
+  // const [mLId, setmId] = useState("");
   const [formData, setFormData] = useState({
     DateTime: "",
     licenseNumber: "",
@@ -340,7 +340,7 @@ const DispatchLoadPage = () => {
 
             const mLissueId = issueToUpdate.id;
             const locatvalue = locateField.value;
-            setmId(mLissueId);
+            // setmId(mLissueId);
 
             const cubesUsed = parseInt(formData.cubes, 10);
             const usedValue = parseInt(usedField ? usedField.value : "0", 10);
@@ -443,7 +443,7 @@ const DispatchLoadPage = () => {
 
   const handlePrintReceipt = () => {
     navigate("/mlowner/home/dispatchload/receipt", {
-      state: { formData, mLId },
+      state: { formData, l_number },
     });
   };
 
@@ -795,7 +795,7 @@ const DispatchLoadPage = () => {
             {language === "en"
               ? "All field are required !"
               : language === "si"
-              ? "සියලුම ක්ෂේත්‍ර අවශ්ය වේ !"
+              ? "සියලුම ක්ෂේත්ර අවශ්ය වේ !"
               : "அனைத்து துறைகளும் தேவை!"}
           </h3>
         </Modal>
@@ -815,7 +815,7 @@ const DispatchLoadPage = () => {
             {language === "en"
               ? `Not enough cubes available. Please adjust the quantity.`
               : language === "si"
-              ? "අවශ්‍ය කියුබ් ලබා ගත නොහැක. ප්‍රමාණය සංවේදය කරන්න."
+              ? "්අවශ්‍ය ප්‍රමාණය නොමැත. ප්‍රමාණය වෙනස් කරන්න්."
               : "போதுமான க்யூப்ஸ் கிடைக்கவில்லை. அளவை சரிசெய்யவும்."}
           </h3>
         </Modal>

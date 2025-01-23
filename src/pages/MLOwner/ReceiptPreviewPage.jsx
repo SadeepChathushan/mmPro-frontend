@@ -14,31 +14,36 @@ const ReceiptPage = () => {
   const [mldata, setmlData] = useState(null);
   const apiKey = localStorage.getItem("API_Key");
   const location = useLocation();
-  const { formData, mLId } = location.state || {}; // Ensure fallback to avoid undefined errors
+  const { formData, l_number } = location.state || {}; // Ensure fallback to avoid undefined errors
 
   console.log("Form Data:", formData);
-  console.log("ML Issue ID:", mLId);
+  console.log("ML  ID:", l_number);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`/api/issues/${mLId}.json`, {
+        const response = await axios.get(`/api/projects/gsmb/issues.json`, {
           headers: {
             "Content-Type": "application/json",
             "X-Redmine-API-Key": apiKey,
           },
         });
-        setmlData(response.data.issue); // Store data in state
+        if (response.data && response.data.issues) {
+          const issues = response.data.issues;
+          const filteredMLIssues = issues.filter(issue => issue.subject === l_number);
+          setmlData(filteredMLIssues[0]);
+        }
+         // Store data in state
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
-    if (mLId) {
+    if (l_number) {
       // Ensure mLId is not undefined before calling fetchData
       fetchData();
     }
-  }, [mLId, apiKey]); // Ensure useEffect runs when mLId changes
+  }, [l_number, apiKey]); // Ensure useEffect runs when mLId changes
 
   // Ensure mldata and mldata.custom_fields exist before accessing
   const mlcontact = mldata?.custom_fields?.find(
