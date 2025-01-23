@@ -114,7 +114,7 @@ const History = () => {
       title: 'Action',
       key: 'action',
       render: (_, record) => {
-        // const buttonDisabled = (clickCounts[record.licenseNumber] || 0) >= 3; // Disable button after 3 clicks
+        const buttonDisabled = (clickCounts[record.licenseNumber] || 0) >= 3; // Disable button after 3 clicks
 
         return (
           <Button
@@ -127,7 +127,7 @@ const History = () => {
               borderRadius: '8px',
             }}
             onClick={() => !buttonDisabled && handleButtonClick(record.licenseNumber)} // Disable onClick if button is disabled
-            // disabled={buttonDisabled} // Disable button
+            disabled={buttonDisabled} // Disable button
           >
             {buttonDisabled ? 'Max Clicks Reached' : 'Print Your Missed Receipts'}
           </Button>
