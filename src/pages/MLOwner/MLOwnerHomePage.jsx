@@ -81,10 +81,7 @@ const MLOwnerHomePage = () => {
         <Space size="middle">
           {/* Dispatch Load Button */}
           <Link
-            to={{
-              pathname: "/mlowner/home/dispatchload",
-              state: { licenseNumber: record.licenseNumber }, // Pass the license number in state
-            }}
+            to={`/mlowner/home/dispatchload/${record.licenseNumber}`}
           >
             <Button
               style={{

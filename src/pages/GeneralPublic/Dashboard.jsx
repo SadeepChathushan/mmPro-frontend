@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import logo from '../../assets/images/gsmbLogo.png';
-import backgroundImage from '../../assets/images/generalpublic.jpg';
+// import backgroundImage from '../../assets/images/generalpublic.jpg';
 import axios from 'axios';
 import { message } from 'antd';
 
@@ -240,7 +240,7 @@ const Dashboard = () => {
         <div style={styles.inputContainer}>
           <input
             type="text"
-            placeholder={language === 'en' ? 'e.g : LA 1234' : 'උදා : LA 1234'}
+            placeholder={language === 'en' ? 'e.g : LA1234' : 'උදා : LA1234'}
             style={styles.inputBox}
             value={input}
             onChange={(e) => setInput(e.target.value)}
