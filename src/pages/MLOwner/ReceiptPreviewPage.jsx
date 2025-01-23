@@ -232,7 +232,7 @@ const ReceiptPage = () => {
               <strong>{language === "en" ? "Mineral Type:" : language == 'si' ? "ඛනිජ වර්ගය:" : "கனிம வகை:"}</strong> {receiptData.mineralType}
             </p>
             <p>
-              <strong>{language === "en" ? "රියදුරු සම්බන්ධතා:" : language == 'si' ? "ලොරි සම්බන්ධතා:" : "ஓட்டுனர் தொடர்பு:"}</strong> {receiptData.lorryContact}
+              <strong>{language === "en" ? "Driver Contact:" : language == 'si' ? "රියදුරු සම්බන්ධතා:" : "ஓட்டுனர் தொடர்பு:"}</strong> {receiptData.lorryContact}
             </p>
             <p>
               <strong>{language === "en" ? "Load (Cube):" : language == 'si' ? "පැටවීම (Cube):" : "சுமை (Cube):"}</strong> {receiptData.loadCube}

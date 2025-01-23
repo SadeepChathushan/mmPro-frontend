@@ -97,7 +97,7 @@ const Licenses = () => {
             return {
               licenseNumber: customFields["License Number"] || "", // Ensure fallback empty string
               owner: customFields["Owner Name"] || "",
-              location: customFields["Address"] || "", // Using 'Address' field for location
+              location: customFields["Location"] || "", // Using 'Address' field for location
               startDate: startDate,
               endDate: endDate,
               capacity: customFields["Capacity"] || "",
