@@ -206,6 +206,7 @@ const Licenses = () => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
+          {/* Dispatch Load Button */}
           <Link to={`/mlowner/home/dispatchload/${record.licenseNumber}`}>
             <Button
               type="primary"
@@ -229,9 +230,30 @@ const Licenses = () => {
               {language === "en" ? "Dispatch Load" : language == 'si' ? "යවන ලද ප්‍රමාණ" : ""}
             </Button>
           </Link>
+    
+          {/* History Button */}
+          <Link to={`/mlowner/history?licenseNumber=${record.licenseNumber}`}>
+            <Button
+              type="default"
+              style={{
+                backgroundColor: '#0066cc',
+                borderColor: '#0066cc',
+                borderRadius: '10%',
+              }}
+              onMouseEnter={(e) =>
+                (e.target.style.backgroundColor = "rgb(46, 131, 214)")
+              }
+              onMouseLeave={(e) =>
+                (e.target.style.backgroundColor = "#007BFF")
+              }
+            >
+              {language === "en" ? "History" : language == 'si' ? "ඉතිහාසය" : ""}
+            </Button>
+          </Link>
         </Space>
       ),
     },
+    
   ];
 
   return (
