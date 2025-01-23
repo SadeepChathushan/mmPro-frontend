@@ -378,7 +378,7 @@ const DispatchLoadPage = () => {
             console.log("Updated issue:", issueToUpdate);
 
             // PUT request to update the issues with new data
-            if (cubesUsed > remainingValue) {
+            if (cubesUsed > remainingValue && remainingValue > 1000) {
               setIsContErrModalVisible(true);
             } else {
               try {
