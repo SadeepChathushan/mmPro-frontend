@@ -795,7 +795,7 @@ const DispatchLoadPage = () => {
             {language === "en"
               ? "All field are required !"
               : language === "si"
-              ? "සියලුම ක්ෂේත්ර අවශ්ය වේ !"
+              ? "සියලුම ක්ෂේත්‍ර අවශ්ය වේ !"
               : "அனைத்து துறைகளும் தேவை!"}
           </h3>
         </Modal>
