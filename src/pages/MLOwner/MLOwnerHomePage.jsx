@@ -126,16 +126,21 @@ const MLOwnerHomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const username = "@achinthamihiran"; // Replace with actual username
-        const password = "Ab2#*De#"; // Replace with actual password
+        // Retrieve the API Key from localStorage
+        const apiKey = localStorage.getItem("API_Key");
   
+        console.log("API Key from localStorage:", apiKey);
+  
+        if (!apiKey) {
+          console.error("API Key not found in localStorage");
+          return;
+        }
+  
+        // Fetch data from API with API Key in Authorization header
         const response = await axios.get('/api/projects/gsmb/issues.json', {
           headers: {
             "Content-Type": "application/json",
-          },
-          auth: {
-            username,
-            password,
+            "X-Redmine-API-Key": apiKey, // Pass the API Key in the header
           },
         });
   
@@ -184,7 +189,7 @@ const MLOwnerHomePage = () => {
   
     fetchData();
   }, [user]); // Re-fetch when user changes
-  
+   
   // Handle search input change
   const handleSearch = (value) => {
     setSearchText(value);
