@@ -159,7 +159,7 @@ const MLOwnerHomePage = () => {
             return {
               licenseNumber: issue.custom_fields.find(field => field.name === 'License Number')?.value,
               owner: issue.custom_fields.find(field => field.name === 'Owner Name')?.value,
-              location: issue.custom_fields.find(field => field.name === 'Address')?.value, // Using Address for location
+              location: issue.custom_fields.find(field => field.name === 'Location')?.value, // Using Address for location
               startDate: issue.start_date,
               dueDate: issue.due_date,
               capacity: issue.custom_fields.find(field => field.name === 'Capacity')?.value,
