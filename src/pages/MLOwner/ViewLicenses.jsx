@@ -165,35 +165,35 @@ const Licenses = () => {
   // Define columns for the table
   const columns = [
     {
-      title: `${language === "en" ? "License Number" : language == 'si' ? "බලපත්‍ර අංකය" : ""}`,
+      title: `${language === "en" ? "License Number" : language == 'si' ? "බලපත්‍ර අංකය" : "உரிம எண்"}`,
       dataIndex: "licenseNumber",
       key: "licenseNumber",
       render: (text) => <span style={{ fontWeight: "bold" }}>{text}</span>,
     },
     {
-      title: `${language === "en" ? "Owner" : language == 'si' ? "අයිතිකරු" : ""}`,
+      title: `${language === "en" ? "Owner" : language == 'si' ? "අයිතිකරු" : "உரிமையாளர்"}`,
       dataIndex: "owner",
       key: "owner",
     },
     {
-      title: `${language === "en" ? "Location" : language == 'si' ? "ස්ථානය" : ""}`,
+      title: `${language === "en" ? "Location" : language == 'si' ? "ස්ථානය" : "இடம்"}`,
       dataIndex: "location",
       key: "location",
     },
     {
-      title: `${language === "en" ? "Start Date" : language == 'si' ? "ආරම්භක දිනය" : ""}`,
+      title: `${language === "en" ? "Start Date" : language == 'si' ? "ආරම්භක දිනය" : "தொடக்க தேதி"}`,
       dataIndex: "startDate",
       key: "startDate",
       render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span>,
     },
     {
-      title: `${language === "en" ? "Due Date" : language == 'si' ? "අවලංගු වන දිනය" : ""}`,
+      title: `${language === "en" ? "Due Date" : language == 'si' ? "අවලංගු වන දිනය" : "இறுதி தேதி"}`,
       dataIndex: "endDate",
       key: "endDate",
       render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span>,
     },
     {
-      title: `${language === "en" ? "Status" : language == 'si' ? "තත්වය" : ""}`,
+      title: `${language === "en" ? "Status" : language == 'si' ? "තත්වය" : "நிலை"}`,
       key: "status",
       render: (text, record) => (
         <span style={{ color: record.status === "Active" ? "green" : "red" }}>
@@ -202,7 +202,7 @@ const Licenses = () => {
       ),
     },
     {
-      title: `${language === "en" ? "Action" : language == 'si' ? "ක්‍රියාමාර්ග" : ""}`,
+      title: `${language === "en" ? "Action" : language == 'si' ? "ක්‍රියාමාර්ග" : "செயல்"}`,
       key: "action",
       render: (_, record) => (
         <Space size="middle">
@@ -227,7 +227,7 @@ const Licenses = () => {
                   record.status === "Inactive" ? "#d9d9d9" : "#FFA500")
               }
             >
-              {language === "en" ? "Dispatch Load" : language == 'si' ? "යවන ලද ප්‍රමාණ" : ""}
+              {language === "en" ? "Dispatch Load" : language == 'si' ? "යවන ලද ප්‍රමාණ" : "அனுப்புதல் சுமை"}
             </Button>
           </Link>
     
@@ -247,7 +247,7 @@ const Licenses = () => {
                 (e.target.style.backgroundColor = "#007BFF")
               }
             >
-              {language === "en" ? "History" : language == 'si' ? "ඉතිහාසය" : ""}
+              {language === "en" ? "History" : language == 'si' ? "ඉතිහාසය" : "வரலாறு"}
             </Button>
           </Link>
         </Space>
@@ -259,21 +259,21 @@ const Licenses = () => {
   return (
     <div style={{ padding: "16px", backgroundColor: "#f0f2f5" }}>
       <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
-        {language === "en" ? "Licenses of MLOwner" : language == 'si' ? "පතල් අයිතිකරුගේ බලපත්‍රර" : ""}
+        {language === "en" ? "Licenses of MLOwner" : language == 'si' ? "පතල් අයිතිකරුගේ බලපත්‍රර" : "ML உரிமையாளரின் உரிமங்கள்"}
       </h1>
 
       <Row gutter={[16, 16]} style={{ marginBottom: "20px" }}>
         <Col xs={24} sm={12} md={6}>
           <DatePicker
             onChange={handleStartDateChange}
-            placeholder={language === "en" ? "Start Date" : language == 'si' ? "ආරම්භක දිනය" : ""}
+            placeholder={language === "en" ? "Start Date" : language == 'si' ? "ආරම්භක දිනය" : "தொடக்க தேதி"}
             style={{ width: "100%" }} // Ensures the width is consistent
           />
         </Col>
         <Col xs={24} sm={12} md={6}>
           <DatePicker
             onChange={handleEndDateChange}
-            placeholder={language === "en" ? "Due Date" : language == 'si' ? "අවසාන දිනය" : ""}
+            placeholder={language === "en" ? "Due Date" : language == 'si' ? "අවසාන දිනය" : "இறுதி தேதி"}
             style={{ width: "100%" }} // Ensures the width is consistent
           />
         </Col>
@@ -289,7 +289,7 @@ const Licenses = () => {
             <Input
               prefix={<SearchOutlined />}
               placeholder={
-                language === "en" ? "Search by License Number" : language == 'si' ? "සොයන්න" : ""
+                language === "en" ? "Search by License Number" : language == 'si' ? "බලපත්‍ර අංකය අනුව සොයන්න" : "உரிம எண் மூலம் தேடவும்"
               }
               style={{ width: "100%" }} // Ensures the width is consistent with DatePickers
             />
@@ -327,7 +327,7 @@ const Licenses = () => {
             }
             onMouseLeave={(e) => (e.target.style.backgroundColor = "#FFA500")}
           >
-            {language === "en" ? "Back to Home" : language == 'si' ? "ආපසු" : ""}
+            {language === "en" ? "Back to Home" : language == 'si' ? "ආපසු" : "முகப்புக்குத் திரும்பு"}
           </Button>
         </Link>
       </div>
