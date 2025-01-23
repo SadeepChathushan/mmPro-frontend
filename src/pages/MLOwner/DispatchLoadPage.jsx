@@ -795,7 +795,7 @@ const DispatchLoadPage = () => {
             {language === "en"
               ? "All field are required !"
               : language === "si"
-              ? "සියලුම ක්ෂේත්ර අවශ්ය වේ !"
+              ? "සියලුම ක්ෂේත්‍ර අවශ්ය වේ !"
               : "அனைத்து துறைகளும் தேவை!"}
           </h3>
         </Modal>
@@ -815,7 +815,7 @@ const DispatchLoadPage = () => {
             {language === "en"
               ? `Not enough cubes available. Please adjust the quantity.`
               : language === "si"
-              ? "Not enough cubes available. Please adjust the quantity."
+              ? "ප්‍රමාණය ප්‍රමාණවත් නොවේ. නැවත උත්සහා කරන්න."
               : "போதுமான க்யூப்ஸ் கிடைக்கவில்லை. அளவை சரிசெய்யவும்."}
           </h3>
         </Modal>
