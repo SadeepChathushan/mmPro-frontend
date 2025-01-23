@@ -3,6 +3,7 @@ import { Table, Row, Col, DatePicker, Button } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import axios from 'axios';
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const History = () => {
   const location = useLocation();
@@ -13,6 +14,7 @@ const History = () => {
   const [dispatchHistory, setDispatchHistory] = useState([]);
   const [licenseNumber, setLicenseNumber] = useState('');
   const [clickCounts, setClickCounts] = useState({}); // Track click counts for each row
+  const { language } = useLanguage();
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -101,17 +103,17 @@ const History = () => {
   };
 
   const columns = [
-    { title: 'License Number', dataIndex: 'licenseNumber', key: 'licenseNumber' },
-    { title: 'Driver Contact', dataIndex: 'lorryDriverContact', key: 'lorryDriverContact' },
-    { title: 'Owner', dataIndex: 'owner', key: 'owner' },
-    { title: 'Location', dataIndex: 'location', key: 'location' },
-    { title: 'Destination', dataIndex: 'Destination', key: 'Destination' },
-    { title: 'Cubes', dataIndex: 'cubes', key: 'cubes' },
-    { title: 'Dispatched Date', dataIndex: 'dispatchDate', key: 'dispatchDate', render: (text) => <span>{moment(text).format('YYYY-MM-DD HH:mm:ss')}</span> },
+    { title: `${language === "en" ? 'License Number' : language == "si" ? 'බලපත්‍ර අංකය' : ''}`, dataIndex: 'licenseNumber', key: 'licenseNumber' },
+    { title: `${language === "en" ? 'Driver Contact' : language == "si" ? 'රියදුරුගේ දුරකථනය' : ''}`, dataIndex: 'lorryDriverContact', key: 'lorryDriverContact' },
+    { title: `${language === "en" ? 'Owner' : language == "si" ? 'අයිතිකරු' : ''}`, dataIndex: 'owner', key: 'owner' },
+    { title: `${language === "en" ? 'Location' : language == "si" ? 'ස්ථානය' : ''}`, dataIndex: 'location' , key: 'location' },
+    { title: `${language === "en" ? 'Destination' : language == "si" ? 'ගමනාන්තය' : ''}`, dataIndex: 'Destination', key: 'Destination' },
+    { title: `${language === "en" ?'Cubes' : language == "si" ? 'කියුබ් ගණන' : ''}`, dataIndex: 'cubes', key: 'cubes' },
+    { title: `${language === "en" ? 'Dispatched Date' : language == "si" ? 'යවන ලද දිනය' : '' }`, dataIndex: 'dispatchDate', key: 'dispatchDate', render: (text) => <span>{moment(text).format('YYYY-MM-DD HH:mm:ss')}</span> },
 
     // New column for "Print Your Missed Receipt" button
     {
-      title: 'Action',
+      title: `${language === "en" ? 'Action' : language == "si" ? 'ක්‍රියාමාර්ග' : ''}`,
       key: 'action',
       render: (_, record) => {
         const buttonDisabled = (clickCounts[record.licenseNumber] || 0) >= 3; // Disable button after 3 clicks
@@ -129,7 +131,7 @@ const History = () => {
             onClick={() => !buttonDisabled && handleButtonClick(record.licenseNumber)} // Disable onClick if button is disabled
             disabled={buttonDisabled} // Disable button
           >
-            {buttonDisabled ? 'Max Clicks Reached' : 'Print Your Missed Receipts'}
+            {buttonDisabled ? `${language == "en" ? 'Max Clicks Reached' : language == "si" ? 'උපරිම ක්ලික් ගණන අවසන්' : '' }`: `${language == "en" ? 'Print Your Missed Receipts' : language == "si" ? 'රිසිට්පත මුද්‍රණය කරගන්න' : '' }`}
           </Button>
         );
       },
@@ -138,14 +140,14 @@ const History = () => {
 
   return (
     <div style={{ padding: '16px', backgroundColor: '#f0f2f5' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Dispatch History</h1>
+      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>{language == "en" ? "Dispatch History" : language == "si" ? "යවන ලද ප්‍රමාණ" : ""}</h1>
 
       <Row gutter={[16, 16]} style={{ marginBottom: '20px' }}>
         <Col xs={24} sm={12} md={6}>
-          <DatePicker onChange={(date) => setStartDate(moment(date).format('YYYY-MM-DD'))} placeholder="Start Date" style={{ width: '100%' }} />
+          <DatePicker onChange={(date) => setStartDate(moment(date).format('YYYY-MM-DD'))} placeholder={language == "en" ? "Start Date" : language == "si" ? "ආරම්භක දිනය" : ""} style={{ width: '100%' }} />
         </Col>
         <Col xs={24} sm={12} md={6}>
-          <DatePicker onChange={(date) => setEndDate(moment(date).format('YYYY-MM-DD'))} placeholder="End Date" style={{ width: '100%' }} />
+          <DatePicker onChange={(date) => setEndDate(moment(date).format('YYYY-MM-DD'))} placeholder={language == "en" ? "End Date" : language == "si" ? "අවසන් දිනය" : ""} style={{ width: '100%' }} />
         </Col>
       </Row>
 
@@ -175,7 +177,7 @@ const History = () => {
           }}
           onClick={() => navigate('/mlowner/home')}
         >
-          Back to Home
+          {language == "en" ? 'Back to Home' : language == "si" ? 'ආපසු' : ''}
         </Button>
       </div>
     </div>
