@@ -170,18 +170,23 @@ const MLOwnerHomePage = () => {
             };
           });
   
+        // **New**: Filter only active licenses
+        mappedData = mappedData.filter(item => item.status === 'Active');
+  
         // **New**: Filter licenses by the logged-in user's full name
         if (user && user.firstname && user.lastname) {
           const fullName = `${user.firstname} ${user.lastname}`; // Construct full name
           mappedData = mappedData.filter(item => item.owner === fullName);
         }
   
-        // Sort the data by due date (most recent first) and then take only the first 5 records
+        // Sort the data by due date (most recent first)
         const sortedData = mappedData.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
-        const recentData = sortedData.slice(0, 5);
   
-        setData(recentData); // Set all filtered data
-        setFilteredData(recentData); // Set filtered data for initial display
+        // **New**: Take only the top 5 most recent active licenses
+        const recentActiveData = sortedData.slice(0, 5);
+  
+        setData(recentActiveData); // Set all filtered data
+        setFilteredData(recentActiveData); // Set filtered data for initial display
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -189,6 +194,7 @@ const MLOwnerHomePage = () => {
   
     fetchData();
   }, [user]); // Re-fetch when user changes
+  
    
   // Handle search input change
   const handleSearch = (value) => {
