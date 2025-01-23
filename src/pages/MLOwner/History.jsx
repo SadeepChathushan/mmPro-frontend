@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Row, Col, DatePicker, Button } from 'antd';
-import { useNavigate, useLocation } from 'react-router-dom'; // useLocation to access the query string
+import { useNavigate, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import axios from 'axios';
 
 const History = () => {
-  const location = useLocation(); // Get the location object (includes query params)
-  const navigate = useNavigate(); // Hook to navigate programmatically
+  const location = useLocation();
+  const navigate = useNavigate();
   
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dispatchHistory, setDispatchHistory] = useState([]);
-  const [licenseNumber, setLicenseNumber] = useState(''); // Store extracted license number
+  const [licenseNumber, setLicenseNumber] = useState('');
+  const [clickCounts, setClickCounts] = useState({}); // Track click counts for each row
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
-    const extractedLicenseNumber = queryParams.get('licenseNumber'); // Assuming URL contains ?licenseNumber=LLL/100/104
+    const extractedLicenseNumber = queryParams.get('licenseNumber');
     if (extractedLicenseNumber) {
       setLicenseNumber(extractedLicenseNumber); // Set the license number from URL
     }
@@ -66,7 +67,7 @@ const History = () => {
     };
 
     fetchDispatchHistory();
-  }, [location.search]); // Trigger the effect whenever the query string changes
+  }, [location.search]);
 
   // Filter dispatch history based on the extracted license number and date range
   const filteredDispatchHistory = dispatchHistory.filter((dispatch) => {
@@ -75,7 +76,6 @@ const History = () => {
       isLicenseMatch = dispatch.licenseNumber === licenseNumber;
     }
 
-    // Then, apply the date range filter
     if (startDate && endDate) {
       const dispatchDate = new Date(dispatch.dispatchDate);
       return (
@@ -88,6 +88,18 @@ const History = () => {
     }
   });
 
+  // Handle button click for each row
+  const handleButtonClick = (licenseNumber) => {
+    setClickCounts((prevCounts) => {
+      const newCounts = { ...prevCounts };
+      newCounts[licenseNumber] = (newCounts[licenseNumber] || 0) + 1;
+      return newCounts;
+    });
+
+    // Navigate to the receipt page
+    navigate(`/mlowner/home/dispatchload/receipt?licenseNumber=${licenseNumber}`);
+  };
+
   const columns = [
     { title: 'License Number', dataIndex: 'licenseNumber', key: 'licenseNumber' },
     { title: 'Driver Contact', dataIndex: 'lorryDriverContact', key: 'lorryDriverContact' },
@@ -96,6 +108,32 @@ const History = () => {
     { title: 'Destination', dataIndex: 'Destination', key: 'Destination' },
     { title: 'Cubes', dataIndex: 'cubes', key: 'cubes' },
     { title: 'Dispatched Date', dataIndex: 'dispatchDate', key: 'dispatchDate', render: (text) => <span>{moment(text).format('YYYY-MM-DD HH:mm:ss')}</span> },
+
+    // New column for "Print Your Missed Receipt" button
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_, record) => {
+        const buttonDisabled = (clickCounts[record.licenseNumber] || 0) >= 3; // Disable button after 3 clicks
+
+        return (
+          <Button
+            type="primary"
+            style={{
+              backgroundColor: buttonDisabled ? '#d6d6d6' : '#28a745', // Grey out the button if disabled
+              borderColor: buttonDisabled ? '#d6d6d6' : '#28a745',
+              color: buttonDisabled ? '#a0a0a0' : 'white',
+              width: '200px',
+              borderRadius: '8px',
+            }}
+            onClick={() => !buttonDisabled && handleButtonClick(record.licenseNumber)} // Disable onClick if button is disabled
+            disabled={buttonDisabled} // Disable button
+          >
+            {buttonDisabled ? 'Max Clicks Reached' : 'Print Your Missed Receipts'}
+          </Button>
+        );
+      },
+    },
   ];
 
   return (
@@ -133,8 +171,9 @@ const History = () => {
             color: 'white',
             width: '200px',
             borderRadius: '8px',
+            marginBottom: '12px',
           }}
-          onClick={() => navigate('/mlowner/home')} // Programmatic navigation
+          onClick={() => navigate('/mlowner/home')}
         >
           Back to Home
         </Button>
