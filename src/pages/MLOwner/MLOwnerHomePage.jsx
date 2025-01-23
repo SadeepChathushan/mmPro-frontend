@@ -37,20 +37,20 @@ const MLOwnerHomePage = () => {
   // Table columns
   const columns = [
     {
-      title: `${language === "en" ? 'LICENSE NUMBER' : 'බලපත්‍ර අංකය'}`,
+      title: `${language === "en" ? 'LICENSE NUMBER' : language == "si" ? 'බලපත්‍ර අංකය' : ''}`,
       dataIndex: 'licenseNumber',
       key: 'licenseNumber',
       render: (text) => <span style={{ fontWeight: 'bold' }}>{text}</span>,
     },
-    { title: `${language === "en" ? 'OWNER' : 'අයිතිකරු'}`, dataIndex: 'owner', key: 'owner' },
-    { title: `${language === "en" ? 'LOCATION' : 'ස්ථානය'}`, dataIndex: 'location', key: 'location' },
-    { title: `${language === "en" ? 'START DATE' : 'ආරම්භක දිනය'}`, dataIndex: 'startDate', key: 'startDate' },
-    { title: `${language === "en" ? 'DUE DATE' : 'අවශ්‍ය වන දිනය'}`, dataIndex: 'dueDate', key: 'dueDate' },
-    { title: `${language === "en" ? 'CAPACITY (CUBES)' : 'කියුබ් ගණන'}`, dataIndex: 'capacity', key: 'capacity' },
-    { title: `${language === "en" ? 'DISPATCHED (CUBES)' : 'යවන ලද ප්‍රමාණය'}`, dataIndex: 'dispatchedCubes', key: 'dispatchedCubes' },
-    { title: `${language === "en" ? 'REMAINING CUBES' : 'ඉතිරි ප්‍රමාණය'}`, dataIndex: 'remainingCubes', key: 'remainingCubes' },
+    { title: `${language === "en" ? 'OWNER' : language == "si" ? 'අයිතිකරු' : ''}`, dataIndex: 'owner', key: 'owner' },
+    { title: `${language === "en" ? 'LOCATION' : language == "si" ? 'ස්ථානය' : ''}`, dataIndex: 'location', key: 'location' },
+    { title: `${language === "en" ? 'START DATE' : language == "si" ? 'ආරම්භක දිනය' : ''}`, dataIndex: 'startDate', key: 'startDate' },
+    { title: `${language === "en" ? 'DUE DATE' : language == "si" ? 'අවශ්‍ය වන දිනය' : ''}`, dataIndex: 'dueDate', key: 'dueDate' },
+    { title: `${language === "en" ? 'CAPACITY (CUBES)' : language == "si" ? 'කියුබ් ගණන' : ''}`, dataIndex: 'capacity', key: 'capacity' },
+    { title: `${language === "en" ? 'DISPATCHED (CUBES)' : language == "si" ? 'යවන ලද ප්‍රමාණය' : ''}`, dataIndex: 'dispatchedCubes', key: 'dispatchedCubes' },
+    { title: `${language === "en" ? 'REMAINING CUBES' : language == "si" ? 'ඉතිරි ප්‍රමාණය' : ''}`, dataIndex: 'remainingCubes', key: 'remainingCubes' },
     {
-      title: `${language === "en" ? 'ROYALTY(SAND) DUE [RS.]' : 'රෝයල්ටි '}`,
+      title: `${language === "en" ? 'ROYALTY(SAND) DUE [RS.]' : language == "si" ? 'රෝයල්ටි (රු.)' : ''}`,
       dataIndex: 'royalty',
       key: 'royalty',
       render: (text) => {
@@ -60,7 +60,7 @@ const MLOwnerHomePage = () => {
       },
     },
     {
-      title: `${language === "en" ? 'STATUS' : 'තත්වය'}`,
+      title: `${language === "en" ? 'STATUS' : language == 'si' ? 'තත්වය' : ''}`,
       dataIndex: 'status',
       key: 'status',
       render: (text, record) => {
@@ -75,7 +75,7 @@ const MLOwnerHomePage = () => {
       },
     },
     {
-      title: `${language === "en" ? 'ACTION' : 'ක්‍රියාමාර්ග'}`,
+      title: `${language === "en" ? 'ACTION' : language == 'si' ? 'ක්‍රියාමාර්ග': ''}`,
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
@@ -96,7 +96,7 @@ const MLOwnerHomePage = () => {
                   : "Dispatch Load"
               }
             >
-              {language === "en" ? "Dispatch Load" : "යවන ලද ප්‍රමාණය"}
+              {language === "en" ? "Dispatch Load" : language == 'si' ? "යවන ලද ප්‍රමාණය" : ''}
             </Button>
           </Link>
 
@@ -114,7 +114,7 @@ const MLOwnerHomePage = () => {
                 borderRadius: '10%',
               }}
             >
-              {language === "en" ? "History" : "ඉතිහාසය"}
+              {language === "en" ? "History" : language == 'si' ? "ඉතිහාසය" : ''}
             </Button>
           </Link>
         </Space>
@@ -228,7 +228,7 @@ const MLOwnerHomePage = () => {
             >
               <Input
                 prefix={<SearchOutlined />}
-                placeholder={language === "en" ? "Search License Number" : "සොයන්න"}
+                placeholder={language === "en" ? "Search License Number" : language == 'si' ? "සොයන්න" : ''}
               />
             </AutoComplete>
           </Col>
@@ -247,7 +247,7 @@ const MLOwnerHomePage = () => {
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
               >
-                {language === "en" ? "View Licenses" : "බලපත්‍ර බලන්න"}
+                {language === "en" ? "View Licenses" : language == 'si' ? "බලපත්‍ර බලන්න" : ""}
               </Button>
             </Link>
           </Col>

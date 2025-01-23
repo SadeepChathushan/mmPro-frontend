@@ -165,35 +165,35 @@ const Licenses = () => {
   // Define columns for the table
   const columns = [
     {
-      title: `${language === "en" ? "License Number" : "බලපත්‍ර අංකය"}`,
+      title: `${language === "en" ? "License Number" : language == 'si' ? "බලපත්‍ර අංකය" : ""}`,
       dataIndex: "licenseNumber",
       key: "licenseNumber",
       render: (text) => <span style={{ fontWeight: "bold" }}>{text}</span>,
     },
     {
-      title: `${language === "en" ? "Owner" : "අයිතිකරු"}`,
+      title: `${language === "en" ? "Owner" : language == 'si' ? "අයිතිකරු" : ""}`,
       dataIndex: "owner",
       key: "owner",
     },
     {
-      title: `${language === "en" ? "Location" : "ස්ථානය"}`,
+      title: `${language === "en" ? "Location" : language == 'si' ? "ස්ථානය" : ""}`,
       dataIndex: "location",
       key: "location",
     },
     {
-      title: `${language === "en" ? "Start Date" : "ආරම්භක දිනය"}`,
+      title: `${language === "en" ? "Start Date" : language == 'si' ? "ආරම්භක දිනය" : ""}`,
       dataIndex: "startDate",
       key: "startDate",
       render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span>,
     },
     {
-      title: `${language === "en" ? "Due Date" : "අවලංගු වන දිනය"}`,
+      title: `${language === "en" ? "Due Date" : language == 'si' ? "අවලංගු වන දිනය" : ""}`,
       dataIndex: "endDate",
       key: "endDate",
       render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span>,
     },
     {
-      title: `${language === "en" ? "Status" : "තත්වය"}`,
+      title: `${language === "en" ? "Status" : language == 'si' ? "තත්වය" : ""}`,
       key: "status",
       render: (text, record) => (
         <span style={{ color: record.status === "Active" ? "green" : "red" }}>
@@ -202,7 +202,7 @@ const Licenses = () => {
       ),
     },
     {
-      title: `${language === "en" ? "Action" : "ක්‍රියාමාර්ග"}`,
+      title: `${language === "en" ? "Action" : language == 'si' ? "ක්‍රියාමාර්ග" : ""}`,
       key: "action",
       render: (_, record) => (
         <Space size="middle">
@@ -226,7 +226,7 @@ const Licenses = () => {
                   record.status === "Inactive" ? "#d9d9d9" : "#FFA500")
               }
             >
-              {language === "en" ? "Dispatch Load" : "ලෝඩ් ප්‍රිථිලි"}
+              {language === "en" ? "Dispatch Load" : language == 'si' ? "යවන ලද ප්‍රමාණ" : ""}
             </Button>
           </Link>
         </Space>
@@ -237,21 +237,21 @@ const Licenses = () => {
   return (
     <div style={{ padding: "16px", backgroundColor: "#f0f2f5" }}>
       <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
-        {language === "en" ? "Licenses of MLOwner" : "MLOwner හි බලපත්‍ර"}
+        {language === "en" ? "Licenses of MLOwner" : language == 'si' ? "පතල් අයිතිකරුගේ බලපත්‍රර" : ""}
       </h1>
 
       <Row gutter={[16, 16]} style={{ marginBottom: "20px" }}>
         <Col xs={24} sm={12} md={6}>
           <DatePicker
             onChange={handleStartDateChange}
-            placeholder={language === "en" ? "Start Date" : "ආරම්භක දිනය"}
+            placeholder={language === "en" ? "Start Date" : language == 'si' ? "ආරම්භක දිනය" : ""}
             style={{ width: "100%" }} // Ensures the width is consistent
           />
         </Col>
         <Col xs={24} sm={12} md={6}>
           <DatePicker
             onChange={handleEndDateChange}
-            placeholder={language === "en" ? "Due Date" : "අවසාන දිනය"}
+            placeholder={language === "en" ? "Due Date" : language == 'si' ? "අවසාන දිනය" : ""}
             style={{ width: "100%" }} // Ensures the width is consistent
           />
         </Col>
@@ -267,7 +267,7 @@ const Licenses = () => {
             <Input
               prefix={<SearchOutlined />}
               placeholder={
-                language === "en" ? "Search by License Number" : "සොයන්න"
+                language === "en" ? "Search by License Number" : language == 'si' ? "සොයන්න" : ""
               }
               style={{ width: "100%" }} // Ensures the width is consistent with DatePickers
             />
@@ -305,7 +305,7 @@ const Licenses = () => {
             }
             onMouseLeave={(e) => (e.target.style.backgroundColor = "#FFA500")}
           >
-            {language === "en" ? "Back to Home" : "ආපසු"}
+            {language === "en" ? "Back to Home" : language == 'si' ? "ආපසු" : ""}
           </Button>
         </Link>
       </div>
