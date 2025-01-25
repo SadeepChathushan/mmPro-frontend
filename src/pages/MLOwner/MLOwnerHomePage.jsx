@@ -37,20 +37,20 @@ const MLOwnerHomePage = () => {
   // Table columns
   const columns = [
     {
-      title: `${language === "en" ? 'LICENSE NUMBER' : language == "si" ? 'බලපත්‍ර අංකය' : ''}`,
+      title: `${language === "en" ? 'LICENSE NUMBER' : language == "si" ? 'බලපත්‍ර අංකය' : 'உரிம எண்'}`,
       dataIndex: 'licenseNumber',
       key: 'licenseNumber',
       render: (text) => <span style={{ fontWeight: 'bold' }}>{text}</span>,
     },
-    { title: `${language === "en" ? 'OWNER' : language == "si" ? 'අයිතිකරු' : ''}`, dataIndex: 'owner', key: 'owner' },
-    { title: `${language === "en" ? 'LOCATION' : language == "si" ? 'ස්ථානය' : ''}`, dataIndex: 'location', key: 'location' },
-    { title: `${language === "en" ? 'START DATE' : language == "si" ? 'ආරම්භක දිනය' : ''}`, dataIndex: 'startDate', key: 'startDate' },
-    { title: `${language === "en" ? 'DUE DATE' : language == "si" ? 'අවශ්‍ය වන දිනය' : ''}`, dataIndex: 'dueDate', key: 'dueDate' },
-    { title: `${language === "en" ? 'CAPACITY (CUBES)' : language == "si" ? 'කියුබ් ගණන' : ''}`, dataIndex: 'capacity', key: 'capacity' },
-    { title: `${language === "en" ? 'DISPATCHED (CUBES)' : language == "si" ? 'යවන ලද ප්‍රමාණය' : ''}`, dataIndex: 'dispatchedCubes', key: 'dispatchedCubes' },
-    { title: `${language === "en" ? 'REMAINING CUBES' : language == "si" ? 'ඉතිරි ප්‍රමාණය' : ''}`, dataIndex: 'remainingCubes', key: 'remainingCubes' },
+    { title: `${language === "en" ? 'OWNER' : language == "si" ? 'අයිතිකරු' : 'உரிமையாளர்'}`, dataIndex: 'owner', key: 'owner' },
+    { title: `${language === "en" ? 'LOCATION' : language == "si" ? 'ස්ථානය' : 'இடம்'}`, dataIndex: 'location', key: 'location' },
+    { title: `${language === "en" ? 'START DATE' : language == "si" ? 'ආරම්භක දිනය' : 'தொடக்க தேதி'}`, dataIndex: 'startDate', key: 'startDate' },
+    { title: `${language === "en" ? 'DUE DATE' : language == "si" ? 'අවශ්‍ය වන දිනය' : 'இறுதி தேதி'}`, dataIndex: 'dueDate', key: 'dueDate' },
+    { title: `${language === "en" ? 'CAPACITY (CUBES)' : language == "si" ? 'කියුබ් ගණන (CUBES)' : 'திறன் (CUBES)'}`, dataIndex: 'capacity', key: 'capacity' },
+    { title: `${language === "en" ? 'DISPATCHED (CUBES)' : language == "si" ? 'යවන ලද ප්‍රමාණය (CUBES)' : 'அனுப்பப்பட்டது (CUBES)'}`, dataIndex: 'dispatchedCubes', key: 'dispatchedCubes' },
+    { title: `${language === "en" ? 'REMAINING (CUBES)' : language == "si" ? 'ඉතිරි ප්‍රමාණය (CUBES)' : 'மீதமுள்ளவை (CUBES)'}`, dataIndex: 'remainingCubes', key: 'remainingCubes' },
     {
-      title: `${language === "en" ? 'ROYALTY(SAND) DUE [RS.]' : language == "si" ? 'රෝයල්ටි (රු.)' : ''}`,
+      title: `${language === "en" ? 'ROYALTY(SAND) DUE [RS.]' : language == "si" ? 'රෝයල්ටි (රු.)' : 'ராயல்டி(மணல்) வரவு [ஆர்.எஸ்.]'}`,
       dataIndex: 'royalty',
       key: 'royalty',
       render: (text) => {
@@ -60,7 +60,7 @@ const MLOwnerHomePage = () => {
       },
     },
     {
-      title: `${language === "en" ? 'STATUS' : language == 'si' ? 'තත්වය' : ''}`,
+      title: `${language === "en" ? 'STATUS' : language == 'si' ? 'තත්වය' : 'நிலை'}`,
       dataIndex: 'status',
       key: 'status',
       render: (text, record) => {
@@ -75,7 +75,7 @@ const MLOwnerHomePage = () => {
       },
     },
     {
-      title: `${language === "en" ? 'ACTION' : language == 'si' ? 'ක්‍රියාමාර්ග': ''}`,
+      title: `${language === "en" ? 'ACTION' : language == 'si' ? 'ක්‍රියාමාර්ග': 'நடவடிக்கை'}`,
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
@@ -96,7 +96,7 @@ const MLOwnerHomePage = () => {
                   : "Dispatch Load"
               }
             >
-              {language === "en" ? "Dispatch Load" : language == 'si' ? "යවන ලද ප්‍රමාණය" : ''}
+              {language === "en" ? "Dispatch Load" : language == 'si' ? "යවන ලද ප්‍රමාණය" : 'அனுப்புதல் சுமை'}
             </Button>
           </Link>
 
@@ -114,7 +114,7 @@ const MLOwnerHomePage = () => {
                 borderRadius: '10%',
               }}
             >
-              {language === "en" ? "History" : language == 'si' ? "ඉතිහාසය" : ''}
+              {language === "en" ? "History" : language == 'si' ? "ඉතිහාසය" : 'வரலாறு'}
             </Button>
           </Link>
         </Space>
@@ -228,7 +228,7 @@ const MLOwnerHomePage = () => {
             >
               <Input
                 prefix={<SearchOutlined />}
-                placeholder={language === "en" ? "Search License Number" : language == 'si' ? "සොයන්න" : ''}
+                placeholder={language === "en" ? "Search License Number" : language == 'si' ? "සොයන්න" : 'தேடல் உரிம எண்'}
               />
             </AutoComplete>
           </Col>
@@ -247,7 +247,7 @@ const MLOwnerHomePage = () => {
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
               >
-                {language === "en" ? "View Licenses" : language == 'si' ? "බලපත්‍ර බලන්න" : ""}
+                {language === "en" ? "View Licenses" : language == 'si' ? "බලපත්‍ර බලන්න" : "உரிமங்களைப் பார்க்கவும்"}
               </Button>
             </Link>
           </Col>
