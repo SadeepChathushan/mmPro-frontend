@@ -69,7 +69,7 @@ const MLOwnerHomePage = () => {
         const isActive = currentDate <= dueDate;
         return (
           <span style={{ color: isActive ? 'green' : 'red' }}>
-            {isActive ? 'Active' : 'Inactive'}
+            {record.status === 'Valid' && isActive ? 'Active' : 'Inactive'}
           </span>
         );
       },
@@ -88,6 +88,7 @@ const MLOwnerHomePage = () => {
                 backgroundColor: '#FFA500',
                 borderColor: '#FFA500',
                 borderRadius: '10%',
+                color: 'black',
               }}
               disabled={parseInt(record.remainingCubes, 10) === 0 || new Date(record.dueDate) < new Date()}
               title={
@@ -95,8 +96,15 @@ const MLOwnerHomePage = () => {
                   ? "Cannot dispatch: No remaining cubes or due date exceeded"
                   : "Dispatch Load"
               }
+              onMouseEnter={(e) =>
+                (e.target.style.backgroundColor = "rgb(211, 153, 61)")
+              }
+              onMouseLeave={(e) =>
+                (e.target.style.backgroundColor =
+                  record.status === "Valid" ? "#FFA500":"#d9d9d9")
+              }
             >
-              {language === "en" ? "Dispatch Load" : language == 'si' ? "යවන ලද ප්‍රමාණය" : 'அனுப்புதல் சுமை'}
+              {language === "en" ? "Dispatch Load" : language == 'si' ? "පැටවීම" : 'அனுப்புதல் சுமை'}
             </Button>
           </Link>
 
@@ -155,6 +163,7 @@ const MLOwnerHomePage = () => {
             const currentDate = new Date();
             const dueDate = new Date(issue.due_date);
             const isActive = currentDate <= dueDate;
+            console.log("Mapped status:", issue.status.name);
   
             return {
               licenseNumber: issue.custom_fields.find(field => field.name === 'License Number')?.value,
@@ -166,12 +175,13 @@ const MLOwnerHomePage = () => {
               dispatchedCubes: issue.custom_fields.find(field => field.name === 'Used')?.value, // Mapped to Used for dispatched cubes
               remainingCubes: issue.custom_fields.find(field => field.name === 'Remaining')?.value, // Using Remaining field for cubes
               royalty: issue.custom_fields.find(field => field.name === 'Royalty(sand)due')?.value, // Added royalty mapping
-              status: isActive ? 'Active' : 'Inactive', // Active if not overdue, inactive otherwise
+              status: issue.status.name, // Active if not overdue, inactive otherwise
             };
           });
   
         // **New**: Filter only active licenses
-        mappedData = mappedData.filter(item => item.status === 'Active');
+        mappedData = mappedData.filter(item => item.status === 'Valid');
+        
   
         // **New**: Filter licenses by the logged-in user's full name
         if (user && user.firstname && user.lastname) {
@@ -247,7 +257,7 @@ const MLOwnerHomePage = () => {
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
               >
-                {language === "en" ? "View Licenses" : language == 'si' ? "බලපත්‍ර බලන්න" : "உரிமங்களைப் பார்க்கவும்"}
+                {language === "en" ? "View Licenses" : language == 'si' ? "බලපත්‍ර බලන්න" : ""}
               </Button>
             </Link>
           </Col>
