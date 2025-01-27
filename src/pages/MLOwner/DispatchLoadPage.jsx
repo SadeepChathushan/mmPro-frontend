@@ -35,8 +35,8 @@ const DispatchLoadPage = () => {
     setIsModalVisible(false);
     setFormData({
       DateTime: "",
-      destination: "",
       licenseNumber: l_number,
+      destination: "",
       lorryNumber: "",
       driverContact: "",
       dueDate: "",
@@ -62,9 +62,10 @@ const DispatchLoadPage = () => {
   const [isErrModalVisible, setIsErrModalVisible] = useState(false);
   const [isProErrModalVisible, setIsProErrModalVisible] = useState(false);
   const [isContErrModalVisible, setIsContErrModalVisible] = useState(false);
+  const [isLoyalErrModalVisible, setIsLoyalErrModalVisible] = useState(false);
   const [location, setLocation] = useState([6.9271, 79.8612]); // Default to Colombo coordinates
   const [locationSuggestions, setLocationSuggestions] = useState([]);
-  const [mLId, setmId] = useState("");
+  // const [mLId, setmId] = useState("");
   const [formData, setFormData] = useState({
     DateTime: "",
     licenseNumber: "",
@@ -340,7 +341,7 @@ const DispatchLoadPage = () => {
 
             const mLissueId = issueToUpdate.id;
             const locatvalue = locateField.value;
-            setmId(mLissueId);
+            // setmId(mLissueId);
 
             const cubesUsed = parseInt(formData.cubes, 10);
             const usedValue = parseInt(usedField ? usedField.value : "0", 10);
@@ -378,37 +379,23 @@ const DispatchLoadPage = () => {
             console.log("Updated issue:", issueToUpdate);
 
             // PUT request to update the issues with new data
-            if (cubesUsed > remainingValue) {
-              setIsContErrModalVisible(true);
+            if (royaltysanddueValue < 1000) {
+              setIsLoyalErrModalVisible(true);
             } else {
-              try {
-                await axios.put(
-                  `/api/issues/${mLissueId}.json`,
-                  {
-                    issue: issueToUpdate, // Pass the actual issue object here
-                  },
-                  {
-                    headers: {
-                      "Content-Type": "application/json",
-                      "X-Redmine-API-Key":
-                        "fb4b68f17ce654c1123a5fcf031de4b560999296",
-                    },
-                    // auth: {
-                    //   username,
-                    //   password,
-                    // },
-                  }
-                );
+              if (cubesUsed > remainingValue) {
+                setIsContErrModalVisible(true);
+              } else {
                 try {
-                  await axios.post(
-                    `/api/issues.json`,
+                  await axios.put(
+                    `/api/issues/${mLissueId}.json`,
                     {
-                      issue: issueData, // Pass the actual issue object here
+                      issue: issueToUpdate, // Pass the actual issue object here
                     },
                     {
                       headers: {
                         "Content-Type": "application/json",
-                        "X-Redmine-API-Key": apiKey,
+                        "X-Redmine-API-Key":
+                          "fb4b68f17ce654c1123a5fcf031de4b560999296",
                       },
                       // auth: {
                       //   username,
@@ -416,15 +403,33 @@ const DispatchLoadPage = () => {
                       // },
                     }
                   );
+                  try {
+                    await axios.post(
+                      `/api/issues.json`,
+                      {
+                        issue: issueData, // Pass the actual issue object here
+                      },
+                      {
+                        headers: {
+                          "Content-Type": "application/json",
+                          "X-Redmine-API-Key": apiKey,
+                        },
+                        // auth: {
+                        //   username,
+                        //   password,
+                        // },
+                      }
+                    );
+                  } catch (error) {
+                    console.error("Error updating issue:", error);
+                    setIsProErrModalVisible(true); // Show error modal on any API request failure
+                  }
                 } catch (error) {
                   console.error("Error updating issue:", error);
                   setIsProErrModalVisible(true); // Show error modal on any API request failure
                 }
-              } catch (error) {
-                console.error("Error updating issue:", error);
-                setIsProErrModalVisible(true); // Show error modal on any API request failure
+                setIsModalVisible(true); // Show success modal if the issue is updated successfully
               }
-              setIsModalVisible(true); // Show success modal if the issue is updated successfully
             }
           }
         } else {
@@ -443,7 +448,7 @@ const DispatchLoadPage = () => {
 
   const handlePrintReceipt = () => {
     navigate("/mlowner/home/dispatchload/receipt", {
-      state: { formData, mLId },
+      state: { formData, l_number },
     });
   };
 
@@ -795,7 +800,7 @@ const DispatchLoadPage = () => {
             {language === "en"
               ? "All field are required !"
               : language === "si"
-              ? "සියලුම ක්ෂේත්‍ර අවශ්ය වේ !"
+              ? "සියලුම ක්ෂේත්ර අවශ්ය වේ !"
               : "அனைத்து துறைகளும் தேவை!"}
           </h3>
         </Modal>
@@ -815,8 +820,26 @@ const DispatchLoadPage = () => {
             {language === "en"
               ? `Not enough cubes available. Please adjust the quantity.`
               : language === "si"
-              ? "අවශ්‍ය කියුබ් ලබා ගත නොහැක. ප්‍රමාණය සංවේදය කරන්න."
+              ? "්අවශ්‍ය ප්‍රමාණය නොමැත. ප්‍රමාණය වෙනස් කරන්න්."
               : "போதுமான க்யூப்ஸ் கிடைக்கவில்லை. அளவை சரிசெய்யவும்."}
+          </h3>
+        </Modal>
+        <Modal
+          visible={isLoyalErrModalVisible}
+          onCancel={() => setIsLoyalErrModalVisible(false)}
+          footer={null}
+          style={{ textAlign: "center" }}
+          bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+        >
+          <div style={{ fontSize: "40px", color: "brown" }}>
+            <IoIosCloseCircle />
+          </div>
+          <h3>
+            {language === "en"
+              ? `Not enough`
+              : language === "si"
+              ? "්Not enough"
+              : "Not enough"}
           </h3>
         </Modal>
       </Content>

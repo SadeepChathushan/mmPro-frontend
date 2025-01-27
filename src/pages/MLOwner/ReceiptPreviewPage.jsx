@@ -5,40 +5,47 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import "./ReceiptPage.css"; // Add this line at the top of your file
 import axios from "axios";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 const ReceiptPage = () => {
+  const { language } = useLanguage();
   const navigate = useNavigate();
   const [mldata, setmlData] = useState(null);
   const apiKey = localStorage.getItem("API_Key");
   const location = useLocation();
-  const { formData, mLId } = location.state || {}; // Ensure fallback to avoid undefined errors
+  const { formData, l_number } = location.state || {}; // Ensure fallback to avoid undefined errors
 
   console.log("Form Data:", formData);
-  console.log("ML Issue ID:", mLId);
+  console.log("ML  ID:", l_number);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`/api/issues/${mLId}.json`, {
+        const response = await axios.get(`/api/projects/gsmb/issues.json`, {
           headers: {
             "Content-Type": "application/json",
             "X-Redmine-API-Key": apiKey,
           },
         });
-        setmlData(response.data.issue); // Store data in state
+        if (response.data && response.data.issues) {
+          const issues = response.data.issues;
+          const filteredMLIssues = issues.filter(issue => issue.subject === l_number);
+          setmlData(filteredMLIssues[0]);
+        }
+         // Store data in state
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
-    if (mLId) {
+    if (l_number) {
       // Ensure mLId is not undefined before calling fetchData
       fetchData();
     }
-  }, [mLId, apiKey]); // Ensure useEffect runs when mLId changes
+  }, [l_number, apiKey]); // Ensure useEffect runs when mLId changes
 
   // Ensure mldata and mldata.custom_fields exist before accessing
   const mlcontact = mldata?.custom_fields?.find(
@@ -184,7 +191,7 @@ const ReceiptPage = () => {
         <Row justify="center" style={{ marginBottom: "20px" }}>
           <Col xs={24} sm={18} md={12} lg={10} xl={8}>
             <Title level={3} style={{ textAlign: "center" }}>
-              Print or Save Your Receipt
+              {language === "en" ? "Print or Save Your Receipt" : language == 'si' ? "ඔබේ රිසිට්පත මුද්‍රණය කරන්න හෝ සුරකින්න" : "உங்கள் ரசீதை அச்சிடவும் அல்லது சேமிக்கவும்"}
             </Title>
           </Col>
         </Row>
@@ -206,38 +213,38 @@ const ReceiptPage = () => {
             </div>
 
             <p>
-              <strong>Lorry Number:</strong> {formData.lorryNumber}
+              <strong>{language === "en" ? "Lorry Number:" : language == 'si' ? "ලොරි අංකය:" : "லாரி எண்:"}</strong> {formData.lorryNumber}
             </p>
             {/* <p><strong>Reference:</strong> {receiptData.reference}</p> */}
             <p>
-              <strong>ML Number:</strong> {receiptData.mlNumber}
+              <strong>{language === "en" ? "ML Number:" : language == 'si' ? "ML අංකය:" : "ML எண்:"}</strong> {receiptData.mlNumber}
             </p>
             <p>
-              <strong>ML Owner:</strong> {receiptData.mlOwner}
+              <strong>{language === "en" ? "ML Owner:" : language == 'si' ? "ML හිමිකරු:" : "ML உரிமையாளர்:"}</strong> {receiptData.mlOwner}
             </p>
             <p>
-              <strong>ML Contact:</strong> {receiptData.mlContact}
+              <strong>{language === "en" ? "ML Contact:" : language == 'si' ? "ML සම්බන්ධතා:" : "ML தொடர்பு:"}</strong> {receiptData.mlContact}
             </p>
             <p>
-              <strong>Start Location:</strong> {receiptData.startLocation}
+              <strong>{language === "en" ? "Start Location:" : language == 'si' ? "ආරම්භක ස්ථානය:" : "தொடக்க இடம்:"}</strong> {receiptData.startLocation}
             </p>
             <p>
-              <strong>Mineral Type:</strong> {receiptData.mineralType}
+              <strong>{language === "en" ? "Mineral Type:" : language == 'si' ? "ඛනිජ වර්ගය:" : "கனிம வகை:"}</strong> {receiptData.mineralType}
             </p>
             <p>
-              <strong>Lorry Contact:</strong> {receiptData.lorryContact}
+              <strong>{language === "en" ? "Driver Contact:" : language == 'si' ? "රියදුරු සම්බන්ධතා:" : "ஓட்டுனர் தொடர்பு:"}</strong> {receiptData.lorryContact}
             </p>
             <p>
-              <strong>Load (Cube):</strong> {receiptData.loadCube}
+              <strong>{language === "en" ? "Load (Cube):" : language == 'si' ? "පැටවීම (Cube):" : "சுமை (Cube):"}</strong> {receiptData.loadCube}
             </p>
             <p>
-              <strong>Destination:</strong> {receiptData.destination}
+              <strong>{language === "en" ? "Destination:" : language == 'si' ? "ගමනාන්තය:" : "சேருமிடம்:"}</strong> {receiptData.destination}
             </p>
             <p>
-              <strong>Validity:</strong> {receiptData.validity}
+              <strong>{language === "en" ? "Validity:" : language == 'si' ? "වලංගුභාවය:" : "செல்லுபடியாகும்:"}</strong> {receiptData.validity}
             </p>
             <p>
-              <strong>Printed Date:</strong> {receiptData.printedDate}
+              <strong>{language === "en" ? "Printed Date:" : language == 'si' ? "මුද්‍රිත දිනය:" : "அச்சிடப்பட்ட தேதி:"}</strong> {receiptData.printedDate}
             </p>
           </Col>
         </Row>
@@ -252,14 +259,14 @@ const ReceiptPage = () => {
                 borderColor: "#FFA500",
               }}
             >
-              Back to Home
+              {language === "en" ? "Back to Home" : language == 'si' ? "ආපසු" : "முகப்புக்குத் திரும்பு"}
             </Button>
             <Button
               type="primary"
               onClick={handlePrintReceipt}
               className="glitter-button" // Apply the glitter button class
             >
-              Print Receipt
+              {language === "en" ? "Print Receipt" : language == 'si' ? "මුද්‍රණ ලදුපත" : "அச்சு ரசீது"}
             </Button>
           </Col>
         </Row>
