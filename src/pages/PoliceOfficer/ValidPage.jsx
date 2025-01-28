@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import axios from 'axios';
+import config from '../../services/config';
 
 const ValidPage = () => {
   const { language } = useLanguage();
@@ -13,43 +14,35 @@ const ValidPage = () => {
   const isTamil = language === 'ta';
 
   const textContent = {
-    licenseTitle: isSinhala ? 'වැලි පතල් බලපත්‍රය' :  isTamil? 'மணல் சுரங்க உரிமம்' :'Sand Mining License',
-    validText: isSinhala ? 'වලංගුයි' :  isTamil? 'செல்லுபடியாகும்' :'Valid',
+    licenseTitle: isSinhala ? 'වැලි පතල් බලපත්‍රය' : isTamil ? 'மணல் சுரங்க உரிமம்' : 'Sand Mining License',
+    validText: isSinhala ? 'වලංගුයි' : isTamil ? 'செல்லுபடியாகும்' : 'Valid',
     fields: [
       [
-        { label: isSinhala ? 'බලපත්‍ර අංකය' :  isTamil? 'உரிம எண்' :'License Number', dataIndex: 'licenseNumber'},
-        { label: isSinhala ? 'ආරම්භක ස්ථානය' :  isTamil? 'இடம் தொடங்கியது' : 'Location Started', dataIndex: 'location'},
+        { label: isSinhala ? 'බලපත්‍ර අංකය' : isTamil ? 'உரிம எண்' : 'License Number', dataIndex: 'licenseNumber' },
+        { label: isSinhala ? 'ආරම්භක ස්ථානය' : isTamil ? 'இடம் தொடங்கியது' : 'Location Started', dataIndex: 'location' },
       ],
       [
 
-        { label: isSinhala ? 'කල් ඉකුත්වන දිනය' :  isTamil? 'காலாவதியாகிறது' :'Expires', dataIndex: 'expire' },
-        { label: isSinhala ? 'පැටවූ දිනය / වේලාව' :  isTamil? 'ஏற்றப்பட்ட தேதி/நேரம்' :'Loaded date/time', dataIndex: 'start'},
+        { label: isSinhala ? 'කල් ඉකුත්වන දිනය' : isTamil ? 'காலாவதியாகிறது' : 'Expires', dataIndex: 'expires' },
+        { label: isSinhala ? 'පැටවූ දිනය / වේලාව' : isTamil ? 'ஏற்றப்பட்ட தேதி/நேரம்' : 'Loaded date/time', dataIndex: 'start' },
 
       ],
       [
-        { label: isSinhala ? 'කියුබ් ගණන' :  isTamil? 'கொள்ளளவு (கனசதுரங்கள்)' :'Capacity(Cubes)', dataIndex: 'capacity'},
-        { label: isSinhala ? 'අවලංගු දිනය/ වේලාව' : isTamil? 'நிலுவைத் தேதி/நேரம்' : 'Due date/Time', dataIndex: 'dueDate'},
+        { label: isSinhala ? 'කියුබ් ගණන' : isTamil ? 'கொள்ளளவு (கனசதுரங்கள்)' : 'Capacity(Cubes)', dataIndex: 'capacity' },
+        { label: isSinhala ? 'අවලංගු දිනය/ වේලාව' : isTamil ? 'நிலுவைத் தேதி/நேரம்' : 'Due date/Time', dataIndex: 'dueDate' },
       ],
       [
 
-        { label: isSinhala ? 'පැටවුම් අංකය' :  isTamil? 'சுமை எண்' :'Load Number', dataIndex: 'loadNumber' },
-        { label: isSinhala ? 'ගමනාන්තය' :  isTamil? 'சேருமிடம்' :'Destination', dataIndex: 'destination'},
+        { label: isSinhala ? 'පැටවුම් අංකය' : isTamil ? 'சுமை எண்' : 'Load Number', dataIndex: 'loadNumber' },
+        { label: isSinhala ? 'ගමනාන්තය' : isTamil ? 'சேருமிடம்' : 'Destination', dataIndex: 'destination' },
 
       ],
-      [{ label: isSinhala ? 'බලපත්‍ර හිමිකරු' :  isTamil? 'உரிமம் வைத்திருப்பவர்' :'License Holder', dataIndex: 'owner'}],
+      [{ label: isSinhala ? 'බලපත්‍ර හිමිකරු' : isTamil ? 'உரிமம் வைத்திருப்பவர்' : 'License Holder', dataIndex: 'owner' }],
     ],
   };
 
   const styles = {
-    // container: {
-    //   display: 'flex',
-    //   flexDirection: 'column',
-    //   alignItems: 'center',
-    //   justifyContent: 'flex-start',
-    //   padding: '5px',
-    //   backgroundColor: '#f4f4f9',
-    //   color: '#333',
-    // },
+
     headerSection: {
       width: '100%',
       maxWidth: '1200px',
@@ -66,16 +59,16 @@ const ValidPage = () => {
       fontSize: '24px',
       textAlign: 'center',
       marginBottom: '20px',
-      marginLeft:'230px',
+      marginLeft: '230px',
       boxShadow: '0 2px 4px rgba(0,0,0,0)',
     },
     sectionTitle: {
       fontSize: '1.8rem',
       fontWeight: 'bold',
       color: '#000000',
-      
+
       marginBottom: '10px',
-      marginLeft : '270px',
+      marginLeft: '270px',
     },
     content: {
       width: '100%',
@@ -93,7 +86,7 @@ const ValidPage = () => {
     field: {
       display: 'flex',
       flexDirection: 'column',
-      width:'160%',
+      width: '160%',
       border: '1px solid #fff',
       borderRadius: '10px',
       padding: '10px',
@@ -190,7 +183,7 @@ const ValidPage = () => {
           textAlign: 'left',
         },
         fieldRow: {
-          display:'flex',
+          display: 'flex',
           flexDirection: 'row', // Ensure horizontal layout
           justifyContent: 'space-between',
           padding: '10px 0',
@@ -202,85 +195,58 @@ const ValidPage = () => {
     }
     return {};
   };
-  
 
-  useEffect(() => {
-    const handleResize = () => {
-      setResponsiveStyles(getResponsiveStyles());
-    };
+  const fetchData = async () => {
+    try {
+      const apiKey = config.getPoliceOfficerApiKey();
+      const response = await axios.get('/api/projects/gsmb/issues.json', {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Redmine-API-Key': apiKey,
+        },
+      });
 
-    handleResize(); // Set initial responsive styles
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+      const issues = response.data.issues;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const username = "@achinthamihiran";
-        const password = "Ab2#*De#";
+      const tplIssue = issues.find(
+        (issue) =>
+          issue.tracker.name === 'TPL' &&
+          issue.custom_fields.find((field) => field.name === 'Lorry Number')?.value === vehicleNumber
+      );
 
-        const response = await axios.get('/api/projects/gsmb/issues.json', {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          auth: {
-            username,
-            password,
-          },
+      if (tplIssue) {
+        const licenseNumber = tplIssue.custom_fields.find((field) => field.name === 'License Number')?.value;
+
+        const mlIssue = issues.find(
+          (issue) =>
+            issue.tracker.name === 'ML' &&
+            issue.custom_fields.find((field) => field.name === 'License Number')?.value === licenseNumber
+        );
+
+        const expires = mlIssue ? mlIssue.due_date || 'N/A' : 'N/A';
+
+        setData({
+          licenseNumber,
+          location: tplIssue.custom_fields.find((field) => field.name === 'Location')?.value || 'N/A',
+          start: tplIssue.start_date,
+          dueDate: tplIssue.due_date,
+          capacity: tplIssue.custom_fields.find((field) => field.name === 'Cubes')?.value || 'N/A',
+          destination: tplIssue.custom_fields.find((field) => field.name === 'Destination')?.value || 'N/A',
+          loadNumber: tplIssue.id.toString(),
+          owner: tplIssue.custom_fields.find((field) => field.name === 'Owner Name')?.value || 'N/A',
+          expires, 
         });
-
-        
-        // Separate issues by tracker
-        const tplIssues = response.data.issues.filter(issue => issue.tracker.name === 'TPL');
-        const mlIssues = response.data.issues.filter(issue => issue.tracker.name === 'ML');
-
-
-        // Map TPL issues
-        const tplData = tplIssues.map((issue) => ({
-          vehicleNumber: issue.custom_fields.find((field) => field.name === 'Lorry Number')?.value,
-          licenseNumber: issue.custom_fields.find((field) => field.name === 'License Number')?.value,
-          start: issue.start_date, // Using standard field
-          dueDate: issue.due_date, 
-          capacity: issue.custom_fields.find((field) => field.name === 'Cubes')?.value,    
-          destination: issue.custom_fields.find((field) => field.name === 'Destination')?.value,  
-          loadNumber: issue.id.toString(), // Get TPL issue number for Load Number        
-        }));
- 
-        const hardcodedLocation = "Kegalla";
-
-        // Find the matching TPL issue based on vehicle number
-        const matchingTplData = tplData.find((item) => item.vehicleNumber === vehicleNumber);
-
-        if (matchingTplData) {
-          // Find corresponding ML issue using License Number
-          const matchingMlIssue = mlIssues.find(issue => 
-            issue.custom_fields.find(field => 
-              field.name === 'License Number'
-            )?.value === matchingTplData.licenseNumber
-          );
-
-          // Get owner from ML issue
-          const owner = matchingMlIssue?.custom_fields.find(field => field.name === 'Owner Name')?.value;
-
-          const expire = matchingMlIssue?.due_date; // Get expiry date from ML standard field
-
-          // Combine TPL and ML data
-          setData({
-            ...matchingTplData,
-            owner: owner || 'N/A',
-            expire: expire || 'N/A',
-            location: hardcodedLocation,
-          });
-        } else {
-          setData(null);
-        }       
-
-      } catch (error) {
-        console.error('Error fetching data:', error);
+      } else {
+        console.warn('No TPL issue found for the given vehicle number.');
+        setData(null);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
+
+  useEffect(() => {
     if (vehicleNumber) {
       fetchData();
     }
@@ -288,43 +254,34 @@ const ValidPage = () => {
 
   if (!vehicleNumber) {
     return (
-      <div style={{ ...styles.container, minHeight: '100vh', justifyContent: 'center' }}>
-        {language === "en" ? "No vehicle number provided" : language === 'si' ? "වාහන අංකයක් සපයා නැත":'வாகன எண் எதுவும் வழங்கப்படவில்லை.'}
+      <div style={styles.container}>
+        {language === 'en'
+          ? 'No vehicle number provided'
+          : language === 'si'
+            ? 'වාහන අංකයක් සපයා නැත'
+            : 'வாகன எண் எதுவும் வழங்கப்படவில்லை.'}
       </div>
     );
   }
 
   if (!data) {
-    return (
-      <div style={{ ...styles.container, minHeight: '100vh', justifyContent: 'center' }}>
-        {language === "en" ? "Loading..." : language === "si"?  "පූරණය වෙමින්...":'ஏற்றுகிறது...'}
-      </div>
-    );
+    return <div style={styles.container}>{language === 'en' ? 'Loading...' : language === 'si' ? 'පූරණය වෙමින්...' : 'ஏற்றுகிறது...'}</div>;
   }
 
   return (
     <div style={styles.container}>
       <div style={styles.headerSection}>
-        <div style={responsiveStyles?.validBadge || styles.validBadge}>
-          {textContent.validText}
-        </div>
-        <h1 style={responsiveStyles?.sectionTitle || styles.sectionTitle}>
-          {textContent.licenseTitle}
-        </h1>
+        <div style={styles.validBadge}>{textContent.validText}</div>
+        <h1 style={styles.sectionTitle}>{textContent.licenseTitle}</h1>
       </div>
 
-      <div style={responsiveStyles?.content || styles.content}>
+      <div style={styles.content}>
         {textContent.fields.map((row, rowIndex) => (
           <div key={rowIndex} style={styles.fieldsContainer}>
             {row.map((field, colIndex) => (
               <div key={`${rowIndex}-${colIndex}`} style={styles.field}>
                 <div style={styles.label}>{field.label}</div>
-                <input 
-                  style={styles.input}
-                  type="text"
-                  value={data[field.dataIndex] || 'N/A'}
-                  readOnly
-                />
+                <input style={styles.input} type="text" value={data[field.dataIndex] || 'N/A'} readOnly />
               </div>
             ))}
           </div>
