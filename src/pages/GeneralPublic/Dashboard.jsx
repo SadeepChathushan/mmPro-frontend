@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import logo from '../../assets/images/gsmbLogo.png';
-// import backgroundImage from '../../assets/images/generalpublic.jpg';
-import axios from 'axios';
+import backgroundImage from '../../assets/images/generalpublic.jpg';
+import { submitComplaint } from '../../services/complaint';
+import { fetchLorryNumber } from '../../services/fetchLorryNumber';
 import { message } from 'antd';
 
 const Dashboard = () => {
   const { language } = useLanguage();
   const [input, setInput] = useState('');
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
-  const [modalMessage, setModalMessage] = useState(''); // Modal message
-  const [data, setData] = useState([]); // All data fetched from API
-  const [phoneNumber, setPhoneNumber] = useState(''); // State for phone number
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [data, setData] = useState([]);
+  const [phoneNumber, setPhoneNumber] = useState('');
 
   const isSinhala = language === 'si';
   const textContent = {
@@ -25,70 +26,18 @@ const Dashboard = () => {
     ],
   };
 
+  useEffect(() => {
+    const loadLorryNumbers = async () => {
+      const lorryNumbers = await fetchLorryNumber();
+      setData(lorryNumbers);
+    };
+    loadLorryNumbers();
+  }, []);
+
   const handleReport = async () => {
-    if (!input.trim()) {
-      message.error(language === "en" ? "Please enter a vehicle number!" : "කරුණාකර වාහන අංකයක් ඇතුළු කරන්න!");
-      return;
-    }
-
-    if (!phoneNumber.trim()) {
-      message.error(language === "en" ? "Please enter your phone number!" : "කරුණාකර ඔබේ දුරකථන අංකය ඇතුළු කරන්න!");
-      return;
-    }
-
-    try {
-      const generateComplaintID = (lorryNumber) => {
-        const randomNum = Math.floor(Math.random() * 1000);
-        return `GP-${lorryNumber}-${randomNum}`;
-      };
-
-      const complaintID = generateComplaintID(input);
-
-      const startDate = new Date();
-      const dueDate = new Date(startDate);
-      dueDate.setDate(startDate.getDate() + 14);
-
-      const payload = {
-        issue: {
-          project_id: 31,
-          tracker_id: 26,
-          subject: language === "en" ? "New Complaint" : "නව පැමිණිල්ලක්",
-          status_id: 1,
-          priority_id: 2,
-          assigned_to_id: 59,
-          start_date: startDate.toISOString().split('T')[0],
-          due_date: dueDate.toISOString().split('T')[0],
-          custom_fields: [
-            { id: 13, name: "Lorry Number", value: input },
-            { id: 90, name: "Complaint ID", value: complaintID },
-            { id: 68, name: "Role", value: "General Public" }, // Static role
-            { id: 3, name: "Mobile Number", value: phoneNumber }, // Added phone number field
-          ],
-        },
-      };
-
-      const apiKey = "32b545985bf4c8dc6475bcc7a12c39ceec49ff3d";  // Use your actual API key here
-
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Redmine-API-Key": apiKey,  // Use Redmine API Key for authentication
-        },
-      };
-
-      const response = await axios.post(
-        "/api/issues.json",
-        payload,
-        config
-      );
-
-      message.success(language === "en" ? "Report Submitted successfully!" : "පැමිණිල්ල සාර්ථකව ඉදිරිපත් කරන ලදී.");
-      closeModal(); // Close modal after success
-      console.log("API response:", response.data);
-      console.log("Payload:", payload);
-    } catch (error) {
-      console.error("Error posting data:", error);
-      message.error(language === "en" ? "Report Submission Failed! Please try again." : "පැමිණිල්ල ඉදිරිපත් කිරීම අසාර්ථකයි. නැවත උත්සාහ කරන්න.");
+    const success = await submitComplaint(input, phoneNumber, language);
+    if (success) {
+      closeModal();
     }
   };
 
@@ -106,7 +55,7 @@ const Dashboard = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setPhoneNumber(''); // Clear phone number when closing modal
+    setPhoneNumber('');
   };
 
   useEffect(() => {
@@ -120,30 +69,6 @@ const Dashboard = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const apiKey = "32b545985bf4c8dc6475bcc7a12c39ceec49ff3d";  // Use your actual API key here
-        const response = await axios.get('/api/projects/gsmb/issues.json', {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Redmine-API-Key': apiKey, // Use Redmine API key for authentication
-          },
-        });
-
-        const mappedData = response.data.issues.map((issue) => ({
-          vehicleNumber: issue.custom_fields.find((field) => field.name === 'Lorry Number')?.value,
-        }));
-
-        setData(mappedData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-  
   const styles = {
     pageContainer: {
       display: 'flex',
@@ -213,7 +138,7 @@ const Dashboard = () => {
     },
     modalContent: {
       backgroundColor: '#fff',
-      padding: '4rem', // Increased padding for a bigger size
+      padding: '4rem',
       borderRadius: '12px',
       textAlign: 'center',
       position: 'relative',
@@ -259,10 +184,7 @@ const Dashboard = () => {
       {isModalOpen && (
         <div style={styles.modal}>
           <div style={styles.modalContent}>
-            <button
-              style={styles.modalCloseButton}
-              onClick={closeModal}
-            >
+            <button style={styles.modalCloseButton} onClick={closeModal}>
               &times;
             </button>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -283,10 +205,7 @@ const Dashboard = () => {
                 }}
               />
               {modalMessage === (language === 'en' ? 'Invalid Load' : 'අවලංගු බලපත් අංකය') && (
-                
                 <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                  {/* Add label text before the phone number input */}
-                  
                   <div style={{ marginBottom: '1rem' }}>
                     <input
                       type="text"
@@ -304,8 +223,6 @@ const Dashboard = () => {
                       onChange={(e) => setPhoneNumber(e.target.value)}
                     />
                   </div>
-
-                  {/* Report button */}
                   <button
                     style={{
                       backgroundColor: '#800000',
@@ -317,7 +234,7 @@ const Dashboard = () => {
                       fontSize: '1rem',
                       marginBottom: '1rem',
                     }}
-                    onClick={handleReport} // This calls the handleReport function
+                    onClick={handleReport}
                   >
                     {language === 'en' ? 'Report to GSMB' : 'GSMB වෙත පැමිණිලි කරන්න'}
                   </button>
