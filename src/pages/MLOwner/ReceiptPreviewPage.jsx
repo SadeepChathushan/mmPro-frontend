@@ -1,36 +1,78 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Typography, Layout, Row, Col, notification } from "antd";
 import { jsPDF } from "jspdf";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import './ReceiptPage.css';  // Add this line at the top of your file
-
+import "./ReceiptPage.css"; // Add this line at the top of your file
+import axios from "axios";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 const ReceiptPage = () => {
+  const { language } = useLanguage();
   const navigate = useNavigate();
-
+  const [mldata, setmlData] = useState(null);
+  const apiKey = localStorage.getItem("API_Key");
   const location = useLocation();
-  const formData = location.state?.formData || []; 
+  const { formData, l_number } = location.state || {}; // Ensure fallback to avoid undefined errors
+
+  console.log("Form Data:", formData);
+  console.log("ML  ID:", l_number);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`/api/projects/gsmb/issues.json`, {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Redmine-API-Key": apiKey,
+          },
+        });
+        if (response.data && response.data.issues) {
+          const issues = response.data.issues;
+          const filteredMLIssues = issues.filter(issue => issue.subject === l_number);
+          setmlData(filteredMLIssues[0]);
+        }
+         // Store data in state
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    if (l_number) {
+      // Ensure mLId is not undefined before calling fetchData
+      fetchData();
+    }
+  }, [l_number, apiKey]); // Ensure useEffect runs when mLId changes
+
+  // Ensure mldata and mldata.custom_fields exist before accessing
+  const mlcontact = mldata?.custom_fields?.find(
+    (field) => field.name === "Mobile Number"
+  ) || { value: "N/A" }; // Provide a default value if not found
+  const mllocation = mldata?.custom_fields?.find(
+    (field) => field.name === "Location"
+  ) || { value: "N/A" }; // Provide a default value if not found
+
 
   const currentDate = new Date();
-  const printedDate = currentDate.toLocaleString();
+  const printedDate = currentDate.toISOString().split("T")[0];
+  const range = printedDate + " to " + formData.dueDate;
 
   const receiptData = {
     lorryNumber: formData.lorryNumber,
-    reference: "892426242",
-    mlNumber: "IML/01/TEST/5178/LRS",
-    mlOwner: "Jayantha",
-    mlContact: "0777173789",
-    startLocation: "Rathnapura",
+    // reference: "892426242",
+    mlNumber: mldata?.subject,
+    mlOwner: mldata?.assigned_to?.name,
+    mlContact: mlcontact.value,
+    startLocation: mllocation.value,
     mineralType: "Sand",
-    lorryContact: formData.lorryNumber,
+    lorryContact: formData.driverContact,
     loadCube: formData.cubes,
     destination: formData.destination,
-    validity: "01/01/2025 @ 12:55 pm to 01/05/2025 12:55 pm",
-     printedDate: printedDate,
+    validity: range,
+    printedDate: printedDate,
   };
 
   const handlePrintReceipt = () => {
@@ -38,49 +80,46 @@ const ReceiptPage = () => {
     const pageWidth = doc.internal.pageSize.width;
     const marginLeft = 20;
     const lineHeight = 8; // Reduced line height for compact spacing
-  
-    const currentDate = new Date();
-  const printedDate = currentDate.toLocaleString();
-    // Mock data or fallback values for missing fields
-    const receiptData = {
-      lorryNumber: formData.lorryNumber,
-      reference: "892426242",
-      mlNumber: "IML/01/TEST/5178/LRS",
-      mlOwner: "Jayantha",
-      mlContact: "0777173789",
-      startLocation: "Rathnapura",
-      mineralType: "Sand",
-      lorryContact: formData.lorryNumber,
-      loadCube: formData.cubes,
-      destination: formData.destination,
-      validity: "01/01/2025 @ 12:55 pm to 01/05/2025 12:55 pm",
-      printedDate: printedDate, 
-    };
-  
+
     // Helper function to add text with proper alignment
-    const addText = (text, x, y, size = 12, bold = false, align = 'left') => {
+    const addText = (text, x, y, size = 12, bold = false, align = "left") => {
       doc.setFontSize(size);
-      doc.setFont('helvetica', bold ? 'bold' : 'normal');
+      doc.setFont("helvetica", bold ? "bold" : "normal");
       doc.text(text, x, y, { align });
     };
-  
+
     // Add Logo
-    const logoUrl = "https://th.bing.com/th/id/OIP.lXqWzX4gCjamrXtOz172qAHaHa?rs=1&pid=ImgDetMain";
+    const logoUrl =
+      "https://th.bing.com/th/id/OIP.lXqWzX4gCjamrXtOz172qAHaHa?rs=1&pid=ImgDetMain";
     const logoSize = 40;
     const logoX = (pageWidth - logoSize) / 2;
-    doc.addImage(logoUrl, 'JPEG', logoX, 10, logoSize, logoSize);
-  
+    doc.addImage(logoUrl, "JPEG", logoX, 10, logoSize, logoSize);
+
     // Title and Contact Info
-    addText("Geological Survey and Mines Bureau", pageWidth / 2, 55, 16, true, 'center');
-    addText("Contact: 1921 / 011-288 7680", pageWidth / 2, 65, 12, false, 'center');
-  
+    addText(
+      "Geological Survey and Mines Bureau",
+      pageWidth / 2,
+      55,
+      16,
+      true,
+      "center"
+    );
+    addText(
+      "Contact: 1921 / 011-288 7680",
+      pageWidth / 2,
+      65,
+      12,
+      false,
+      "center"
+    );
+
     // Line separator after contact info
     doc.setDrawColor(0, 0, 0);
     doc.line(marginLeft, 70, pageWidth - marginLeft, 70);
-  
+
     // Receipt Title
-    addText("License Owner's Receipt", pageWidth / 2, 80, 14, true, 'center');
-  
+    addText("License Owner's Receipt", pageWidth / 2, 80, 14, true, "center");
+
     // Receipt Details
     const startY = 90;
     const details = [
@@ -97,24 +136,38 @@ const ReceiptPage = () => {
       { label: "Validity", value: receiptData.validity },
       { label: "Printed Date", value: receiptData.printedDate },
     ];
-  
+
     details.forEach((item, index) => {
       const yPosition = startY + index * (lineHeight + 5); // Adjusted spacing
       addText(`${item.label}:`, marginLeft, yPosition, 12, true);
       addText(item.value, marginLeft + 60, yPosition, 12);
     });
-  
+
     // Footer Content
     const footerY = doc.internal.pageSize.height - 20; // Adjusted footer position
-    addText("Thank you for using our services!", pageWidth / 2, footerY, 10, true, 'center');
+    addText(
+      "Thank you for using our services!",
+      pageWidth / 2,
+      footerY,
+      10,
+      true,
+      "center"
+    );
     doc.line(marginLeft, footerY - 5, pageWidth - marginLeft, footerY - 5);
-  
+
     // Copyright Text
-    addText("© 2025 Geological Survey and Mines Bureau. All rights reserved.", pageWidth / 2, footerY + 5, 8, false, 'center');
-  
+    addText(
+      "© 2025 Geological Survey and Mines Bureau. All rights reserved.",
+      pageWidth / 2,
+      footerY + 5,
+      8,
+      false,
+      "center"
+    );
+
     // Check if printer is available
-    const isPrinterAvailable = () => window.matchMedia('print').matches;
-  
+    const isPrinterAvailable = () => window.matchMedia("print").matches;
+
     if (isPrinterAvailable()) {
       doc.autoPrint(); // Automatically open print dialog
       doc.output("dataurlnewwindow");
@@ -122,12 +175,12 @@ const ReceiptPage = () => {
       doc.save(`${receiptData.lorryContact}.pdf`);
 
       notification.info({
-        message: 'No printer detected',
-        description: 'The receipt will be downloaded as a PDF.',
+        message: "No printer detected",
+        description: "The receipt will be downloaded as a PDF.",
       });
     }
   };
-  
+
   const handleBackToHome = () => {
     navigate("/mlowner/home");
   };
@@ -138,12 +191,19 @@ const ReceiptPage = () => {
         <Row justify="center" style={{ marginBottom: "20px" }}>
           <Col xs={24} sm={18} md={12} lg={10} xl={8}>
             <Title level={3} style={{ textAlign: "center" }}>
-              Print or Save Your Receipt
+              {language === "en" ? "Print or Save Your Receipt" : language == 'si' ? "ඔබේ රිසිට්පත මුද්‍රණය කරන්න හෝ සුරකින්න" : "உங்கள் ரசீதை அச்சிடவும் அல்லது சேமிக்கவும்"}
             </Title>
           </Col>
         </Row>
         <Row justify="center">
-          <Col xs={24} sm={18} md={12} lg={10} xl={8} style={{ border: "1px solid #d9d9d9", padding: "20px" }}>
+          <Col
+            xs={24}
+            sm={18}
+            md={12}
+            lg={10}
+            xl={8}
+            style={{ border: "1px solid #d9d9d9", padding: "20px" }}
+          >
             <div style={{ textAlign: "center", marginBottom: "20px" }}>
               <img
                 src="https://th.bing.com/th/id/OIP.lXqWzX4gCjamrXtOz172qAHaHa?rs=1&pid=ImgDetMain"
@@ -152,18 +212,40 @@ const ReceiptPage = () => {
               />
             </div>
 
-            <p><strong>Lorry Number:</strong> {formData.lorryNumber}</p>
-            <p><strong>Reference:</strong> {receiptData.reference}</p>
-            <p><strong>ML Number:</strong> {receiptData.mlNumber}</p>
-            <p><strong>ML Owner:</strong> {receiptData.mlOwner}</p>
-            <p><strong>ML Contact:</strong> {receiptData.mlContact}</p>
-            <p><strong>Start Location:</strong> {receiptData.startLocation}</p>
-            <p><strong>Mineral Type:</strong> {receiptData.mineralType}</p>
-            <p><strong>Lorry Contact:</strong> {receiptData.lorryContact}</p>
-            <p><strong>Load (Cube):</strong> {receiptData.loadCube}</p>
-            <p><strong>Destination:</strong> {receiptData.destination}</p>
-            <p><strong>Validity:</strong> {receiptData.validity}</p>
-            <p><strong>Printed Date:</strong> {receiptData.printedDate}</p>
+            <p>
+              <strong>{language === "en" ? "Lorry Number:" : language == 'si' ? "ලොරි අංකය:" : "லாரி எண்:"}</strong> {formData.lorryNumber}
+            </p>
+            {/* <p><strong>Reference:</strong> {receiptData.reference}</p> */}
+            <p>
+              <strong>{language === "en" ? "ML Number:" : language == 'si' ? "ML අංකය:" : "ML எண்:"}</strong> {receiptData.mlNumber}
+            </p>
+            <p>
+              <strong>{language === "en" ? "ML Owner:" : language == 'si' ? "ML හිමිකරු:" : "ML உரிமையாளர்:"}</strong> {receiptData.mlOwner}
+            </p>
+            <p>
+              <strong>{language === "en" ? "ML Contact:" : language == 'si' ? "ML සම්බන්ධතා:" : "ML தொடர்பு:"}</strong> {receiptData.mlContact}
+            </p>
+            <p>
+              <strong>{language === "en" ? "Start Location:" : language == 'si' ? "ආරම්භක ස්ථානය:" : "தொடக்க இடம்:"}</strong> {receiptData.startLocation}
+            </p>
+            <p>
+              <strong>{language === "en" ? "Mineral Type:" : language == 'si' ? "ඛනිජ වර්ගය:" : "கனிம வகை:"}</strong> {receiptData.mineralType}
+            </p>
+            <p>
+              <strong>{language === "en" ? "Driver Contact:" : language == 'si' ? "රියදුරු සම්බන්ධතා:" : "ஓட்டுனர் தொடர்பு:"}</strong> {receiptData.lorryContact}
+            </p>
+            <p>
+              <strong>{language === "en" ? "Load (Cube):" : language == 'si' ? "පැටවීම (Cube):" : "சுமை (Cube):"}</strong> {receiptData.loadCube}
+            </p>
+            <p>
+              <strong>{language === "en" ? "Destination:" : language == 'si' ? "ගමනාන්තය:" : "சேருமிடம்:"}</strong> {receiptData.destination}
+            </p>
+            <p>
+              <strong>{language === "en" ? "Validity:" : language == 'si' ? "වලංගුභාවය:" : "செல்லுபடியாகும்:"}</strong> {receiptData.validity}
+            </p>
+            <p>
+              <strong>{language === "en" ? "Printed Date:" : language == 'si' ? "මුද්‍රිත දිනය:" : "அச்சிடப்பட்ட தேதி:"}</strong> {receiptData.printedDate}
+            </p>
           </Col>
         </Row>
 
@@ -171,18 +253,21 @@ const ReceiptPage = () => {
           <Col>
             <Button
               onClick={handleBackToHome}
-              style={{ marginRight: "10px", backgroundColor: "#FFA500", borderColor: "#FFA500" }}
+              style={{
+                marginRight: "10px",
+                backgroundColor: "#FFA500",
+                borderColor: "#FFA500",
+              }}
             >
-              Back to Home
+              {language === "en" ? "Back to Home" : language == 'si' ? "ආපසු" : "முகப்புக்குத் திரும்பு"}
             </Button>
             <Button
-  type="primary"
-  onClick={handlePrintReceipt}
-  className="glitter-button"  // Apply the glitter button class
->
-  Print Receipt
-</Button>
-
+              type="primary"
+              onClick={handlePrintReceipt}
+              className="glitter-button" // Apply the glitter button class
+            >
+              {language === "en" ? "Print Receipt" : language == 'si' ? "මුද්‍රණ ලදුපත" : "அச்சு ரசீது"}
+            </Button>
           </Col>
         </Row>
       </Content>

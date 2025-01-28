@@ -28,23 +28,23 @@ const NewLicenseForm = () => {
         },
       };
 
-      const username = "@achinthamihiran"; // Replace with actual username
-      const password = "Ab2#*De#"; // Replace with actual password
+      // Retrieve API Key from localStorage
+      const apiKey = localStorage.getItem("API_Key");
+
+      console.log("API Key from localStorage:", apiKey);
+
+      if (!apiKey) {
+        console.error("API Key not found in localStorage");
+        return;
+      }
 
       // Post the data to the API
-      const response = await axios.post(
-        "/api/projects/new-license/issues.json",
-        payload,
-        {
+      const response = await axios.post( "/api/projects/new-license/issues.json",{
           headers: {
             "Content-Type": "application/json",
+            "X-Redmine-API-Key": apiKey, // Pass the API Key in the header
           },
-          auth: {
-            username,
-            password,
-          },
-        }
-      );
+      });
 
       console.log("Data posted successfully:", response.data);
     } catch (error) {

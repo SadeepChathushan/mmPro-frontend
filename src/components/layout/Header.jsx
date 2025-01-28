@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Layout, Menu, Button } from "antd";
+import React, { useState, useRef, useEffect } from "react";
+import { Layout, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
 import Userlogo from "../../assets/images/user.png";
@@ -7,14 +7,44 @@ import { FaChevronDown } from "react-icons/fa";
 import mmLogo from "../../assets/images/LOGO.png";
 import "../layout/layout.css"; 
 import { Link } from "react-router-dom";
+import authService from "../../services/authService"; // Import authService
 
 const { Header } = Layout;
 
 const AppHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null); // Ref for the dropdown menu
   const { language, toggleLanguage } = useLanguage();
   const navigate = useNavigate();
 
+  // Logout function
+  const handleLogout = () => {
+    authService.logout(); // Call logout from authService
+    navigate("/signin"); // Redirect to signin page after logout
+  };
+
+  // Close dropdown if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false); // Close dropdown when clicked outside
+      }
+    };
+
+    // Add event listener when component is mounted
+    document.addEventListener("click", handleClickOutside);
+
+    // Clean up event listener on component unmount
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
+  // Prevent dropdown from closing when clicking on the dropdown itself
+  const handleDropdownClick = (event) => {
+    event.stopPropagation(); // Prevent click from bubbling to document listener
+    setIsOpen(!isOpen); // Toggle dropdown open/close
+  };
 
   return (
     <Header
@@ -117,12 +147,13 @@ const AppHeader = () => {
         />
         <FaChevronDown
           style={{ fontSize: "20px", color: "#781424", cursor: "pointer" }}
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={handleDropdownClick} // Handle dropdown toggle
         />
       </div>
       {/* Dropdown Menu */}
       {isOpen && (
         <div
+          ref={dropdownRef} // Attach ref to the dropdown
           style={{
             position: "absolute",
             top: "65px",
@@ -137,13 +168,19 @@ const AppHeader = () => {
           <p style={{ margin: "-15px -10px -10px 10px", cursor: "pointer" }}>
             Profile
           </p>
-          <p style={{ margin: "-20px -10px -15px 10px", cursor: "pointer" }}>
+          <p
+            style={{
+              margin: "-20px -10px -15px 10px",
+              cursor: "pointer",
+              color: "red",
+            }}
+            onClick={handleLogout} // Add logout action to the menu
+          >
             Logout
           </p>
         </div>
       )}
       </div>
-      
     </Header>
   );
 };
