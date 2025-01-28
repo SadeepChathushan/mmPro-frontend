@@ -119,7 +119,7 @@ const SignInPage = () => {
 
             <Form.Item
               label={
-                <span style={{ color: "#ffffff" }}>Username / பயனர் பெயர்</span>
+                <span style={{ color: "#ffffff" }}>Username /පරිශීලක නාමය / பயனர் பெயர்</span>
               }
               name="username"
               rules={[

@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Button, Input, Table, Row, Col, Space, Typography, AutoComplete } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
-import axios from 'axios'; // Import axios for API requests
+import axios from 'axios';
 import { useLanguage } from "../../contexts/LanguageContext";
-import authService from '../../services/authService'; // Import auth service
+import authService from '../../services/authService';
+import "../../styles/MLOwner/MLOwnerHomePage.css";
+
+ // Import the CSS file
 
 const { Title } = Typography;
 
@@ -220,63 +223,48 @@ const MLOwnerHomePage = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#f0f2f5', height: '100%' }}>
-      <div style={{ padding: '24px' }}>
-        <Row gutter={16} justify="space-between" align="middle">
-          <Col xs={24} sm={24} md={12} lg={12}>
-            <AutoComplete
-              value={searchText}
-              onSearch={handleSearch}
-              style={{
-                width: '100%',
-                borderRadius: '4px',
-                padding: '8px 16px',
-              }}
-              options={filteredData.map(result => ({
-                value: result.licenseNumber,
-              }))}
+    <div className="page-container">
+    <div className="page-content">
+      <Row gutter={16} justify="space-between" align="middle">
+        <Col xs={24} sm={24} md={12} lg={12}>
+          <AutoComplete
+            value={searchText}
+            onSearch={handleSearch}
+            style={{ width: '100%', borderRadius: '4px', padding: '8px 16px' }}
+            options={filteredData.map(result => ({
+              value: result.licenseNumber,
+            }))}
+          >
+            <Input
+              prefix={<SearchOutlined />}
+              placeholder={language === "en" ? "Search License Number" : language == 'si' ? "සොයන්න" : 'தேடல் உரிம எண்'}
+            />
+          </AutoComplete>
+        </Col>
+        <Col xs={24} sm={24} md={12} lg={12} className="search-col">
+          <Link to="/mlowner/home/viewlicenses">
+            <Button
+              type="primary"
+              className="view-licenses-button"
+              onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
             >
-              <Input
-                prefix={<SearchOutlined />}
-                placeholder={language === "en" ? "Search License Number" : language == 'si' ? "සොයන්න" : 'தேடல் உரிம எண்'}
-              />
-            </AutoComplete>
-          </Col>
-          <Col xs={24} sm={24} md={12} lg={12} style={{ textAlign: 'center', marginTop: '16px' }}>
-            <Link to="/mlowner/home/viewlicenses">
-              <Button
-                type="primary"
-                style={{
-                  backgroundColor: '#a52a2a',
-                  color: 'white',
-                  borderColor: '#a52a2a',
-                  borderRadius: '8px',
-                  width: '100%',
-                  marginBottom: '12px',
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
-              >
-                {language === "en" ? "View Licenses" : language == 'si' ? "බලපත්‍ර බලන්න" : ""}
-              </Button>
-            </Link>
-          </Col>
-        </Row>
-
-        <Table
-          columns={columns}
-          dataSource={filteredData}
-          pagination={false}
-          style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-            marginTop: '24px',
-          }}
-          scroll={{ x: 'max-content' }}
-        />
-      </div>
+              {language === "en" ? "View Licenses" : language == 'si' ? "බලපත්‍ර බලන්න" : ""}
+            </Button>
+          </Link>
+        </Col>
+      </Row>
+  
+      <Table
+        columns={columns}
+        dataSource={filteredData}
+        pagination={false}
+        className="table-container"
+        scroll={{ x: 'max-content' }}
+      />
     </div>
+  </div>
+  
   );
 };
 
