@@ -3,7 +3,7 @@ import { Button, Typography, Layout, Row, Col, notification } from "antd";
 import { jsPDF } from "jspdf";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import "./ReceiptPage.css"; // Add this line at the top of your file
+import "../../styles/MLOwner/ReceiptPage.css"; // Add this line at the top of your file
 import axios from "axios";
 import { useLanguage } from "../../contexts/LanguageContext";
 
