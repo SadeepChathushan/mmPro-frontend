@@ -1,82 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { message } from 'antd'; // Import message for notifications
-import axios from 'axios'; // Import axios for API requests
+import { message } from 'antd';
+import axios from 'axios';
+import { submitComplaint } from '../../services/complaint';
 import logo from '../../assets/images/gsmbLogo.png';
 import backgroundImage from '../../assets/images/machinery.jpg';
+
+
 
 const Dashboard = () => {
     const { language } = useLanguage();
     const [input, setInput] = useState('');
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-    const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
-    const [modalMessage, setModalMessage] = useState(''); // Modal message
-    const [data, setData] = useState([]); // All data fetched from API
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+    const [data, setData] = useState([]);
     const [phoneNumber, setPhoneNumber] = useState('');
     const navigate = useNavigate();
-    const apiKey = 'fd39218883888c64c25af1d029ada9d1b94879dd'; // API key
+    const apiKey = 'fd39218883888c64c25af1d029ada9d1b94879dd';
 
     const handleReport = async () => {
-        if (!input.trim()) {
-            message.error(language === "en" ? "Please enter a vehicle number!" : "කරුණාකර වාහන අංකයක් ඇතුළු කරන්න!");
-            return;
-        }
-
-        if (!phoneNumber.trim()) {
-            message.error(language === "en" ? "Please enter your phone number!" : "කරුණාකර ඔබේ දුරකථන අංකය ඇතුළු කරන්න!");
-            return;
-        }
-
-        try {
-            const generateComplaintID = (lorryNumber) => {
-                const randomNum = Math.floor(Math.random() * 1000);
-                return `PO-${lorryNumber}-${randomNum}`;
-            };
-
-            const complaintID = generateComplaintID(input);
-
-            const startDate = new Date();
-            const dueDate = new Date(startDate);
-            dueDate.setDate(startDate.getDate() + 14);
-
-            const payload = {
-                issue: {
-                    project_id: 31,
-                    tracker_id: 26,
-                    subject: language === "en" ? "New Complaint" : "නව පැමිණිල්ලක්",
-                    status_id: 11,
-                    priority_id: 2,
-                    assigned_to_id: 59,
-                    start_date: startDate.toISOString().split('T')[0],
-                    due_date: dueDate.toISOString().split('T')[0],
-                    custom_fields: [
-                        { id: 13, name: "Lorry Number", value: input },
-                        { id: 90, name: "Complaint ID", value: complaintID },
-                        { id: 68, name: "Role", value: "Police Officer" },
-                        { id: 3, name: "Mobile Number", value: phoneNumber }
-                    ],
-                },
-            };
-
-            const response = await axios.post(
-                "/api/projects/gsmb/issues.json",
-                payload,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-Redmine-API-Key": apiKey, // Use API key for authentication
-                    },
-                }
-            );
-
-            message.success(language === "en" ? "Report Submitted successfully!" : "පැමිණිල්ල සාර්ථකව ඉදිරිපත් කරන ලදී.");
-            setIsModalOpen(false); // Close modal after success
-            console.log("API response:", response.data);
-            console.log("Payload:", payload);
-        } catch (error) {
-            console.error("Error submitting complaint:", error);
-            message.error(language === "en" ? "Report Submission Failed! Please try again." : "පැමිණිල්ල ඉදිරිපත් කිරීම අසාර්ථකයි. නැවත උත්සාහ කරන්න.");
+        const success = await submitComplaint(input, phoneNumber, language, 'Police Officer');
+        if (success) {
+            setIsModalOpen(false);
         }
     };
 
