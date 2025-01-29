@@ -6,7 +6,7 @@ import { submitComplaint } from '../../services/complaint';
 import { fetchLorryNumber } from '../../services/fetchLorryNumber';
 import Modal from '../../components/GeneralPublic/Modal';
 import VehicleInput from '../../components/GeneralPublic/VehicleInput';
-import '../../styles/GeneralPublic/dashboard.css';
+import '../../styles/GeneralPublic/GeneralPublicdashboard.css';
 
 const Dashboard = () => {
   const { language } = useLanguage();
