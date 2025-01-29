@@ -50,3 +50,17 @@
     border-radius: 10%;
   }
   
+  .dispatch-load-button {
+    background-color: #FFA500;
+    color: white; /* Optional: Change text color */
+  }
+  
+  .history-button {
+    background-color: #0066cc;
+    color: white; /* Optional: Change text color */
+  }
+  
+  .dispatch-load-button:hover, .history-button:hover {
+    opacity: 0.8; /* Optional: Apply hover effect */
+  }
+  
