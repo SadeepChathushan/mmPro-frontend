@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Table, Row, Col, DatePicker, Button } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import moment from "moment";
-import axios from "axios";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { fetchDispatchHistoryData } from "../../services/MLOService"; // Import the service
 import '../../styles/MLOwner/History.css'; // Import the CSS file
 
 const History = () => {
@@ -41,49 +41,17 @@ const History = () => {
       setl_number(extractedLicenseNumber);
     }
 
-    const fetchDispatchHistory = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get("/api/projects/gsmb/issues.json", {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Redmine-API-Key": apiKey,
-          },
-        });
-
-        if (response.data && response.data.issues) {
-          const issues = response.data.issues;
-          const filteredIssues = issues.filter(
-            (issue) => issue.tracker.id === 8
-          );
-
-          const formattedDispatchHistory = filteredIssues.map((issue) => {
-            const customFields = issue.custom_fields.reduce((acc, field) => {
-              acc[field.name] = field.value;
-              return acc;
-            }, {});
-
-            return {
-              licenseNumber: customFields["License Number"] || "",
-              owner: customFields["Owner Name"] || "",
-              location: customFields["Location"] || "",
-              Destination: customFields["Destination"] || "",
-              lorryNumber: customFields["Lorry Number"] || "",
-              cubes: customFields["Cubes"] || "",
-              dispatchDate: issue.start_date || "",
-              due_date: issue.due_date || "",
-              lorryDriverContact: customFields["Driver Contact"] || "",
-            };
-          });
-
-          setDispatchHistory(formattedDispatchHistory);
-        }
+        const data = await fetchDispatchHistoryData(apiKey); // Call the service function
+        setDispatchHistory(data);
       } catch (error) {
         console.error("Error fetching dispatch history:", error);
       }
     };
 
-    fetchDispatchHistory();
-  }, [location.search]);
+    fetchData();
+  }, [location.search, apiKey]);
 
   const filteredDispatchHistory = dispatchHistory.filter((dispatch) => {
     let isLicenseMatch = true;
