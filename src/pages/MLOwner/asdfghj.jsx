@@ -18,7 +18,6 @@ import axios from "axios";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
-import "../../styles/MLOwner/DispatchLoadPage.css";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -486,10 +485,11 @@ const DispatchLoadPage = () => {
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
+
   return (
-   <Layout className="dispatch-load-container">
+    <Layout style={{ minHeight: "100vh" }}>
       <Content style={{ padding: "24px" }}>
-        <Title level={3} className="page-title">
+        <Title level={3} style={{ textAlign: "center", marginBottom: "20px" }}>
           {language === "en"
             ? "Dispatch Your Load Here"
             : language === "si"
@@ -497,11 +497,10 @@ const DispatchLoadPage = () => {
             : "உங்கள் சுமையை இங்கே அனுப்பவும்"}
         </Title>
 
-        {/* Date and Time Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
                 {language === "en"
                   ? "DATE & TIME:"
                   : language === "si"
@@ -520,8 +519,8 @@ const DispatchLoadPage = () => {
         {/* License Number Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
                 {language === "en"
                   ? "LICENSE NUMBER:"
                   : language === "si"
@@ -536,8 +535,8 @@ const DispatchLoadPage = () => {
         {/* Destination Input with Search Options */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
                 {language === "en"
                   ? "DESTINATION:"
                   : language === "si"
@@ -574,8 +573,8 @@ const DispatchLoadPage = () => {
         {/* Lorry Number Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
                 {language === "en"
                   ? "LORRY NUMBER:"
                   : language === "si"
@@ -594,8 +593,8 @@ const DispatchLoadPage = () => {
         {/* Driver Contact Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
                 {language === "en"
                   ? "DRIVER CONTACT:"
                   : language === "si"
@@ -614,13 +613,13 @@ const DispatchLoadPage = () => {
         {/* Due Date Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
                 {language === "en"
                   ? "DUE DATE:"
                   : language === "si"
                   ? "නියමිත දිනය:"
-                  : "இறுதி தேதி:"}
+                  : "இறுதி தேதி::"}
               </span>
               <DatePicker
                 value={formData.dueDate ? dayjs(formData.dueDate) : null}
@@ -637,15 +636,15 @@ const DispatchLoadPage = () => {
         {/* Cubes Input with Increment and Decrement Buttons */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
                 {language === "en"
                   ? "CUBES:"
                   : language === "si"
                   ? "කියුබ් ගණන:"
                   : "க்யூப்ஸ்:"}
               </span>
-              <div className="cubes-input-container">
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <Button
                   onClick={decrementCubes}
                   style={{ marginRight: "8px" }}
@@ -656,7 +655,7 @@ const DispatchLoadPage = () => {
                 <Input
                   value={formData.cubes}
                   onChange={handleCubesChange}
-                  className="cubes-input"
+                  style={{ width: "60px", textAlign: "center" }}
                 />
                 <Button onClick={incrementCubes} style={{ marginLeft: "8px" }}>
                   +
@@ -673,13 +672,20 @@ const DispatchLoadPage = () => {
             sm={24}
             md={12}
             lg={12}
-            className="button-container"
+            style={{ display: "flex", justifyContent: "center" }}
           >
             <Button
               type="primary"
               onClick={handleCancel}
               danger
-              className="cancel-button"
+              style={{
+                marginRight: "16px",
+                fontSize: "16px",
+                padding: "10px 20px",
+                backgroundColor: "#FFA500", // Cancel button color (orange)
+                borderColor: "#FFA500",
+                color: "white",
+              }}
               size="large"
             >
               {language === "en"
@@ -691,7 +697,13 @@ const DispatchLoadPage = () => {
             <Button
               type="primary"
               onClick={handleSubmit}
-              className="submit-button"
+              style={{
+                fontSize: "16px",
+                padding: "10px 20px",
+                backgroundColor: "#781424", // Submit button color (dark red)
+                borderColor: "#781424",
+                color: "white",
+              }}
               size="large"
             >
               {language === "en"
@@ -704,137 +716,137 @@ const DispatchLoadPage = () => {
         </Row>
 
         {/* Success Modal */}
-               <Modal
-                 visible={isModalVisible}
-                 onCancel={() => resetFormdata()}
-                 footer={null}
-                 style={{ textAlign: "center" }}
-                 bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-               >
-                 <div style={{ fontSize: "40px", color: "brown" }}>
-                   <IoIosDoneAll />
-                 </div>
-                 <p>
-                   {language === "en"
-                     ? "Dispatched Successfully!"
-                     : language === "si"
-                     ? "සාර්ථකයි!"
-                     : "வெற்றிகரமாக அனுப்பப்பட்டது!"}
-                 </p>
-                 <Button
-                   type="primary"
-                   onClick={handleBackToHome}
-                   style={{
-                     backgroundColor: "#FFA500",
-                     color: "white",
-                     borderColor: "#FFA500",
-                     marginRight: "20px",
-                   }}
-                 >
-                   {language === "en"
-                     ? "Back to Home"
-                     : language === "si"
-                     ? "ආපසු"
-                     : "முகப்புக்குத் திரும்பு"}
-                 </Button>
-       
-                 <Button
-                   type="default"
-                   onClick={handlePrintReceipt}
-                   style={{
-                     backgroundColor: "#781424",
-                     color: "white",
-                     marginLeft: "20px",
-                   }}
-                 >
-                   {language === "en"
-                     ? "Print Receipt"
-                     : language === "si"
-                     ? "රිසිට් පත මුද්‍රණය කරන්න"
-                     : "அச்சு ரசீது"}
-                 </Button>
-               </Modal>
-       
-               {/* unSuccess Modal */}
-               <Modal
-                 visible={isProErrModalVisible}
-                 onCancel={() => setIsProErrModalVisible(false)}
-                 footer={null}
-                 style={{ textAlign: "center" }}
-                 bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-               >
-                 <div style={{ fontSize: "40px", color: "brown" }}>
-                   <IoIosCloseCircle />
-                 </div>
-                 <p>
-                   {language === "en"
-                     ? "Dispatched Unsuccessfully!"
-                     : language === "si"
-                     ? "අසාර්ථකයි!"
-                     : "அனுப்பப்பட்டது தோல்வி!"}
-                 </p>
-               </Modal>
-       
-               {/*req Error Modal */}
-               <Modal
-                 visible={isErrModalVisible}
-                 onCancel={() => setIsErrModalVisible(false)}
-                 footer={null}
-                 style={{ textAlign: "center" }}
-                 bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-               >
-                 <div style={{ fontSize: "40px", color: "brown" }}>
-                   <IoIosCloseCircle />
-                 </div>
-                 <h3>
-                   {language === "en"
-                     ? "All field are required !"
-                     : language === "si"
-                     ? "සියලුම ක්ෂේත්ර අවශ්ය වේ !"
-                     : "அனைத்து துறைகளும் தேவை!"}
-                 </h3>
-               </Modal>
-       
-               {/*cube re Error Modal */}
-               <Modal
-                 visible={isContErrModalVisible}
-                 onCancel={() => setIsContErrModalVisible(false)}
-                 footer={null}
-                 style={{ textAlign: "center" }}
-                 bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-               >
-                 <div style={{ fontSize: "40px", color: "brown" }}>
-                   <IoIosCloseCircle />
-                 </div>
-                 <h3>
-                   {language === "en"
-                     ? `Not enough cubes available. Please adjust the quantity.`
-                     : language === "si"
-                     ? "්අවශ්‍ය ප්‍රමාණය නොමැත. ප්‍රමාණය වෙනස් කරන්න්."
-                     : "போதுமான க்யூப்ஸ் கிடைக்கவில்லை. அளவை சரிசெய்யவும்."}
-                 </h3>
-               </Modal>
-               <Modal
-                 visible={isLoyalErrModalVisible}
-                 onCancel={() => setIsLoyalErrModalVisible(false)}
-                 footer={null}
-                 style={{ textAlign: "center" }}
-                 bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-               >
-                 <div style={{ fontSize: "40px", color: "brown" }}>
-                   <IoIosCloseCircle />
-                 </div>
-                 <h3>
-                   {language === "en"
-                     ? `Not enough`
-                     : language === "si"
-                     ? "්Not enough"
-                     : "Not enough"}
-                 </h3>
-               </Modal>
-       
+        <Modal
+          visible={isModalVisible}
+          onCancel={() => resetFormdata()}
+          footer={null}
+          style={{ textAlign: "center" }}
+          bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+        >
+          <div style={{ fontSize: "40px", color: "brown" }}>
+            <IoIosDoneAll />
+          </div>
+          <p>
+            {language === "en"
+              ? "Dispatched Successfully!"
+              : language === "si"
+              ? "සාර්ථකයි!"
+              : "வெற்றிகரமாக அனுப்பப்பட்டது!"}
+          </p>
+          <Button
+            type="primary"
+            onClick={handleBackToHome}
+            style={{
+              backgroundColor: "#FFA500",
+              color: "white",
+              borderColor: "#FFA500",
+              marginRight: "20px",
+            }}
+          >
+            {language === "en"
+              ? "Back to Home"
+              : language === "si"
+              ? "ආපසු"
+              : "முகப்புக்குத் திரும்பு"}
+          </Button>
+
+          <Button
+            type="default"
+            onClick={handlePrintReceipt}
+            style={{
+              backgroundColor: "#781424",
+              color: "white",
+              marginLeft: "20px",
+            }}
+          >
+            {language === "en"
+              ? "Print Receipt"
+              : language === "si"
+              ? "රිසිට් පත මුද්‍රණය කරන්න"
+              : "அச்சு ரசீது"}
+          </Button>
+        </Modal>
+
+        {/* unSuccess Modal */}
+        <Modal
+          visible={isProErrModalVisible}
+          onCancel={() => setIsProErrModalVisible(false)}
+          footer={null}
+          style={{ textAlign: "center" }}
+          bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+        >
+          <div style={{ fontSize: "40px", color: "brown" }}>
+            <IoIosCloseCircle />
+          </div>
+          <p>
+            {language === "en"
+              ? "Dispatched Unsuccessfully!"
+              : language === "si"
+              ? "අසාර්ථකයි!"
+              : "அனுப்பப்பட்டது தோல்வி!"}
+          </p>
+        </Modal>
+
+        {/*req Error Modal */}
+        <Modal
+          visible={isErrModalVisible}
+          onCancel={() => setIsErrModalVisible(false)}
+          footer={null}
+          style={{ textAlign: "center" }}
+          bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+        >
+          <div style={{ fontSize: "40px", color: "brown" }}>
+            <IoIosCloseCircle />
+          </div>
+          <h3>
+            {language === "en"
+              ? "All field are required !"
+              : language === "si"
+              ? "සියලුම ක්ෂේත්ර අවශ්ය වේ !"
+              : "அனைத்து துறைகளும் தேவை!"}
+          </h3>
+        </Modal>
+
+        {/*cube re Error Modal */}
+        <Modal
+          visible={isContErrModalVisible}
+          onCancel={() => setIsContErrModalVisible(false)}
+          footer={null}
+          style={{ textAlign: "center" }}
+          bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+        >
+          <div style={{ fontSize: "40px", color: "brown" }}>
+            <IoIosCloseCircle />
+          </div>
+          <h3>
+            {language === "en"
+              ? `Not enough cubes available. Please adjust the quantity.`
+              : language === "si"
+              ? "්අවශ්‍ය ප්‍රමාණය නොමැත. ප්‍රමාණය වෙනස් කරන්න්."
+              : "போதுமான க்யூப்ஸ் கிடைக்கவில்லை. அளவை சரிசெய்யவும்."}
+          </h3>
+        </Modal>
+        <Modal
+          visible={isLoyalErrModalVisible}
+          onCancel={() => setIsLoyalErrModalVisible(false)}
+          footer={null}
+          style={{ textAlign: "center" }}
+          bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+        >
+          <div style={{ fontSize: "40px", color: "brown" }}>
+            <IoIosCloseCircle />
+          </div>
+          <h3>
+            {language === "en"
+              ? `Not enough`
+              : language === "si"
+              ? "්Not enough"
+              : "Not enough"}
+          </h3>
+        </Modal>
       </Content>
-    </Layout>  );
+    </Layout>
+  );
 };
 
 export default DispatchLoadPage;
