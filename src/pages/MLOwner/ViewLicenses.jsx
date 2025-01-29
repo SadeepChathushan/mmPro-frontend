@@ -15,6 +15,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useLanguage } from "../../contexts/LanguageContext";
 import moment from "moment";
+import '../../styles/MLOwner/Licenses.css';
 
 const { Title } = Typography;
 
@@ -26,46 +27,30 @@ const Licenses = () => {
   const [searchText, setSearchText] = useState("");
   const [filteredLicenses, setFilteredLicenses] = useState([]);
 
-  // Function to fetch licenses data
-  // Function to fetch licenses data
   const fetchLicenses = async () => {
     try {
       const apiKey = localStorage.getItem("API_Key");
-      // const username = "@achinthamihiran"; // Replace with actual username
-      // const password = "Ab2#*De#"; // Replace with actual password
-
       const response = await axios.get("/api/projects/gsmb/issues.json", {
         headers: {
           "Content-Type": "application/json",
           "X-Redmine-API-Key": apiKey,
         },
-        // auth: {
-        //   username,
-        //   password,
-        // },
       });
 
       if (response.data && response.data.issues) {
         const issues = response.data.issues;
-        console.log("iss", issues);
 
-        // Map and filter the API data to the table format
         const formattedLicenses = issues
           .filter((issue) => {
-            // Ensure required properties exist
             if (!issue.tracker || !issue.custom_fields || !issue.assigned_to) {
               return false;
             }
 
-            // Find the "Capacity" field safely
             const capacityField = issue.custom_fields.find(
               (field) => field.name === "Capacity"
             );
-            const capacity = capacityField
-              ? parseInt(capacityField.value, 10)
-              : NaN;
+            const capacity = capacityField ? parseInt(capacityField.value, 10) : NaN;
 
-            // Check conditions: tracker name must be "ML", capacity must be a valid number >= 0, assigned_to ID must be 58
             return (
               issue.tracker.name === "ML" &&
               !isNaN(capacity) &&
@@ -74,42 +59,36 @@ const Licenses = () => {
             );
           })
           .map((issue) => {
-            // Ensure issue.custom_fields is an array before reducing
             const customFields = Array.isArray(issue.custom_fields)
               ? issue.custom_fields.reduce((acc, field) => {
                   if (field.name) {
-                    acc[field.name] = field.value || null; // Handle missing field values
+                    acc[field.name] = field.value || null;
                   }
                   return acc;
                 }, {})
               : {};
 
-            // Extract field values safely
             const startDate =
-              customFields["Start Date"] || issue.start_date || ""; // Defaulting to issue.start_date if missing
-            const endDate = customFields["End Date"] || issue.due_date || ""; // Defaulting to issue.due_date if missing
-            const dueDate = issue.due_date || endDate; // Using due_date directly if available
+              customFields["Start Date"] || issue.start_date || "";
+            const endDate = customFields["End Date"] || issue.due_date || "";
+            const dueDate = issue.due_date || endDate;
 
-            // Check if the license is active based on the due date
             const currentDate = new Date();
             const isActive = dueDate ? currentDate <= new Date(dueDate) : false;
 
             return {
-              licenseNumber: customFields["License Number"] || "", // Ensure fallback empty string
+              licenseNumber: customFields["License Number"] || "",
               owner: customFields["Owner Name"] || "",
-              location: customFields["Location"] || "", // Using 'Address' field for location
+              location: customFields["Location"] || "",
               startDate: startDate,
               endDate: endDate,
               capacity: customFields["Capacity"] || "",
-              dispatchedCubes: customFields["Used"] || "", // Mapped to 'Used' for dispatched cubes
-              remainingCubes: customFields["Remaining"] || "", // Using 'Remaining' field for cubes
-              royalty: customFields["Royalty(sand)due"] || "", // Added royalty mapping
-              status: issue.status.name, // License status based on due date
+              dispatchedCubes: customFields["Used"] || "",
+              remainingCubes: customFields["Remaining"] || "",
+              royalty: customFields["Royalty(sand)due"] || "",
+              status: issue.status.name,
             };
           });
-
-        // Debugging log moved outside the map function
-        console.log("Formatted Licenses:", formattedLicenses);
 
         setLicenses(formattedLicenses);
         setFilteredLicenses(formattedLicenses);
@@ -121,12 +100,10 @@ const Licenses = () => {
     }
   };
 
-  // Fetch licenses when the component mounts
   useEffect(() => {
     fetchLicenses();
   }, []);
 
-  // Handle date changes
   const handleStartDateChange = (date) => {
     setStartDate(date ? moment(date).format("YYYY-MM-DD") : null);
   };
@@ -135,7 +112,6 @@ const Licenses = () => {
     setEndDate(date ? moment(date).format("YYYY-MM-DD") : null);
   };
 
-  // Handle search input change
   const handleSearch = (value) => {
     setSearchText(value);
     if (value) {
@@ -144,11 +120,10 @@ const Licenses = () => {
       );
       setFilteredLicenses(filteredResults);
     } else {
-      setFilteredLicenses(licenses); // Reset to show all data if search text is empty
+      setFilteredLicenses(licenses);
     }
   };
 
-  // Filter the licenses based on the selected date range
   const filteredLicensesByDate = filteredLicenses.filter((license) => {
     if (startDate && endDate) {
       const licenseStartDate = new Date(license.startDate);
@@ -158,11 +133,10 @@ const Licenses = () => {
         licenseEndDate <= new Date(endDate)
       );
     } else {
-      return true; // Show all licenses if no dates are selected
+      return true;
     }
   });
 
-  // Define columns for the table
   const columns = [
     {
       title: `${
@@ -224,8 +198,20 @@ const Licenses = () => {
       }`,
       key: "status",
       render: (text, record) => (
-        <span style={{ color: record.status === "Valid" ? "green" : record.status === "Expired" ? "gray" : "red" }}>
-          {record.status === "Valid"? "Active" : record.status === "Expired" ? "Inactive" : "Rejected"}
+        <span
+          className={
+            record.status === "Valid"
+              ? "valid-status"
+              : record.status === "Expired"
+              ? "expired-status"
+              : "rejected-status"
+          }
+        >
+          {record.status === "Valid"
+            ? "Active"
+            : record.status === "Expired"
+            ? "Inactive"
+            : "Rejected"}
         </span>
       ),
     },
@@ -238,32 +224,17 @@ const Licenses = () => {
           : "செயல்"
       }`,
       key: "action",
-      render: (
-        _,
-        record // Disable if the license is inactive
-      ) => (
+      render: (_, record) => (
         <Space size="middle">
-          {/* Dispatch Load Button */}
           <Link to={`/mlowner/home/dispatchload/${record.licenseNumber}`}>
             <Button
-              type="primary"
+              className={`button ${
+                record.status === "Expired" || record.status === "Rejected"
+                  ? "dispatch-button-disabled"
+                  : "dispatch-button"
+              }`}
               disabled={
-                record.status === "Expired" ? true : record.status === "Rejected" ? true : false
-              } // Disable if the license is inactive
-              style={{
-                backgroundColor:
-                  record.status === "Valid" ? "#FFA500":"#d9d9d9",
-                borderColor: "",
-                color: record.status === "Valid" ? "black" : "#888", // Adjust text color
-                width: "200px",
-                borderRadius: "8px",
-              }}
-              onMouseEnter={(e) =>
-                (e.target.style.backgroundColor = "rgb(211, 153, 61)")
-              }
-              onMouseLeave={(e) =>
-                (e.target.style.backgroundColor =
-                  record.status === "Valid" ? "#FFA500":"#d9d9d9")
+                record.status === "Expired" || record.status === "Rejected"
               }
             >
               {language === "en"
@@ -274,26 +245,8 @@ const Licenses = () => {
             </Button>
           </Link>
 
-          {/* History Button */}
           <Link to={`/mlowner/history?licenseNumber=${record.licenseNumber}`}>
-            <Button
-              type="default"
-              style={{
-                backgroundColor: "#0066cc",
-                borderColor: "#0066cc",
-                borderRadius: "10%",
-              }}
-              onMouseEnter={(e) =>
-                (e.target.style.backgroundColor = "rgb(46, 131, 214)")
-              }
-              onMouseLeave={(e) => (e.target.style.backgroundColor = "#007BFF")}
-            >
-              {language === "en"
-                ? "History"
-                : language == "si"
-                ? "ඉතිහාසය"
-                : "வரலாறு"}
-            </Button>
+            <Button className="history-button">{language === "en" ? "History" : language === "si" ? "ඉතිහාසය" : "வரலாறு"}</Button>
           </Link>
         </Space>
       ),
@@ -301,47 +254,39 @@ const Licenses = () => {
   ];
 
   return (
-    <div style={{ padding: "16px", backgroundColor: "#f0f2f5" }}>
-      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
+    <div className="container">
+      <h1 className="title">
         {language === "en"
           ? "Licenses of MLOwner"
-          : language == "si"
-          ? "පතල් අයිතිකරුගේ බලපත්‍රර"
+          : language === "si"
+          ? "පතල් අයිතිකරුගේ බලපත්‍ර"
           : "ML உரிமையாளரின் உரிமங்கள்"}
       </h1>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: "20px" }}>
+      <Row className="filter-row" gutter={[16, 16]}>
         <Col xs={24} sm={12} md={6}>
           <DatePicker
             onChange={handleStartDateChange}
             placeholder={
-              language === "en"
-                ? "Start Date"
-                : language == "si"
-                ? "ආරම්භක දිනය"
-                : "தொடக்க தேதி"
+              language === "en" ? "Start Date" : language === "si" ? "ආරම්භක දිනය" : "தொடக்க தேதி"
             }
-            style={{ width: "100%" }} // Ensures the width is consistent
+            className="date-picker-col"
           />
         </Col>
         <Col xs={24} sm={12} md={6}>
           <DatePicker
             onChange={handleEndDateChange}
             placeholder={
-              language === "en"
-                ? "Due Date"
-                : language == "si"
-                ? "අවසාන දිනය"
-                : "இறுதி தேதி"
+              language === "en" ? "Due Date" : language === "si" ? "අවසාන දිනය" : "இறுதி தேதி"
             }
-            style={{ width: "100%" }} // Ensures the width is consistent
+            className="date-picker-col"
           />
         </Col>
         <Col xs={24} sm={12} md={6}>
           <AutoComplete
             value={searchText}
             onSearch={handleSearch}
-            style={{ width: "100%" }} // Ensures the width is consistent with DatePickers
+            className="auto-complete-col"
             options={filteredLicenses.map((result) => ({
               value: result.licenseNumber,
             }))}
@@ -351,11 +296,10 @@ const Licenses = () => {
               placeholder={
                 language === "en"
                   ? "Search by License Number"
-                  : language == "si"
+                  : language === "si"
                   ? "බලපත්‍ර අංකය අනුව සොයන්න"
                   : "உரிம எண் மூலம் தேடவும்"
               }
-              style={{ width: "100%" }} // Ensures the width is consistent with DatePickers
             />
           </AutoComplete>
         </Col>
@@ -364,41 +308,26 @@ const Licenses = () => {
       <Table
         dataSource={filteredLicensesByDate}
         columns={columns}
-        scroll={{ x: "max-content" }} // Enable horizontal scroll for small screens
-        style={{
-          marginBottom: "20px",
-          backgroundColor: "white",
-          borderRadius: "8px",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-        }}
+        scroll={{ x: "max-content" }}
+        className="table-container"
         pagination={false}
       />
 
-      {/* Back to Home Button */}
-      <div style={{ textAlign: "center" }}>
-        <Link to="/mlowner/home/">
-          <Button
-            type="primary"
-            style={{
-              backgroundColor: "#FFA500",
-              borderColor: "#FFA500",
-              color: "white",
-              width: "200px",
-              borderRadius: "8px",
-            }}
-            onMouseEnter={(e) =>
-              (e.target.style.backgroundColor = "rgb(211, 153, 61)")
-            }
-            onMouseLeave={(e) => (e.target.style.backgroundColor = "#FFA500")}
-          >
-            {language === "en"
-              ? "Back to Home"
-              : language == "si"
-              ? "ආපසු"
-              : "முகப்புக்குத் திரும்பு"}
-          </Button>
-        </Link>
-      </div>
+     {/* Back to Home Button */}
+<div className="back-to-home-button">
+  <Link to="/mlowner/home/">
+    <Button
+      type="primary"
+      className="home-button"
+    >
+      {language === "en"
+        ? "Back to Home"
+        : language === "si"
+        ? "ආපසු"
+        : "முகப்புக்குத் திரும்பு"}
+    </Button>
+  </Link>
+</div>
     </div>
   );
 };
