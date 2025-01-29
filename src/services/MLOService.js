@@ -11,7 +11,7 @@ const MLOService = {
         console.error("API Key not found in localStorage");
         return [];
       }
-      
+
       const response = await axios.get(`${BASE_URL}/projects/gsmb/issues.json`, {
         headers: {
           "Content-Type": "application/json",
@@ -59,7 +59,6 @@ const MLOService = {
     return mappedData.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate)).slice(0, 5);
   }
 };
-
 
 export const fetchLicenses = async () => {
   try {
@@ -125,16 +124,9 @@ export const fetchLicenses = async () => {
   }
 };
 
-
-
-
-
-
 // src/services/dispatchHistoryService.js
 
-//************************************************
-//  */
-
+// Fetch dispatch history data
 export const fetchDispatchHistoryData = async (apiKey) => {
   try {
     const response = await axios.get("/api/projects/gsmb/issues.json", {
@@ -173,6 +165,103 @@ export const fetchDispatchHistoryData = async (apiKey) => {
     }
   } catch (error) {
     console.error("Error fetching dispatch history:", error);
+    throw error;
+  }
+};
+
+// Fetch ML data by license number
+export const fetchMLData = async (apiKey, l_number) => {
+  try {
+    const response = await axios.get(`/api/projects/gsmb/issues.json`, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Redmine-API-Key": apiKey,
+      },
+    });
+
+    if (response.data && response.data.issues) {
+      const issues = response.data.issues;
+      const filteredMLIssues = issues.filter(issue => issue.subject === l_number);
+      return filteredMLIssues[0];
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return null;
+  }
+};
+
+// Fetch location suggestions from Nominatim API, restricted to Sri Lanka
+export const fetchLocationSuggestions = async (value) => {
+  if (!value) {
+    return [];
+  }
+
+  try {
+    const response = await axios.get(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${value}&addressdetails=1&countrycodes=LK&limit=5`
+    );
+
+    return response.data
+      .filter((item) => !isNaN(parseFloat(item.lat)) && !isNaN(parseFloat(item.lon)))
+      .map((item) => ({
+        value: item.display_name,
+        lat: parseFloat(item.lat),
+        lon: parseFloat(item.lon),
+      }));
+  } catch (error) {
+    console.error("Error fetching location suggestions:", error);
+    return [];
+  }
+};
+
+// Fetch issues from the API
+export const fetchIssues = async () => {
+  try {
+    const response = await axios.get("/api/projects/gsmb/issues.json", {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+      },
+    });
+    return response.data.issues;
+  } catch (error) {
+    console.error("Error fetching issues:", error);
+    throw error;
+  }
+};
+
+// Update an issue with new data
+export const updateIssue = async (issueId, updatedIssue) => {
+  try {
+    const response = await axios.put(`/api/issues/${issueId}.json`, {
+      issue: updatedIssue,
+    }, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating issue:", error);
+    throw error;
+  }
+};
+
+// Create a new issue
+export const createIssue = async (newIssue) => {
+  try {
+    const response = await axios.post("/api/issues.json", {
+      issue: newIssue,
+    }, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creating issue:", error);
     throw error;
   }
 };

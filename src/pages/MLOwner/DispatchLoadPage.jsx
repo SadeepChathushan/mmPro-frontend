@@ -19,7 +19,7 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
 import "../../styles/MLOwner/DispatchLoadPage.css";
-
+import { fetchIssues, updateIssue, createIssue } from '../../services/MLOService';
 const { Content } = Layout;
 const { Title } = Typography;
 
@@ -234,17 +234,20 @@ const DispatchLoadPage = () => {
 
  
  
+  
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+  
     // Trim the values before validation
     setIssueData({
       ...issueData,
       due_date: formData.dueDate, // Assign the new due_date value
     });
-
+  
     // Log form data to check values
     console.log("Form data on submit:", formData);
-
+  
     if (
       !formData.licenseNumber.trim() ||
       !formData.destination.trim() ||
@@ -255,200 +258,68 @@ const DispatchLoadPage = () => {
       // Log if validation fails
       console.log("One or more fields are empty!");
       setIsErrModalVisible(true);
-    } else {
-      // setFormData({ ...formData, DateTime: currentDateTime });
-
-      try {
-        // Replace with actual password
-
-        // Fetch issues using axios
-        const response = await axios.get("/api/projects/gsmb/issues.json", {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Redmine-API-Key": apiKey,
-          },
-          // auth: {
-          //   username,
-          //   password,
-          // },
-        });
-
-        const issues = response.data.issues;
-        console.log("Issues:", issues);
-
-        // Find the issue by license number in custom_fields
-        // const issueToUpdate = issues.find((issue) => {
-        //   return (issue.custom_fields.some(
-        //     (field) =>
-        //       field.name === "License Number" &&
-        //       field.value === formData.licenseNumber) && (issue.custom_fields.some(
-        //         (field) =>
-        //           field.name === "Royalty(sand)due"))
-        //   );
-        // });
-
-        const issueToUpdate = issues.find((issue) => {
-          return issue.subject === formData.licenseNumber;
-        });
-        // Find the issue by license number in custom_fields
-        // const issueToUpdate = issues.find((issue) => {
-        //   return issue.subject === formData.licenseNumber;
-        // });
-
-        if (issueToUpdate) {
-          console.log("Issue to update:", issueToUpdate);
-          // Update the cubes used and remaining cubes
-          const cubesField = issueToUpdate.custom_fields.find(
-            (field) => field.name === "Remaining"
-          );
-          console.log("Cubes field:", cubesField);
-          if (cubesField) {
-            console.log("Cubes field 1");
-            // Update the "Used" field (usually Custom Fields 84 for "Used")
-            const usedField =
-              issueToUpdate.custom_fields.find(
-                (field) => field.name === "Used"
-              ) || 0;
-            const remainingField = issueToUpdate.custom_fields.find(
-              (field) => field.name === "Remaining"
-            );
-            const royaltysanddueField = issueToUpdate.custom_fields.find(
-              (field) => field.name === "Royalty(sand)due"
-            );
-            const locateField = issueToUpdate.custom_fields.find(
-              (field) => field.name === "Location"
-            );
-
-            const licenseNumberFeild = issueData.custom_fields.find(
-              (field) => field.name === "License Number"
-            );
-
-            const destinationField = issueData.custom_fields.find(
-              (field) => field.name === "Destination"
-            );
-
-            const lorryNumberField = issueData.custom_fields.find(
-              (field) => field.name === "Lorry Number"
-            );
-
-            const driverContactField = issueData.custom_fields.find(
-              (field) => field.name === "Driver Contact"
-            );
-
-            const cubesField = issueData.custom_fields.find(
-              (field) => field.name === "Cubes"
-            );
-            const locateField1 = issueData.custom_fields.find(
-              (field) => field.name === "Location"
-            );
-
-            const mLissueId = issueToUpdate.id;
-            const locatvalue = locateField.value;
-            // setmId(mLissueId);
-
-            const cubesUsed = parseInt(formData.cubes, 10);
-            const usedValue = parseInt(usedField ? usedField.value : "0", 10);
-            const remainingValue = parseInt(
-              remainingField ? remainingField.value : "0",
-              10
-            );
-            const royaltysanddueValue = parseInt(
-              royaltysanddueField ? royaltysanddueField.value : "0",
-              10
-            );
-
-            console.log("Cubes used:", cubesUsed);
-            console.log("Used value:", usedValue);
-            console.log("Remaining value:", remainingValue);
-
-            // Increment the used value and adjust the remaining value
-            usedField.value = (usedValue + cubesUsed).toString();
-            remainingField.value = (remainingValue - cubesUsed).toString();
-            royaltysanddueField.value = (
-              royaltysanddueValue -
-              cubesUsed * 100
-            ).toString();
-            licenseNumberFeild.value = formData.licenseNumber;
-            destinationField.value = formData.destination;
-            lorryNumberField.value = formData.lorryNumber;
-            driverContactField.value = formData.driverContact;
-            cubesField.value = formData.cubes;
-            locateField1.value = locatvalue;
-
-            console.log("Updated fields:", usedField, remainingField);
-
-            // Also update the cubes used in the "Cubes" field
-            // cubesField.value = formData.cubes;
-            console.log("Updated issue:", issueToUpdate);
-
-            // PUT request to update the issues with new data
-            if (royaltysanddueValue < 1000) {
-              setIsLoyalErrModalVisible(true);
-            } else {
-              if (cubesUsed > remainingValue) {
-                setIsContErrModalVisible(true);
-              } else {
-                try {
-                  await axios.put(
-                    `/api/issues/${mLissueId}.json`,
-                    {
-                      issue: issueToUpdate, // Pass the actual issue object here
-                    },
-                    {
-                      headers: {
-                        "Content-Type": "application/json",
-                        "X-Redmine-API-Key":
-                          "fb4b68f17ce654c1123a5fcf031de4b560999296",
-                      },
-                      // auth: {
-                      //   username,
-                      //   password,
-                      // },
-                    }
-                  );
-                  try {
-                    await axios.post(
-                      `/api/issues.json`,
-                      {
-                        issue: issueData, // Pass the actual issue object here
-                      },
-                      {
-                        headers: {
-                          "Content-Type": "application/json",
-                          "X-Redmine-API-Key": apiKey,
-                        },
-                        // auth: {
-                        //   username,
-                        //   password,
-                        // },
-                      }
-                    );
-                  } catch (error) {
-                    console.error("Error updating issue:", error);
-                    setIsProErrModalVisible(true); // Show error modal on any API request failure
-                  }
-                } catch (error) {
-                  console.error("Error updating issue:", error);
-                  setIsProErrModalVisible(true); // Show error modal on any API request failure
-                }
-                setIsModalVisible(true); // Show success modal if the issue is updated successfully
-              }
-            }
-          }
+      return;
+    }
+  
+    try {
+      // Fetch issues using the service
+      const issues = await fetchIssues();
+      console.log("Issues:", issues);
+  
+      const issueToUpdate = issues.find((issue) => issue.subject === formData.licenseNumber);
+  
+      if (issueToUpdate) {
+        console.log("Issue to update:", issueToUpdate);
+  
+        // Find custom fields and perform necessary calculations
+        const cubesField = issueToUpdate.custom_fields.find((field) => field.name === "Remaining");
+        const usedField = issueToUpdate.custom_fields.find((field) => field.name === "Used") || 0;
+        const remainingField = issueToUpdate.custom_fields.find((field) => field.name === "Remaining");
+        const royaltysanddueField = issueToUpdate.custom_fields.find((field) => field.name === "Royalty(sand)due");
+        const locateField = issueToUpdate.custom_fields.find((field) => field.name === "Location");
+  
+        // Handle new field updates
+        const cubesUsed = parseInt(formData.cubes, 10);
+        const usedValue = parseInt(usedField ? usedField.value : "0", 10);
+        const remainingValue = parseInt(remainingField ? remainingField.value : "0", 10);
+        const royaltysanddueValue = parseInt(royaltysanddueField ? royaltysanddueField.value : "0", 10);
+  
+        console.log("Cubes used:", cubesUsed);
+        console.log("Used value:", usedValue);
+        console.log("Remaining value:", remainingValue);
+  
+        // Update fields
+        usedField.value = (usedValue + cubesUsed).toString();
+        remainingField.value = (remainingValue - cubesUsed).toString();
+        royaltysanddueField.value = (royaltysanddueValue - cubesUsed * 100).toString();
+  
+        console.log("Updated fields:", usedField, remainingField);
+  
+        // Check for errors before updating the issue
+        if (royaltysanddueValue < 1000) {
+          setIsLoyalErrModalVisible(true);
+        } else if (cubesUsed > remainingValue) {
+          setIsContErrModalVisible(true);
         } else {
-          console.error(
-            "Issue not found for license number",
-            formData.licenseNumber
-          );
-          setIsProErrModalVisible(true); // Show error modal if the issue is not found
+          // Update the issue using the service function
+          const updatedIssue = { ...issueToUpdate, custom_fields: issueToUpdate.custom_fields };
+          await updateIssue(issueToUpdate.id, updatedIssue);
+  
+          // Create a new issue if necessary
+          await createIssue(issueData);
+  
+          setIsModalVisible(true); // Show success modal if the issue is updated successfully
         }
-      } catch (error) {
-        console.error("Error fetching issues:", error);
-        setIsProErrModalVisible(true); // Show error modal on any API request failure
+      } else {
+        console.error("Issue not found for license number", formData.licenseNumber);
+        setIsProErrModalVisible(true); // Show error modal if the issue is not found
       }
+    } catch (error) {
+      console.error("Error processing issue:", error);
+      setIsProErrModalVisible(true); // Show error modal on any API request failure
     }
   };
-
+  
   const handlePrintReceipt = () => {
     navigate("/mlowner/home/dispatchload/receipt", {
       state: { formData, l_number },
