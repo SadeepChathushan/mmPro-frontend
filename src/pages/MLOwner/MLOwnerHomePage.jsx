@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Input, Table, Row, Col, Space, Typography, AutoComplete } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Button, Table, Space, Typography, Row, Col, AutoComplete, Input } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
+import { SearchOutlined } from '@ant-design/icons';
 import { useLanguage } from "../../contexts/LanguageContext";
 import authService from '../../services/authService';
-import apiService from '../../services/MLOServices'; // Import the new service
+import MLOService from '../../services/MLOService';
 import "../../styles/MLOwner/MLOwnerHomePage.css";
 
 const { Title } = Typography;
 
 const MLOwnerHomePage = () => {
   const { language } = useLanguage();
-  const location = useLocation(); 
-  const [data, setData] = useState([]); 
-  const [filteredData, setFilteredData] = useState([]); 
-  const [searchText, setSearchText] = useState(""); 
-  const [licenseNumberQuery, setLicenseNumberQuery] = useState(""); 
-  const [user, setUser] = useState(null); 
+  const location = useLocation();
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [licenseNumberQuery, setLicenseNumberQuery] = useState("");
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const currentUser = authService.getCurrentUser();
@@ -33,48 +33,17 @@ const MLOwnerHomePage = () => {
     }
   }, [location.search]);
 
-  const columns = [
-    // Define your columns here (no changes required)
-  ];
-
-  // Fetch data from API using the new apiService
   useEffect(() => {
     const fetchData = async () => {
-      const apiKey = localStorage.getItem("API_Key");
-
-      if (!apiKey) {
-        console.error("API Key not found in localStorage");
-        return;
-      }
-
       try {
-        const issues = await apiService.fetchData(apiKey);
+        const apiKey = localStorage.getItem("API_Key");
+        if (!apiKey) {
+          console.error("API Key not found in localStorage");
+          return;
+        }
 
-        let mappedData = issues
-          .filter(issue => {
-            const capacity = issue.custom_fields.find(field => field.name === 'Capacity')?.value;
-            return issue.tracker.name === "ML" && (parseInt(capacity, 10) >= 0);
-          })
-          .map(issue => {
-            const currentDate = new Date();
-            const dueDate = new Date(issue.due_date);
-            const isActive = currentDate <= dueDate;
-
-            return {
-              licenseNumber: issue.custom_fields.find(field => field.name === 'License Number')?.value,
-              owner: issue.custom_fields.find(field => field.name === 'Owner Name')?.value,
-              location: issue.custom_fields.find(field => field.name === 'Location')?.value,
-              startDate: issue.start_date,
-              dueDate: issue.due_date,
-              capacity: issue.custom_fields.find(field => field.name === 'Capacity')?.value,
-              dispatchedCubes: issue.custom_fields.find(field => field.name === 'Used')?.value,
-              remainingCubes: issue.custom_fields.find(field => field.name === 'Remaining')?.value,
-              royalty: issue.custom_fields.find(field => field.name === 'Royalty(sand)due')?.value,
-              status: issue.status.name,
-            };
-          });
-
-        mappedData = mappedData.filter(item => item.status === 'Valid');
+        const projects = await MLOService.fetchProjects(apiKey);
+        let mappedData = MLOService.mapProjectData(projects);
 
         if (user && user.firstname && user.lastname) {
           const fullName = `${user.firstname} ${user.lastname}`;
@@ -82,7 +51,6 @@ const MLOwnerHomePage = () => {
         }
 
         const sortedData = mappedData.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
-
         const recentActiveData = sortedData.slice(0, 5);
 
         setData(recentActiveData);
@@ -103,9 +71,46 @@ const MLOwnerHomePage = () => {
       );
       setFilteredData(filteredResults);
     } else {
-      setFilteredData(data); 
+      setFilteredData(data);
     }
   };
+
+  const columns = [
+    { title: 'LICENSE NUMBER', dataIndex: 'licenseNumber', key: 'licenseNumber' },
+    { title: 'OWNER', dataIndex: 'owner', key: 'owner' },
+    { title: 'LOCATION', dataIndex: 'location', key: 'location' },
+    { title: 'START DATE', dataIndex: 'startDate', key: 'startDate' },
+    { title: 'DUE DATE', dataIndex: 'dueDate', key: 'dueDate' },
+    { title: 'CAPACITY (CUBES)', dataIndex: 'capacity', key: 'capacity' },
+    { title: 'DISPATCHED (CUBES)', dataIndex: 'dispatchedCubes', key: 'dispatchedCubes' },
+    { title: 'REMAINING (CUBES)', dataIndex: 'remainingCubes', key: 'remainingCubes' },
+    { title: 'ROYALTY(SAND) DUE [RS.]', dataIndex: 'royalty', key: 'royalty' },
+    {
+      title: 'STATUS',
+      dataIndex: 'status',
+      key: 'status',
+      render: (text, record) => {
+        const isActive = new Date() <= new Date(record.dueDate);
+        return <span style={{ color: isActive ? 'green' : 'red' }}>{isActive ? 'Active' : 'Inactive'}</span>;
+      },
+    },
+    {
+      title: 'ACTION',
+      key: 'action',
+      render: (_, record) => (
+        <Space size="middle">
+          <Link to={`/mlowner/home/dispatchload/${record.licenseNumber}`}>
+            <Button style={{ backgroundColor: '#FFA500' }} disabled={parseInt(record.remainingCubes, 10) === 0 || new Date(record.dueDate) < new Date()}>
+              Dispatch Load
+            </Button>
+          </Link>
+          <Link to={{ pathname: "/mlowner/history", search: `?licenseNumber=${record.licenseNumber}` }}>
+            <Button style={{ backgroundColor: '#0066cc' }}>History</Button>
+          </Link>
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <div className="page-container">
@@ -122,7 +127,7 @@ const MLOwnerHomePage = () => {
             >
               <Input
                 prefix={<SearchOutlined />}
-                placeholder={language === "en" ? "Search License Number" : language == 'si' ? "සොයන්න" : 'தேடல் உரிம எண்'}
+                placeholder="Search License Number"
               />
             </AutoComplete>
           </Col>
@@ -134,7 +139,7 @@ const MLOwnerHomePage = () => {
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
               >
-                {language === "en" ? "View Licenses" : language == 'si' ? "බලපත්‍ර බලන්න" : ""}
+                View Licenses
               </Button>
             </Link>
           </Col>
