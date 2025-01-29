@@ -1,31 +1,39 @@
+// src/components/PoliceOfficer/Dashboard.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { message } from 'antd';
-import axios from 'axios';
+import { fetchVehicleData} from '../../services/PoliceOfficer/vehicleService';
 import { submitComplaint } from '../../services/complaint';
+import { getTranslations } from '../../utils/PoliceOfficer/languageUtils';
+import ReportModal from '../../components/PoliceOfficer/Modal';
+import VehicleCheckForm from '../../components/PoliceOfficer/VehicleCheckForm';
 import logo from '../../assets/images/gsmbLogo.png';
 import backgroundImage from '../../assets/images/machinery.jpg';
-
-
+import '../../styles/PoliceOfficer/PoliceOfficerdashboard.css';
 
 const Dashboard = () => {
     const { language } = useLanguage();
     const [input, setInput] = useState('');
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
     const [data, setData] = useState([]);
     const [phoneNumber, setPhoneNumber] = useState('');
     const navigate = useNavigate();
-    const apiKey = 'fd39218883888c64c25af1d029ada9d1b94879dd';
+    const translations = getTranslations(language);
 
-    const handleReport = async () => {
-        const success = await submitComplaint(input, phoneNumber, language, 'Police Officer');
-        if (success) {
-            setIsModalOpen(false);
-        }
-    };
+    useEffect(() => {
+        const loadVehicleData = async () => {
+            try {
+                const vehicleData = await fetchVehicleData();
+                setData(vehicleData);
+            } catch (error) {
+                console.error('Failed to load vehicle data:', error);
+            }
+        };
+
+        loadVehicleData();
+    }, []);
 
     const handleCheck = () => {
         const validVehicle = data.find(item => item.vehicleNumber === input.trim());
@@ -35,278 +43,60 @@ const Dashboard = () => {
                 state: { vehicleNumber: input.trim() },
             });
         } else {
-            setModalMessage(language === 'en' ? 'Invalid Load' : 'අනවසර පැටවීමක්');
+            setModalMessage(translations.invalidLoad[language]);
             setIsModalOpen(true);
         }
     };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('/api/projects/gsmb/issues.json', {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Redmine-API-Key': apiKey, // Use API key for authentication
-                    },
-                });
-
-                const mappedData = response.data.issues.map((issue) => ({
-                    vehicleNumber: issue.custom_fields.find((field) => field.name === 'Lorry Number')?.value,
-                }));
-
-                setData(mappedData);
-            } catch (error) {
-                console.error('Error fetching data:', error);
+    const handleReport = async () => {
+        try {
+            const success = await submitComplaint(input, phoneNumber, language, 'Police Officer');
+            if (success) {
+                setIsModalOpen(false);
             }
-        };
-
-        fetchData();
-    }, []);
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
-
-    const styles = {
-        pageContainer: {
-            display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            height: '60vh',
-            backgroundColor: '#fff',
-        },
-
-        backgroundSection: {
-            flex: '1 1 0%',
-            backgroundImage: `url(${backgroundImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'left center',
-            backgroundRepeat: 'no-repeat',
-            height: '100%',
-            display: isMobile ? 'none' : 'block',
-        },
-
-        header: {
-            padding: '1rem',
-            textAlign: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        },
-        headerLogo: {
-            width: isMobile ? '120px' : '180px',
-        },
-        mainContent: {
-            flex: '1 1 ',
-
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-
-            padding: '40px',
-            backgroundColor: '#fff', // Overlay for better contrast
-            marginBottom: 'auto',
-            boxSizing: 'border-box',
-            // Include padding in height calculation
-        },
-        header: {
-            padding: '10px',
-            textAlign: 'right',
-            backgroundColor: '#fff',
-
-        },
-        headerLogo: {
-            width: isMobile ? '200px' : '250px',
-
-        },
-
-        title: {
-            fontSize: isMobile ? '1.5rem' : '2rem',
-            fontWeight: 'bold',
-            marginBottom: '1.5rem',
-        },
-        inputContainer: {
-            marginBottom: '1.5rem',
-            width: '100%',
-            maxWidth: '20rem',
-
-            color: 'black',
-            textAlign: 'center',
-
-        },
-        inputBox: {
-            width: '100%',
-            padding: isMobile ? '0.6rem' : '0.75rem',
-            border: '1px solid #ccc',
-            borderRadius: '1.5rem',
-            fontSize: isMobile ? '0.9rem' : '1rem',
-        },
-        checkButton: {
-            backgroundColor: '#800000',
-            color: '#fff',
-            padding: isMobile ? '0.6rem 1.5rem' : '0.75rem 2rem',
-            border: 'none',
-            borderRadius: '1.5rem',
-            fontSize: isMobile ? '0.9rem' : '1rem',
-            cursor: 'pointer',
-            width: '100%',
-            maxWidth: '20rem',
-
-        },
-
-        modal: {
-            position: 'fixed',
-            top: '0',
-            left: '0',
-            right: '0',
-            bottom: '0',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        modalContent: {
-            backgroundColor: '#fff',
-            padding: '3rem',
-            borderRadius: '12px',
-            textAlign: 'center',
-            position: 'relative',
-        },
-        modalCloseButton: {
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-            backgroundColor: 'transparent',
-            border: 'none',
-            fontSize: '1.5rem',
-            cursor: 'pointer',
-            color: '#000',
-        },
+        } catch (error) {
+            console.error('Failed to submit report:', error);
+        }
     };
 
     useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
-        window.addEventListener('resize', handleResize);
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
-    const textContent = {
-        contacts: [
-            { number: '+94-11-2886289', icon: ' 📞' },
-            { number: '+94-11-2886290', icon: ' 📞' },
-            { number: '901', icon: ' 📞' },
-        ],
-    };
+        setModalMessage(translations.invalidLoad[language]); // Update message when language changes
+    }, [language]);
 
     return (
-        <div style={styles.pageContainer}>
-            <div style={styles.backgroundSection}></div>
-            <main style={styles.mainContent}>
-                <header style={styles.header}>
-                    <img src={logo} alt="Logo" style={styles.headerLogo} />
+        <div className="po-dashboard-container">
+            <div 
+                className="po-background-section" 
+                style={{ backgroundImage: `url(${backgroundImage})` }}
+            ></div>
+            <main className="po-main-content">
+                <header className="po-header">
+                    <img src={logo} alt="Logo" className="po-header-logo" />
                 </header>
-                <h3 style={{ fontFamily: "inherit", fontWeight: 'bold', color: '#950C33' }}>
-                    {language === 'en' ? 'GEOL0GICAL SURVEY & MINES BUREAU' : language === 'si' ? 'භූගෝලීය සමීක්ෂණ සහ පතල් කාර්යාංශය' : 'புவியியல் ஆய்வு மற்றும் சுரங்கப் பணியகம்'}
+                <h3 className="po-org-title">
+                    {translations.title[language]}
                 </h3>
-                <p style={{ color: '#444242', marginTop: '5px', fontSize: "14px", textAlign: 'center', marginTop: "10px" }}>
-                    {language == 'en' ? ' Police officers to verify a vehicles validity by entering its registration number. The system checks the details against the database and provides an instant result, confirming whether the vehicle is  valid or invalid, ensuring compliance and road safety.' : language === 'si' ? 'පොලිස් නිලධාරීන් වාහනයක ලියාපදිංචි අංකය ඇතුළත් කිරීමෙන් එහි වලංගුභාවය සත්‍යාපනය කළ යුතුය. පද්ධතිය දත්ත සමුදායට අනුව විස්තර පරීක්ෂා කර ක්ෂණික ප්‍රතිඵලයක් ලබා දෙන අතර, වාහනය වලංගුද අවලංගුද යන්න තහවුරු කරයි, අනුකූලතාව සහ මාර්ග ආරක්ෂාව සහතික කරයි.' : 'காவல்துறை அதிகாரிகள் ஒரு வாகனத்தின் பதிவு எண்ணை உள்ளிட்டு அதன் செல்லுபடியை சரிபார்க்க வேண்டும். இந்த அமைப்பு தரவுத்தளத்துடன் விவரங்களைச் சரிபார்த்து, வாகனம் செல்லுபடியாகுமா அல்லது செல்லாததா என்பதை உறுதிசெய்து, உடனடி முடிவை வழங்குகிறது, இணக்கத்தையும் சாலை பாதுகாப்பையும் உறுதி செய்கிறது.'}
+                <p className="po-org-description">
+                    {translations.description[language]}
                 </p>
-                <div style={styles.inputContainer}>
-                    <input
-                        type="text"
-                        placeholder={language === 'en' ? 'Enter vehicle number' : language === 'si' ? 'විස්තර ඇතුළත් කරන්න' : 'வாகன எண்ணை உள்ளிடவும்'}
-                        style={styles.inputBox}
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                    />
-                </div>
-                <button
-                    style={styles.checkButton}
-                    onClick={handleCheck}
-                >
-                    {language === 'en' ? 'Check' : language === 'si' ? 'පරීක්ෂා කරන්න' : 'சரிபார்க்கவும்'}
-                </button>
+                
+                <VehicleCheckForm 
+                    input={input}
+                    onInputChange={setInput}
+                    onCheck={handleCheck}
+                    language={language}
+                />
+
+                <ReportModal 
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    message={modalMessage}
+                    phoneNumber={phoneNumber}
+                    onPhoneNumberChange={setPhoneNumber}
+                    onReport={handleReport}
+                    language={language}
+                />
             </main>
-            {isModalOpen && (
-                <div style={styles.modal}>
-                    <div style={styles.modalContent}>
-                        <button style={styles.modalCloseButton} onClick={closeModal}>
-                            &times;
-                        </button>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <input
-                                type="text"
-                                value={modalMessage}
-                                readOnly
-                                style={{
-                                    backgroundColor: '#FF0000',
-                                    color: '#fff',
-                                    padding: '0.75rem 2rem',
-                                    border: 'none',
-                                    borderRadius: '1.5rem',
-                                    fontSize: '1rem',
-                                    textAlign: 'center',
-                                    width: '200px',
-                                    height: '50px',
-                                }}
-                            />
-                            <div style={{ marginBottom: '1rem' }}></div>
-                            <input
-                                type="text"
-                                placeholder={language === 'en' ? 'Enter Your Phone Number' : 'දුරකථන අංකය ඇතුළු කරන්න'}
-                                style={{
-                                    backgroundColor: '#f9f9f9',
-                                    color: '#000',
-                                    padding: '0.75rem 2rem',
-                                    border: 'solid #ccc',
-                                    borderRadius: '1.5rem',
-                                    fontSize: '1rem',
-                                    width: '275px',
-                                }}
-                                value={phoneNumber}
-                                onChange={(e) => setPhoneNumber(e.target.value)}
-                            />
-                            <button
-                                style={{
-                                    backgroundColor: '#fff',
-                                    color: '#FF0000',
-                                    border: '2px solid #FF0000',
-                                    padding: '0.75rem 2rem',
-                                    borderRadius: '1.5rem',
-                                    cursor: 'pointer',
-                                    fontSize: '1rem',
-                                    margin: '1rem 0',
-                                    width: '200px',
-                                    height: '50px',
-                                }}
-                                onClick={handleReport} // Submit complaint when clicked
-                            >
-                                {language === 'en' ? 'Report to GSMB' : language === 'si' ? 'GSMB වෙත වාර්තා කරන්න' : 'GSMB-க்கு புகாரளிக்கவும்'}
-                            </button>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
-                            {textContent.contacts.map((contact, index) => (
-                                <div
-                                    key={index}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '10px',
-                                    }}
-                                >
-                                    <span>{contact.icon}</span>
-                                    <span>{contact.number}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
