@@ -165,7 +165,7 @@ const MLOwnerHomePage = () => {
           </Button>
         </Link>
         <Link to={{ pathname: "/mlowner/history", search: `?licenseNumber=${record.licenseNumber}` }}>
-          <Button className="history-button">
+          <Button className="history-button1">
             History
           </Button>
         </Link>
