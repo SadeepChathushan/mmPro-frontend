@@ -35,5 +35,15 @@ export const getTranslations = (language) => ({
         en: 'Invalid Load',
         si: 'අනවසර පැටවීමක්',
         ta: 'செல்லாத சுமை'
+    },
+    invalidVehicleNumber: {
+        en: 'Invalid Vehicle Number Format!',
+        si: 'වලංගු නොවන වාහන අංක ආකෘතියකි!',
+        ta: 'தவறான வாகன எண் வடிவம்!'
+    },
+    invalidPhoneNumber: {
+        en: 'Invalid Phone Number Format!',
+        si: 'වලංගු නොවන දුරකථන අංක ආකෘතියකි!',
+        ta: 'தவறான தொலைபேசி எண் வடிவம்!'
     }
 });

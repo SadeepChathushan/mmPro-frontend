@@ -246,3 +246,49 @@
     font-size: 16px;
     font-weight: bold;
 }
+
+/* src/styles/PoliceOfficer/ValidationModal.css */
+
+/* src/styles/PoliceOfficer/ValidationModal.css */
+
+.validation-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001; /* Higher than the report modal */
+}
+
+.validation-modal {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.validation-message {
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+    margin-bottom: 10px;
+}
+
+.validation-close-button {
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.validation-close-button:hover {
+    background-color: #c9302c;
+}
