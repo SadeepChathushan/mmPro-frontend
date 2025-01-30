@@ -1,12 +1,13 @@
+// src/pages/GeneralPublic/Dashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
-import logo from '../../assets/images/gsmbLogo.png';
-import axios from 'axios';
-import backgroundImage from '../../assets/images/generalpublic.jpg';
+import logo from '../../assets/images/gsmbLogo.jpg';
 import { submitComplaint } from '../../services/complaint';
 import { fetchLorryNumber } from '../../services/fetchLorryNumber';
-
-import { message } from 'antd';
+import Modal from '../../components/GeneralPublic/Modal';
+import VehicleInput from '../../components/GeneralPublic/VehicleInput';
+import '../../styles/GeneralPublic/GeneralPublicdashboard.css';
+import backgroundImage from '../../assets/images/generalpublic.jpg';
 
 const Dashboard = () => {
   const { language } = useLanguage();
@@ -16,17 +17,6 @@ const Dashboard = () => {
   const [modalMessage, setModalMessage] = useState('');
   const [data, setData] = useState([]);
   const [phoneNumber, setPhoneNumber] = useState('');
-
-  const isSinhala = language === 'si';
-  const textContent = {
-    reportButton: isSinhala ? 'GSMB වෙත වාර්තා කරන්න' : 'Report to GSMB',
-    vehiclePlaceholder: isSinhala ? 'උදා : LA 1234' : 'e.g : LA 1234',
-    contacts: [
-      { number: '+94-11-2886289', icon: '📞' },
-      { number: '+94-11-2886290', icon: '📞' },
-      { number: '901', icon: '📞' },
-    ],
-  };
 
   useEffect(() => {
     const loadLorryNumbers = async () => {
@@ -47,10 +37,10 @@ const Dashboard = () => {
     const validVehicle = data.find(item => item.vehicleNumber === input.trim());
 
     if (validVehicle) {
-      setModalMessage(language === 'en' ? 'Valid Load' : 'වලංගු පැටවීම');
+      setModalMessage(language === 'en' ? 'Valid Load' : language === 'si' ? 'වලංගු පැටවීමකි' : 'சரியான ஏற்றுதல்');
       setIsModalOpen(true);
     } else {
-      setModalMessage(language === 'en' ? 'Invalid Load' : 'අවලංගු බලපත් අංකය');
+      setModalMessage(language === 'en' ? 'Invalid Load' : language === 'si' ?'අනවසර පැටවීමකි' : 'தவறான சுமை');
       setIsModalOpen(true);
     }
   };
@@ -71,201 +61,44 @@ const Dashboard = () => {
     };
   }, []);
 
-  const styles = {
-    pageContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      backgroundImage: `url(${backgroundImage})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-      color: '#fff',
-    },
-    header: {
-      padding: '1rem',
-      textAlign: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    },
-    headerLogo: {
-      width: isMobile ? '120px' : '180px',
-    },
-    mainContent: {
-      flex: '1 0 auto',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    title: {
-      fontSize: isMobile ? '1.5rem' : '2rem',
-      fontWeight: 'bold',
-      marginBottom: '1.5rem',
-    },
-    inputContainer: {
-      marginBottom: '1.5rem',
-      width: '100%',
-      maxWidth: '20rem',
-      color: 'black',
-    },
-    inputBox: {
-      width: '100%',
-      padding: isMobile ? '0.6rem' : '0.75rem',
-      border: '1px solid #ccc',
-      borderRadius: '1.5rem',
-      fontSize: isMobile ? '0.9rem' : '1rem',
-    },
-    checkButton: {
-      backgroundColor: '#800000',
-      color: '#fff',
-      padding: isMobile ? '0.6rem 1.5rem' : '0.75rem 2rem',
-      border: 'none',
-      borderRadius: '1.5rem',
-      fontSize: isMobile ? '0.9rem' : '1rem',
-      cursor: 'pointer',
-      width: '100%',
-      maxWidth: '20rem',
-    },
-    modal: {
-      position: 'fixed',
-      top: '0',
-      left: '0',
-      right: '0',
-      bottom: '0',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    modalContent: {
-      backgroundColor: '#fff',
-      padding: '4rem',
-      borderRadius: '12px',
-      textAlign: 'center',
-      position: 'relative',
-    },
-    modalCloseButton: {
-      position: 'absolute',
-      top: '10px',
-      right: '10px',
-      backgroundColor: 'transparent',
-      border: 'none',
-      fontSize: '1.5rem',
-      cursor: 'pointer',
-      color: '#000',
-    },
-  };
-
   return (
-    <div style={styles.pageContainer}>
-      <header style={styles.header}>
-        <img src={logo} alt="Logo" style={styles.headerLogo} />
-      </header>
-      <main style={styles.mainContent}>
-        <h2 style={styles.title}>Enter Vehicle Number</h2>
-        <div style={styles.inputContainer}>
-          <input
-            type="text"
-            placeholder={language === 'en' ? 'e.g : LA1234' : 'උදා : LA1234'}
-            style={styles.inputBox}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-        </div>
+    <div className="page-container">
+      <div
+      className="background-section"
+      style={{backgroundImage: `url(${backgroundImage})`}}
+      >
+
+      </div>
+      {/* <header className="header"> */}
+        {/* <img src={logo} alt="Logo" className="header-logo" /> */}
+      {/* </header> */}
+      <main className="main-content">
+        <header className='header'>
+          <img src={logo} alt='logo' className='header-logo'/>
+
+        </header>
+        <h4 className="title">{language === 'en' ? 'GEOLOGICAL SURVEY & MINES BUREAU' : language === 'si' ? 'භූගෝලීය සමීක්ෂණ සහ පතල් කාර්යාංශය' : 'புவியியல் ஆய்வு மற்றும் சுரங்கப் பணியகம்'}</h4>
+        <p className='para'>{language === 'en'? 'General public users can verify a vehicles validity by entering its vehicle number. The system checks the details against the database and provides an instant result, confirming whether the vehicle is valid or invalid. Additionally, users can submit complaints regarding suspicious or unauthorized vehicles, ensuring better compliance and road safety.':language==='si'?'සාමාන්‍ය පරිශීලකයින්ට වාහනයක වලංගුභාවය එහි වාහන අංකය ඇතුළත් කිරීමෙන් සත්‍යාපනය කළ හැකිය. පද්ධතිය දත්ත සමුදායට අනුව විස්තර පරීක්ෂා කර වාහනය වලංගුද අවලංගුද යන්න තහවුරු කරමින් ක්ෂණික ප්‍රතිඵලයක් ලබා දෙයි. මීට අමතරව, පරිශීලකයින්ට සැක සහිත හෝ අනවසර වාහන සම්බන්ධයෙන් පැමිණිලි ඉදිරිපත් කළ හැකි අතර, එමඟින් වඩා හොඳ අනුකූලතාවයක් සහ මාර්ග ආරක්ෂාව සහතික කෙරේ.':'பொது பயனர்கள் ஒரு வாகனத்தின் செல்லுபடியை அதன் வாகன எண்ணை உள்ளிடுவதன் மூலம் சரிபார்க்கலாம். இந்த அமைப்பு தரவுத்தளத்தில் உள்ள விவரங்களைச் சரிபார்த்து, வாகனம் செல்லுபடியாகுமா அல்லது செல்லாததா என்பதை உறுதிப்படுத்தும் உடனடி முடிவை வழங்குகிறது. கூடுதலாக, பயனர்கள் சந்தேகத்திற்கிடமான அல்லது அங்கீகரிக்கப்படாத வாகனங்கள் தொடர்பான புகார்களைச் சமர்ப்பிக்கலாம், இது சிறந்த இணக்கத்தையும் சாலைப் பாதுகாப்பையும் உறுதி செய்கிறது.'}</p>
+        <VehicleInput input={input} setInput={setInput} language={language} />
         <button
-          style={styles.checkButton}
+          className="check-button"
           onMouseOver={(e) => (e.target.style.backgroundColor = '#5a0000')}
           onMouseOut={(e) => (e.target.style.backgroundColor = '#800000')}
           onClick={handleCheck}
         >
-          {language === 'en' ? 'Check' : 'පරීක්ෂා කරන්න'}
+          {language === 'en' ? 'Check' : language === 'si' ? 'පරීක්ෂා කරන්න' : 'சரிபார்க்கவும்'}
         </button>
       </main>
 
       {isModalOpen && (
-        <div style={styles.modal}>
-          <div style={styles.modalContent}>
-            <button style={styles.modalCloseButton} onClick={closeModal}>
-              &times;
-            </button>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <input
-                type="text"
-                value={modalMessage}
-                readOnly
-                style={{
-                  backgroundColor: modalMessage === 'Valid Load' ? '#28a745' : '#FF0000',
-                  color: '#fff',
-                  padding: '0.75rem 2rem',
-                  border: 'none',
-                  borderRadius: '1.5rem',
-                  fontSize: '1rem',
-                  textAlign: 'center',
-                  width: '200px',
-                  height: '50px',
-                }}
-              />
-              {modalMessage === (language === 'en' ? 'Invalid Load' : 'අවලංගු බලපත් අංකය') && (
-                <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                  <div style={{ marginBottom: '1rem' }}>
-                    <input
-                      type="text"
-                      placeholder={language === 'en' ? 'Enter Your Phone Number' : 'දුරකථන අංකය ඇතුළු කරන්න'}
-                      style={{
-                        backgroundColor: '#f9f9f9',
-                        color: '#000',
-                        padding: '0.75rem 2rem',
-                        border: 'solid #ccc',
-                        borderRadius: '1.5rem',
-                        fontSize: '1rem',
-                        width: '275px',
-                      }}
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                    />
-                  </div>
-                  <button
-                    style={{
-                      backgroundColor: '#800000',
-                      color: '#fff',
-                      padding: '0.75rem 2rem',
-                      border: 'none',
-                      borderRadius: '1.5rem',
-                      cursor: 'pointer',
-                      fontSize: '1rem',
-                      marginBottom: '1rem',
-                    }}
-                    onClick={handleReport}
-                  >
-                    {language === 'en' ? 'Report to GSMB' : 'GSMB වෙත පැමිණිලි කරන්න'}
-                  </button>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
-                    {textContent.contacts.map((contact, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '8px 16px',
-                          border: '1px solid #ccc',
-                          borderRadius: '4px',
-                          fontSize: '14px',
-                          backgroundColor: '#f9f9f9',
-                          color: 'black',
-                        }}
-                      >
-                        <span>{contact.number}</span>
-                        <span>{contact.icon}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        <Modal
+          modalMessage={modalMessage}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
+          handleReport={handleReport}
+          closeModal={closeModal}
+          language={language}
+        />
       )}
     </div>
   );

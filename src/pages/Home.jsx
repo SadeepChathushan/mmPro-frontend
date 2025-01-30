@@ -1,7 +1,7 @@
 import React from "react";
 import { Layout, Row, Col, Typography, Image } from "antd";
 import Navbar from "../components/layout/Navbar";
-import Footer from "../components/layout/Footer";
+import Footer from "../components/layout/HomeFooter";
 import { useLanguage } from "../contexts/LanguageContext";
 import backgroundImage from "../assets/images/ocean.jpg";
 import aboutImage from "../assets/images/engineer.jpg";
