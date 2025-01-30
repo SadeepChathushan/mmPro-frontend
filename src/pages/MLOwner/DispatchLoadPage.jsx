@@ -454,6 +454,7 @@ const DispatchLoadPage = () => {
                   : "லாரி எண்:"}
               </span>
               <Input
+                id="lorryNumber"
                 value={formData.lorryNumber}
                 onChange={handleLorryNumberChange}
                 style={{ width: "100%" }}
@@ -474,6 +475,7 @@ const DispatchLoadPage = () => {
                   : "ஓட்டுனர் தொடர்பு:"}
               </span>
               <Input
+                id="drivercontact"
                 value={formData.driverContact}
                 onChange={handleDriverContactChange}
                 style={{ width: "100%" }}
@@ -575,7 +577,7 @@ const DispatchLoadPage = () => {
         </Row>
 
         {/* Success Modal */}
-               <Modal
+     <Modal
                  visible={isModalVisible}
                  onCancel={() => resetFormdata()}
                  footer={null}
@@ -686,6 +688,7 @@ const DispatchLoadPage = () => {
                  </h3>
                </Modal>
                <Modal
+                 id="not_enough_Loyalty"
                  visible={isLoyalErrModalVisible}
                  onCancel={() => setIsLoyalErrModalVisible(false)}
                  footer={null}
@@ -697,13 +700,14 @@ const DispatchLoadPage = () => {
                  </div>
                  <h3>
                    {language === "en"
-                     ? `Not enough`
-                     : language === "si"
-                     ? "්Not enough"
-                     : "Not enough"}
+              ? `Not enough Loyalty unit.`
+              : language === "si"
+              ? "්ප්‍රමාණවත් පක්ෂපාතීත්වය ඒකකයක් නොමැත."
+              : "போதுமான லாயல்டி யூனிட் இல்லை."}
                  </h3>
                </Modal>
        
+
       </Content>
     </Layout>  );
 };
