@@ -2,8 +2,8 @@
 
 /* Main container */
 .history-container {
-  padding: 16px;
-  background-color: #f0f2f5;
+  padding: 10px;
+  background-color: #fff;
 }
 
 /* Title styling */
@@ -19,9 +19,10 @@
 
 /* Back to Home button */
 .history-back-button {
-  background-color: #ffa500;
-  border-color: #ffa500;
-  color: white;
+  height: 40px;
+  background-color: #fff500;
+  border-color: #fff500;
+  color: black;
   width: 200px;
   border-radius: 8px;
   margin-bottom: 12px;
@@ -32,11 +33,12 @@
   margin-bottom: 20px;
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0);
 }
 
 /* DatePicker styling */
 .history-datepicker {
+  margin-left: 350px;
   width: 100%;
 }
 
@@ -55,6 +57,7 @@
 
 /* Enabled action button */
 .history-action-button-enabled {
+  height: 40px;
   background-color: #28a745;
   border-color: #28a745;
   color: white;

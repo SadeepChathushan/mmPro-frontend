@@ -1,19 +1,21 @@
 /* MLOwnerHomePage.css */
 
-.page-container {
-    background-color: #f0f2f5;
+.page-container1 {
+    background-color: #fff;
     height: 100%;
   }
   
-  .page-content {
-    padding: 24px;
+  .page-content1 {
+    padding: 12px;
   }
   
   .search-col {
     text-align: center;
+    
   }
   
   .view-licenses-button {
+    margin-top: 28px;
     background-color: #a52a2a;
     color: white;
     border-color: #a52a2a;
@@ -23,10 +25,10 @@
   }
   
   .view-licenses-button:hover {
-    background-color: rgb(211, 153, 61);
+    background-color: #FFf500;
   }
   
-  .table-container {
+  .table-container1 {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -34,8 +36,8 @@
   }
   
   .dispatch-button {
-    background-color: #FFA500;
-    border-color: #FFA500;
+    background-color: #FFf500;
+    border-color: #FFf500;
     border-radius: 10%;
     color: black;
   }
@@ -44,15 +46,19 @@
     background-color: rgb(211, 153, 61);
   }
   
-  .history-button {
+  .history-button1 {
     background-color: #0066cc;
     border-color: #0066cc;
     border-radius: 10%;
+    
+    color: black;
   }
   
   .dispatch-load-button {
-    background-color: #FFA500;
-    color: white; /* Optional: Change text color */
+    width: 200px;
+    height: 35px;
+    background-color: #FFf500;
+    color: black; /* Optional: Change text color */
   }
   
   .history-button {

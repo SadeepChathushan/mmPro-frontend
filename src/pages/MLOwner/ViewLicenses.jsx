@@ -15,6 +15,7 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import moment from "moment";
 import { fetchLicenses } from "../../services/MLOService";
 import "../../styles/MLOwner/Licenses.css";
+import "../../styles/MLOwner/History.css";
 
 const Licenses = () => {
   const { language } = useLanguage();
@@ -47,6 +48,9 @@ const Licenses = () => {
           )
         : licenses
     );
+  };
+  const go_home = () => {
+    navigate("/mlowner/home");
   };
 
   const filteredLicensesByDate = filteredLicenses.filter((license) => {
@@ -120,11 +124,12 @@ const Licenses = () => {
       ),
     },
   ];
+ 
 
   return (
     <div className="container">
       <h1 className="title">
-        {language === "en" ? "Licenses of MLOwner" : language === "si" ? "පතල් අයිතිකරුගේ බලපත්‍ර" : "ML உரிமையாளரின் உரிமங்கள்"}
+        {language === "en" ? "Licenses of Mining License Owner" : language === "si" ? "පතල් අයිතිකරුගේ බලපත්‍ර" : "ML உரிமையாளரின் உரிமங்கள்"}
       </h1>
 
       <Row className="filter-row" gutter={[16, 16]}>
@@ -162,6 +167,11 @@ const Licenses = () => {
 
 
       <Table dataSource={filteredLicensesByDate} columns={columns} scroll={{ x: "max-content" }} pagination={false} />
+      <div className="history-button-container">
+        <Button className="history-back-button" onClick={() => go_home()}>
+          {language === "en" ? "Back to Home" :language ==="si"? "ආපසු":"வீட்டிற்குத் திரும்பு"}
+        </Button>
+      </div>
     </div>
   );
 };

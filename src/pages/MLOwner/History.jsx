@@ -85,17 +85,17 @@ const History = () => {
   };
 
   const columns = [
-    { title: language === "en" ? "License Number" : "බලපත්‍ර අංකය", dataIndex: "licenseNumber", key: "licenseNumber" },
-    { title: language === "en" ? "Driver Contact" : "රියදුරුගේ දුරකථනය", dataIndex: "lorryDriverContact", key: "lorryDriverContact" },
-    { title: language === "en" ? "Owner" : "අයිතිකරු", dataIndex: "owner", key: "owner" },
-    { title: language === "en" ? "Location" : "ස්ථානය", dataIndex: "location", key: "location" },
-    { title: language === "en" ? "Lorry Number" : "ලොරි අංකය", dataIndex: "lorryNumber", key: "lorryNumber" },
-    { title: language === "en" ? "Destination" : "ගමනාන්තය", dataIndex: "Destination", key: "Destination" },
-    { title: language === "en" ? "Cubes" : "කියුබ් ගණන", dataIndex: "cubes", key: "cubes" },
-    { title: language === "en" ? "Dispatched Date" : "යවන ලද දිනය", dataIndex: "dispatchDate", key: "dispatchDate", render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span> },
-    { title: language === "en" ? "Due Date" : "අවසන් ලද දිනය", dataIndex: "due_date", key: "due_date", render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span> },
+    { title: language === "en" ? "License Number" : language ==="si"?"බලපත්‍ර අංකය":"உரிம எண்", dataIndex: "licenseNumber", key: "licenseNumber" },
+    { title: language === "en" ? "Driver Contact" : language ==="si"?"රියදුරුගේ දුරකථනය":"ஓட்டுநர் தொடர்பு", dataIndex: "lorryDriverContact", key: "lorryDriverContact" },
+    { title: language === "en" ? "Owner" : language ==="si"?"අයිතිකරු":"உரிமையாளர்", dataIndex: "owner", key: "owner" },
+    { title: language === "en" ? "Location" : language ==="si"?"ස්ථානය":"இடம்", dataIndex: "location", key: "location" },
+    { title: language === "en" ? "Lorry Number" : language ==="si"?"ලොරි අංකය":"லாரி எண்", dataIndex: "lorryNumber", key: "lorryNumber" },
+    { title: language === "en" ? "Destination" : language ==="si"? "ගමනාන්තය":"சேருமிடம்", dataIndex: "Destination", key: "Destination" },
+    { title: language === "en" ? "Cubes" :language ==="si"? "කියුබ් ගණන":"கனசதுரங்கள்", dataIndex: "cubes", key: "cubes" },
+    { title: language === "en" ? "Dispatched Date" : language === "si"?"යවන ලද දිනය":"அனுப்பப்பட்ட தேதி", dataIndex: "dispatchDate", key: "dispatchDate", render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span> },
+    { title: language === "en" ? "Due Date" : language === "si"?"අවසන් ලද දිනය":"நிலுவைத் தேதி", dataIndex: "due_date", key: "due_date", render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span> },
     {
-      title: language === "en" ? "Action" : "ක්‍රියාමාර්ග",
+      title: language === "en" ? "Action" :language ==="si"? "ක්‍රියාමාර්ග":"செயல்",
       key: "action",
       render: (_, record) => {
         const buttonDisabled = (clickCounts[record.licenseNumber] || 0) >= 3;
@@ -106,8 +106,8 @@ const History = () => {
             disabled={buttonDisabled}
           >
             {buttonDisabled
-              ? language === "en" ? "Max Clicks Reached" : "උපරිම ක්ලික් ගණන අවසන්"
-              : language === "en" ? "Print Your Missed Receipts" : "රිසිට්පත මුද්‍රණය කරගන්න"
+              ? language === "en" ? "Max Clicks Reached" :language ==="si"? "උපරිම ක්ලික් ගණන අවසන්":"ரசீதை அச்சிடுங்கள்"
+              : language === "en" ? "Print Your Missed Receipts" : language ==="si"?"රිසිට්පත මුද්‍රණය කරගන්න":"ரசீதை அச்சிடுங்கள்"
             }
           </Button>
         );
@@ -118,21 +118,21 @@ const History = () => {
   return (
     <div className="history-container">
       <h1 className="history-title">
-        {language === "en" ? "Dispatch History" : "යවන ලද ප්‍රමාණ"}
+        {language === "en" ? "Dispatch History" : language ==="si" ? "යවන ලද ප්‍රමාණ" :"அனுப்புதல் வரலாறு"}
       </h1>
 
       <Row gutter={[16, 16]} style={{ marginBottom: "20px" }}>
         <Col xs={24} sm={12} md={6}>
           <DatePicker
             onChange={(date) => setStartDate(moment(date).format("YYYY-MM-DD"))}
-            placeholder={language === "en" ? "Start Date" : "ආරම්භක දිනය"}
+            placeholder={language === "en" ? "Start Date" : language ==="si"? "ආරම්භක දිනය":"தொடக்க தேதி"}
             className="history-datepicker"
           />
         </Col>
         <Col xs={24} sm={12} md={6}>
           <DatePicker
             onChange={(date) => setEndDate(moment(date).format("YYYY-MM-DD"))}
-            placeholder={language === "en" ? "End Date" : "අවසන් දිනය"}
+            placeholder={language === "en" ? "End Date" :language ==="si"? "අවසන් දිනය":"முடிவு தேதி"}
             className="history-datepicker"
           />
         </Col>
@@ -147,7 +147,7 @@ const History = () => {
 
       <div className="history-button-container">
         <Button className="history-back-button" onClick={() => go_home()}>
-          {language === "en" ? "Back to Home" : "ආපසු"}
+          {language === "en" ? "Back to Home" :language ==="si"? "ආපසු":"வீட்டிற்குத் திரும்பு"}
         </Button>
       </div>
     </div>
