@@ -27,9 +27,14 @@ export const getTranslations = (language) => ({
         ta: 'GSMB-க்கு புகாரளிக்கவும்'
     },
     phoneNumberPlaceholder: {
-        en: 'Enter Your Phone Number',
-        si: 'දුරකථන අංකය ඇතුළු කරන්න',
-        ta: 'தொலைபேசி எண்ணை உள்ளிடவும்'
+        en: 'e.g : 071XXXXXXX',
+        si: 'උදා : 071XXXXXXX',
+        ta: 'எ.கா : 071XXXXXXX'
+    },
+    phoneNumber: {
+        en: 'Enter Your Phone Number (e.g : 071XXXXXXX)',
+        si: 'දුරකථන අංකය ඇතුළු කරන්න (උදා : 071XXXXXXX)',
+        ta: 'தொலைபேசி எண்ணை உள்ளிடவும் (எ.கா : 071XXXXXXX)'
     },
     invalidLoad: {
         en: 'Invalid Load',
