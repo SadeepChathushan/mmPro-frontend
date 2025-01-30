@@ -3,7 +3,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import logo from '../../assets/images/gsmbLogo.jpg';
 import { submitComplaint } from '../../services/complaint';
 import { fetchLorryNumber } from '../../services/GeneralPublic/fetchLorryNumber';
-import { validateVehicleNumber } from '../../services/GeneralPublic/validation';
+import { validateVehicleNumber, validatePhoneNumber } from '../../services/GeneralPublic/validation';
 import Modal from '../../components/GeneralPublic/Modal';
 import VehicleInput from '../../components/GeneralPublic/VehicleInput';
 import '../../styles/GeneralPublic/GeneralPublicdashboard.css';
@@ -27,6 +27,11 @@ const Dashboard = () => {
   }, []);
 
   const handleReport = async () => {
+    if (!validatePhoneNumber(phoneNumber)) {
+      setModalMessage(language === 'en' ? 'Invalid Phone Number Format!' : language === 'si'  ? 'වලංගු නොවන දුරකථන අංක ආකෘතියකි!' : 'தவறான தொலைபேசி எண் வடிவம்!');
+      setIsModalOpen(true);
+      return;
+    }
     const success = await submitComplaint(input, phoneNumber, language);
     if (success) {
       closeModal();
@@ -39,8 +44,8 @@ const Dashboard = () => {
         language === 'en'
           ? 'Invalid Vehicle Number Format!'
           : language === 'si'
-          ? 'අනවශ්‍ය වාහන අංකයක්!'
-          : 'தவறான வாகன எண்ணம்!'
+            ? 'අනවශ්‍ය වාහන අංකයක්!'
+            : 'தவறான வாகன எண்ணம்!'
       );
       setIsModalOpen(true);
       return;
@@ -53,13 +58,13 @@ const Dashboard = () => {
         ? language === 'en'
           ? 'Valid Load'
           : language === 'si'
-          ? 'වලංගු පැටවීමකි'
-          : 'சரியான ஏற்றுதல்'
+            ? 'වලංගු පැටවීමකි'
+            : 'சரியான ஏற்றுதல்'
         : language === 'en'
-        ? 'Invalid Load'
-        : language === 'si'
-        ? 'අනවසර පැටවීමකි'
-        : 'தவறான சுமை'
+          ? 'Invalid Load'
+          : language === 'si'
+            ? 'අනවසර පැටවීමකි'
+            : 'தவறான சுமை'
     );
     setIsModalOpen(true);
   };
@@ -91,15 +96,15 @@ const Dashboard = () => {
           {language === 'en'
             ? 'GEOLOGICAL SURVEY & MINES BUREAU'
             : language === 'si'
-            ? 'භූගෝලීය සමීක්ෂණ සහ පතල් කාර්යාංශය'
-            : 'புவியியல் ஆய்வு மற்றும் சுரங்கப் பணியகம்'}
+              ? 'භූගෝලීය සමීක්ෂණ සහ පතල් කාර්යාංශය'
+              : 'புவியியல் ஆய்வு மற்றும் சுரங்கப் பணியகம்'}
         </h4>
         <p className="para">
           {language === 'en'
             ? 'General public users can verify a vehicle’s validity by entering its vehicle number. The system checks the details against the database and provides an instant result, confirming whether the vehicle is valid or invalid. Additionally, users can submit complaints regarding suspicious or unauthorized vehicles, ensuring better compliance and road safety.'
             : language === 'si'
-            ? 'සාමාන්‍ය පරිශීලකයින්ට වාහනයක වලංගුභාවය එහි වාහන අංකය ඇතුළත් කිරීමෙන් සත්‍යාපනය කළ හැකිය...'
-            : 'பொது பயனர்கள் ஒரு வாகனத்தின் செல்லுபடியை அதன் வாகன எண்ணை உள்ளிடுவதன் மூலம் சரிபார்க்கலாம்...'}
+              ? 'සාමාන්‍ය පරිශීලකයින්ට වාහනයක වලංගුභාවය එහි වාහන අංකය ඇතුළත් කිරීමෙන් සත්‍යාපනය කළ හැකිය...'
+              : 'பொது பயனர்கள் ஒரு வாகனத்தின் செல்லுபடியை அதன் வாகன எண்ணை உள்ளிடுவதன் மூலம் சரிபார்க்கலாம்...'}
         </p>
         <VehicleInput input={input} setInput={setInput} language={language} />
         <button
