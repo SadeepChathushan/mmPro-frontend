@@ -176,8 +176,8 @@ const MLOwnerHomePage = () => {
   ];
 
   return (
-    <div className="page-container">
-      <div className="page-content">
+    <div className="page-container1">
+      <div className="page-content1">
         <Row gutter={16} justify="space-between" align="middle">
           <Col xs={24} sm={24} md={12} lg={12}>
             <AutoComplete
@@ -212,7 +212,7 @@ const MLOwnerHomePage = () => {
           columns={columns}
           dataSource={filteredData}
           pagination={false}
-          className="table-container"
+          className="table-container1"
           scroll={{ x: 'max-content' }}
         />
       </div>
