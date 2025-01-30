@@ -18,8 +18,7 @@ import axios from "axios";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
-import "../../styles/MLOwner/DispatchLoadPage.css";
-import { fetchIssues, updateIssue, createIssue } from '../../services/MLOService';
+
 const { Content } = Layout;
 const { Title } = Typography;
 
@@ -234,20 +233,17 @@ const DispatchLoadPage = () => {
 
  
  
-  
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
     // Trim the values before validation
     setIssueData({
       ...issueData,
       due_date: formData.dueDate, // Assign the new due_date value
     });
-  
+
     // Log form data to check values
     console.log("Form data on submit:", formData);
-  
+
     if (
       !formData.licenseNumber.trim() ||
       !formData.destination.trim() ||
@@ -258,68 +254,200 @@ const DispatchLoadPage = () => {
       // Log if validation fails
       console.log("One or more fields are empty!");
       setIsErrModalVisible(true);
-      return;
-    }
-  
-    try {
-      // Fetch issues using the service
-      const issues = await fetchIssues();
-      console.log("Issues:", issues);
-  
-      const issueToUpdate = issues.find((issue) => issue.subject === formData.licenseNumber);
-  
-      if (issueToUpdate) {
-        console.log("Issue to update:", issueToUpdate);
-  
-        // Find custom fields and perform necessary calculations
-        const cubesField = issueToUpdate.custom_fields.find((field) => field.name === "Remaining");
-        const usedField = issueToUpdate.custom_fields.find((field) => field.name === "Used") || 0;
-        const remainingField = issueToUpdate.custom_fields.find((field) => field.name === "Remaining");
-        const royaltysanddueField = issueToUpdate.custom_fields.find((field) => field.name === "Royalty(sand)due");
-        const locateField = issueToUpdate.custom_fields.find((field) => field.name === "Location");
-  
-        // Handle new field updates
-        const cubesUsed = parseInt(formData.cubes, 10);
-        const usedValue = parseInt(usedField ? usedField.value : "0", 10);
-        const remainingValue = parseInt(remainingField ? remainingField.value : "0", 10);
-        const royaltysanddueValue = parseInt(royaltysanddueField ? royaltysanddueField.value : "0", 10);
-  
-        console.log("Cubes used:", cubesUsed);
-        console.log("Used value:", usedValue);
-        console.log("Remaining value:", remainingValue);
-  
-        // Update fields
-        usedField.value = (usedValue + cubesUsed).toString();
-        remainingField.value = (remainingValue - cubesUsed).toString();
-        royaltysanddueField.value = (royaltysanddueValue - cubesUsed * 100).toString();
-  
-        console.log("Updated fields:", usedField, remainingField);
-  
-        // Check for errors before updating the issue
-        if (royaltysanddueValue < 1000) {
-          setIsLoyalErrModalVisible(true);
-        } else if (cubesUsed > remainingValue) {
-          setIsContErrModalVisible(true);
+    } else {
+      // setFormData({ ...formData, DateTime: currentDateTime });
+
+      try {
+        // Replace with actual password
+
+        // Fetch issues using axios
+        const response = await axios.get("/api/projects/gsmb/issues.json", {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Redmine-API-Key": apiKey,
+          },
+          // auth: {
+          //   username,
+          //   password,
+          // },
+        });
+
+        const issues = response.data.issues;
+        console.log("Issues:", issues);
+
+        // Find the issue by license number in custom_fields
+        // const issueToUpdate = issues.find((issue) => {
+        //   return (issue.custom_fields.some(
+        //     (field) =>
+        //       field.name === "License Number" &&
+        //       field.value === formData.licenseNumber) && (issue.custom_fields.some(
+        //         (field) =>
+        //           field.name === "Royalty(sand)due"))
+        //   );
+        // });
+
+        const issueToUpdate = issues.find((issue) => {
+          return issue.subject === formData.licenseNumber;
+        });
+        // Find the issue by license number in custom_fields
+        // const issueToUpdate = issues.find((issue) => {
+        //   return issue.subject === formData.licenseNumber;
+        // });
+
+        if (issueToUpdate) {
+          console.log("Issue to update:", issueToUpdate);
+          // Update the cubes used and remaining cubes
+          const cubesField = issueToUpdate.custom_fields.find(
+            (field) => field.name === "Remaining"
+          );
+          console.log("Cubes field:", cubesField);
+          if (cubesField) {
+            console.log("Cubes field 1");
+            // Update the "Used" field (usually Custom Fields 84 for "Used")
+            const usedField =
+              issueToUpdate.custom_fields.find(
+                (field) => field.name === "Used"
+              ) || 0;
+            const remainingField = issueToUpdate.custom_fields.find(
+              (field) => field.name === "Remaining"
+            );
+            const royaltysanddueField = issueToUpdate.custom_fields.find(
+              (field) => field.name === "Royalty(sand)due"
+            );
+            const locateField = issueToUpdate.custom_fields.find(
+              (field) => field.name === "Location"
+            );
+
+            const licenseNumberFeild = issueData.custom_fields.find(
+              (field) => field.name === "License Number"
+            );
+
+            const destinationField = issueData.custom_fields.find(
+              (field) => field.name === "Destination"
+            );
+
+            const lorryNumberField = issueData.custom_fields.find(
+              (field) => field.name === "Lorry Number"
+            );
+
+            const driverContactField = issueData.custom_fields.find(
+              (field) => field.name === "Driver Contact"
+            );
+
+            const cubesField = issueData.custom_fields.find(
+              (field) => field.name === "Cubes"
+            );
+            const locateField1 = issueData.custom_fields.find(
+              (field) => field.name === "Location"
+            );
+
+            const mLissueId = issueToUpdate.id;
+            const locatvalue = locateField.value;
+            // setmId(mLissueId);
+
+            const cubesUsed = parseInt(formData.cubes, 10);
+            const usedValue = parseInt(usedField ? usedField.value : "0", 10);
+            const remainingValue = parseInt(
+              remainingField ? remainingField.value : "0",
+              10
+            );
+            const royaltysanddueValue = parseInt(
+              royaltysanddueField ? royaltysanddueField.value : "0",
+              10
+            );
+
+            console.log("Cubes used:", cubesUsed);
+            console.log("Used value:", usedValue);
+            console.log("Remaining value:", remainingValue);
+
+            // Increment the used value and adjust the remaining value
+            usedField.value = (usedValue + cubesUsed).toString();
+            remainingField.value = (remainingValue - cubesUsed).toString();
+            royaltysanddueField.value = (
+              royaltysanddueValue -
+              cubesUsed * 100
+            ).toString();
+            licenseNumberFeild.value = formData.licenseNumber;
+            destinationField.value = formData.destination;
+            lorryNumberField.value = formData.lorryNumber;
+            driverContactField.value = formData.driverContact;
+            cubesField.value = formData.cubes;
+            locateField1.value = locatvalue;
+
+            console.log("Updated fields:", usedField, remainingField);
+
+            // Also update the cubes used in the "Cubes" field
+            // cubesField.value = formData.cubes;
+            console.log("Updated issue:", issueToUpdate);
+
+            // PUT request to update the issues with new data
+            if (royaltysanddueValue < 1000) {
+              setIsLoyalErrModalVisible(true);
+            } else {
+              if (cubesUsed > remainingValue) {
+                setIsContErrModalVisible(true);
+              } else {
+                try {
+                  await axios.put(
+                    `/api/issues/${mLissueId}.json`,
+                    {
+                      issue: issueToUpdate, // Pass the actual issue object here
+                    },
+                    {
+                      headers: {
+                        "Content-Type": "application/json",
+                        "X-Redmine-API-Key":
+                          "fb4b68f17ce654c1123a5fcf031de4b560999296",
+                      },
+                      // auth: {
+                      //   username,
+                      //   password,
+                      // },
+                    }
+                  );
+                  try {
+                    await axios.post(
+                      `/api/issues.json`,
+                      {
+                        issue: issueData, // Pass the actual issue object here
+                      },
+                      {
+                        headers: {
+                          "Content-Type": "application/json",
+                          "X-Redmine-API-Key": apiKey,
+                        },
+                        // auth: {
+                        //   username,
+                        //   password,
+                        // },
+                      }
+                    );
+                  } catch (error) {
+                    console.error("Error updating issue:", error);
+                    setIsProErrModalVisible(true); // Show error modal on any API request failure
+                  }
+                } catch (error) {
+                  console.error("Error updating issue:", error);
+                  setIsProErrModalVisible(true); // Show error modal on any API request failure
+                }
+                setIsModalVisible(true); // Show success modal if the issue is updated successfully
+              }
+            }
+          }
         } else {
-          // Update the issue using the service function
-          const updatedIssue = { ...issueToUpdate, custom_fields: issueToUpdate.custom_fields };
-          await updateIssue(issueToUpdate.id, updatedIssue);
-  
-          // Create a new issue if necessary
-          await createIssue(issueData);
-  
-          setIsModalVisible(true); // Show success modal if the issue is updated successfully
+          console.error(
+            "Issue not found for license number",
+            formData.licenseNumber
+          );
+          setIsProErrModalVisible(true); // Show error modal if the issue is not found
         }
-      } else {
-        console.error("Issue not found for license number", formData.licenseNumber);
-        setIsProErrModalVisible(true); // Show error modal if the issue is not found
+      } catch (error) {
+        console.error("Error fetching issues:", error);
+        setIsProErrModalVisible(true); // Show error modal on any API request failure
       }
-    } catch (error) {
-      console.error("Error processing issue:", error);
-      setIsProErrModalVisible(true); // Show error modal on any API request failure
     }
   };
-  
+
   const handlePrintReceipt = () => {
     navigate("/mlowner/home/dispatchload/receipt", {
       state: { formData, l_number },
@@ -357,10 +485,11 @@ const DispatchLoadPage = () => {
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
+
   return (
-   <Layout className="dispatch-load-container">
+    <Layout style={{ minHeight: "100vh" }}>
       <Content style={{ padding: "24px" }}>
-        <Title level={3} className="page-title">
+        <Title level={3} style={{ textAlign: "center", marginBottom: "20px" }}>
           {language === "en"
             ? "Dispatch Your Load Here"
             : language === "si"
@@ -368,11 +497,10 @@ const DispatchLoadPage = () => {
             : "உங்கள் சுமையை இங்கே அனுப்பவும்"}
         </Title>
 
-        {/* Date and Time Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
                 {language === "en"
                   ? "DATE & TIME:"
                   : language === "si"
@@ -391,8 +519,8 @@ const DispatchLoadPage = () => {
         {/* License Number Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
                 {language === "en"
                   ? "LICENSE NUMBER:"
                   : language === "si"
@@ -407,8 +535,8 @@ const DispatchLoadPage = () => {
         {/* Destination Input with Search Options */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
                 {language === "en"
                   ? "DESTINATION:"
                   : language === "si"
@@ -445,8 +573,8 @@ const DispatchLoadPage = () => {
         {/* Lorry Number Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
                 {language === "en"
                   ? "LORRY NUMBER:"
                   : language === "si"
@@ -454,7 +582,6 @@ const DispatchLoadPage = () => {
                   : "லாரி எண்:"}
               </span>
               <Input
-                id="lorryNumber"
                 value={formData.lorryNumber}
                 onChange={handleLorryNumberChange}
                 style={{ width: "100%" }}
@@ -466,8 +593,8 @@ const DispatchLoadPage = () => {
         {/* Driver Contact Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
                 {language === "en"
                   ? "DRIVER CONTACT:"
                   : language === "si"
@@ -475,7 +602,6 @@ const DispatchLoadPage = () => {
                   : "ஓட்டுனர் தொடர்பு:"}
               </span>
               <Input
-                id="drivercontact"
                 value={formData.driverContact}
                 onChange={handleDriverContactChange}
                 style={{ width: "100%" }}
@@ -487,13 +613,13 @@ const DispatchLoadPage = () => {
         {/* Due Date Input */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
                 {language === "en"
                   ? "DUE DATE:"
                   : language === "si"
                   ? "නියමිත දිනය:"
-                  : "இறுதி தேதி:"}
+                  : "இறுதி தேதி::"}
               </span>
               <DatePicker
                 value={formData.dueDate ? dayjs(formData.dueDate) : null}
@@ -510,15 +636,15 @@ const DispatchLoadPage = () => {
         {/* Cubes Input with Increment and Decrement Buttons */}
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
+            <div style={{ marginBottom: "16px" }}>
+              <span style={{ fontWeight: "bold" }}>
                 {language === "en"
                   ? "CUBES:"
                   : language === "si"
                   ? "කියුබ් ගණන:"
                   : "க்யூப்ஸ்:"}
               </span>
-              <div className="cubes-input-container">
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <Button
                   onClick={decrementCubes}
                   style={{ marginRight: "8px" }}
@@ -529,7 +655,7 @@ const DispatchLoadPage = () => {
                 <Input
                   value={formData.cubes}
                   onChange={handleCubesChange}
-                  className="cubes-input"
+                  style={{ width: "60px", textAlign: "center" }}
                 />
                 <Button onClick={incrementCubes} style={{ marginLeft: "8px" }}>
                   +
@@ -546,13 +672,20 @@ const DispatchLoadPage = () => {
             sm={24}
             md={12}
             lg={12}
-            className="button-container"
+            style={{ display: "flex", justifyContent: "center" }}
           >
             <Button
               type="primary"
               onClick={handleCancel}
               danger
-              className="cancel-button"
+              style={{
+                marginRight: "16px",
+                fontSize: "16px",
+                padding: "10px 20px",
+                backgroundColor: "#FFA500", // Cancel button color (orange)
+                borderColor: "#FFA500",
+                color: "white",
+              }}
               size="large"
             >
               {language === "en"
@@ -564,7 +697,13 @@ const DispatchLoadPage = () => {
             <Button
               type="primary"
               onClick={handleSubmit}
-              className="submit-button"
+              style={{
+                fontSize: "16px",
+                padding: "10px 20px",
+                backgroundColor: "#781424", // Submit button color (dark red)
+                borderColor: "#781424",
+                color: "white",
+              }}
               size="large"
             >
               {language === "en"
@@ -577,139 +716,137 @@ const DispatchLoadPage = () => {
         </Row>
 
         {/* Success Modal */}
-     <Modal
-                 visible={isModalVisible}
-                 onCancel={() => resetFormdata()}
-                 footer={null}
-                 style={{ textAlign: "center" }}
-                 bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-               >
-                 <div style={{ fontSize: "40px", color: "brown" }}>
-                   <IoIosDoneAll />
-                 </div>
-                 <p>
-                   {language === "en"
-                     ? "Dispatched Successfully!"
-                     : language === "si"
-                     ? "සාර්ථකයි!"
-                     : "வெற்றிகரமாக அனுப்பப்பட்டது!"}
-                 </p>
-                 <Button
-                   type="primary"
-                   onClick={handleBackToHome}
-                   style={{
-                     backgroundColor: "#FFA500",
-                     color: "white",
-                     borderColor: "#FFA500",
-                     marginRight: "20px",
-                   }}
-                 >
-                   {language === "en"
-                     ? "Back to Home"
-                     : language === "si"
-                     ? "ආපසු"
-                     : "முகப்புக்குத் திரும்பு"}
-                 </Button>
-       
-                 <Button
-                   type="default"
-                   onClick={handlePrintReceipt}
-                   style={{
-                     backgroundColor: "#781424",
-                     color: "white",
-                     marginLeft: "20px",
-                   }}
-                 >
-                   {language === "en"
-                     ? "Print Receipt"
-                     : language === "si"
-                     ? "රිසිට් පත මුද්‍රණය කරන්න"
-                     : "அச்சு ரசீது"}
-                 </Button>
-               </Modal>
-       
-               {/* unSuccess Modal */}
-               <Modal
-                 visible={isProErrModalVisible}
-                 onCancel={() => setIsProErrModalVisible(false)}
-                 footer={null}
-                 style={{ textAlign: "center" }}
-                 bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-               >
-                 <div style={{ fontSize: "40px", color: "brown" }}>
-                   <IoIosCloseCircle />
-                 </div>
-                 <p>
-                   {language === "en"
-                     ? "Dispatched Unsuccessfully!"
-                     : language === "si"
-                     ? "අසාර්ථකයි!"
-                     : "அனுப்பப்பட்டது தோல்வி!"}
-                 </p>
-               </Modal>
-       
-               {/*req Error Modal */}
-               <Modal
-                 visible={isErrModalVisible}
-                 onCancel={() => setIsErrModalVisible(false)}
-                 footer={null}
-                 style={{ textAlign: "center" }}
-                 bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-               >
-                 <div style={{ fontSize: "40px", color: "brown" }}>
-                   <IoIosCloseCircle />
-                 </div>
-                 <h3>
-                   {language === "en"
-                     ? "All field are required !"
-                     : language === "si"
-                     ? "සියලුම ක්ෂේත්ර අවශ්ය වේ !"
-                     : "அனைத்து துறைகளும் தேவை!"}
-                 </h3>
-               </Modal>
-       
-               {/*cube re Error Modal */}
-               <Modal
-                 visible={isContErrModalVisible}
-                 onCancel={() => setIsContErrModalVisible(false)}
-                 footer={null}
-                 style={{ textAlign: "center" }}
-                 bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-               >
-                 <div style={{ fontSize: "40px", color: "brown" }}>
-                   <IoIosCloseCircle />
-                 </div>
-                 <h3>
-                   {language === "en"
-                     ? `Not enough cubes available. Please adjust the quantity.`
-                     : language === "si"
-                     ? "්අවශ්‍ය ප්‍රමාණය නොමැත. ප්‍රමාණය වෙනස් කරන්න්."
-                     : "போதுமான க்யூப்ஸ் கிடைக்கவில்லை. அளவை சரிசெய்யவும்."}
-                 </h3>
-               </Modal>
-               <Modal
-                 id="not_enough_Loyalty"
-                 visible={isLoyalErrModalVisible}
-                 onCancel={() => setIsLoyalErrModalVisible(false)}
-                 footer={null}
-                 style={{ textAlign: "center" }}
-                 bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-               >
-                 <div style={{ fontSize: "40px", color: "brown" }}>
-                   <IoIosCloseCircle />
-                 </div>
-                 <h3>
-                   {language === "en"
-              ? `Not enough Loyalty unit.`
+        <Modal
+          visible={isModalVisible}
+          onCancel={() => resetFormdata()}
+          footer={null}
+          style={{ textAlign: "center" }}
+          bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+        >
+          <div style={{ fontSize: "40px", color: "brown" }}>
+            <IoIosDoneAll />
+          </div>
+          <p>
+            {language === "en"
+              ? "Dispatched Successfully!"
               : language === "si"
-              ? "්ප්‍රමාණවත් පක්ෂපාතීත්වය ඒකකයක් නොමැත."
-              : "போதுமான லாயல்டி யூனிட் இல்லை."}
-                 </h3>
-               </Modal>
-       
+              ? "සාර්ථකයි!"
+              : "வெற்றிகரமாக அனுப்பப்பட்டது!"}
+          </p>
+          <Button
+            type="primary"
+            onClick={handleBackToHome}
+            style={{
+              backgroundColor: "#FFA500",
+              color: "white",
+              borderColor: "#FFA500",
+              marginRight: "20px",
+            }}
+          >
+            {language === "en"
+              ? "Back to Home"
+              : language === "si"
+              ? "ආපසු"
+              : "முகப்புக்குத் திரும்பு"}
+          </Button>
 
+          <Button
+            type="default"
+            onClick={handlePrintReceipt}
+            style={{
+              backgroundColor: "#781424",
+              color: "white",
+              marginLeft: "20px",
+            }}
+          >
+            {language === "en"
+              ? "Print Receipt"
+              : language === "si"
+              ? "රිසිට් පත මුද්‍රණය කරන්න"
+              : "அச்சு ரசீது"}
+          </Button>
+        </Modal>
+
+        {/* unSuccess Modal */}
+        <Modal
+          visible={isProErrModalVisible}
+          onCancel={() => setIsProErrModalVisible(false)}
+          footer={null}
+          style={{ textAlign: "center" }}
+          bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+        >
+          <div style={{ fontSize: "40px", color: "brown" }}>
+            <IoIosCloseCircle />
+          </div>
+          <p>
+            {language === "en"
+              ? "Dispatched Unsuccessfully!"
+              : language === "si"
+              ? "අසාර්ථකයි!"
+              : "அனுப்பப்பட்டது தோல்வி!"}
+          </p>
+        </Modal>
+
+        {/*req Error Modal */}
+        <Modal
+          visible={isErrModalVisible}
+          onCancel={() => setIsErrModalVisible(false)}
+          footer={null}
+          style={{ textAlign: "center" }}
+          bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+        >
+          <div style={{ fontSize: "40px", color: "brown" }}>
+            <IoIosCloseCircle />
+          </div>
+          <h3>
+            {language === "en"
+              ? "All field are required !"
+              : language === "si"
+              ? "සියලුම ක්ෂේත්ර අවශ්ය වේ !"
+              : "அனைத்து துறைகளும் தேவை!"}
+          </h3>
+        </Modal>
+
+        {/*cube re Error Modal */}
+        <Modal
+          visible={isContErrModalVisible}
+          onCancel={() => setIsContErrModalVisible(false)}
+          footer={null}
+          style={{ textAlign: "center" }}
+          bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+        >
+          <div style={{ fontSize: "40px", color: "brown" }}>
+            <IoIosCloseCircle />
+          </div>
+          <h3>
+            {language === "en"
+              ? `Not enough cubes available. Please adjust the quantity.`
+              : language === "si"
+              ? "්අවශ්‍ය ප්‍රමාණය නොමැත. ප්‍රමාණය වෙනස් කරන්න්."
+              : "போதுமான க்யூப்ஸ் கிடைக்கவில்லை. அளவை சரிசெய்யவும்."}
+          </h3>
+        </Modal>
+        <Modal
+          visible={isLoyalErrModalVisible}
+          onCancel={() => setIsLoyalErrModalVisible(false)}
+          footer={null}
+          style={{ textAlign: "center" }}
+          bodyStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+        >
+          <div style={{ fontSize: "40px", color: "brown" }}>
+            <IoIosCloseCircle />
+          </div>
+          <h3>
+            {language === "en"
+              ? `Not enough`
+              : language === "si"
+              ? "්Not enough"
+              : "Not enough"}
+          </h3>
+        </Modal>
       </Content>
-    </Layout>  );
+    </Layout>
+  );
 };
 
 export default DispatchLoadPage;
