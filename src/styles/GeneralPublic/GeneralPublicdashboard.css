@@ -1,0 +1,143 @@
+/* src/styles/GeneralPublic/dashboard.css */
+
+/* Page Container */
+.page-container {
+    display: flex;
+    flex-direction: column;
+    background-image: url('../../assets/images/generalpublic.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #fff;
+  }
+  
+  /* Header */
+  .header {
+    padding: 1rem;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+  
+  /* Logo */
+  .header-logo {
+    width: 180px;
+  }
+  
+  /* Main Content */
+  .main-content {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Title */
+  .title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Input Container */
+  .input-container {
+    margin-bottom: 1.5rem;
+    width: 100%;
+    max-width: 20rem;
+    color: black;
+  }
+  
+  /* Input Box */
+  .input-box {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 1.5rem;
+    font-size: 1rem;
+  }
+  
+  /* Check Button */
+  .check-button {
+    background-color: #800000;
+    color: #fff;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+    max-width: 20rem;
+  }
+  
+  /* Modal */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Modal Content */
+  .modal-content {
+    background-color: #fff;
+    padding: 4rem;
+    border-radius: 12px;
+    text-align: center;
+    position: relative;
+  }
+  
+  /* Modal Close Button */
+  .modal-close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #000;
+  }
+  
+  /* Phone Number Input */
+  .phone-number-input {
+    background-color: #f9f9f9;
+    color: #000;
+    padding: 0.75rem 2rem;
+    border: solid #ccc;
+    border-radius: 1.5rem;
+    font-size: 1rem;
+    width: 275px;
+  }
+  
+  /* Report Button */
+  .report-button {
+    background-color: #800000;
+    color: #fff;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 1.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Contact Information */
+  .contact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    color: black;
+  }
+  
