@@ -8,11 +8,11 @@ const Footer = () => {
     <footer
       id="h-footer"
       className="footer"
-      style={{
-        backgroundColor: "#FFF",
-        paddingTop: "10px",
-        borderTop: "1px solid #781424",
-      }}
+      // style={{
+      //   backgroundColor: "#FFF",
+      //   paddingTop: "10px",
+      //   borderTop: "1px solid #781424",
+      // }}
     >
       <div className="footer-container">
         <div className="footer-top">
