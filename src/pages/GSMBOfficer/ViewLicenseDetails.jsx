@@ -159,17 +159,17 @@ const ViewLicenseDetails = () => {
   return (
     <div
       style={{
-        maxWidth: "800px",
+        
         margin: "0 auto",
-        padding: "20px",
-        background: "#f0f2f5",
-        borderRadius: "10px",
+        // padding: "20px",
+        background: "#fff",
+        // borderRadius: "10px",
       }}
     >
       <Button
         type="link"
         icon={<ArrowLeftOutlined />}
-        style={{ marginBottom: "16px", paddingLeft: 0, color: "#000000" }}
+        style={{ marginBottom: "16px", paddingLeft: 0, color: "#000000" ,backgroundColor:'#FFE143'}}
         href="/gsmb/dashboard"
       >
         Back
@@ -177,12 +177,13 @@ const ViewLicenseDetails = () => {
 
       <Card
         title={<h3 style={{ margin: 0 }}>Edit License Details</h3>}
-        style={{ borderRadius: "10px" }}
+        style={{textAlign:'center',fontSize:'20px', fontWeight:'bold' }}
       >
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Row gutter={[16, 16]}>
             <Col xs={24} sm={12}>
               <Form.Item
+              style={{fontSize:'24px'}}
                 label="License Number"
                 name="licenseNumber"
                 rules={[{ required: true, message: "Please input the license number!" }]}
@@ -280,6 +281,7 @@ const ViewLicenseDetails = () => {
                   backgroundColor: "#950C33",
                   borderColor: "#950C33",
                   width: "100%",
+                  
                 }}
               >
                 Update
