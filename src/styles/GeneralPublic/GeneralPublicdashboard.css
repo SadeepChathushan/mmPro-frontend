@@ -2,43 +2,61 @@
 
 /* Page Container */
 .page-container {
-    display: flex;
-    flex-direction: column;
-    background-image: url('../../assets/images/generalpublic.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    color: #fff;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 60vh;
+  background-color: #fff;
+    
   }
+  .background-section {
+    flex: 1 1 0%;
+    background-size: cover;
+    background-position: left center;
+    background-repeat: no-repeat;
+    height: 100%;
+}
+
+
+
   
   /* Header */
   .header {
-    padding: 1rem;
-    text-align: center;
-    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    text-align: right;
+    background-color: #fff;
   }
   
   /* Logo */
   .header-logo {
-    width: 180px;
+    width: 250px;
   }
   
   /* Main Content */
   .main-content {
-    flex: 1 0 auto;
+    flex: 1 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
-    background-color: rgba(0, 0, 0, 0.5);
+    padding: 40px;
+    background-color: #fff;
+    margin-bottom: auto;
+    box-sizing: border-box;
   }
   
   /* Title */
   .title {
-    font-size: 2rem;
+    font-size: 16px;
     font-weight: bold;
     margin-bottom: 1.5rem;
+    color: #800000;
+   
+  }
+  .para{
+    font-size: 12px;
+    text-align: center;
   }
   
   /* Input Container */
