@@ -1,17 +1,22 @@
 /* Main layout styles */
 .dispatch-load-container {
-  min-height: 100vh;
+  background-color: white;
+  min-height: 60vh;
   padding: 24px;
 }
 
 .page-title {
   text-align: center;
+  font-size: 36px;
   margin-bottom: 20px;
+  font-weight: bold;
 }
 
 /* Form field styles */
 .form-field {
-  margin-bottom: 16px;
+  align-content: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .field-label {
@@ -40,8 +45,8 @@
   margin-right: 16px;
   font-size: 16px;
   padding: 10px 20px;
-  background-color: #FFA500;
-  border-color: #FFA500;
+  background-color: #FFf500;
+  /* border-color: #FFf500; */
   color: white;
 }
 
@@ -56,7 +61,7 @@
 /* Modal styles */
 .modal-icon {
   font-size: 40px;
-  color: brown;
+  color: #FFf500;
 }
 
 .modal-content {

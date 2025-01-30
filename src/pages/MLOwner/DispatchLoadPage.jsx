@@ -360,7 +360,7 @@ const DispatchLoadPage = () => {
   }, []);
   return (
    <Layout className="dispatch-load-container">
-      <Content style={{ padding: "24px" }}>
+      <Content style={{ padding: "20px" }}>
         <Title level={3} className="page-title">
           {language === "en"
             ? "Dispatch Your Load Here"
@@ -371,9 +371,10 @@ const DispatchLoadPage = () => {
 
         {/* Date and Time Input */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={24} lg={24}>
             <div className="form-field">
-              <span className="field-label">
+              <span className="field-label"
+              style={{textAlign:'center'}}>
                 {language === "en"
                   ? "DATE & TIME:"
                   : language === "si"
@@ -391,7 +392,7 @@ const DispatchLoadPage = () => {
 
         {/* License Number Input */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={24} lg={24}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
@@ -407,7 +408,7 @@ const DispatchLoadPage = () => {
 
         {/* Destination Input with Search Options */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={24} lg={24}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
@@ -445,7 +446,7 @@ const DispatchLoadPage = () => {
 
         {/* Lorry Number Input */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={24} lg={24}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
@@ -465,7 +466,7 @@ const DispatchLoadPage = () => {
 
         {/* Driver Contact Input */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={24} lg={24}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
@@ -485,7 +486,7 @@ const DispatchLoadPage = () => {
 
         {/* Due Date Input */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={24} lg={24}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
@@ -508,7 +509,7 @@ const DispatchLoadPage = () => {
 
         {/* Cubes Input with Increment and Decrement Buttons */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={24} lg={24}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
