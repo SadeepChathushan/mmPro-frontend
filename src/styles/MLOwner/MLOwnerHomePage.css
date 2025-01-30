@@ -46,10 +46,12 @@
     background-color: rgb(211, 153, 61);
   }
   
-  .history-button {
+  .history-button1 {
     background-color: #0066cc;
     border-color: #0066cc;
     border-radius: 10%;
+    
+    color: black;
   }
   
   .dispatch-load-button {
