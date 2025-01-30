@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/footer.css"; // Import external CSS
+import "../../styles/homefooter.css"; // Import external CSS
 import logo from "../../assets/images/gsmblogo2.png"; // Import image
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 
