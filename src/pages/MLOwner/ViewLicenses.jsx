@@ -124,7 +124,7 @@ const Licenses = () => {
   return (
     <div className="container">
       <h1 className="title">
-        {language === "en" ? "Licenses of MLOwner" : language === "si" ? "පතල් අයිතිකරුගේ බලපත්‍ර" : "ML உரிமையாளரின் உரிமங்கள்"}
+        {language === "en" ? "Licenses of Mining License Owner" : language === "si" ? "පතල් අයිතිකරුගේ බලපත්‍ර" : "ML உரிமையாளரின் உரிமங்கள்"}
       </h1>
 
       <Row className="filter-row" gutter={[16, 16]}>
