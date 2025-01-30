@@ -128,71 +128,97 @@ const DispatchLoadPage = () => {
 
   // Load previous searches from localStorage when component mounts
   useEffect(() => {
-    const savedSearches =
-      JSON.parse(localStorage.getItem("previousSearches")) || [];
+    const savedSearches = JSON.parse(localStorage.getItem("previousSearches")) || [];
     setPreviousSearches(savedSearches);
   }, []);
-
+  
   // Fetch location suggestions from Nominatim API, restricted to Sri Lanka
   const fetchLocationSuggestions = async (value) => {
-    if (!value) {
+    if (!value.trim()) { // Ensure value is not empty or just spaces
       setLocationSuggestions([]);
       return;
     }
-
+  
     try {
       const response = await axios.get(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${value}&addressdetails=1&countrycodes=LK&limit=5`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(value)}&addressdetails=1&countrycodes=LK&limit=5`
       );
-
-      const validSuggestions = response.data.filter((item) => {
-        const lat = parseFloat(item.lat);
-        const lon = parseFloat(item.lon);
-        return !isNaN(lat) && !isNaN(lon); // Only keep valid lat/lon values
-      });
-
-      setLocationSuggestions(
-        validSuggestions.map((item) => ({
+  
+      const validSuggestions = response.data
+        .filter((item) => {
+          const lat = parseFloat(item.lat);
+          const lon = parseFloat(item.lon);
+          return !isNaN(lat) && !isNaN(lon); // Only keep valid lat/lon values
+        })
+        .map((item) => ({
           value: item.display_name,
           lat: parseFloat(item.lat),
           lon: parseFloat(item.lon),
-        }))
-      );
+        }));
+  
+      setLocationSuggestions(validSuggestions);
     } catch (error) {
       console.error("Error fetching location suggestions:", error);
       setLocationSuggestions([]);
     }
   };
-
+  
   // Handle selection of a location suggestion
   const handleLocationSelect = (value, option) => {
     const { lat, lon } = option;
-
-    if (isNaN(lat) || isNaN(lon)) {
+  
+    if (!lat || !lon || isNaN(lat) || isNaN(lon)) {
       console.error("Invalid lat/lon selected:", lat, lon);
       return;
     }
-
-    setLocation([lat, lon]); // Update the map center (we won't show the map anymore)
-    setFormData({ ...formData, destination: value }); // Set the destination field with the selected location
-
+  
+    setLocation([lat, lon]); // Update the location state
+    setFormData((prev) => ({ ...prev, destination: value })); // Update form data
+  
     // Update the previous searches in localStorage
     const updatedSearches = [
       value,
       ...previousSearches.filter((search) => search !== value),
-    ];
-    if (updatedSearches.length > 5) updatedSearches.pop(); // Limit to the last 5 searches
+    ].slice(0, 5); // Keep only the last 5 searches
+  
     setPreviousSearches(updatedSearches);
-    localStorage.setItem("previousSearches", JSON.stringify(updatedSearches)); // Save to localStorage
+    localStorage.setItem("previousSearches", JSON.stringify(updatedSearches));
   };
-
   const handleLorryNumberChange = (e) => {
     setFormData({ ...formData, lorryNumber: e.target.value });
+    const value = e.target.value;
+    // Validation for Lorry Number: must contain exactly 4 digits and no symbols
+    const lorryNumberPattern = /^[0-9]{4}$/;
+    if (value.length <= 7 && lorryNumberPattern.test(value)) {
+      setFormData({
+        ...formData,
+        lorryNumber: value
+      });
+    } else if (value.length === 7) {
+      message.warning("Lorry number cannot be more than 6 digits and must only contain numbers.");
+    }
   };
 
   const handleDriverContactChange = (e) => {
-    setFormData({ ...formData, driverContact: e.target.value });
+    const value = e.target.value;
+  
+    // Allow only numeric values
+    if (/[^0-9]/.test(value)) {
+      message.warning("Driver contact number must contain only numbers.");
+      return; // Prevent invalid input
+    }
+  
+    // Validation for Driver Contact: must be exactly 10 digits
+    if (value.length <= 10) {
+      setFormData({
+        ...formData,
+        driverContact: value
+      });
+    } else {
+      message.warning("Driver contact number should only have 10 digits.");
+    }
   };
+  
 
   const handleDatetime = (e) => {
     setFormData({ ...formData, DateTime: e.target.value });
@@ -358,6 +384,17 @@ const DispatchLoadPage = () => {
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
+
+  //validations for dispatch load form
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    // Use a regular expression to allow only alphanumeric characters and '/'
+    const isValid = /^[a-zA-Z0-9/]*$/.test(value);
+    if (isValid) {
+      setLNumber(value);
+    }
+  };
+  
   return (
    <Layout className="dispatch-load-container">
       <Content style={{ padding: "24px" }}>
@@ -391,19 +428,24 @@ const DispatchLoadPage = () => {
 
         {/* License Number Input */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
-                {language === "en"
-                  ? "LICENSE NUMBER:"
-                  : language === "si"
-                  ? "බලපත්‍ර අංකය:"
-                  : "உரிம எண்:"}
-              </span>
-              <Input value={l_number} style={{ width: "100%" }} required />
-            </div>
-          </Col>
-        </Row>
+      <Col xs={24} sm={24} md={12} lg={12}>
+        <div className="form-field">
+          <span className="field-label">
+            {language === "en"
+              ? "LICENSE NUMBER:"
+              : language === "si"
+              ? "බලපත්‍ර අංකය:"
+              : "உரிம எண்:"}
+          </span>
+          <Input
+            value={l_number}
+            onChange={handleInputChange}
+            style={{ width: "100%" }}
+            required
+          />
+        </div>
+      </Col>
+    </Row>
 
         {/* Destination Input with Search Options */}
         <Row gutter={16}>
@@ -444,44 +486,47 @@ const DispatchLoadPage = () => {
         </Row>
 
         {/* Lorry Number Input */}
-        <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
-                {language === "en"
-                  ? "LORRY NUMBER:"
-                  : language === "si"
-                  ? "ලොරි අංකය:"
-                  : "லாரி எண்:"}
-              </span>
-              <Input
-                value={formData.lorryNumber}
-                onChange={handleLorryNumberChange}
-                style={{ width: "100%" }}
-              />
-            </div>
-          </Col>
-        </Row>
+           {/* Lorry Number Input */}
+      <Row gutter={16}>
+        <Col xs={24} sm={24} md={12} lg={12}>
+          <div className="form-field">
+            <span className="field-label">
+              {language === "en"
+                ? "LORRY NUMBER:"
+                : language === "si"
+                ? "ලොරි අංකය:"
+                : "லாரி எண்:"}
+            </span>
+            <Input
+              value={formData.lorryNumber}
+              onChange={handleLorryNumberChange}
+              style={{ width: "100%" }}
+              maxLength={7} // Limiting input to 7 characters
+            />
+          </div>
+        </Col>
+      </Row>
 
-        {/* Driver Contact Input */}
-        <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
-            <div className="form-field">
-              <span className="field-label">
-                {language === "en"
-                  ? "DRIVER CONTACT:"
-                  : language === "si"
-                  ? "රියදුරුගේ දුරකථන අංකය:"
-                  : "ஓட்டுனர் தொடர்பு:"}
-              </span>
-              <Input
-                value={formData.driverContact}
-                onChange={handleDriverContactChange}
-                style={{ width: "100%" }}
-              />
-            </div>
-          </Col>
-        </Row>
+      {/* Driver Contact Input */}
+      <Row gutter={16}>
+        <Col xs={24} sm={24} md={12} lg={12}>
+          <div className="form-field">
+            <span className="field-label">
+              {language === "en"
+                ? "DRIVER CONTACT:"
+                : language === "si"
+                ? "රියදුරුගේ දුරකථන අංකය:"
+                : "ஓட்டுனர் தொடர்பு:"}
+            </span>
+            <Input
+              value={formData.driverContact}
+              onChange={handleDriverContactChange}
+              style={{ width: "100%" }}
+              maxLength={10} // Limiting input to 10 characters
+            />
+          </div>
+        </Col>
+      </Row>
 
         {/* Due Date Input */}
         <Row gutter={16}>
