@@ -79,3 +79,24 @@
   color: white;
   margin-left: 20px;
 }
+
+/* Container for the field label and input */
+.lorry-number-container {
+  margin-bottom: 16px;
+}
+
+/* Style for the label */
+.lorry-number-label {
+  font-weight: bold;
+}
+
+/* Style for error message */
+.lorry-number-error {
+  color: red;
+  font-size: 12px;
+}
+
+/* Input styling can be added here if needed */
+.lorry-number-input {
+  width: 100%;
+}
