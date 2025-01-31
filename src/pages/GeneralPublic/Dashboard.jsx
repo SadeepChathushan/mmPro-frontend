@@ -1,12 +1,13 @@
-// src/pages/GeneralPublic/Dashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
-import logo from '../../assets/images/gsmbLogo.png';
+import logo from '../../assets/images/gsmbLogo.jpg';
 import { submitComplaint } from '../../services/complaint';
-import { fetchLorryNumber } from '../../services/fetchLorryNumber';
+import { fetchLorryNumber } from '../../services/GeneralPublic/fetchLorryNumber';
+import { validateVehicleNumber, validatePhoneNumber } from '../../services/GeneralPublic/validation';
 import Modal from '../../components/GeneralPublic/Modal';
 import VehicleInput from '../../components/GeneralPublic/VehicleInput';
 import '../../styles/GeneralPublic/GeneralPublicdashboard.css';
+import backgroundImage from '../../assets/images/generalpublic.jpg';
 
 const Dashboard = () => {
   const { language } = useLanguage();
@@ -26,6 +27,11 @@ const Dashboard = () => {
   }, []);
 
   const handleReport = async () => {
+    if (!validatePhoneNumber(phoneNumber)) {
+      setModalMessage(language === 'en' ? 'Invalid Phone Number Format!' : language === 'si'  ? 'වලංගු නොවන දුරකථන අංක ආකෘතියකි!' : 'தவறான தொலைபேசி எண் வடிவம்!');
+      setIsModalOpen(true);
+      return;
+    }
     const success = await submitComplaint(input, phoneNumber, language);
     if (success) {
       closeModal();
@@ -33,15 +39,34 @@ const Dashboard = () => {
   };
 
   const handleCheck = () => {
-    const validVehicle = data.find(item => item.vehicleNumber === input.trim());
-
-    if (validVehicle) {
-      setModalMessage(language === 'en' ? 'Valid Load' : language === 'si' ? 'වලංගු පැටවීමකි' : 'சரியான ஏற்றுதல்');
+    if (!validateVehicleNumber(input)) {
+      setModalMessage(
+        language === 'en'
+          ? 'Invalid Vehicle Number Format!'
+          : language === 'si'
+            ? 'අනවශ්‍ය වාහන අංකයක්!'
+            : 'தவறான வாகன எண்ணம்!'
+      );
       setIsModalOpen(true);
-    } else {
-      setModalMessage(language === 'en' ? 'Invalid Load' : language === 'si' ?'අනවසර පැටවීමකි' : 'தவறான சுமை');
-      setIsModalOpen(true);
+      return;
     }
+
+    const validVehicle = data.find((item) => item.vehicleNumber === input.trim());
+
+    setModalMessage(
+      validVehicle
+        ? language === 'en'
+          ? 'Valid Load'
+          : language === 'si'
+            ? 'වලංගු පැටවීමකි'
+            : 'சரியான ஏற்றுதல்'
+        : language === 'en'
+          ? 'Invalid Load'
+          : language === 'si'
+            ? 'අනවසර පැටවීමකි'
+            : 'தவறான சுமை'
+    );
+    setIsModalOpen(true);
   };
 
   const closeModal = () => {
@@ -62,11 +87,25 @@ const Dashboard = () => {
 
   return (
     <div className="page-container">
-      <header className="header">
-        <img src={logo} alt="Logo" className="header-logo" />
-      </header>
+      <div className="background-section" style={{ backgroundImage: `url(${backgroundImage})` }}></div>
       <main className="main-content">
-        <h2 className="title">{language === 'en' ? 'Enter Vehicle Number' : language === 'si' ? 'වාහන අංකය ඇතුලත් කරන්න' : 'வாகன எண்ணை உள்ளிடவும்'}</h2>
+        <header className="header">
+          <img src={logo} alt="logo" className="header-logo" />
+        </header>
+        <h4 className="title">
+          {language === 'en'
+            ? 'GEOLOGICAL SURVEY & MINES BUREAU'
+            : language === 'si'
+              ? 'භූගෝලීය සමීක්ෂණ සහ පතල් කාර්යාංශය'
+              : 'புவியியல் ஆய்வு மற்றும் சுரங்கப் பணியகம்'}
+        </h4>
+        <p className="para">
+          {language === 'en'
+            ? 'General public users can verify a vehicle’s validity by entering its vehicle number. The system checks the details against the database and provides an instant result, confirming whether the vehicle is valid or invalid. Additionally, users can submit complaints regarding suspicious or unauthorized vehicles, ensuring better compliance and road safety.'
+            : language === 'si'
+              ? 'සාමාන්‍ය පරිශීලකයින්ට වාහනයක වලංගුභාවය එහි වාහන අංකය ඇතුළත් කිරීමෙන් සත්‍යාපනය කළ හැකිය...'
+              : 'பொது பயனர்கள் ஒரு வாகனத்தின் செல்லுபடியை அதன் வாகன எண்ணை உள்ளிடுவதன் மூலம் சரிபார்க்கலாம்...'}
+        </p>
         <VehicleInput input={input} setInput={setInput} language={language} />
         <button
           className="check-button"

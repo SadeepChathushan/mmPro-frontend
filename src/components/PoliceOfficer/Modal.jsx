@@ -40,6 +40,9 @@ const Modal = ({
                 </div>
 
                 {/* Phone number input */}
+                <div>
+                    <h3>{translations.phoneNumber[language]}</h3>
+                </div>
                 <input
                     type="text"
                     placeholder={translations.phoneNumberPlaceholder[language]}

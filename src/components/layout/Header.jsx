@@ -48,13 +48,20 @@ const AppHeader = () => {
 
   return (
     <Header
-      style={{
-        background: "#FCD5D0",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
-    >
+  style={{
+    background: "#FCD5D0",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    position: "fixed",  // ✅ Fix header at the top
+    top: 0,  // ✅ Stick to the top
+    left: 0,  // ✅ Ensure it starts from the left
+    width: "100%",  // ✅ Make it full width
+    zIndex: 1000,  // ✅ Keep it above other elements
+    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)", // ✅ Add shadow effect
+  }}
+>
+
       <div className="user-header-logo">
         <Link to="/"><img
           src={mmLogo}
