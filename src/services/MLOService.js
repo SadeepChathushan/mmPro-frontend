@@ -101,6 +101,16 @@ export const fetchLicenses = async () => {
               }, {})
             : {};
 
+          const today = moment().startOf("day");
+          const dueDate = moment(issue.due_date).startOf("day");
+          const remainingCubes = parseInt(customFields["Remaining"] || 0, 10);
+
+          const isInactive =
+            issue.status.name === "Expired" ||
+            issue.status.name === "Rejected" ||
+            dueDate.isBefore(today) ||
+            remainingCubes <= 0;
+
           return {
             licenseNumber: customFields["License Number"] || "",
             owner: customFields["Owner Name"] || "",
@@ -111,7 +121,7 @@ export const fetchLicenses = async () => {
             dispatchedCubes: customFields["Used"] || "",
             remainingCubes: customFields["Remaining"] || "",
             royalty: customFields["Royalty(sand)due"] || "",
-            status: issue.status.name,
+            status: isInactive ? "Inactive" : "Active",
           };
         });
     } else {
@@ -123,7 +133,6 @@ export const fetchLicenses = async () => {
     return [];
   }
 };
-
 // src/services/dispatchHistoryService.js
 
 // Fetch dispatch history data
