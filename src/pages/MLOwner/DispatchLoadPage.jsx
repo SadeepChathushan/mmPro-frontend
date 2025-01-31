@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import "../../styles/MLOwner/DispatchLoadPage.css";
 import { fetchIssues, updateIssue, createIssue } from '../../services/MLOService';
 import Modals from "./Modals";
+import { handleDriverContactChange,handleLorryNumberChange } from '../../utils//MLOUtils/DispatchValidation'; 
 const { Content } = Layout;
 const { Title } = Typography;
 
@@ -45,11 +46,10 @@ const DispatchLoadPage = () => {
       cubes: 1,
     });
   };
+  const [driverContactError, setDriverContactError] = useState('');
+  const [lorryNumberError, setLorryNumberError] = useState('');
 
-  console.log(l_number);
-  {
-    /*_---------------User______*/
-  }
+  
   const user_Details = JSON.parse(localStorage.getItem("USER")) || {};
   const apiKey = localStorage.getItem("API_Key");
   console.log("user", user_Details.lastname);
@@ -184,43 +184,9 @@ const DispatchLoadPage = () => {
     setPreviousSearches(updatedSearches);
     localStorage.setItem("previousSearches", JSON.stringify(updatedSearches));
   };
-  const handleLorryNumberChange = (e) => {
-    setFormData({ ...formData, lorryNumber: e.target.value });
-    const value = e.target.value;
-    // Validation for Lorry Number: must contain exactly 4 digits and no symbols
-    const lorryNumberPattern = /^[0-9]{4}$/;
-    if (value.length <= 7 && lorryNumberPattern.test(value)) {
-      setFormData({
-        ...formData,
-        lorryNumber: value
-      });
-    } else if (value.length === 7) {
-      message.warning("Lorry number cannot be more than 6 digits and must only contain numbers.");
-    }
-  };
-
-  const handleDriverContactChange = (e) => {
-    const value = e.target.value;
-  
-    // Allow only numeric values
-    if (/[^0-9]/.test(value)) {
-      message.warning("Driver contact number must contain only numbers.");
-      return; // Prevent invalid input
-    }
-  
-    // Validation for Driver Contact: must be exactly 10 digits
-    if (value.length <= 10) {
-      setFormData({
-        ...formData,
-        driverContact: value
-      });
-    } else {
-      message.warning("Driver contact number should only have 10 digits.");
-    }
-  };
   
 
-  const handleDatetime = (e) => {
+const handleDatetime = (e) => {
     setFormData({ ...formData, DateTime: e.target.value });
   };
 
@@ -486,47 +452,42 @@ const DispatchLoadPage = () => {
         </Row>
 
         {/* Lorry Number Input */}
-           {/* Lorry Number Input */}
-      <Row gutter={16}>
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <div className="form-field">
-            <span className="field-label">
-              {language === "en"
-                ? "LORRY NUMBER:"
-                : language === "si"
-                ? "ලොරි අංකය:"
-                : "லாரி எண்:"}
-            </span>
-            <Input
-              value={formData.lorryNumber}
-              onChange={handleLorryNumberChange}
-              style={{ width: "100%" }}
-              maxLength={7} // Limiting input to 7 characters
-            />
-          </div>
-        </Col>
-      </Row>
+        <Row gutter={16}>
+          <Col xs={24} sm={24} md={12} lg={12}>
+            <div className="form-field">
+              <span className="field-label">LORRY NUMBER:</span>
+              <Input
+                value={formData.lorryNumber}
+                onChange={(e) =>
+                  handleLorryNumberChange(e, formData, setFormData, setLorryNumberError)
+                }
+                required
+              />
+              {lorryNumberError && (
+                <div style={{ color: "red", fontSize: "12px" }}>{lorryNumberError}</div>
+              )}
+            </div>
+          </Col>
+        </Row>
 
-      {/* Driver Contact Input */}
-      <Row gutter={16}>
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <div className="form-field">
-            <span className="field-label">
-              {language === "en"
-                ? "DRIVER CONTACT:"
-                : language === "si"
-                ? "රියදුරුගේ දුරකථන අංකය:"
-                : "ஓட்டுனர் தொடர்பு:"}
-            </span>
-            <Input
-              value={formData.driverContact}
-              onChange={handleDriverContactChange}
-              style={{ width: "100%" }}
-              maxLength={10} // Limiting input to 10 characters
-            />
-          </div>
-        </Col>
-      </Row>
+        {/* Driver Contact Input */}
+        <Row gutter={16}>
+          <Col xs={24} sm={24} md={12} lg={12}>
+            <div className="form-field">
+              <span className="field-label">DRIVER CONTACT:</span>
+              <Input
+                value={formData.driverContact}
+                onChange={(e) =>
+                  handleDriverContactChange(e, formData, setFormData, setDriverContactError)
+                }
+                required
+              />
+              {driverContactError && (
+                <div style={{ color: "red", fontSize: "12px" }}>{driverContactError}</div>
+              )}
+            </div>
+          </Col>
+        </Row>
 
         {/* Due Date Input */}
         <Row gutter={16}>
