@@ -176,6 +176,15 @@ const uploadLorry = async (file) => {
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
+              label={language === "en" ? "NIC" : "ජාතික හැඳුනුම්පත"}
+              name="nic"
+              rules={[{ required: true, message: language === "en" ? "Please input the NIC Number!" : "ජාතික හැඳුනුම්පත ඇතුළත් කරන්න!" }]}
+            >
+              <Input style={{fontSize:"24px"}}/>
+            </Form.Item>
+          </Col>
+          {/* <Col xs={24} sm={24} md={12}>
+            <Form.Item
               label={language === "en" ? "Lorry Book" : "ලොරි පොත"}
               name="lorryBook"
               rules={[{ required: true, message: language === "en" ? "Please upload the lorry book image!" : "කරුණාකර ලොරි පොත උඩුගත කරන්න!" }]}
@@ -190,8 +199,8 @@ const uploadLorry = async (file) => {
                 </Button>
               </Upload>
             </Form.Item>
-          </Col>
-          <Col xs={24} sm={24} md={12}>
+          </Col> */}
+          {/* <Col xs={24} sm={24} md={12}>
             <Form.Item
               label={language === "en" ? "Lorry" : "ලොරිය"}
               name="lorry"
@@ -207,7 +216,7 @@ const uploadLorry = async (file) => {
                 </Button>
               </Upload>
             </Form.Item>
-          </Col>
+          </Col> */}
           <Col xs={24}>
             <Form.Item>
               <div style={{ 
@@ -240,7 +249,7 @@ const uploadLorry = async (file) => {
                     e.currentTarget.style.borderColor = "#950C33"; // Default border
                   }}
                 >
-                  {language == "en" ? "Create License" : "බලපත්‍රය නිර්මාණය කරන්න"}
+                  {language == "en" ? "Create Mining License Owner" : "පතල් බලපත්‍ර හිමිකරු සාදන්න"}
                 </Button>
                 <Button
                   type="default"

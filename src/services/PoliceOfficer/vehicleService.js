@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 
-const API_KEY = 'fd39218883888c64c25af1d029ada9d1b94879dd';
+const API_KEY = localStorage.getItem("API_Key");
 
 export const fetchVehicleData = async () => {
     try {
