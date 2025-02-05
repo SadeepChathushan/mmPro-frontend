@@ -1,53 +1,51 @@
-import React, { useEffect } from "react";
+// NewLicenseForm.js
+
+import React from "react";
 import { Form, Input, Button, DatePicker, Row, Col } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import axios from "axios";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { useNavigate } from "react-router-dom";
+
+import addNewLicense from "../../services/officerService";
 
 const NewLicenseForm = () => {
   const { language } = useLanguage();
   const [form] = Form.useForm();
 
-  const navigate = useNavigate();
-
+  // Handle form submission
   const onFinish = async (values) => {
     try {
+      // Build the payload to match Redmine's issue creation format
       const payload = {
         issue: {
-          project_id: 31,
-          tracker_id: 7,
-          subject: "New License",
-          start_date: values.validityStart.format("YYYY-MM-DD"),
-          due_date: values.endDate.format("YYYY-MM-DD"),
+          project: { id: 18 },
+          tracker: { id: 5 },
+          subject: language === "en" ? "New License" : "නව බලපත්‍රය",
           custom_fields: [
-            { id: 8, value: values.licenseNumber },
-            { id: 2, value: values.ownerName },
-            { id: 3, value: values.mobile },
-            { id: 5, value: values.capacity },
-            { id: 11, value: values.location },
+            { id: 8, name: "License Number", value: values.licenseNumber },
+            { id: 2, name: "Owner Name", value: values.ownerName },
+            { id: 3, name: "Mobile Number", value: values.mobile },
+            { id: 5, name: "Capacity", value: values.capacity },
+            {
+              id: 9,
+              name: "Start Date",
+              value: values.validityStart.format("YYYY-MM-DD"),
+            },
+            {
+              id: 10,
+              name: "End Date",
+              value: values.endDate.format("YYYY-MM-DD"),
+            },
+            { id: 11, name: "Location", value: values.location },
           ],
         },
       };
 
-      const username = "Insaf"; // Replace with actual username
-      const password = "Aasait@123"; // Replace with actual password
+      // Call the service function to add a new license
+      const result = await addNewLicense(payload);
 
-      console.log(payload);
-
-      // Post the data to the API
-      const response = await axios.post("/api/issues.json", payload, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        auth: {
-          username,
-          password,
-        },
-      });
-
-      console.log("Data posted successfully:", response.data);
-      navigate(-1);
+      console.log("Data posted successfully:", result);
+      // Optionally reset the form or show a success message
+      form.resetFields();
     } catch (error) {
       console.error("Error posting data:", error);
     }
@@ -59,26 +57,18 @@ const NewLicenseForm = () => {
   };
 
   return (
-    <div
-    // style={{
-    //   maxWidth: "800px",
-    //   margin: "0 auto",
-    //   padding: "20px",
-    //   background: "#f0f2f5",
-    //   borderRadius: "10px",
-    // }}
-    >
+    <div>
       <Button
         type="link"
         icon={<ArrowLeftOutlined />}
         style={{ marginBottom: "10px", paddingLeft: 0, color: "#000000" }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "#EFE29C"; // Hover color
-          e.currentTarget.style.borderColor = "#EFE29C"; // Hover border
+          e.currentTarget.style.backgroundColor = "#EFE29C";
+          e.currentTarget.style.borderColor = "#EFE29C";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "#ffffff"; // Default color
-          e.currentTarget.style.borderColor = "#ffffff"; // Default border
+          e.currentTarget.style.backgroundColor = "#ffffff";
+          e.currentTarget.style.borderColor = "#ffffff";
         }}
         href="/gsmb/dashboard"
       >
@@ -95,12 +85,8 @@ const NewLicenseForm = () => {
       >
         {language === "en" ? "New License" : "නව බලපත්‍රය"}
       </h2>
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        // style={{ gap: "16px" }}
-      >
+
+      <Form form={form} layout="vertical" onFinish={onFinish}>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
@@ -119,6 +105,7 @@ const NewLicenseForm = () => {
               <Input style={{ fontSize: "24px" }} />
             </Form.Item>
           </Col>
+
           <Col xs={24} sm={24} md={12}>
             <Form.Item
               label={language === "en" ? "Owner Name" : "අයිතිකරුගේ නම"}
@@ -136,6 +123,7 @@ const NewLicenseForm = () => {
               <Input style={{ fontSize: "24px" }} />
             </Form.Item>
           </Col>
+
           <Col xs={24} sm={24} md={12}>
             <Form.Item
               label={
@@ -158,6 +146,7 @@ const NewLicenseForm = () => {
               />
             </Form.Item>
           </Col>
+
           <Col xs={24} sm={24} md={12}>
             <Form.Item
               label={language === "en" ? "Valid Until" : "අවලංගු වන දිනය"}
@@ -178,6 +167,7 @@ const NewLicenseForm = () => {
               />
             </Form.Item>
           </Col>
+
           <Col xs={24} sm={24} md={12}>
             <Form.Item
               label={language === "en" ? "Capacity (Cubes)" : "කියුබ්ස් ගණන"}
@@ -195,6 +185,7 @@ const NewLicenseForm = () => {
               <Input style={{ fontSize: "24px" }} />
             </Form.Item>
           </Col>
+
           <Col xs={24} sm={24} md={12}>
             <Form.Item
               label={language === "en" ? "Mobile" : "ජංගම දුරකථන අංකය"}
@@ -212,12 +203,8 @@ const NewLicenseForm = () => {
               <Input style={{ fontSize: "24px" }} />
             </Form.Item>
           </Col>
-          <Col
-            xs={24}
-            sm={24}
-            md={12}
-            style={{ fontSize: "32px", justifyContent: "center" }}
-          >
+
+          <Col xs={24} sm={24} md={12}>
             <Form.Item
               label={language === "en" ? "Location" : "ස්ථානය"}
               name="location"
@@ -245,7 +232,6 @@ const NewLicenseForm = () => {
                   justifyContent: "center",
                   alignItems: "center",
                   gap: "50px",
-                  alignItems: "center",
                 }}
               >
                 <Button
@@ -257,15 +243,14 @@ const NewLicenseForm = () => {
                     backgroundColor: "#950C33",
                     borderColor: "#950C33",
                     height: "40px",
-                    // width: "48%",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#FFE143"; // Hover color
-                    e.currentTarget.style.borderColor = "#FFE143"; // Hover border
+                    e.currentTarget.style.backgroundColor = "#FFE143";
+                    e.currentTarget.style.borderColor = "#FFE143";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#950C33"; // Default color
-                    e.currentTarget.style.borderColor = "#950C33"; // Default border
+                    e.currentTarget.style.backgroundColor = "#950C33";
+                    e.currentTarget.style.borderColor = "#950C33";
                   }}
                 >
                   {language === "en" ? "Create License" : "බලපත්‍රය සාදන්න"}
@@ -277,18 +262,17 @@ const NewLicenseForm = () => {
                   style={{
                     flex: "1 1 48%",
                     maxWidth: "300px",
-                    // width: "48%",
                     backgroundColor: "#FFFFFF",
                     borderColor: "#950C33",
                     height: "40px",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#950C33"; // Hover color
-                    e.currentTarget.style.borderColor = "#950C33"; // Hover border
+                    e.currentTarget.style.backgroundColor = "#950C33";
+                    e.currentTarget.style.borderColor = "#950C33";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#FFFFFF"; // Default color
-                    e.currentTarget.style.borderColor = "#950C33"; // Default border
+                    e.currentTarget.style.backgroundColor = "#FFFFFF";
+                    e.currentTarget.style.borderColor = "#950C33";
                   }}
                 >
                   {language === "en" ? "Cancel" : "අවලංගු කරන්න"}

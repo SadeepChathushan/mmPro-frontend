@@ -1,0 +1,171 @@
+.nav-list {
+  width: 40%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+
+.n-mmprologo {
+  height: auto;
+  width: 150%;
+}
+
+.n-button {
+  width: 40%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+
+#service {
+  padding: 10px;
+  height: 100vh;
+}
+
+#about {
+  height: 100vh;
+}
+
+.h-about-content {
+  padding: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.h-about-image {
+  height: auto;
+  width: 100%;
+  margin-right: 20px;
+}
+.h-about-content-div {
+  flex: 1;
+  max-width: 50%;
+  justify-content: space-between;
+  padding: 20px;
+}
+.h-about-img-div {
+  flex: 1;
+  max-width: 50%;
+}
+.h-about-title {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.h-about-title p {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.h-hero-content {
+  padding: 50px;
+  background-image: url("../../assets/images/truck.png"); /* Image inside public folder */
+  background-size: cover;
+  background-position: center;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+ 
+
+  
+}
+
+
+.user-header-logo{
+     display: flex;
+     align-items: center;
+}
+
+@media (max-width: 1161px) {
+  .nav-list {
+    display: none;
+  }
+  .n-button {
+    width: 50%;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+  }
+  #service {
+    height: auto;
+  }
+  #about {
+    height: auto;
+  }
+}
+
+@media (max-width: 875px) {
+  #service {
+    height: auto;
+  }
+  #about {
+    height: auto;
+  }
+  .h-about-content {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .h-about-content-div {
+    flex: 1;
+    max-width: 100%;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  .h-about-img-div {
+    flex: 1;
+    max-width: 100%;
+  }
+
+  .h-about-content div Image {
+  }
+}
+
+@media (max-width: 662px) {
+  .nav-list {
+    display: none;
+  }
+  .n-button {
+    width: 60%;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+  }
+  .h-hero-content {
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 515px) {
+    .user-header-logo{
+        display: none;
+    }
+  }
+
+@media (max-width: 442px) {
+  .nav-list {
+  }
+  .n-mmprologo {
+    display: none;
+  }
+  .n-button {
+    width: 100%;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+  }
+  .h-paragraph {
+    font-size: 10px;
+  }
+  .h-hero-content {
+    min-height: 300px;
+  }
+}

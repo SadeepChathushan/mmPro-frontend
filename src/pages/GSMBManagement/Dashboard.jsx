@@ -781,9 +781,7 @@ const Dashboard = () => {
           <Col xs={24} md={8}>
             <Card
               title={
-                <span style={{ color: "#fff" }}>
-                  Annual Top Mining License Categories
-                </span>
+                <span style={{ color: "#fff" }}> Top Royalty Contributors</span>
               } // Title in white
               style={{
                 backgroundColor: "rgba(254, 118, 118, 0.1)",
@@ -795,10 +793,6 @@ const Dashboard = () => {
                 outline: "none", // Removes outline
               }}
             >
-              <Title level={5} style={{ color: "#fff", textAlign: "center" }}>
-                Top Royalty Contributor
-              </Title>
-
               <List
                 dataSource={recentOrders}
                 renderItem={(item) => (

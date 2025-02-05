@@ -1,0 +1,64 @@
+/* History.css */
+
+/* Main container */
+.history-container {
+  padding: 10px;
+  background-color: #fff;
+}
+
+/* Title styling */
+.history-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Button Container */
+.history-button-container {
+  text-align: center;
+}
+
+/* Back to Home button */
+.history-back-button {
+  height: 40px;
+  background-color: #fff500;
+  border-color: #fff500;
+  color: black;
+  width: 200px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+/* Table styling */
+.history-table {
+  margin-bottom: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0);
+}
+
+/* DatePicker styling */
+.history-datepicker {
+  margin-left: 350px;
+  width: 100%;
+}
+
+/* Action button styling */
+.history-action-button {
+  width: 200px;
+  border-radius: 8px;
+}
+
+/* Disabled action button */
+.history-action-button-disabled {
+  background-color: #d6d6d6;
+  border-color: #d6d6d6;
+  color: #a0a0a0;
+}
+
+/* Enabled action button */
+.history-action-button-enabled {
+  height: 40px;
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+}

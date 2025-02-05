@@ -1,9 +1,104 @@
-import React from 'react'
+// src/components/PoliceOfficer/Dashboard.jsx
+
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { fetchVehicleData} from '../../services/PoliceOfficer/vehicleService';
+import { submitComplaint } from '../../services/complaint';
+import { getTranslations } from '../../utils/PoliceOfficer/languageUtils';
+import ReportModal from '../../components/PoliceOfficer/Modal';
+import VehicleCheckForm from '../../components/PoliceOfficer/VehicleCheckForm';
+import logo from '../../assets/images/gsmbLogo.png';
+import backgroundImage from '../../assets/images/machinery.jpg';
+import '../../styles/PoliceOfficer/PoliceOfficerdashboard.css';
 
 const Dashboard = () => {
-  return (
-    <div>Dashboard</div>
-  )
-}
+    const { language } = useLanguage();
+    const [input, setInput] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+    const [data, setData] = useState([]);
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const navigate = useNavigate();
+    const translations = getTranslations(language);
 
-export default Dashboard
+    useEffect(() => {
+        const loadVehicleData = async () => {
+            try {
+                const vehicleData = await fetchVehicleData();
+                setData(vehicleData);
+            } catch (error) {
+                console.error('Failed to load vehicle data:', error);
+            }
+        };
+
+        loadVehicleData();
+    }, []);
+
+    const handleCheck = () => {
+        const validVehicle = data.find(item => item.vehicleNumber === input.trim());
+
+        if (validVehicle) {
+            navigate('/police-officer/valid', {
+                state: { vehicleNumber: input.trim() },
+            });
+        } else {
+            setModalMessage(translations.invalidLoad[language]);
+            setIsModalOpen(true);
+        }
+    };
+
+    const handleReport = async () => {
+        try {
+            const success = await submitComplaint(input, phoneNumber, language, 'Police Officer');
+            if (success) {
+                setIsModalOpen(false);
+            }
+        } catch (error) {
+            console.error('Failed to submit report:', error);
+        }
+    };
+
+    useEffect(() => {
+        setModalMessage(translations.invalidLoad[language]); // Update message when language changes
+    }, [language]);
+
+    return (
+        <div className="po-dashboard-container">
+            <div 
+                className="po-background-section" 
+                style={{ backgroundImage: `url(${backgroundImage})` }}
+            ></div>
+            <main className="po-main-content">
+                <header className="po-header">
+                    <img src={logo} alt="Logo" className="po-header-logo" />
+                </header>
+                <h3 className="po-org-title">
+                    {translations.title[language]}
+                </h3>
+                <p className="po-org-description">
+                    {translations.description[language]}
+                </p>
+                
+                <VehicleCheckForm 
+                    input={input}
+                    onInputChange={setInput}
+                    onCheck={handleCheck}
+                    language={language}
+                />
+
+                <ReportModal 
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    message={modalMessage}
+                    phoneNumber={phoneNumber}
+                    onPhoneNumberChange={setPhoneNumber}
+                    onReport={handleReport}
+                    language={language}
+                />
+            </main>
+        </div>
+    );
+};
+
+export default Dashboard;
