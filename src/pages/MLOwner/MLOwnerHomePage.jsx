@@ -107,8 +107,14 @@ const MLOwnerHomePage = () => {
           mappedData = mappedData.filter(item => item.owner === fullName);
         }
 
-        const sortedData = mappedData.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
-        const recentActiveData = sortedData.slice(0, 5);
+        // Filter for active licenses only (due date is in the future)
+        const activeData = mappedData.filter(item => new Date(item.dueDate) >= new Date());
+
+        // Sort by due date (most recent first)
+        const sortedActiveData = activeData.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
+
+        // Get only the most recent 5 active licenses
+        const recentActiveData = sortedActiveData.slice(0, 5);
 
         setData(recentActiveData);
         setFilteredData(recentActiveData);
@@ -156,21 +162,20 @@ const MLOwnerHomePage = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-        <Link to={`/mlowner/home/dispatchload/${record.licenseNumber}`}>
-          <Button
-            className="dispatch-load-button"
-            disabled={parseInt(record.remainingCubes, 10) === 0 || new Date(record.dueDate) < new Date()}
-          >
-            Dispatch Load
-          </Button>
-        </Link>
-        <Link to={{ pathname: "/mlowner/history", search: `?licenseNumber=${record.licenseNumber}` }}>
-          <Button className="history-button1">
-            History
-          </Button>
-        </Link>
-      </Space>
-      
+          <Link to={`/mlowner/home/dispatchload/${record.licenseNumber}`}>
+            <Button
+              className="dispatch-load-button"
+              disabled={parseInt(record.remainingCubes, 10) === 0 || new Date(record.dueDate) < new Date()}
+            >
+              Dispatch Load
+            </Button>
+          </Link>
+          <Link to={{ pathname: "/mlowner/history", search: `?licenseNumber=${record.licenseNumber}` }}>
+            <Button className="history-button1">
+              History
+            </Button>
+          </Link>
+        </Space>
       ),
     },
   ];

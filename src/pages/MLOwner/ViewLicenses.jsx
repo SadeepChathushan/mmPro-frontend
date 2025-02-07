@@ -10,7 +10,7 @@ import {
   Space,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
 import moment from "moment";
 import { fetchLicenses } from "../../services/MLOService";
@@ -19,6 +19,7 @@ import "../../styles/MLOwner/History.css";
 
 const Licenses = () => {
   const { language } = useLanguage();
+  const navigate = useNavigate();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [licenses, setLicenses] = useState([]);
@@ -49,6 +50,7 @@ const Licenses = () => {
         : licenses
     );
   };
+
   const go_home = () => {
     navigate("/mlowner/home");
   };
@@ -96,8 +98,8 @@ const Licenses = () => {
       title: language === "en" ? "Status" : language === "si" ? "තත්වය" : "நிலை",
       key: "status",
       render: (_, record) => (
-        <span className={record.status === "Valid" ? "valid-status" : "expired-status"}>
-          {record.status === "Valid" ? "Active" : "Inactive"}
+        <span className={record.status === "Active" ? "valid-status" : "expired-status"}>
+          {record.status}
         </span>
       ),
     },
@@ -108,8 +110,8 @@ const Licenses = () => {
         <Space size="middle">
           <Link to={`/mlowner/home/dispatchload/${record.licenseNumber}`}>
             <Button
-              className={record.status === "Expired" ? "dispatch-button-disabled" : "dispatch-button"}
-              disabled={record.status === "Expired"}
+              className={record.status === "Inactive" ? "dispatch-button-disabled" : "dispatch-button"}
+              disabled={record.status === "Inactive"}
             >
               {language === "en" ? "Dispatch Load" : language === "si" ? "යවන ලද ප්‍රමාණ" : "அனுப்புதல் சுமை"}
             </Button>
@@ -124,7 +126,6 @@ const Licenses = () => {
       ),
     },
   ];
- 
 
   return (
     <div className="container">
@@ -133,43 +134,47 @@ const Licenses = () => {
       </h1>
 
       <Row className="filter-row" gutter={[16, 16]}>
-  <Col xs={24} sm={12} md={8}>
-    <DatePicker 
-      className="large-input" 
-      onChange={(date) => setStartDate(date)} 
-      placeholder="Start Date" 
-      style={{ width: '100%' }} 
-    />
-  </Col>
-  <Col xs={24} sm={12} md={8}>
-    <DatePicker 
-      className="large-input" 
-      onChange={(date) => setEndDate(date)} 
-      placeholder="End Date" 
-      style={{ width: '100%' }} 
-    />
-  </Col>
-  <Col xs={24} sm={12} md={8}>
-    <AutoComplete 
-      value={searchText} 
-      onSearch={handleSearch} 
-      options={licenses.map(({ licenseNumber }) => ({ value: licenseNumber }))} 
-      style={{ width: '100%' }}
-    >
-      <Input 
-        className="large-input" 
-        prefix={<SearchOutlined />} 
-        placeholder="Search by License Number" 
+        <Col xs={24} sm={12} md={8}>
+          <DatePicker
+            className="large-input"
+            onChange={(date) => setStartDate(date)}
+            placeholder="Start Date"
+            style={{ width: "100%" }}
+          />
+        </Col>
+        <Col xs={24} sm={12} md={8}>
+          <DatePicker
+            className="large-input"
+            onChange={(date) => setEndDate(date)}
+            placeholder="End Date"
+            style={{ width: "100%" }}
+          />
+        </Col>
+        <Col xs={24} sm={12} md={8}>
+          <AutoComplete
+            value={searchText}
+            onSearch={handleSearch}
+            options={licenses.map(({ licenseNumber }) => ({ value: licenseNumber }))}
+            style={{ width: "100%" }}
+          >
+            <Input
+              className="large-input"
+              prefix={<SearchOutlined />}
+              placeholder="Search by License Number"
+            />
+          </AutoComplete>
+        </Col>
+      </Row>
+
+      <Table
+        dataSource={filteredLicensesByDate}
+        columns={columns}
+        scroll={{ x: "max-content" }}
+        pagination={false}
       />
-    </AutoComplete>
-  </Col>
-</Row>
-
-
-      <Table dataSource={filteredLicensesByDate} columns={columns} scroll={{ x: "max-content" }} pagination={false} />
       <div className="history-button-container">
         <Button className="history-back-button" onClick={() => go_home()}>
-          {language === "en" ? "Back to Home" :language ==="si"? "ආපසු":"வீட்டிற்குத் திரும்பு"}
+          {language === "en" ? "Back to Home" : language === "si" ? "ආපසු" : "வீட்டிற்குத் திரும்பு"}
         </Button>
       </div>
     </div>

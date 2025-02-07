@@ -1,5 +1,6 @@
 // src/components/GeneralPublic/Modal.jsx
 import React from 'react';
+import '../../styles/GeneralPublic/GeneralPublicdashboard.css'; // Make sure to import the CSS file
 
 const Modal = ({ modalMessage, phoneNumber, setPhoneNumber, handleReport, closeModal, language }) => {
   const isSinhala = language === 'si';
@@ -8,13 +9,13 @@ const Modal = ({ modalMessage, phoneNumber, setPhoneNumber, handleReport, closeM
     reportButton: isSinhala
       ? 'GSMB වෙත වාර්තා කරන්න'
       : language === 'ta'
-      ? 'GSMB இற்கு புகார் செய்யவும்'
-      : 'Report to GSMB',
+        ? 'GSMB இற்கு புகார் செய்யவும்'
+        : 'Report to GSMB',
     vehiclePlaceholder: isSinhala
-      ? 'උදා : 0711231231'
+      ? 'උදා : 071XXXXXXX'
       : language === 'ta'
-      ? 'எ.கா : 0711231231'
-      : 'e.g : 0711231231',
+        ? 'எ.கா : 071XXXXXXX'
+        : 'e.g : 071XXXXXXX',
     contacts: [
       { number: '+94-11-2886289', icon: '📞' },
       { number: '+94-11-2886290', icon: '📞' },
@@ -28,38 +29,34 @@ const Modal = ({ modalMessage, phoneNumber, setPhoneNumber, handleReport, closeM
         <button className="modal-close-button" onClick={closeModal}>
           &times;
         </button>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div className="gp-modal-body">
           <input
             type="text"
             value={modalMessage}
             readOnly
-            style={{
-              backgroundColor: modalMessage === (language === 'en' ? 'Valid Load' : language === 'si' ? 'වලංගු පැටවීමකි' : 'சரியான ஏற்றுதல்') ? '#28a745' : '#FF0000',
-              color: '#fff',
-              padding: '0.75rem 1rem',
-              border: 'none',
-              borderRadius: '1.5rem',
-              fontSize: '1rem',
-              textAlign: 'center',
-              width: '200px',
-              height: '50px',
-            }}
+            className={modalMessage === (language === 'en' ? 'Valid Load' : language === 'si' ? 'වලංගු පැටවීමකි' : 'சரியான ஏற்றுதல்') ? 'valid-message' : 'invalid-message'}
           />
-          {modalMessage === (language === 'en' ? 'Invalid Load' : language === 'si' ?'අනවසර පැටවීමකි' : 'தவறான சுமை') && (
-            <div style={{ marginTop: '1rem', textAlign: 'center', }}>
-              <div style={{ marginBottom: '1rem' }}>
-                <input
-                  type="text"
-                  placeholder={textContent.vehiclePlaceholder}
-                  className="phone-number-input"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                />
-              </div>
+
+          {modalMessage === (language === 'en' ? 'Invalid Load' : language === 'si' ? 'අනවසර පැටවීමකි' : 'தவறான சுமை') && (
+            <div className="modal-input-section">
+              <h3 className="modal-title">
+                {language === 'en'
+                  ? 'Enter Your Phone Number (e.g : 071XXXXXXX)'
+                  : language === 'si'
+                    ? 'දුරකථන අංකය ඇතුළු කරන්න (උදා : 071XXXXXXX)'
+                    : 'தொலைபேசி எண்ணை உள்ளிடவும் (எ.கா : 071XXXXXXX)'}
+              </h3>
+              <input
+                type="text"
+                placeholder={textContent.vehiclePlaceholder}
+                className="phone-number-input"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+              />
               <button className="report-button" onClick={handleReport}>
                 {textContent.reportButton}
               </button>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
+              <div className="contact-list">
                 {textContent.contacts.map((contact, index) => (
                   <div key={index} className="contact">
                     <span>{contact.number}</span>
