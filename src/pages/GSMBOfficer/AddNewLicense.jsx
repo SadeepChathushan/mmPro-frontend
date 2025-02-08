@@ -5,7 +5,7 @@ import { Form, Input, Button, DatePicker, Row, Col } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useLanguage } from "../../contexts/LanguageContext";
 
-import addNewLicense  from "../../services/officerService"; 
+import addNewLicense from "../../services/officerService";
 
 const NewLicenseForm = () => {
   const { language } = useLanguage();
@@ -17,17 +17,25 @@ const NewLicenseForm = () => {
       // Build the payload to match Redmine's issue creation format
       const payload = {
         issue: {
-          project: { id: 18 },
-          tracker: { id: 5 },
+          project: { id: 31 },
+          tracker: { id: 7 },
           subject: language === "en" ? "New License" : "නව බලපත්‍රය",
           custom_fields: [
-            { id: 8,  name: "License Number", value: values.licenseNumber },
-            { id: 2,  name: "Owner Name",     value: values.ownerName },
-            { id: 3,  name: "Mobile Number",  value: values.mobile },
-            { id: 5,  name: "Capacity",       value: values.capacity },
-            { id: 9,  name: "Start Date",     value: values.validityStart.format("YYYY-MM-DD") },
-            { id: 10, name: "End Date",       value: values.endDate.format("YYYY-MM-DD") },
-            { id: 11, name: "Location",       value: values.location },
+            { id: 8, name: "License Number", value: values.licenseNumber },
+            { id: 2, name: "Owner Name", value: values.ownerName },
+            { id: 3, name: "Mobile Number", value: values.mobile },
+            { id: 5, name: "Capacity", value: values.capacity },
+            {
+              id: 9,
+              name: "Start Date",
+              value: values.validityStart.format("YYYY-MM-DD"),
+            },
+            {
+              id: 10,
+              name: "End Date",
+              value: values.endDate.format("YYYY-MM-DD"),
+            },
+            { id: 11, name: "Location", value: values.location },
           ],
         },
       };
@@ -67,7 +75,14 @@ const NewLicenseForm = () => {
         {language === "en" ? "Back" : "ආපසු"}
       </Button>
 
-      <h2 style={{ textAlign: "center", fontWeight: "bold", color: "#1a1a1a", fontSize: "32px" }}>
+      <h2
+        style={{
+          textAlign: "center",
+          fontWeight: "bold",
+          color: "#1a1a1a",
+          fontSize: "32px",
+        }}
+      >
         {language === "en" ? "New License" : "නව බලපත්‍රය"}
       </h2>
 
@@ -111,7 +126,9 @@ const NewLicenseForm = () => {
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "Validity Start" : "වලංගුතාව ආරම්භක දිනය"}
+              label={
+                language === "en" ? "Validity Start" : "වලංගුතාව ආරම්භක දිනය"
+              }
               name="validityStart"
               rules={[
                 {
@@ -123,7 +140,10 @@ const NewLicenseForm = () => {
                 },
               ]}
             >
-              <DatePicker format="DD/MM/YYYY" style={{ width: "100%", fontSize: "24px" }} />
+              <DatePicker
+                format="DD/MM/YYYY"
+                style={{ width: "100%", fontSize: "24px" }}
+              />
             </Form.Item>
           </Col>
 
@@ -141,7 +161,10 @@ const NewLicenseForm = () => {
                 },
               ]}
             >
-              <DatePicker format="DD/MM/YYYY" style={{ width: "100%", fontSize: "24px" }} />
+              <DatePicker
+                format="DD/MM/YYYY"
+                style={{ width: "100%", fontSize: "24px" }}
+              />
             </Form.Item>
           </Col>
 
