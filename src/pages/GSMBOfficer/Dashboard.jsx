@@ -15,7 +15,7 @@ const Dashboard = () => {
   const [searchText, setSearchText] = useState("");
   const [tableData, setTableData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [activeTab, setActiveTab] = useState("ML");
+  const [activeTab, setActiveTab] = useState("CMPLN");
 
   const tabs = [
     { key: "ML", label: language === "en" ? "Mining License" : "බලපත්‍ර" },
