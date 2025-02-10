@@ -33,7 +33,7 @@ const officerService = {
       }
 
       const response = await axios.post(
-        "/api/projects/new-license/issues.json",
+        "/api/projects/gsmb/issues.json",
         payload,
         {
           headers: {
@@ -98,6 +98,98 @@ const officerService = {
       return null;
     }
   },
+
+
+ 
+  //  registerUser: async (userData) => {
+  //   try {
+  //     const apiKey = localStorage.getItem("API_Key");
+  //     if (!apiKey) {
+  //       console.error("API Key not found in localStorage");
+  //       return null;
+  //     }
+
+  //     const response = await axios.post(
+  //       `api/users.json`,
+  //       userData,
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           "X-Redmine-API-Key": apiKey,
+  //         },
+  //       }
+  //     );
+
+  //     return response.data.user || null;
+  //   } catch (error) {
+  //     console.error("Error registering user:", error);
+  //     return null;
+  //   }
+  // },
+
+
+
+ 
+  registerUser: async (userData) => {
+    try {
+      const apiKey = localStorage.getItem("API_Key");
+      if (!apiKey) {
+        console.error("API Key not found in localStorage");
+        return null;
+      }
+
+      // Log the payload for debugging
+      console.log("User Data Payload:", userData);
+
+      const response = await axios.post("/api/users.json", userData, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Redmine-API-Key": apiKey,
+        },
+      });
+
+      // Return the user data from the response
+      return response.data.user || null;
+    } catch (error) {
+      console.error("Error registering user:", error.response ? error.response.data : error.message);
+      return null;
+    }
+  },
+
+  // Step 2: Assign user to GSMB project with ML Owner role
+  assignUserToProject: async (userId, projectId, roleId) => {
+    try {
+      const apiKey = localStorage.getItem("API_Key");
+      if (!apiKey) {
+        console.error("API Key not found in localStorage");
+        return null;
+      }
+
+      const payload = {
+        membership: {
+          user_id: userId,
+          role_ids: [roleId], // ML Owner Role ID
+        },
+      };
+
+      const response = await axios.post(`/api/projects/gsmb/memberships.json`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Redmine-API-Key": apiKey,
+          },
+        }
+      );
+
+      return response.data || null;
+    } catch (error) {
+      console.error("Error assigning user to project:", error);
+      return null;
+    }
+  },
+
+
 };
 
 // Now export the service object as the default
