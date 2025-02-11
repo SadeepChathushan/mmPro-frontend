@@ -1,59 +1,104 @@
-import axios from 'axios';
+// officerService.js
 
-// Function to get issues data
-const getIssuesData = async () => {
-  try {
-    // Retrieve API Key from localStorage
-    const apiKey = localStorage.getItem("API_Key");
+import axios from "axios";
 
-    if (!apiKey) {
-      console.error("API Key not found in localStorage");
-      return;
+// Wrap your named functions in an object
+const officerService = {
+  getIssuesData: async () => {
+    try {
+      const apiKey = localStorage.getItem("API_Key");
+      if (!apiKey) {
+        console.error("API Key not found in localStorage");
+        return [];
+      }
+      const response = await axios.get("/api/projects/gsmb/issues.json", {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Redmine-API-Key": apiKey,
+        },
+      });
+      return response.data.issues || [];
+    } catch (error) {
+      console.error("Error fetching issues data:", error);
+      return [];
     }
+  },
 
-    // Fetch data from API with API Key in Authorization header
-    const response = await axios.get("/api/projects/gsmb/issues.json", {
-      headers: {
-        "Content-Type": "application/json",
-        "X-Redmine-API-Key": apiKey, // Pass the API Key in the header
-      },
-    });
+  addNewLicense: async (payload) => {
+    try {
+      const apiKey = localStorage.getItem("API_Key");
+      if (!apiKey) {
+        console.error("API Key not found in localStorage");
+        return [];
+      }
 
-    return response.data.issues || [];
-  } catch (error) {
-    console.error("Error fetching issues data:", error);
-    return [];
-  }
+      const response = await axios.post(
+        "/api/projects/new-license/issues.json",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Redmine-API-Key": apiKey,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error adding new license:", error);
+      return [];
+    }
+  },
+
+  // New Function: Fetch a single license by ID
+  getLicenseById: async (licenseId) => {
+    try {
+      const apiKey = localStorage.getItem("API_Key");
+      if (!apiKey) {
+        console.error("API Key not found in localStorage");
+        return null;
+      }
+
+      const response = await axios.get(`/api/issues/${licenseId}.json`, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Redmine-API-Key": apiKey,
+        },
+      });
+
+      return response.data.issue || null;
+    } catch (error) {
+      console.error(`Error fetching license with ID ${licenseId}:`, error);
+      return null;
+    }
+  },
+
+  // New Function: Update a license by ID
+  updateLicense: async (licenseId, payload) => {
+    try {
+      const apiKey = localStorage.getItem("API_Key");
+      if (!apiKey) {
+        console.error("API Key not found in localStorage");
+        return null;
+      }
+
+      const response = await axios.put(
+        `/api/issues/${licenseId}.json`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Redmine-API-Key": apiKey,
+          },
+        }
+      );
+
+      return response.data || null;
+    } catch (error) {
+      console.error(`Error updating license with ID ${licenseId}:`, error);
+      return null;
+    }
+  },
 };
 
-
-// Function to get issues data
-const addNewLicense = async (payload) => {
-  try {
-    // Retrieve API Key from localStorage
-    const apiKey = localStorage.getItem("API_Key");
-
-    if (!apiKey) {
-      console.error("API Key not found in localStorage");
-      return;
-    }
-
-    // Fetch data from API with API Key in Authorization header
-    const response = await axios.post( "/api/projects/new-license/issues.json", payload, {
-      headers: {
-        "Content-Type": "application/json",
-        "X-Redmine-API-Key": apiKey, // Pass the API Key in the header
-      },
-    });
-
-    return response.data.issues || [];
-  } catch (error) {
-    console.error("Error fetching issues data:", error);
-    return [];
-  }
-};
-
-
-
-
-export default {getIssuesData};
+// Now export the service object as the default
+export default officerService;
