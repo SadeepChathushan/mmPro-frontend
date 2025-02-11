@@ -8,7 +8,6 @@ import getValidationRules from "../../utils/validationRules";
 import addNewLicense from "../../services/officerService";
 import moment from "moment";
 
-
 const NewLicenseForm = () => {
   const { language } = useLanguage();
   const [form] = Form.useForm();
@@ -20,8 +19,8 @@ const NewLicenseForm = () => {
       // Build the payload to match Redmine's issue creation format
       const payload = {
         issue: {
-          project: { id: 18 },
-          tracker: { id: 5 },
+          project: { id: 31 },
+          tracker: { id: 7 },
           subject: language === "en" ? "New License" : "නව බලපත්‍රය",
           custom_fields: [
             { id: 8, name: "License Number", value: values.licenseNumber },
