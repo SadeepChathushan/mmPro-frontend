@@ -12,12 +12,15 @@ const MLOService = {
         return [];
       }
 
-      const response = await axios.get(`${BASE_URL}/projects/gsmb/issues.json`, {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Redmine-API-Key": apiKey,
-        },
-      });
+      const response = await axios.get(
+        `${BASE_URL}/projects/gsmb/issues.json`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Redmine-API-Key": apiKey,
+          },
+        }
+      );
 
       return response.data.issues;
     } catch (error) {
@@ -28,36 +31,54 @@ const MLOService = {
 
   mapProjectData: (issues, user) => {
     let mappedData = issues
-      .filter(issue => {
-        const capacity = issue.custom_fields.find(field => field.name === 'Capacity')?.value;
-        return issue.tracker.name === "ML" && (parseInt(capacity, 10) >= 0);
+      .filter((issue) => {
+        const capacity = issue.custom_fields.find(
+          (field) => field.name === "Capacity"
+        )?.value;
+        return issue.tracker.name === "ML" && parseInt(capacity, 10) >= 0;
       })
-      .map(issue => {
+      .map((issue) => {
         const currentDate = new Date();
         const dueDate = new Date(issue.due_date);
         return {
-          licenseNumber: issue.custom_fields.find(field => field.name === 'License Number')?.value,
-          owner: issue.custom_fields.find(field => field.name === 'Owner Name')?.value,
-          location: issue.custom_fields.find(field => field.name === 'Location')?.value,
+          licenseNumber: issue.custom_fields.find(
+            (field) => field.name === "License Number"
+          )?.value,
+          owner: issue.custom_fields.find(
+            (field) => field.name === "Owner Name"
+          )?.value,
+          location: issue.custom_fields.find(
+            (field) => field.name === "Location"
+          )?.value,
           startDate: issue.start_date,
           dueDate: issue.due_date,
-          capacity: issue.custom_fields.find(field => field.name === 'Capacity')?.value,
-          dispatchedCubes: issue.custom_fields.find(field => field.name === 'Used')?.value,
-          remainingCubes: issue.custom_fields.find(field => field.name === 'Remaining')?.value,
-          royalty: issue.custom_fields.find(field => field.name === 'Royalty(sand)due')?.value,
+          capacity: issue.custom_fields.find(
+            (field) => field.name === "Capacity"
+          )?.value,
+          dispatchedCubes: issue.custom_fields.find(
+            (field) => field.name === "Used"
+          )?.value,
+          remainingCubes: issue.custom_fields.find(
+            (field) => field.name === "Remaining"
+          )?.value,
+          royalty: issue.custom_fields.find(
+            (field) => field.name === "Royalty(sand)due"
+          )?.value,
           status: issue.status.name,
         };
       });
 
-    mappedData = mappedData.filter(item => item.status === 'Valid');
+    mappedData = mappedData.filter((item) => item.status === "Valid");
 
     if (user && user.firstname && user.lastname) {
       const fullName = `${user.firstname} ${user.lastname}`;
-      mappedData = mappedData.filter(item => item.owner === fullName);
+      mappedData = mappedData.filter((item) => item.owner === fullName);
     }
 
-    return mappedData.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate)).slice(0, 5);
-  }
+    return mappedData
+      .sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate))
+      .slice(0, 5);
+  },
 };
 
 export const fetchLicenses = async () => {
@@ -82,7 +103,9 @@ export const fetchLicenses = async () => {
           const capacityField = issue.custom_fields.find(
             (field) => field.name === "Capacity"
           );
-          const capacity = capacityField ? parseInt(capacityField.value, 10) : NaN;
+          const capacity = capacityField
+            ? parseInt(capacityField.value, 10)
+            : NaN;
 
           return (
             issue.tracker.name === "ML" &&
@@ -147,9 +170,7 @@ export const fetchDispatchHistoryData = async (apiKey) => {
 
     if (response.data && response.data.issues) {
       const issues = response.data.issues;
-      const filteredIssues = issues.filter(
-        (issue) => issue.tracker.id === 8
-      );
+      const filteredIssues = issues.filter((issue) => issue.tracker.id === 8);
 
       const formattedDispatchHistory = filteredIssues.map((issue) => {
         const customFields = issue.custom_fields.reduce((acc, field) => {
@@ -190,7 +211,9 @@ export const fetchMLData = async (apiKey, l_number) => {
 
     if (response.data && response.data.issues) {
       const issues = response.data.issues;
-      const filteredMLIssues = issues.filter(issue => issue.subject === l_number);
+      const filteredMLIssues = issues.filter(
+        (issue) => issue.subject === l_number
+      );
       return filteredMLIssues[0];
     }
   } catch (error) {
@@ -211,7 +234,9 @@ export const fetchLocationSuggestions = async (value) => {
     );
 
     return response.data
-      .filter((item) => !isNaN(parseFloat(item.lat)) && !isNaN(parseFloat(item.lon)))
+      .filter(
+        (item) => !isNaN(parseFloat(item.lat)) && !isNaN(parseFloat(item.lon))
+      )
       .map((item) => ({
         value: item.display_name,
         lat: parseFloat(item.lat),
@@ -242,14 +267,18 @@ export const fetchIssues = async () => {
 // Update an issue with new data
 export const updateIssue = async (issueId, updatedIssue) => {
   try {
-    const response = await axios.put(`/api/issues/${issueId}.json`, {
-      issue: updatedIssue,
-    }, {
-      headers: {
-        "Content-Type": "application/json",
-        "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+    const response = await axios.put(
+      `/api/issues/${issueId}.json`,
+      {
+        issue: updatedIssue,
       },
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error updating issue:", error);
@@ -260,14 +289,18 @@ export const updateIssue = async (issueId, updatedIssue) => {
 // Create a new issue
 export const createIssue = async (newIssue) => {
   try {
-    const response = await axios.post("/api/issues.json", {
-      issue: newIssue,
-    }, {
-      headers: {
-        "Content-Type": "application/json",
-        "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+    const response = await axios.post(
+      "/api/issues.json",
+      {
+        issue: newIssue,
       },
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error creating issue:", error);

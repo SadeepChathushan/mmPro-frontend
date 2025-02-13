@@ -14,6 +14,7 @@ import VehicleCheckForm from "../../components/PoliceOfficer/VehicleCheckForm";
 import logo from "../../assets/images/gsmbLogo.png";
 import backgroundImage from "../../assets/images/machinery.jpg";
 import "../../styles/PoliceOfficer/PoliceOfficerdashboard.css";
+import axios from "axios";
 
 const Dashboard = () => {
   const { language } = useLanguage();
@@ -35,20 +36,19 @@ const Dashboard = () => {
     }
 
     try {
-      const token = localStorage.getItem("USER_TOKEN"); // Retrieve the token from localStorage
+      const token = localStorage.getItem("USER_TOKEN");
 
-      const response = await fetch(
-        `http://127.0.0.1:5000/police-officer/check-lorry-number?lorry_number=${input.trim()}`,
+      const response = await axios.get(
+        `http://127.0.0.1:5000/police-officer/check-lorry-number`,
         {
-          method: "GET",
+          params: { lorry_number: input.trim() },
           headers: {
-            Authorization: `Bearer ${token}`, // Include Bearer token
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
       );
-
-      const data = await response.json();
+      const data = response.data;
 
       if (data.license_details) {
         navigate("/police-officer/valid", {
