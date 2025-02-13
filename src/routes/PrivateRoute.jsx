@@ -1,10 +1,9 @@
-import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import authService from '../services/authService';
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import authService from "../services/authService";
 
 const PrivateRoute = ({ allowedRoles }) => {
   const userRole = authService.getUserRole();
-  console.log("User role:", userRole);  // Add this to debug the role value
 
   if (!userRole) {
     // Redirect to sign-in if not authenticated
@@ -19,4 +18,4 @@ const PrivateRoute = ({ allowedRoles }) => {
   return <Outlet />;
 };
 
-export default PrivateRoute;  // Make sure to use the default export here
+export default PrivateRoute; // Make sure to use the default export here
