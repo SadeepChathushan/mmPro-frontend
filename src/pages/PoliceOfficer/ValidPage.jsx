@@ -16,8 +16,6 @@ const ValidPage = () => {
     setData(licenseDetails);
   }, [licenseDetails]);
 
-  console.log(licenseDetails);
-
   const textContent = {
     licenseTitle: isSinhala
       ? "වැලි පතල් බලපත්‍රය"
