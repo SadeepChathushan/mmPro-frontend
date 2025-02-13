@@ -1,0 +1,153 @@
+/* ValidPage.css */
+
+.pov-container {
+  width: 100%;
+  /* max-width: 1200px; */
+  margin: 0 auto;
+}
+
+/*.pov-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+} */
+
+.pov-validBadge {
+  background-color: #009833;
+  color: #fff;
+  padding: 12px 70px;
+  /* width: 100%; */
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 20px;
+  /* margin-left: 230px; */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0);
+}
+
+.pov-sectionTitle {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #000000;
+  margin-bottom: 10px;
+  text-align: center;
+  /* margin-left: 270px; */
+}
+
+.pov-content {
+  width: 100%;
+  max-width: 83%;
+  background-color: #fff;
+  padding: 15px;
+}
+
+.pov-fieldsContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 350px;
+}
+
+.pov-field {
+  display: flex;
+  flex-direction: column;
+  width: 160%;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: #ffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0);
+}
+
+.pov-label {
+  font-size: 18px;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.pov-input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  color: #333;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  pointer-events: none;
+}
+
+.pov-fieldRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  margin: 5px 0;
+}
+
+.pov-fieldValue {
+  text-align: right;
+  font-weight: bold;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 940px) {
+  .pov-header {
+    flex-direction: column;
+    align-items: center;
+    padding: 0 10px;
+  }
+
+  .pov-validBadge {
+    padding: 10px 15px;
+    font-size: 1rem;
+    margin-left: 0;
+    text-align: center;
+    width: 100%;
+  }
+
+  .pov-sectionTitle {
+    font-size: 18px;
+    margin-left: 0;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .pov-content {
+    padding: 10px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .pov-fieldsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+  }
+
+  .pov-field {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .pov-label {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+
+  .pov-input {
+    font-size: 14px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .pov-fieldRow {
+    flex-direction: column;
+    padding: 10px 0;
+  }
+
+  .pov-fieldValue {
+    font-size: 14px;
+  }
+}
