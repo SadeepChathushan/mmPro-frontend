@@ -316,4 +316,21 @@ export const createIssue = async (data) => {
   }
 };
 
+export const get_user = async () => {
+  const token = localStorage.getItem("USER_TOKEN");
+  const userId = localStorage.getItem("USER_ID");
+  try {
+    const response = await axios.get(`http://127.0.0.1:5000/mining-owner/user-detail/${userId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+    return response.data.user_detail;
+  } catch (error) {
+    console.error("Error fetching issues:", error);
+    throw error;
+  }
+};
+
 export default MLOService;
