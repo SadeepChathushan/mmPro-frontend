@@ -4,6 +4,7 @@ const BASE_URL = "/api";
 
 const authService = {
   login: async (username, password) => {
+    console.log("Logging in with:");
     try {
       const response = await axios.get(
         `${BASE_URL}/users/current.json?include=memberships,groups`,
