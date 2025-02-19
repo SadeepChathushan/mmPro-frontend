@@ -59,6 +59,7 @@ const DispatchLoadPage = () => {
   const user_name = userf_name + " " + userl_name;
   console.log("mee", user_name);
 
+  const [number, setLNumber] = useState("");
   const { language } = useLanguage();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isErrModalVisible, setIsErrModalVisible] = useState(false);
@@ -82,9 +83,10 @@ const DispatchLoadPage = () => {
     project_id: 31,
     tracker_id: 8,
     status_id: 47,
-    assigned_to_id: user_Details.id,
+    assigned_to_id: 58,
     subject: "TPL", //TPL0004
     due_date: "",
+    estimated_hours: 24.0,
     custom_fields: [
       {
         id: 2,
@@ -230,6 +232,7 @@ const handleDatetime = (e) => {
   
 
   const handleSubmit = async (event) => {
+    console.log("entered");
     event.preventDefault();
   
     // Trim the values before validation
@@ -260,17 +263,16 @@ const handleDatetime = (e) => {
       console.log("Issues:", issues);
   
       const issueToUpdate = issues.find((issue) => issue.subject === formData.licenseNumber);
+      console.log("Issue to update:", issueToUpdate);
   
       if (issueToUpdate) {
-        console.log("Issue to update:", issueToUpdate);
   
         // Find custom fields and perform necessary calculations
-        const cubesField = issueToUpdate.custom_fields.find((field) => field.name === "Remaining");
         const usedField = issueToUpdate.custom_fields.find((field) => field.name === "Used") || 0;
         const remainingField = issueToUpdate.custom_fields.find((field) => field.name === "Remaining");
         const royaltysanddueField = issueToUpdate.custom_fields.find((field) => field.name === "Royalty(sand)due");
         const locateField = issueToUpdate.custom_fields.find((field) => field.name === "Location");
-  
+
         // Handle new field updates
         const cubesUsed = parseInt(formData.cubes, 10);
         const usedValue = parseInt(usedField ? usedField.value : "0", 10);
@@ -287,6 +289,22 @@ const handleDatetime = (e) => {
         royaltysanddueField.value = (royaltysanddueValue - cubesUsed * 100).toString();
   
         console.log("Updated fields:", usedField, remainingField);
+
+        // Create tpl details
+        const tplLocationField = issueData.custom_fields.find((field) => field.name === "Location");
+        const tplDestinationField = issueData.custom_fields.find((field) => field.name === "Destination") || 0;
+        const tplLorrynumberField = issueData.custom_fields.find((field) => field.name === "Lorry Number");
+        const tplDrivercontactField = issueData.custom_fields.find((field) => field.name === "Driver Contact");
+        const tplCubeField = issueData.custom_fields.find((field) => field.name === "Cubes");
+
+        tplLocationField.value = (locateField.value).toString();
+        tplDestinationField.value = (formData.destination).toString();
+        tplLorrynumberField.value = (formData.lorryNumber).toString();
+        tplDrivercontactField.value = (formData.driverContact).toString();
+        tplCubeField.value = (formData.cubes).toString();
+        issueData.due_date = formData.dueDate;
+  
+        console.log("issue:", issueData);
   
         // Check for errors before updating the issue
         if (royaltysanddueValue < 1000) {
@@ -296,9 +314,10 @@ const handleDatetime = (e) => {
         } else {
           // Update the issue using the service function
           const updatedIssue = { ...issueToUpdate, custom_fields: issueToUpdate.custom_fields };
-          await updateIssue(issueToUpdate.id, updatedIssue);
+          await  updateIssue(issueToUpdate.id, updatedIssue);
   
           // Create a new issue if necessary
+          console.log("issueData", issueData);
           await createIssue(issueData);
   
           setIsModalVisible(true); // Show success modal if the issue is updated successfully
