@@ -56,22 +56,22 @@ const Dashboard = () => {
         }
     };
 
-    const handleReport = async () => {
-        if (!validatePhoneNumber(phoneNumber)) {
-            setValidationMessage(translations.invalidPhoneNumber[language]);
-            setIsValidationModalOpen(true);
-            return;
-        }
+    // const handleReport = async () => {
+    //     if (!validatePhoneNumber(phoneNumber)) {
+    //         setValidationMessage(translations.invalidPhoneNumber[language]);
+    //         setIsValidationModalOpen(true);
+    //         return;
+    //     }
 
-        try {
-            const success = await submitComplaint(input, phoneNumber, language, 'Police Officer');
-            if (success) {
-                setIsModalOpen(false);
-            }
-        } catch (error) {
-            console.error('Failed to submit report:', error);
-        }
-    };
+    //     try {
+    //         const success = await submitComplaint(input, phoneNumber, language, 'Police Officer');
+    //         if (success) {
+    //             setIsModalOpen(false);
+    //         }
+    //     } catch (error) {
+    //         console.error('Failed to submit report:', error);
+    //     }
+    // };
 
     useEffect(() => {
         setModalMessage(translations.invalidLoad[language]); // Update message when language changes
@@ -106,9 +106,9 @@ const Dashboard = () => {
                         isOpen={isModalOpen}
                         onClose={() => setIsModalOpen(false)}
                         message={modalMessage}
-                        phoneNumber={phoneNumber}
-                        onPhoneNumberChange={setPhoneNumber}
-                        onReport={handleReport}
+                        // phoneNumber={phoneNumber}
+                        // onPhoneNumberChange={setPhoneNumber}
+                        // onReport={handleReport}
                         language={language}
                     />
                 )}

@@ -3,6 +3,10 @@ import moment from "moment";
 
 const BASE_URL = "/api";
 
+// const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiTUxPd25lciIsImV4cCI6MTczOTkwNDg4NX0.A_rqIpfZMdI5dgS9lMzJaNvhwvERe72Zs29zG4C9JhI';
+
+// const token = localStorage.getItem("USER_TOKEN");
+
   
 const MLOService = {
   fetchProjects: async () => {
@@ -190,12 +194,14 @@ export const fetchDispatchHistoryData = async (licenseNumber = "") => {
 
 
 // Fetch ML data by license number
-export const fetchMLData = async (apiKey, l_number) => {
+export const fetchMLData = async (l_number) => {
+  const e_l_number = encodeURIComponent(l_number);
+  const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.get(`/api/projects/gsmb/issues.json`, {
+    const response = await axios.get(`http://127.0.0.1:5000/mining-owner/ml-detail?l_number=${e_l_number}`, {
       headers: {
         "Content-Type": "application/json",
-        "X-Redmine-API-Key": apiKey,
+        "Authorization": `Bearer ${token}`,
       },
     });
 
@@ -250,15 +256,32 @@ export const fetchIssues = async () => {
   }
 };
 
+// // Fetch issue from the API using issue id
+// export const fetchIssue = async () => {
+//   try {
+//     const response = await axios.get("/api/projects/gsmb/issues.json", {
+//       headers: {
+//         "Content-Type": "application/json",
+//         "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+//       },
+//     });
+//     return response.data.issues;
+//   } catch (error) {
+//     console.error("Error fetching issues:", error);
+//     throw error;
+//   }
+// };
+
 // Update an issue with new data
 export const updateIssue = async (issueId, updatedIssue) => {
+  const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.put(`/api/issues/${issueId}.json`, {
+    const response = await axios.put(`http://127.0.0.1:5000/mining-owner/update-ml/${issueId}`, {
       issue: updatedIssue,
     }, {
       headers: {
         "Content-Type": "application/json",
-        "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+        "Authorization": `Bearer ${token}`,
       },
     });
     return response.data;
@@ -269,19 +292,37 @@ export const updateIssue = async (issueId, updatedIssue) => {
 };
 
 // Create a new issue
-export const createIssue = async (newIssue) => {
+export const createIssue = async (data) => {
+  const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.post("/api/issues.json", {
-      issue: newIssue,
+    const response = await axios.post("http://127.0.0.1:5000/mining-owner/create-tpl", {
+      issue: data,
     }, {
       headers: {
         "Content-Type": "application/json",
-        "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+        "Authorization": `Bearer ${token}`,
       },
     });
     return response.data;
   } catch (error) {
     console.error("Error creating issue:", error);
+    throw error;
+  }
+};
+
+export const get_user = async () => {
+  const token = localStorage.getItem("USER_TOKEN");
+  const userId = localStorage.getItem("USER_ID");
+  try {
+    const response = await axios.get(`http://127.0.0.1:5000/mining-owner/user-detail/${userId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+    return response.data.user_detail;
+  } catch (error) {
+    console.error("Error fetching issues:", error);
     throw error;
   }
 };

@@ -120,11 +120,12 @@ const Dashboard = () => {
       {isModalOpen && (
         <Modal
           modalMessage={modalMessage}
-          phoneNumber={phoneNumber}
-          setPhoneNumber={setPhoneNumber}
-          handleReport={handleReport}
-          closeModal={closeModal}
+          // phoneNumber={phoneNumber}
+          // setPhoneNumber={setPhoneNumber}
+          // handleReport={handleReport}
           language={language}
+          closeModal={closeModal}
+          
         />
       )}
     </div>

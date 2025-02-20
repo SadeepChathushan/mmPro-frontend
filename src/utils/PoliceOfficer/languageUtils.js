@@ -27,14 +27,14 @@ export const getTranslations = (language) => ({
         ta: 'GSMB-க்கு புகாரளிக்கவும்'
     },
     phoneNumberPlaceholder: {
-        en: 'e.g : 071XXXXXXX',
-        si: 'උදා : 071XXXXXXX',
-        ta: 'எ.கா : 071XXXXXXX'
+        // en: 'e.g : 071XXXXXXX',
+        // si: 'උදා : 071XXXXXXX',
+        // ta: 'எ.கா : 071XXXXXXX'
     },
     phoneNumber: {
-        en: 'Enter Your Phone Number (e.g : 071XXXXXXX)',
-        si: 'දුරකථන අංකය ඇතුළු කරන්න (උදා : 071XXXXXXX)',
-        ta: 'தொலைபேசி எண்ணை உள்ளிடவும் (எ.கா : 071XXXXXXX)'
+        // en: 'Enter Your Phone Number (e.g : 071XXXXXXX)',
+        // si: 'දුරකථන අංකය ඇතුළු කරන්න (උදා : 071XXXXXXX)',
+        // ta: 'தொலைபேசி எண்ணை உள்ளிடவும் (எ.கா : 071XXXXXXX)'
     },
     invalidLoad: {
         en: 'Invalid Load',
@@ -47,8 +47,8 @@ export const getTranslations = (language) => ({
         ta: 'தவறான வாகன எண் வடிவம்!'
     },
     invalidPhoneNumber: {
-        en: 'Invalid Phone Number Format!',
-        si: 'වලංගු නොවන දුරකථන අංක ආකෘතියකි!',
-        ta: 'தவறான தொலைபேசி எண் வடிவம்!'
+        // en: 'Invalid Phone Number Format!',
+        // si: 'වලංගු නොවන දුරකථන අංක ආකෘතියකි!',
+        // ta: 'தவறான தொலைபேசி எண் வடிவம்!'
     }
 });

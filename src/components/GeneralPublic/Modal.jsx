@@ -5,8 +5,8 @@ import axios from 'axios';
 const Modal = ({ 
   modalMessage, 
   language, 
-  onClose, 
-  reportDetails 
+  closeModal
+  //reportDetails 
 }) => {
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [verifiedPhoneNumber, setVerifiedPhoneNumber] = useState(null);
@@ -35,7 +35,7 @@ const Modal = ({
   const handleSubmitReport = async (phoneNumber) => {
     try {
       const response = await axios.post('http://127.0.0.1:5000/submit-report', {
-        ...reportDetails,
+        //...reportDetails,
         phoneNumber: phoneNumber
       });
 
@@ -54,7 +54,7 @@ const Modal = ({
   return (
     <div className="modal">
       <div className="modal-content">
-        <button className="modal-close-button" onClick={onClose}>
+        <button className="modal-close-button" onClick={closeModal}>
           &times;
         </button>
         <div className="gp-modal-body">
