@@ -36,31 +36,32 @@ const History = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const extractedLicenseNumber = queryParams.get("licenseNumber");
-
+  
     if (extractedLicenseNumber) {
       setLicenseNumber(extractedLicenseNumber);
       setl_number(extractedLicenseNumber);
     }
-
+  
     const fetchData = async () => {
       try {
-        // Fetch dispatch history data from the service
-        const data = await fetchDispatchHistoryData();
-
+        // Fetch dispatch history data from the service, passing the extracted license number
+        const data = await fetchDispatchHistoryData(extractedLicenseNumber);
+  
         if (!data || data.length === 0) {
           console.log("No dispatch history data found");
           return;
         }
-
+  
         // Set the dispatch history state
         setDispatchHistory(data);
       } catch (error) {
         console.error('Error fetching dispatch history:', error);
       }
     };
-
+  
     fetchData();
-  }, []); // Empty dependency array ensures it runs once when the component mounts
+  }, []);
+   // Empty dependency array ensures it runs once when the component mounts
 
   const filteredDispatchHistory = dispatchHistory.filter((dispatch) => {
     let isLicenseMatch = true;
