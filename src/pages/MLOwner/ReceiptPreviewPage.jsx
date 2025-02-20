@@ -15,17 +15,16 @@ const ReceiptPage = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   const [mldata, setmlData] = useState(null);
-  const apiKey = localStorage.getItem("API_Key");
   const location = useLocation();
   const { formData, l_number } = location.state || {}; // Ensure fallback to avoid undefined errors
 
   useEffect(() => {
     if (l_number) {
-      fetchMLData(apiKey, l_number)
+      fetchMLData(l_number)
         .then(data => setmlData(data))
         .catch(error => console.error("Error fetching ML data:", error));
     }
-  }, [l_number, apiKey]);
+  }, [l_number]);
 
   // Ensure mldata and mldata.custom_fields exist before accessing
   const mlcontact = mldata?.custom_fields?.find(

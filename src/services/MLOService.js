@@ -202,12 +202,14 @@ export const fetchDispatchHistoryData = async () => {
 
 
 // Fetch ML data by license number
-export const fetchMLData = async (apiKey, l_number) => {
+export const fetchMLData = async (l_number) => {
+  const e_l_number = encodeURIComponent(l_number);
+  const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.get(`/api/projects/gsmb/issues.json`, {
+    const response = await axios.get(`http://127.0.0.1:5000/mining-owner/ml-detail?l_number=${e_l_number}`, {
       headers: {
         "Content-Type": "application/json",
-        "X-Redmine-API-Key": apiKey,
+        "Authorization": `Bearer ${token}`,
       },
     });
 
