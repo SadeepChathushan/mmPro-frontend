@@ -76,55 +76,43 @@ const MLOwnerHomePage = () => {
   const currentTranslations = translations[language] || translations['en'];
 
   useEffect(() => {
-    const currentUser = authService.getCurrentUser();
-    if (currentUser) {
-      setUser(currentUser);
-    }
-  }, []);
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const licenseNumber = queryParams.get('licenseNumber');
-    if (licenseNumber) {
-      setLicenseNumberQuery(licenseNumber);
-    }
-  }, [location.search]);
-
-  useEffect(() => {
     const fetchData = async () => {
       try {
-        const apiKey = localStorage.getItem("API_Key");
-        if (!apiKey) {
-          console.error("API Key not found in localStorage");
+        const token = localStorage.getItem("USER_TOKEN"); // Use USER_TOKEN for authentication
+        if (!token) {
+          console.error("User token not found in localStorage");
           return;
         }
-
-        const projects = await MLOService.fetchProjects(apiKey);
-        let mappedData = MLOService.mapProjectData(projects);
-
-        if (user && user.firstname && user.lastname) {
-          const fullName = `${user.firstname} ${user.lastname}`;
-          mappedData = mappedData.filter(item => item.owner === fullName);
+  
+        // Fetch the projects (licenses) using the service method
+        const projects = await MLOService.fetchProjects();
+        if (!projects || projects.length === 0) {
+          console.log("No projects found");
+          return;
         }
-
+  
+        // Map the fetched data
+        let mappedData = MLOService.mapProjectData(projects);
+  
         // Filter for active licenses only (due date is in the future)
         const activeData = mappedData.filter(item => new Date(item.dueDate) >= new Date());
-
-        // Sort by due date (most recent first)
-        const sortedActiveData = activeData.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
-
+  
         // Get only the most recent 5 active licenses
-        const recentActiveData = sortedActiveData.slice(0, 5);
-
+        const recentActiveData = activeData.slice(0, 5);
+  
+        // Set the data state
         setData(recentActiveData);
         setFilteredData(recentActiveData);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-
+  
     fetchData();
-  }, [user]);
+  }, []); // Empty dependency array ensures it runs once when the component mounts
+  
+  
+  
 
   const handleSearch = (value) => {
     setSearchText(value);

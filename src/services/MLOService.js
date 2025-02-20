@@ -3,62 +3,75 @@ import moment from "moment";
 
 const BASE_URL = "/api";
 
+// const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiTUxPd25lciIsImV4cCI6MTczOTkwNDg4NX0.A_rqIpfZMdI5dgS9lMzJaNvhwvERe72Zs29zG4C9JhI';
+
+// const token = localStorage.getItem("USER_TOKEN");
+
+  
 const MLOService = {
   fetchProjects: async () => {
     try {
-      const apiKey = localStorage.getItem("API_Key");
-      if (!apiKey) {
-        console.error("API Key not found in localStorage");
+      
+      if (!token) {
+        console.error("User token not found in localStorage");
         return [];
       }
 
-      const response = await axios.get(`${BASE_URL}/projects/gsmb/issues.json`, {
+      const response = await axios.get("http://127.0.0.1:5000/mining-owner/mining-homeLicenses", {
         headers: {
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
-          "X-Redmine-API-Key": apiKey,
         },
       });
 
-      return response.data.issues;
+      console.log("API Response:", response.data);
+
+      if (response.status === 200 && Array.isArray(response.data.mining_home)) {
+        return response.data.mining_home; // Returning the array of projects (licenses)
+      } else {
+        console.error("Invalid data format: Expected an array of issues.");
+        return [];
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
       return [];
     }
   },
 
-  mapProjectData: (issues, user) => {
+  mapProjectData: (issues) => {
+    if (!Array.isArray(issues)) {
+      console.error("Invalid data format:", issues);
+      return [];
+    }
+
     let mappedData = issues
       .filter(issue => {
-        const capacity = issue.custom_fields.find(field => field.name === 'Capacity')?.value;
-        return issue.tracker.name === "ML" && (parseInt(capacity, 10) >= 0);
+        const capacity = issue.custom_fields?.find(field => field.name === 'Capacity')?.value;
+        return issue.tracker?.name === "ML" && (parseInt(capacity, 10) >= 0);
       })
       .map(issue => {
         const currentDate = new Date();
         const dueDate = new Date(issue.due_date);
         return {
-          licenseNumber: issue.custom_fields.find(field => field.name === 'License Number')?.value,
-          owner: issue.custom_fields.find(field => field.name === 'Owner Name')?.value,
-          location: issue.custom_fields.find(field => field.name === 'Location')?.value,
+          licenseNumber: issue.custom_fields?.find(field => field.name === 'License Number')?.value,
+          owner: issue.custom_fields?.find(field => field.name === 'Owner Name')?.value,
+          location: issue.custom_fields?.find(field => field.name === 'Location')?.value,
           startDate: issue.start_date,
           dueDate: issue.due_date,
-          capacity: issue.custom_fields.find(field => field.name === 'Capacity')?.value,
-          dispatchedCubes: issue.custom_fields.find(field => field.name === 'Used')?.value,
-          remainingCubes: issue.custom_fields.find(field => field.name === 'Remaining')?.value,
-          royalty: issue.custom_fields.find(field => field.name === 'Royalty(sand)due')?.value,
-          status: issue.status.name,
+          capacity: issue.custom_fields?.find(field => field.name === 'Capacity')?.value,
+          dispatchedCubes: issue.custom_fields?.find(field => field.name === 'Used')?.value,
+          remainingCubes: issue.custom_fields?.find(field => field.name === 'Remaining')?.value,
+          royalty: issue.custom_fields?.find(field => field.name === 'Royalty(sand)due')?.value,
+          status: issue.status?.name,
         };
       });
 
     mappedData = mappedData.filter(item => item.status === 'Valid');
 
-    if (user && user.firstname && user.lastname) {
-      const fullName = `${user.firstname} ${user.lastname}`;
-      mappedData = mappedData.filter(item => item.owner === fullName);
-    }
-
     return mappedData.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate)).slice(0, 5);
   }
 };
+
 
 export const fetchLicenses = async () => {
   try {
@@ -136,23 +149,31 @@ export const fetchLicenses = async () => {
 // src/services/dispatchHistoryService.js
 
 // Fetch dispatch history data
-export const fetchDispatchHistoryData = async (apiKey) => {
+
+
+export const fetchDispatchHistoryData = async () => {
   try {
-    const response = await axios.get("/api/projects/gsmb/issues.json", {
+    // Retrieve the user token from localStorage
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return [];
+    }
+
+    // Make the API request to fetch the dispatch history data
+    const response = await axios.get("http://127.0.0.1:5000/mining-owner/view-tpls", {
       headers: {
+        "Authorization": `Bearer ${token}`, // Use the token in the Authorization header
         "Content-Type": "application/json",
-        "X-Redmine-API-Key": apiKey,
       },
     });
 
-    if (response.data && response.data.issues) {
-      const issues = response.data.issues;
-      const filteredIssues = issues.filter(
-        (issue) => issue.tracker.id === 8
-      );
+    if (response.data && response.data.view_tpls) {
+      const dispatchHistory = response.data.view_tpls; // Accessing the correct field in the response
 
-      const formattedDispatchHistory = filteredIssues.map((issue) => {
-        const customFields = issue.custom_fields.reduce((acc, field) => {
+      // Format the dispatch history data
+      const formattedDispatchHistory = dispatchHistory.map((item) => {
+        const customFields = item.custom_fields.reduce((acc, field) => {
           acc[field.name] = field.value;
           return acc;
         }, {});
@@ -161,11 +182,11 @@ export const fetchDispatchHistoryData = async (apiKey) => {
           licenseNumber: customFields["License Number"] || "",
           owner: customFields["Owner Name"] || "",
           location: customFields["Location"] || "",
-          Destination: customFields["Destination"] || "",
+          destination: customFields["Destination"] || "",
           lorryNumber: customFields["Lorry Number"] || "",
           cubes: customFields["Cubes"] || "",
-          dispatchDate: issue.start_date || "",
-          due_date: issue.due_date || "",
+          dispatchDate: item.created_on || "", // Using created_on instead of start_date
+          dueDate: item.due_date || "",
           lorryDriverContact: customFields["Driver Contact"] || "",
         };
       });
@@ -178,13 +199,17 @@ export const fetchDispatchHistoryData = async (apiKey) => {
   }
 };
 
+
+
 // Fetch ML data by license number
-export const fetchMLData = async (apiKey, l_number) => {
+export const fetchMLData = async (l_number) => {
+  const e_l_number = encodeURIComponent(l_number);
+  const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.get(`/api/projects/gsmb/issues.json`, {
+    const response = await axios.get(`http://127.0.0.1:5000/mining-owner/ml-detail?l_number=${e_l_number}`, {
       headers: {
         "Content-Type": "application/json",
-        "X-Redmine-API-Key": apiKey,
+        "Authorization": `Bearer ${token}`,
       },
     });
 
@@ -239,15 +264,32 @@ export const fetchIssues = async () => {
   }
 };
 
+// // Fetch issue from the API using issue id
+// export const fetchIssue = async () => {
+//   try {
+//     const response = await axios.get("/api/projects/gsmb/issues.json", {
+//       headers: {
+//         "Content-Type": "application/json",
+//         "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+//       },
+//     });
+//     return response.data.issues;
+//   } catch (error) {
+//     console.error("Error fetching issues:", error);
+//     throw error;
+//   }
+// };
+
 // Update an issue with new data
 export const updateIssue = async (issueId, updatedIssue) => {
+  const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.put(`/api/issues/${issueId}.json`, {
+    const response = await axios.put(`http://127.0.0.1:5000/mining-owner/update-ml/${issueId}`, {
       issue: updatedIssue,
     }, {
       headers: {
         "Content-Type": "application/json",
-        "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+        "Authorization": `Bearer ${token}`,
       },
     });
     return response.data;
@@ -258,19 +300,37 @@ export const updateIssue = async (issueId, updatedIssue) => {
 };
 
 // Create a new issue
-export const createIssue = async (newIssue) => {
+export const createIssue = async (data) => {
+  const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.post("/api/issues.json", {
-      issue: newIssue,
+    const response = await axios.post("http://127.0.0.1:5000/mining-owner/create-tpl", {
+      issue: data,
     }, {
       headers: {
         "Content-Type": "application/json",
-        "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+        "Authorization": `Bearer ${token}`,
       },
     });
     return response.data;
   } catch (error) {
     console.error("Error creating issue:", error);
+    throw error;
+  }
+};
+
+export const get_user = async () => {
+  const token = localStorage.getItem("USER_TOKEN");
+  const userId = localStorage.getItem("USER_ID");
+  try {
+    const response = await axios.get(`http://127.0.0.1:5000/mining-owner/user-detail/${userId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+    return response.data.user_detail;
+  } catch (error) {
+    console.error("Error fetching issues:", error);
     throw error;
   }
 };

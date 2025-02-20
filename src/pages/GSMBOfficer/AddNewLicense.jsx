@@ -28,6 +28,7 @@ const NewLicenseForm = () => {
       // Build the payload to match Redmine's issue creation format
       const payload = {
         issue: {
+
           project: { id: 31 }, // GSMB Project ID
           tracker: { id: 7 }, // ML Tracker ID
           subject: values.licenseNumber,
@@ -35,7 +36,8 @@ const NewLicenseForm = () => {
           // priority: { id: 2 },
           start_date: values.validityStart.format("YYYY-MM-DD"), // Start date
           due_date: values.endDate.format("YYYY-MM-DD"), // End date
-          estimated_hours: 24.0, // Default estimated hours
+          estimated_hours: 24.0, // Default estimated hour
+          subject: language === "en" ? "New License" : "නව බලපත්‍රය",
 
           custom_fields: [
             { id: 8, name: "License Number", value: values.licenseNumber },

@@ -4,6 +4,6 @@ export const validateVehicleNumber = (vehicleNumber) => {
 };
 
 export const validatePhoneNumber = (phoneNumber) => {
-  const phoneRegex = /^07[01245678][0-9]{7}$/;  // Validates Sri Lankan phone numbers (e.g., +94 or 0712345678)
+  const phoneRegex = /^7|0|(?:\+94)[0-9]{9,10}$/;  // Validates Sri Lankan phone numbers (e.g., +94 or 0712345678)
   return phoneRegex.test(phoneNumber);
 };

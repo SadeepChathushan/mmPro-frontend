@@ -9,23 +9,40 @@ import googleLogo from "../../assets/images/google_icon.png";
 import "./Signin.css";
 import authService from "../../services/authService";
 
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+console.log("clientId", clientId);
+
 const SignInPage = () => {
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
     const { username, password } = values;
-    const response = await authService.login(username, password);
+    try {
+      const response = await axios.post("http://localhost:5000/auth/login", {
+        username,
+        password,
+      });
 
-    if (response.success) {
-      message.success("Login successful!");
-      redirectToDashboard(response.role);
-    } else {
-      message.error(response.message);
+      if (response.data.token) {
+        
+        message.success("Login successful!");
+        // Save token in localStorage (or sessionStorage depending on your needs)
+        localStorage.setItem("USER_ID", response.data.userId[0]);
+        localStorage.setItem("USER_TOKEN", response.data.token);
+        localStorage.setItem("USERROLE", response.data.role);
+        redirectToDashboard(response.data.role);
+      } else {
+        message.error("Login failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      message.error("Login failed. Please try again.");
     }
   };
 
   const redirectToDashboard = (role) => {
-    console.log("the role is:", role);
+    console.log("user role: ", localStorage.getItem("USERROLE"));
+    console.log("token: ", localStorage.getItem("USER_TOKEN"));
     switch (role) {
       case "GSMBOfficer":
         navigate("/gsmb/dashboard");
@@ -50,17 +67,19 @@ const SignInPage = () => {
 
   const handleGoogleLoginSuccess = async (response) => {
     const { credential } = response;
+    console.log(credential);
     try {
-      const res = await axios.post("http://localhost:5000/auth/google", {
+      const res = await axios.post("http://localhost:5000/auth/google-login", {
         token: credential,
       });
 
-      const userRole = res.data.user.role;
-
-      if (res.data.user) {
+      if (res.data.token) {
         message.success("Google login successful!");
-        localStorage.setItem("USERROLE", userRole);
-        redirectToDashboard(userRole); // Redirect based on role
+        // Save token in localStorage
+        localStorage.setItem("USER_ID", response.data.userId[0]);
+        localStorage.setItem("USER_TOKEN", res.data.token);
+        localStorage.setItem("USERROLE", res.data.role);
+        redirectToDashboard(res.data.role);
       } else {
         message.error("User role not found!");
       }
@@ -154,7 +173,7 @@ const SignInPage = () => {
 
             {/* Google Login Button */}
             <Form.Item className="center-text">
-              <GoogleOAuthProvider clientId="329550488375-r7qkh9339o8cn1cmniinkboo5vac6m9g.apps.googleusercontent.com">
+              <GoogleOAuthProvider clientId={clientId}>
                 <GoogleLogin
                   onSuccess={handleGoogleLoginSuccess}
                   onFailure={() => message.error("Google login failed!")}

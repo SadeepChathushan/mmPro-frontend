@@ -11,6 +11,7 @@ const NewLicenseForm = () => {
   const { language } = useLanguage();
   const [form] = Form.useForm();
 
+
   const onFinish = async (values) => {
     try {
       const userPayload = {
@@ -19,6 +20,7 @@ const NewLicenseForm = () => {
           firstname: values.firstname,
           lastname: values.lastname,
           mail: values.mail,
+
           custom_fields: [
             { id: 21, name: "Mobile Number", value: values.phoneNumber },
             { id: 22, name: "Address", value: values.address },
@@ -26,6 +28,7 @@ const NewLicenseForm = () => {
           ],
         },
       };
+
   
       const newUser = await officerService.registerUser(userPayload);
       if (!newUser || !newUser.id) {
@@ -55,6 +58,7 @@ const NewLicenseForm = () => {
           : "පතල් බලපත්‍ර හිමිකරු සාර්ථකව ලියාපදිංචි කරන ලදී!"
       );
   
+
       form.resetFields();
     } catch (error) {
       console.error("Error:", error);
@@ -71,9 +75,7 @@ const NewLicenseForm = () => {
   };
 
   return (
-    <div
-
-    >
+    <div>
       <Button
         type="link"
         icon={<ArrowLeftOutlined />}
@@ -108,15 +110,19 @@ const NewLicenseForm = () => {
           <Col xs={24} sm={24} md={12}>
             <Form.Item
               style={{ fontSize: "32px" }}
+
               label={language === "en" ? "First Name" : "අයිතිකරුගේ මුල් නම"}
               name="firstname"
+
               rules={[
                 {
                   required: true,
                   message:
                     language === "en"
+
                       ? "Please input the first name!"
                       : "අයිතිකරුගේ මුල් නම ඇතුළත් කරන්න!",
+
                 },
               ]}
             >
@@ -127,16 +133,20 @@ const NewLicenseForm = () => {
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
+
               style={{ fontSize: "32px" }}
               label={language === "en" ? "Last Name" : "අයිතිකරුගේ අවසන් නම"}
               name="lastname"
+
               rules={[
                 {
                   required: true,
                   message:
                     language === "en"
+
                       ? "Please input the last name!"
                       : "අයිතිකරුගේ අවසන් නම ඇතුළත් කරන්න!",
+
                 },
               ]}
             >
@@ -146,15 +156,19 @@ const NewLicenseForm = () => {
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
+
               label={language === "en" ? "Email Address" : "විද්‍යුත් තැපෑල"}
               name="mail"
+
               rules={[
                 {
                   required: true,
                   message:
                     language === "en"
+
                       ? "Please input the Email!"
                       : "විද්‍යුත් තැපෑල ඇතුළත් කරන්න!",
+
                 },
               ]}
             >
@@ -164,15 +178,19 @@ const NewLicenseForm = () => {
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
+
               label={language === "en" ? "Mobile Number" : "ජංගම දුරකථන අංකය"}
               name="phoneNumber"
+
               rules={[
                 {
                   required: true,
                   message:
                     language === "en"
+
                       ? "Please input the mobile number!"
                       : "ජංගම දුරකථන අංකය ඇතුළත් කරන්න!",
+
                 },
               ]}
             >
@@ -197,21 +215,25 @@ const NewLicenseForm = () => {
               <Input style={{ fontSize: "24px" }} />
             </Form.Item>
           </Col>
+
           <Col xs={24} sm={24} md={12}>
             <Form.Item
               label={language === "en" ? "NIC" : "ජාතික හැඳුනුම්පත"}
               name="NIC"
+
               rules={[
                 {
                   required: true,
                   message:
                     language === "en"
+
                       ? "Please input the NIC Number!"
                       : "ජාතික හැඳුනුම්පත ඇතුළත් කරන්න!",
                 },
               ]}
             >
               <Input style={{ fontSize: "24px" }} />
+
             </Form.Item>
           </Col>
 
@@ -226,6 +248,7 @@ const NewLicenseForm = () => {
                   alignItems: "center",
                   gap: "50px",
                   alignItems: "center",
+
                 }}
               >
                 <Button
@@ -248,9 +271,11 @@ const NewLicenseForm = () => {
                     e.currentTarget.style.borderColor = "#950C33"; // Default border
                   }}
                 >
+
                   {language == "en"
                     ? "Create Mining License Owner"
                     : "පතල් බලපත්‍ර හිමිකරු සාදන්න"}
+
                 </Button>
                 <Button
                   type="default"
