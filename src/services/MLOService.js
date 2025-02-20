@@ -153,7 +153,6 @@ export const fetchDispatchHistoryData = async (licenseNumber = "") => {
         licenseNumber: licenseNumber, // Send the licenseNumber as a query parameter
       },
     });
-
     // Check if the response is valid and contains the expected data
     if (response.data && response.data.view_tpls && Array.isArray(response.data.view_tpls)) {
       const dispatchHistory = response.data.view_tpls;
@@ -173,7 +172,7 @@ export const fetchDispatchHistoryData = async (licenseNumber = "") => {
           destination: customFields["Destination"] || "",
           lorryNumber: customFields["Lorry Number"] || "",
           cubes: customFields["Cubes"] || "",
-          dispatchDate: item.created_on || "", // Using created_on instead of start_date
+          startDate: item.start_date || "", // Using created_on instead of start_date
           dueDate: item.due_date || "",
           status: item.status || "Unknown",  // Default status if not found
           lorryDriverContact: customFields["Driver Contact"] || "",
@@ -204,12 +203,7 @@ export const fetchMLData = async (l_number) => {
         "Authorization": `Bearer ${token}`,
       },
     });
-
-    if (response.data && response.data.issues) {
-      const issues = response.data.issues;
-      const filteredMLIssues = issues.filter(issue => issue.subject === l_number);
-      return filteredMLIssues[0];
-    }
+    return response.data.ml_detail;
   } catch (error) {
     console.error("Error fetching data:", error);
     return null;
@@ -243,7 +237,7 @@ export const fetchLocationSuggestions = async (value) => {
 // Fetch issues from the API
 export const fetchIssues = async () => {
   try {
-    const response = await axios.get("/api/projects/gsmb/issues.json", {
+    const response = await axios.get("/api/issues.json", {
       headers: {
         "Content-Type": "application/json",
         "X-Redmine-API-Key": localStorage.getItem("API_Key"),
