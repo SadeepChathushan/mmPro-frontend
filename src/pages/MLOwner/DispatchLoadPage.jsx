@@ -19,8 +19,9 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
 import "../../styles/MLOwner/DispatchLoadPage.css";
-import { fetchIssues, updateIssue, createIssue } from '../../services/MLOService';
+import { fetchIssues, updateIssue, createIssue, get_user } from '../../services/MLOService';
 import Modals from "./Modals";
+import { handleDriverContactChange,handleLorryNumberChange } from '../../utils//MLOUtils/DispatchValidation'; 
 const { Content } = Layout;
 const { Title } = Typography;
 
@@ -45,11 +46,10 @@ const DispatchLoadPage = () => {
       cubes: 1,
     });
   };
+  const [driverContactError, setDriverContactError] = useState('');
+  const [lorryNumberError, setLorryNumberError] = useState('');
 
-  console.log(l_number);
-  {
-    /*_---------------User______*/
-  }
+  
   const user_Details = JSON.parse(localStorage.getItem("USER")) || {};
   const apiKey = localStorage.getItem("API_Key");
   console.log("user", user_Details.lastname);
@@ -59,6 +59,7 @@ const DispatchLoadPage = () => {
   const user_name = userf_name + " " + userl_name;
   console.log("mee", user_name);
 
+  const [number, setLNumber] = useState("");
   const { language } = useLanguage();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isErrModalVisible, setIsErrModalVisible] = useState(false);
@@ -82,19 +83,20 @@ const DispatchLoadPage = () => {
     project_id: 31,
     tracker_id: 8,
     status_id: 47,
-    assigned_to_id: user_Details.id,
+    assigned_to_id: "",
     subject: "TPL", //TPL0004
     due_date: "",
+    estimated_hours: 24.0,
     custom_fields: [
       {
         id: 2,
         name: "Owner Name",
-        value: user_name,
+        value: "",
       },
       {
         id: 8,
         name: "License Number",
-        value: "LLL/100/100",
+        value: "",
       },
       {
         id: 11,
@@ -184,43 +186,9 @@ const DispatchLoadPage = () => {
     setPreviousSearches(updatedSearches);
     localStorage.setItem("previousSearches", JSON.stringify(updatedSearches));
   };
-  const handleLorryNumberChange = (e) => {
-    setFormData({ ...formData, lorryNumber: e.target.value });
-    const value = e.target.value;
-    // Validation for Lorry Number: must contain exactly 4 digits and no symbols
-    const lorryNumberPattern = /^[0-9]{4}$/;
-    if (value.length <= 7 && lorryNumberPattern.test(value)) {
-      setFormData({
-        ...formData,
-        lorryNumber: value
-      });
-    } else if (value.length === 7) {
-      message.warning("Lorry number cannot be more than 6 digits and must only contain numbers.");
-    }
-  };
-
-  const handleDriverContactChange = (e) => {
-    const value = e.target.value;
-  
-    // Allow only numeric values
-    if (/[^0-9]/.test(value)) {
-      message.warning("Driver contact number must contain only numbers.");
-      return; // Prevent invalid input
-    }
-  
-    // Validation for Driver Contact: must be exactly 10 digits
-    if (value.length <= 10) {
-      setFormData({
-        ...formData,
-        driverContact: value
-      });
-    } else {
-      message.warning("Driver contact number should only have 10 digits.");
-    }
-  };
   
 
-  const handleDatetime = (e) => {
+const handleDatetime = (e) => {
     setFormData({ ...formData, DateTime: e.target.value });
   };
 
@@ -264,6 +232,7 @@ const DispatchLoadPage = () => {
   
 
   const handleSubmit = async (event) => {
+    console.log("entered");
     event.preventDefault();
   
     // Trim the values before validation
@@ -294,26 +263,28 @@ const DispatchLoadPage = () => {
       console.log("Issues:", issues);
   
       const issueToUpdate = issues.find((issue) => issue.subject === formData.licenseNumber);
+      console.log("Issue to update:", issueToUpdate);
   
       if (issueToUpdate) {
-        console.log("Issue to update:", issueToUpdate);
+        // get user details
+        const userData = await get_user();
+        console.log("userdata",userData.id)
   
         // Find custom fields and perform necessary calculations
-        const cubesField = issueToUpdate.custom_fields.find((field) => field.name === "Remaining");
         const usedField = issueToUpdate.custom_fields.find((field) => field.name === "Used") || 0;
         const remainingField = issueToUpdate.custom_fields.find((field) => field.name === "Remaining");
         const royaltysanddueField = issueToUpdate.custom_fields.find((field) => field.name === "Royalty(sand)due");
         const locateField = issueToUpdate.custom_fields.find((field) => field.name === "Location");
-  
+
         // Handle new field updates
         const cubesUsed = parseInt(formData.cubes, 10);
         const usedValue = parseInt(usedField ? usedField.value : "0", 10);
         const remainingValue = parseInt(remainingField ? remainingField.value : "0", 10);
         const royaltysanddueValue = parseInt(royaltysanddueField ? royaltysanddueField.value : "0", 10);
   
-        console.log("Cubes used:", cubesUsed);
-        console.log("Used value:", usedValue);
-        console.log("Remaining value:", remainingValue);
+        // console.log("Cubes used:", cubesUsed);
+        // console.log("Used value:", usedValue);
+        // console.log("Remaining value:", remainingValue);
   
         // Update fields
         usedField.value = (usedValue + cubesUsed).toString();
@@ -321,6 +292,29 @@ const DispatchLoadPage = () => {
         royaltysanddueField.value = (royaltysanddueValue - cubesUsed * 100).toString();
   
         console.log("Updated fields:", usedField, remainingField);
+
+        // Create tpl details
+        const tplLocationField = issueData.custom_fields.find((field) => field.name === "Location");
+        const tplDestinationField = issueData.custom_fields.find((field) => field.name === "Destination") || 0;
+        const tplLorrynumberField = issueData.custom_fields.find((field) => field.name === "Lorry Number");
+        const tplDrivercontactField = issueData.custom_fields.find((field) => field.name === "Driver Contact");
+        const tplCubeField = issueData.custom_fields.find((field) => field.name === "Cubes");
+        const tplL_numberField = issueData.custom_fields.find((field) => field.name === "License Number");
+        const tplO_nameField = issueData.custom_fields.find((field) => field.name === "Owner Name");
+
+        // set data to Create tpl 
+        tplLocationField.value = (locateField.value).toString();
+        tplDestinationField.value = (formData.destination).toString();
+        tplLorrynumberField.value = (formData.lorryNumber).toString();
+        tplDrivercontactField.value = (formData.driverContact).toString();
+        tplCubeField.value = (formData.cubes).toString();
+        const userName = userData.firstname +" "+ userData.lastname;
+        tplO_nameField.value = (userName).toString();
+        issueData.due_date = formData.dueDate;
+        issueData.assigned_to_id = userData.id;
+        tplL_numberField.value = (formData.licenseNumber).toString();
+  
+        console.log("issue:", issueData);
   
         // Check for errors before updating the issue
         if (royaltysanddueValue < 1000) {
@@ -330,9 +324,10 @@ const DispatchLoadPage = () => {
         } else {
           // Update the issue using the service function
           const updatedIssue = { ...issueToUpdate, custom_fields: issueToUpdate.custom_fields };
-          await updateIssue(issueToUpdate.id, updatedIssue);
+          await  updateIssue(issueToUpdate.id, updatedIssue);
   
           // Create a new issue if necessary
+          console.log("issueData", issueData);
           await createIssue(issueData);
   
           setIsModalVisible(true); // Show success modal if the issue is updated successfully
@@ -486,47 +481,42 @@ const DispatchLoadPage = () => {
         </Row>
 
         {/* Lorry Number Input */}
-           {/* Lorry Number Input */}
-      <Row gutter={16}>
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <div className="form-field">
-            <span className="field-label">
-              {language === "en"
-                ? "LORRY NUMBER:"
-                : language === "si"
-                ? "ලොරි අංකය:"
-                : "லாரி எண்:"}
-            </span>
-            <Input
-              value={formData.lorryNumber}
-              onChange={handleLorryNumberChange}
-              style={{ width: "100%" }}
-              maxLength={7} // Limiting input to 7 characters
-            />
-          </div>
-        </Col>
-      </Row>
+        <Row gutter={16}>
+          <Col xs={24} sm={24} md={12} lg={12}>
+            <div className="form-field">
+              <span className="field-label">LORRY NUMBER:</span>
+              <Input
+                value={formData.lorryNumber}
+                onChange={(e) =>
+                  handleLorryNumberChange(e, formData, setFormData, setLorryNumberError)
+                }
+                required
+              />
+              {lorryNumberError && (
+                <div style={{ color: "red", fontSize: "12px" }}>{lorryNumberError}</div>
+              )}
+            </div>
+          </Col>
+        </Row>
 
-      {/* Driver Contact Input */}
-      <Row gutter={16}>
-        <Col xs={24} sm={24} md={12} lg={12}>
-          <div className="form-field">
-            <span className="field-label">
-              {language === "en"
-                ? "DRIVER CONTACT:"
-                : language === "si"
-                ? "රියදුරුගේ දුරකථන අංකය:"
-                : "ஓட்டுனர் தொடர்பு:"}
-            </span>
-            <Input
-              value={formData.driverContact}
-              onChange={handleDriverContactChange}
-              style={{ width: "100%" }}
-              maxLength={10} // Limiting input to 10 characters
-            />
-          </div>
-        </Col>
-      </Row>
+        {/* Driver Contact Input */}
+        <Row gutter={16}>
+          <Col xs={24} sm={24} md={12} lg={12}>
+            <div className="form-field">
+              <span className="field-label">DRIVER CONTACT:</span>
+              <Input
+                value={formData.driverContact}
+                onChange={(e) =>
+                  handleDriverContactChange(e, formData, setFormData, setDriverContactError)
+                }
+                required
+              />
+              {driverContactError && (
+                <div style={{ color: "red", fontSize: "12px" }}>{driverContactError}</div>
+              )}
+            </div>
+          </Col>
+        </Row>
 
         {/* Due Date Input */}
         <Row gutter={16}>

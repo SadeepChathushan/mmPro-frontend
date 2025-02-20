@@ -1,25 +1,54 @@
-// src/components/GeneralPublic/Modal.jsx
-import React from 'react';
+import React, { useState } from 'react';
+import OtpVerificationModal from './OtpVerificationModal.jsx';
+import axios from 'axios';
 
-const Modal = ({ modalMessage, phoneNumber, setPhoneNumber, handleReport, closeModal, language }) => {
-  const isSinhala = language === 'si';
+const Modal = ({ 
+  modalMessage, 
+  language, 
+  closeModal
+  //reportDetails 
+}) => {
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [verifiedPhoneNumber, setVerifiedPhoneNumber] = useState(null);
 
   const textContent = {
-    reportButton: isSinhala
+    reportButton: language === 'si'
       ? 'GSMB වෙත වාර්තා කරන්න'
       : language === 'ta'
-      ? 'GSMB இற்கு புகார் செய்யவும்'
-      : 'Report to GSMB',
-    vehiclePlaceholder: isSinhala
-      ? 'උදා : 0711231231'
-      : language === 'ta'
-      ? 'எ.கா : 0711231231'
-      : 'e.g : 0711231231',
+        ? 'GSMB இற்கு புகார் செய்யவும்'
+        : 'Report to GSMB',
     contacts: [
       { number: '+94-11-2886289', icon: '📞' },
       { number: '+94-11-2886290', icon: '📞' },
       { number: '901', icon: '📞' },
     ],
+  };
+
+  const handleOpenOtpModal = () => {
+    setIsOtpModalOpen(true);
+  };
+
+  const handleCloseOtpModal = () => {
+    setIsOtpModalOpen(false);
+  };
+
+  const handleSubmitReport = async (phoneNumber) => {
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/submit-report', {
+        //...reportDetails,
+        phoneNumber: phoneNumber
+      });
+
+      if (response.data.success) {
+        // Handle successful report submission
+        onClose(); // Close the modal
+      } else {
+        // Handle submission error
+        console.error('Report submission failed');
+      }
+    } catch (error) {
+      console.error('Error submitting report', error);
+    }
   };
 
   return (
@@ -28,38 +57,24 @@ const Modal = ({ modalMessage, phoneNumber, setPhoneNumber, handleReport, closeM
         <button className="modal-close-button" onClick={closeModal}>
           &times;
         </button>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div className="gp-modal-body">
           <input
             type="text"
             value={modalMessage}
             readOnly
-            style={{
-              backgroundColor: modalMessage === (language === 'en' ? 'Valid Load' : language === 'si' ? 'වලංගු පැටවීමකි' : 'சரியான ஏற்றுதல்') ? '#28a745' : '#FF0000',
-              color: '#fff',
-              padding: '0.75rem 1rem',
-              border: 'none',
-              borderRadius: '1.5rem',
-              fontSize: '1rem',
-              textAlign: 'center',
-              width: '200px',
-              height: '50px',
-            }}
+            className={modalMessage === (language === 'en' ? 'Valid Load' : language === 'si' ? 'වලංගු පැටවීමකි' : 'சரியான ஏற்றுதல்') ? 'valid-message' : 'invalid-message'}
           />
-          {modalMessage === (language === 'en' ? 'Invalid Load' : language === 'si' ?'අනවසර පැටවීමකි' : 'தவறான சுமை') && (
-            <div style={{ marginTop: '1rem', textAlign: 'center', }}>
-              <div style={{ marginBottom: '1rem' }}>
-                <input
-                  type="text"
-                  placeholder={textContent.vehiclePlaceholder}
-                  className="phone-number-input"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                />
-              </div>
-              <button className="report-button" onClick={handleReport}>
+
+          {modalMessage !== (language === 'en' ? 'Valid Load' : language === 'si' ? 'වලංගු පැටවීමකි' : 'சரியான ஏற்றுதல்') && (
+            <div className="modal-actions">
+              <button 
+                className="gp-report-button" 
+                onClick={handleOpenOtpModal}
+              >
                 {textContent.reportButton}
               </button>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
+
+              <div className="contact-list">
                 {textContent.contacts.map((contact, index) => (
                   <div key={index} className="contact">
                     <span>{contact.number}</span>
@@ -70,6 +85,13 @@ const Modal = ({ modalMessage, phoneNumber, setPhoneNumber, handleReport, closeM
             </div>
           )}
         </div>
+
+        <OtpVerificationModal
+          isOpen={isOtpModalOpen}
+          onClose={handleCloseOtpModal}
+          onVerificationSuccess={handleSubmitReport}
+          language={language}
+        />
       </div>
     </div>
   );

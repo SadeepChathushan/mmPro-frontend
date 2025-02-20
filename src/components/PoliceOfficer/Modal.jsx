@@ -40,13 +40,16 @@ const Modal = ({
                 </div>
 
                 {/* Phone number input */}
-                <input
+                <div>
+                    <h3>{translations.phoneNumber[language]}</h3>
+                </div>
+                {/* <input
                     type="text"
                     placeholder={translations.phoneNumberPlaceholder[language]}
                     className="po-modal-input"
                     value={phoneNumber}
                     onChange={(e) => onPhoneNumberChange(e.target.value)}
-                />
+                /> */}
 
                 {/* Report button */}
                 <button className="po-report-button" onClick={onReport}>
