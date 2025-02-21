@@ -55,6 +55,31 @@ const getValidationRules = (language) => ({
             : "කරුණාකර වලංගු 10 අංක ජංගම දුරකථන අංකයක් ඇතුළත් කරන්න!",
       },
     ],
+
+    NIC: [
+      {
+        required: true,
+        message: language === "en" ? "Please enter NIC number!" : "කරුණාකර ජා.හැ. අංකය ලබාදෙන්න!",
+      },
+      {
+        pattern: /^\d{9}[Vv]|\d{12}$/,
+        message: language === "en" ? "Invalid NIC format!" : "වැරදි ජා.හැ. ආකෘතියයි!",
+      },
+    ],
+
+    capacity: [
+      {
+        required: true,
+        message: language === "en" ? "Please enter capacity!" : "කරුණාකර කිවුබ්ස් ගණන ලබාදෙන්න!",
+      },
+      {
+        type: "number",
+        min: 1,
+        message: language === "en" ? "Capacity must be at least 1!" : "කිවුබ්ස් ගණන 1 ට වඩා වැඩි විය යුතුයි!",
+      },
+    ],
+
+
     capacity: [
       {
         required: true,

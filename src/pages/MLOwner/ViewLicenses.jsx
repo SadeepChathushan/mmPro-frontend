@@ -29,6 +29,7 @@ const Licenses = () => {
   useEffect(() => {
     const loadLicenses = async () => {
       const data = await fetchLicenses();
+      console.log(data);
       setLicenses(data);
       setFilteredLicenses(data);
     };
