@@ -236,11 +236,12 @@ export const fetchLocationSuggestions = async (value) => {
 
 // Fetch issues from the API
 export const fetchIssues = async () => {
+  const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.get("/api/issues.json", {
+    const response = await axios.get("http://127.0.0.1:5000/mining-owner/mining-licenses", {
       headers: {
         "Content-Type": "application/json",
-        "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+        "Authorization": `Bearer ${token}`,
       },
     });
     return response.data.issues;
