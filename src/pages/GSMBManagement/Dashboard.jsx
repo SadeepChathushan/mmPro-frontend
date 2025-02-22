@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Layout, Row, Col, DatePicker, Typography } from 'antd';
 import { KPICard, getDefaultKPIData } from "../../components/GSMBManagement/KPICard";
@@ -31,6 +32,7 @@ const Dashboard = () => {
     expired: 0,
     rejected: 0,
   });
+
   
   const [TotalRoyalty, setTotalRoyalty] = useState(0);
   
@@ -40,6 +42,7 @@ const Dashboard = () => {
     InProgress: 0,
     Executed: 0,
   });
+
 
   // Sample chart data
   const data = [
@@ -119,6 +122,7 @@ const Dashboard = () => {
   ];
 
   const colors = [
+
     "#FFD700", "#FF8C00", "#B8860B", "#DAA520", "#FF4500",
     "#FF0000", "#B22222", "#8B0000", "#FF6347", "#CD5C5C",
   ];
@@ -177,7 +181,14 @@ const Dashboard = () => {
         }}
       >
         <Row justify="space-between" align="middle">
-          <Title level={3} style={{ WebkitBackgroundClip: "text", color: "#cacaca", margin: 0 }}>
+          <Title
+            level={3}
+            style={{
+              WebkitBackgroundClip: "text",
+              color: "#cacaca",
+              margin: 0,
+            }}
+          >
             DASHBOARD
           </Title>
           <RangePicker />
@@ -189,6 +200,7 @@ const Dashboard = () => {
         <Row gutter={16}>
           {kpiData.map((kpi, index) => (
             <Col xs={24} md={6} key={index}>
+
               <KPICard 
                 kpi={kpi}
                 colors={colors}
@@ -201,15 +213,18 @@ const Dashboard = () => {
 
         {/* Charts Row */}
         <Row gutter={16} style={{ marginTop: "20px" }}>
+
           <MonthlyChart lineData={monthlyData} />
           <MiningAreas data={areadata} getDynamicColor={getDynamicColor} />
         </Row>
+
 
         {/* Bottom Row */}
         <Row gutter={16} style={{ marginTop: "20px" }}>
           <TopContributors orders = {recentOrders}/>
           <LicenseCategories data = {licenseData} />
           <Col xs={24} md={8}>
+
             <TransportLicense pieData={transportData} colors={colors} />
           </Col>
         </Row>
