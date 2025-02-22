@@ -1,25 +1,39 @@
 // officerService.js
 
 import axios from "axios";
+import moment from "moment";
+
+
+const token = localStorage.getItem("USER_TOKEN");
+
 
 // Wrap your named functions in an object
 const officerService = {
   getIssuesData: async () => {
     try {
-      const apiKey = localStorage.getItem("API_Key");
-      if (!apiKey) {
-        console.error("API Key not found in localStorage");
+      
+      if (!token) {
+        console.error("User token not found in localStorage");
         return [];
       }
-      const response = await axios.get("/api/projects/gsmb/issues.json", {
+
+      const response = await axios.get("http://127.0.0.1:5000/gsmb-officer/gsmb-issue", {
         headers: {
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
-          "X-Redmine-API-Key": apiKey,
         },
       });
-      return response.data.issues || [];
+
+      console.log("API Response:", response.data);
+
+      if (response.status === 200 && Array.isArray(response.data.mining_licenses)) {
+        return response.data.mining_licenses; // Returning the array of projects (licenses)
+      } else {
+        console.error("Invalid data format: Expected an array of issues.");
+        return [];
+      }
     } catch (error) {
-      console.error("Error fetching issues data:", error);
+      console.error("Error fetching data:", error);
       return [];
     }
   },

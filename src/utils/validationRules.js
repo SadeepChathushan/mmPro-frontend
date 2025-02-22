@@ -16,7 +16,7 @@ const getValidationRules = (language) => ({
             : "කරුණාකර අවසරපත්‍ර අංකය ඇතුළත් කරන්න!",
       },
       {
-        pattern: /^[A-Z0-9-]{5,20}$/,
+        pattern: /^[A-Z0-9/]{5,20}$/,
         message:
           language === "en"
             ? "License number must be 5-20 characters, containing uppercase letters, numbers, and hyphens!"
