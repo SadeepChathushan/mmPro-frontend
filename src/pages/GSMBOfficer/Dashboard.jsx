@@ -16,10 +16,8 @@ const Dashboard = () => {
   const [searchText, setSearchText] = useState("");
   const [tableData, setTableData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  // Set default tab to "ML" (or change as needed)
   const [activeTab, setActiveTab] = useState("ML");
 
-  // Add a new tab for ML Owners
   const tabs = [
     { key: "ML", label: language === "en" ? "Mining License" : "බලපත්‍ර" },
     { key: "TPL", label: language === "en" ? "Transport License" : "ප්‍රවාහන බලපත්‍ර" },
@@ -76,13 +74,13 @@ const Dashboard = () => {
 
   // Update filtered data whenever activeTab or tableData changes
   useEffect(() => {
-    // Only filter license data for the non-MLOWNER tabs
     if (activeTab !== "MLOWNER") {
       const filtered = tableData.filter((item) => item.tracker === activeTab);
       setFilteredData(filtered);
     }
   }, [activeTab, tableData]);
 
+  // Handle search logic
   const handleSearch = (value) => {
     setSearchText(value);
     const filtered = tableData
@@ -99,67 +97,47 @@ const Dashboard = () => {
     <div className="min-h-screen" style={{ backgroundColor: "#f0f2f5", padding: "16px" }}>
       {/* Stats Section */}
       <Row gutter={[16, 16]} justify="space-around">
-        {[
-          {
-            title: language === "en" ? "Total Licenses" : "මුළු බලපත්‍ර",
-            count: tableData.filter((item) => item.tracker === "ML").length,
-            color: "#1890ff",
-          },
-          {
-            title: language === "en" ? "Transport Licenses" : "ප්‍රවාහන බලපත්‍ර",
-            count: tableData.filter((item) => item.tracker === "TPL").length,
-            color: "#408220",
-          },
-          {
-            title: language === "en" ? "Complaints" : "පැමිණිලි",
-            count: tableData.filter((item) => item.tracker === "CMPLN").length,
-            color: "#950C33",
-          },
-          // You can also add a stats box for ML Owners if needed.
-        ].map((box, index) => (
-          <Col xs={24} sm={12} md={8} lg={6} key={index}>
-            <StatsBox title={box.title} count={box.count} color={box.color} />
-          </Col>
-        ))}
+        {[{ title: language === "en" ? "Total Licenses" : "මුළු බලපත්‍ර", count: tableData.filter((item) => item.tracker === "ML").length, color: "#1890ff" },
+          { title: language === "en" ? "Transport Licenses" : "ප්‍රවාහන බලපත්‍ර", count: tableData.filter((item) => item.tracker === "TPL").length, color: "#408220" },
+          { title: language === "en" ? "Complaints" : "පැමිණිලි", count: tableData.filter((item) => item.tracker === "CMPLN").length, color: "#950C33" }]
+          .map((box, index) => (
+            <Col xs={24} sm={12} md={8} lg={6} key={index}>
+              <StatsBox title={box.title} count={box.count} color={box.color} />
+            </Col>
+          ))}
       </Row>
 
       {/* Tab Section */}
       <TabSection tabs={tabs} activeKey={activeTab} onChange={setActiveTab} />
 
-      {/* Only show the search input and related buttons when NOT on the ML Owners tab */}
-      {activeTab !== "MLOWNER" && (
-        <Row gutter={[16, 16]} align="middle" style={{ marginTop: "16px" }}>
-          <Col xs={24} sm={16}>
-            <Input
-              placeholder={language === "en" ? "Search" : "සොයන්න"}
-              prefix={<SearchOutlined />}
-              style={{
-                width: "100%",
-                borderRadius: "4px",
-                padding: "8px 16px",
-                backgroundColor: "#ffffff",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              }}
-              value={searchText}
-              onChange={(e) => handleSearch(e.target.value)}
-            />
-          </Col>
-          <Col xs={24} sm={8} style={{ textAlign: "right" }}>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-              <Link to="/gsmb/register-new-owner">
-                <Button type="primary" style={{ backgroundColor: "#950C33", color: "white" }}>
-                  {language === "en" ? "+ Register New Owner" : "+ අයිතිකරු ලියාපදිංචි කරන්න"}
-                </Button>
-              </Link>
-              <Link to="/gsmb/add-new-license">
-                <Button type="default" style={{ backgroundColor: "white", borderColor: "#d9d9d9" }}>
-                  {language === "en" ? "+ Add New License" : "+ නව අවසරපත්‍රයක් එකතු කරන්න"}
-                </Button>
-              </Link>
-            </div>
-          </Col>
-        </Row>
-      )}
+      {/* Search and buttons */}
+      <Row gutter={[16, 16]} align="middle" style={{ marginTop: "16px" }}>
+        <Col xs={24} sm={16}>
+          <Input
+            placeholder={language === "en" ? "Search" : "සොයන්න"}
+            prefix={<SearchOutlined />}
+            style={{
+              width: "100%",
+              borderRadius: "4px",
+              padding: "8px 16px",
+              backgroundColor: "#ffffff",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            }}
+            value={searchText}
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+        </Col>
+        <Col xs={24} sm={8} style={{ textAlign: "right" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            <Link to="/gsmb/register-new-owner">
+              <Button type="primary" style={{ backgroundColor: "#950C33", color: "white" }}>
+                {language === "en" ? "+ Register New Owner" : "+ අයිතිකරු ලියාපදිංචි කරන්න"}
+              </Button>
+            </Link>
+           
+          </div>
+        </Col>
+      </Row>
 
       {/* Table Section */}
       <div
@@ -173,7 +151,7 @@ const Dashboard = () => {
         }}
       >
         {activeTab === "MLOWNER" ? (
-          <MlOwnersTable />
+          <MlOwnersTable data={filteredData} />
         ) : (
           <LicenseTable data={filteredData} tracker={activeTab} />
         )}

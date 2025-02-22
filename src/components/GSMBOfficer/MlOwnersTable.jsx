@@ -6,6 +6,7 @@ import officerService from "../../services/officerService"; // Import officerSer
 const MlOwnersTable = () => {
   const [ownersData, setOwnersData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [language, setLanguage] = useState("en"); // default to "en"
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,63 +45,63 @@ const MlOwnersTable = () => {
     }
   };
 
-
   // Define columns for the ML owners table
-const columns = [
-  {
-    title: "ID",
-    dataIndex: "id",
-    key: "id",
-  },
-  {
-    title: "Owner Name",
-    dataIndex: "ownerName",
-    key: "ownerName",
-  },
-  {
-    title: "Email",
-    key: "email",
-    render: (text, record) => {
-      // Check if email exists and use a fallback if missing
-      const email = record.userDetails?.mail || "No Email";
-      return email;
+  const columns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
     },
-  },
-  {
-    title: "NIC",
-    key: "nic",
-    render: (text, record) => {
-      // Access the NIC value from custom_fields
-      const nicField = record.userDetails.custom_fields.find(field => field.name === "NIC");
-      return nicField ? nicField.value : "N/A";
+    {
+      title: "Owner Name",
+      dataIndex: "ownerName",
+      key: "ownerName",
     },
-  },
-  {
-    title: "Phone Number",
-    key: "phone",
-    render: (text, record) => {
-      // Access the Phone Number value from custom_fields
-      const phoneField = record.userDetails.custom_fields.find(field => field.name === "Phone Number");
-      return phoneField ? phoneField.value : "N/A";
+    {
+      title: "Email",
+      key: "email",
+      render: (text, record) => {
+        // Check if email exists and use a fallback if missing
+        const email = record.userDetails?.mail || "No Email";
+        return email;
+      },
     },
-  },
-  {
-    title: "Total Licenses",
-    dataIndex: "licenses",
-    key: "licenses",
-    render: (licenses) => licenses.length,
-  },
-  {
-    title: "Action",
-    key: "action",
-    render: (_, record) => (
-      <Link to={`/gsmb/ml-owner/${record.id}`} state={{ owner: record }}>
-        <Button type="link">View</Button>
-      </Link>
-    ),
-  },
-];
-
+    {
+      title: "NIC",
+      key: "nic",
+      render: (text, record) => {
+        // Access the NIC value from custom_fields
+        const nicField = record.userDetails.custom_fields.find(field => field.name === "NIC");
+        return nicField ? nicField.value : "N/A";
+      },
+    },
+    {
+      title: "Phone Number",
+      key: "phone",
+      render: (text, record) => {
+        // Access the Phone Number value from custom_fields
+        const phoneField = record.userDetails.custom_fields.find(field => field.name === "Phone Number");
+        return phoneField ? phoneField.value : "N/A";
+      },
+    },
+    {
+      title: "Total Licenses",
+      dataIndex: "licenses",
+      key: "licenses",
+      render: (licenses) => licenses.length,
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Link to={`/gsmb/add-new-license/${record.id}`}>
+          <Button type="default" style={{ backgroundColor: "white", borderColor: "#d9d9d9" }}>
+            {language === "en" ? "+ Add New License" : "+ නව අවසරපත්‍රයක් එකතු කරන්න"}
+          </Button>
+        </Link>
+      ),
+    },
+  ];
 
   // Expanded row render to show the nested table of licenses for each owner
   const expandedRowRender = (record) => {
@@ -129,18 +130,15 @@ const columns = [
           );
         },
       },
-
       {
         title: "Transport License History",
         key: "history",
         render: (_, record) => (
-          // <Link to={`/TPLHistory/${record.licensePrefix}/${record.licenseNumber}/${record.uniqueId}`}>
           <Link to={`/gsmb/dashboard/TPLHistory?licenseNumber=${record.licenseNumber}`}>
-          <Button type="link" style={{ color: "#000000", backgroundColor: "#ca8282", borderColor: "#ca8282" }}>
-            View History
-          </Button>
-        </Link>
-
+            <Button type="link" style={{ color: "#000000", backgroundColor: "#ca8282", borderColor: "#ca8282" }}>
+              View History
+            </Button>
+          </Link>
         ),
       },
     ];
