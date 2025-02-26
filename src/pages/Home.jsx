@@ -1,17 +1,22 @@
 import React from "react";
-import { Layout, Row, Col, Typography, Image } from "antd";
+import { Layout, Row, Col, Typography, Image, Button } from "antd";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/HomeFooter";
 import { useLanguage } from "../contexts/LanguageContext";
 import backgroundImage from "../assets/images/ocean.jpg";
 import aboutImage from "../assets/images/engineer.jpg";
 import serviceImage from "../assets/images/constructor.jpg";
+import { useNavigate } from "react-router-dom";
 
 const { Content } = Layout;
 const { Title, Paragraph } = Typography;
 
 const Home = () => {
   const { language } = useLanguage();
+  const navigate = useNavigate();
+  const go_public_validate = () => {
+    navigate("/public"); 
+  };
   return (
     <Layout>
       <Navbar />
@@ -25,6 +30,20 @@ const Home = () => {
             {language === 'en'? 'Welcome to mmPro, the advanced solution for efficient mining and mineral production monitoring. This platform is designed to provide seamless tracking, data analysis, and reporting, helping the Geological Survey and Mines Bureau (GSMB) manage mining operations with precision. Whether you’re overseeing resource extraction, ensuring regulatory compliance, or improving productivity, mmPro equips you with the tools to make informed decisions and drive sustainable mining practices. Let’s work together to enhance the future of mining and ensure a transparent and responsible industry.'
             :language ==='si'? 'කාර්යක්ෂම පතල් කැණීම් සහ ඛනිජ නිෂ්පාදන අධීක්ෂණය සඳහා උසස් විසඳුම වන mmPro වෙත සාදරයෙන් පිළිගනිමු. මෙම වේදිකාව නිර්මාණය කර ඇත්තේ බාධාවකින් තොරව ලුහුබැඳීම, දත්ත විශ්ලේෂණය සහ වාර්තාකරණය සැපයීම සඳහා වන අතර, භූ විද්‍යා සමීක්ෂණ සහ පතල් කාර්යාංශයට (GSMB) පතල් මෙහෙයුම් නිරවද්‍යතාවයෙන් කළමනාකරණය කිරීමට උපකාරී වේ. ඔබ සම්පත් නිස්සාරණය අධීක්ෂණය කරන්නේද, නියාමන අනුකූලතාව සහතික කරන්නේද, නැතහොත් ඵලදායිතාව වැඩි දියුණු කරන්නේද යන්න නොසලකා, දැනුවත් තීරණ ගැනීමට සහ තිරසාර පතල් භාවිතයන් මෙහෙයවීමට mmPro ඔබට මෙවලම් සපයයි. පතල් කැණීමේ අනාගතය වැඩිදියුණු කිරීමට සහ විනිවිද පෙනෙන සහ වගකිවයුතු කර්මාන්තයක් සහතික කිරීමට අපි එක්ව කටයුතු කරමු.' 
             :'திறமையான சுரங்க மற்றும் கனிம உற்பத்தி கண்காணிப்புக்கான மேம்பட்ட தீர்வான mmPro-விற்கு வருக. இந்த தளம் தடையற்ற கண்காணிப்பு, தரவு பகுப்பாய்வு மற்றும் அறிக்கையிடலை வழங்க வடிவமைக்கப்பட்டுள்ளது, இது புவியியல் ஆய்வு மற்றும் சுரங்கப் பணியகம் (GSMB) சுரங்க நடவடிக்கைகளை துல்லியமாக நிர்வகிக்க உதவுகிறது. நீங்கள் வள பிரித்தெடுப்பை மேற்பார்வையிடுகிறீர்களோ, ஒழுங்குமுறை இணக்கத்தை உறுதிசெய்கிறீர்களோ, அல்லது உற்பத்தித்திறனை மேம்படுத்துகிறீர்களோ, தகவலறிந்த முடிவுகளை எடுப்பதற்கும் நிலையான சுரங்க நடைமுறைகளை இயக்குவதற்கும் mmPro உங்களுக்கு கருவிகளை வழங்குகிறது. சுரங்கத்தின் எதிர்காலத்தை மேம்படுத்தவும், வெளிப்படையான மற்றும் பொறுப்பான தொழிலை உறுதி செய்யவும் ஒன்றிணைந்து செயல்படுவோம்.'}</Paragraph>
+            <Button
+              type="primary"
+              onClick={() => go_public_validate()}
+              style={{
+                backgroundColor: "#781424",
+                whiteSpace: "balance",
+                margin: "5px",
+                padding: "20px 20px",
+              }}
+            >
+              {language === 'en'? 'Check validity'
+            :language ==='si'? 'වලංගු බව පරීක්ෂා කරන්න' 
+            :'சரியானதா என்பதை சரிபார்க்கவும்'}
+            </Button>
         </Title>
         
       </Content>

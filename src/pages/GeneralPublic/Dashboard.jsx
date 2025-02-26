@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import logo from "../../assets/images/gsmbLogo.jpg";
 import {
-  submitComplaint,
   submitComplaintPublic,
 } from "../../services/complaint";
 import { fetchLorryNumber } from "../../services/GeneralPublic/fetchLorryNumber";
@@ -25,6 +24,14 @@ const Dashboard = () => {
   const [data, setData] = useState([]);
   const [phoneNumber, setPhoneNumber] = useState("");
 
+  useEffect(() => {
+    const loadLorryNumbers = async () => {
+      const lorryNumbers = await fetchLorryNumber();
+      setData(lorryNumbers);
+    };
+    loadLorryNumbers();
+  }, []);
+  
   const handleReport = async () => {
     if (!validatePhoneNumber(phoneNumber)) {
       setModalMessage(
@@ -116,7 +123,6 @@ const Dashboard = () => {
           : "வாகன எண்ணை சரிபார்க்கும் பிழை"
       );
     }
-
     setIsModalOpen(true);
   };
 
