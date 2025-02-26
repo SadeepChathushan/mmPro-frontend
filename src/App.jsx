@@ -11,7 +11,7 @@ import SignInPage from './components/Auth/SignIn';
 import { useAuth } from './hooks/useAuth';
 import PrivateRoute from './routes/PrivateRoute';
 import SignUp from './components/Auth/SignUp';
-
+import GeneralPublicDashboard from '../src/pages/GeneralPublic/Dashboard';
 import GeneralPublicRoutes from './routes/GeneralPublicRoutes';
 import Footer from './components/layout/Footer';
 
@@ -28,6 +28,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/public" element={<GeneralPublicDashboard />} />
         <Route path="*" element={<NotFound />} />
 
         {/* Protected Routes */}
@@ -35,7 +36,8 @@ const App = () => {
           element={
 
             <PrivateRoute
-              allowedRoles={['GSMBOfficer', 'PoliceOfficer','MLOwner','GSMBManagement','GeneralPublic']}
+              // allowedRoles={['GSMBOfficer', 'PoliceOfficer','MLOwner','GSMBManagement','GeneralPublic']}
+              allowedRoles={['GSMBOfficer', 'PoliceOfficer','MLOwner','GSMBManagement']}
             />
 
           }
@@ -58,9 +60,9 @@ const App = () => {
 
 
             {/* GeneralPublic Routes */}
-            <Route path="generalpublic/*" element={<PrivateRoute allowedRoles={['GeneralPublic']} />}>
+            {/* <Route path="generalpublic/*" element={<PrivateRoute allowedRoles={['GeneralPublic']} />}>
               <Route path="*" element={<GeneralPublicRoutes />} />
-            </Route>
+            </Route> */}
 
 
             {/* GSMB management routes*/}
