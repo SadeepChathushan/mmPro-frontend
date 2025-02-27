@@ -1,11 +1,21 @@
+
 // NewLicenseForm.js
 
 import React from "react";
-import { Form, Input, Button, DatePicker, Row, Col, message, InputNumber } from "antd";
+import {
+  Form,
+  Input,
+  Button,
+  DatePicker,
+  Row,
+  Col,
+  message,
+  InputNumber,
+} from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useLanguage } from "../../contexts/LanguageContext";
 import getValidationRules from "../../utils/validationRules";
-import addNewLicense from "../../services/officerService";
+import officerService from "../../services/officerService";
 import moment from "moment";
 
 const NewLicenseForm = () => {
@@ -19,31 +29,33 @@ const NewLicenseForm = () => {
       // Build the payload to match Redmine's issue creation format
       const payload = {
         issue: {
-          project: { id: 31 },
-          tracker: { id: 7 },
+
+          project: { id: 31 }, // GSMB Project ID
+          tracker: { id: 7 }, // ML Tracker ID
+          subject: values.licenseNumber,
+          status: { id: 17 },
+          // priority: { id: 2 },
+          start_date: values.validityStart.format("YYYY-MM-DD"), // Start date
+          due_date: values.endDate.format("YYYY-MM-DD"), // End date
+          estimated_hours: 24.0, // Default estimated hour
           subject: language === "en" ? "New License" : "නව බලපත්‍රය",
+
           custom_fields: [
             { id: 8, name: "License Number", value: values.licenseNumber },
             { id: 2, name: "Owner Name", value: values.ownerName },
             { id: 3, name: "Mobile Number", value: values.mobile },
             { id: 5, name: "Capacity", value: values.capacity },
-            {
-              id: 9,
-              name: "Start Date",
-              value: values.validityStart.format("YYYY-MM-DD"),
-            },
-            {
-              id: 10,
-              name: "End Date",
-              value: values.endDate.format("YYYY-MM-DD"),
-            },
             { id: 11, name: "Location", value: values.location },
+            { id: 37, name: "NIC", value: values.NIC },
+            // { id: 84, name: "Used", value: "0" }, // Initially, no capacity is used
+            // { id: 85, name: "Remaining", value: values.capacity }, // Full capacity at start
+            // { id: 86, name: "Royalty(sand)due", value: "0" }, // No royalty due initially
           ],
         },
       };
 
       // Call the service function to add a new license
-      const result = await addNewLicense(payload);
+      const result = await officerService.addNewLicense(payload);
 
       console.log("Data posted successfully:", result);
       message.success(
@@ -130,9 +142,7 @@ const NewLicenseForm = () => {
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={
-                language === "en" ? "License Number" : "බලපත්‍රය අංකය"
-              }
+              label={language === "en" ? "License Number" : "බලපත්‍රය අංකය"}
               name="licenseNumber"
               rules={rules.licenseNumber}
             >
@@ -152,10 +162,70 @@ const NewLicenseForm = () => {
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
+              label={language === "en" ? "Mobile" : "ජංගම දුරකථන අංකය"}
+              name="mobile"
+              rules={rules.mobile}
+            >
+              <Input style={{ fontSize: "24px" }} />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={24} md={12}>
+            <Form.Item
+              label={language === "en" ? "NIC" : "ජාතික හැඳුනුම්පත් අංකය"}
+              name="NIC"
+              rules={rules.NIC} // Ensure you define validation for NIC in your rules
+            >
+              <Input style={{ fontSize: "24px" }} />
+            </Form.Item>
+          </Col>
+
+
+
+          <Col xs={24} sm={24} md={12}>
+            <Form.Item
+              label={language === "en" ? "Capacity (Cubes)" : "කියුබ්ස් ගණන"}
+              name="capacity"
+              rules={rules.capacity} // Ensure you define validation for NIC in your rules
+            >
+              <Input style={{ fontSize: "24px" }} />
+            </Form.Item>
+          </Col>
+
+
+          
+{/* 
+          <Col xs={24} sm={24} md={12}>
+            <Form.Item
+              label={language === "en" ? "Capacity (Cubes)" : "කියුබ්ස් ගණන"}
+              name="capacity"
+              rules={rules.capacity}
+            >
+              <InputNumber
+                style={{ width: "100%", fontSize: "24px" }}
+                min={1}
+                formatter={(value) =>
+                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+              />
+            </Form.Item>
+          </Col> */}
+
+          <Col xs={24} sm={24} md={12}>
+            <Form.Item
+              label={language === "en" ? "Location" : "ස්ථානය"}
+              name="location"
+              rules={rules.location}
+            >
+              <Input style={{ fontSize: "24px" }} />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={24} md={12}>
+            <Form.Item
               label={
-                language === "en"
-                  ? "Validity Start"
-                  : "වලංගුතාව ආරම්භක දිනය"
+                language === "en" ? "Validity Start" : "වලංගුතාව ආරම්භක දිනය"
               }
               name="validityStart"
               rules={rules.validityStart}
@@ -176,9 +246,7 @@ const NewLicenseForm = () => {
               name="endDate"
               rules={[
                 ...rules.endDate,
-                {
-                  validator: validateEndDate,
-                },
+                
               ]}
             >
               <DatePicker
@@ -192,43 +260,6 @@ const NewLicenseForm = () => {
                   return current && current < moment(startDate).endOf("day");
                 }}
               />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={24} md={12}>
-          <Form.Item
-  label={language === "en" ? "Capacity (Cubes)" : "කියුබ්ස් ගණන"}
-  name="capacity"
-  rules={rules.capacity}
->
-  <InputNumber
-    style={{ width: "100%", fontSize: "24px" }}
-    min={1}
-    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-    parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
-  />
-</Form.Item>
-          </Col>
-
-          <Col xs={24} sm={24} md={12}>
-            <Form.Item
-              label={
-                language === "en" ? "Mobile" : "ජංගම දුරකථන අංකය"
-              }
-              name="mobile"
-              rules={rules.mobile}
-            >
-              <Input style={{ fontSize: "24px" }} />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={24} md={12}>
-            <Form.Item
-              label={language === "en" ? "Location" : "ස්ථානය"}
-              name="location"
-              rules={rules.location}
-            >
-              <Input style={{ fontSize: "24px" }} />
             </Form.Item>
           </Col>
 
