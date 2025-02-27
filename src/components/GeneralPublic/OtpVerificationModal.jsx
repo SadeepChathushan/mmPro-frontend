@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { message } from "antd";
 
 const OtpVerificationModal = ({
   isOpen,
@@ -14,6 +15,9 @@ const OtpVerificationModal = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [attempts, setAttempts] = useState(0);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
 
   // Language-specific text content
   const textContent = {
@@ -25,11 +29,17 @@ const OtpVerificationModal = ({
         : "Phone Number Verification",
     phonePlaceholder:
       language === "si"
-        ? "උදා : 071XXXXXXX"
+        ? "උදා : +9471XXXXXXX"
         : language === "ta"
-        ? "எ.கா : 071XXXXXXX"
-        : "e.g : 071XXXXXXX",
+        ? "எ.கா : +9471XXXXXXX"
+        : "e.g : +9471XXXXXXX",
     verifyButton: otpSent ? "Resend OTP" : "Verify Phone Number",
+    successMessage:
+      language === "si"
+        ? "සත්යාපනය සාර්ථකයි!"
+        : language === "ta"
+        ? "சரிபார்ப்பு வெற்றிகரமானது!"
+        : "Verification successful!",
   };
 
   const token = localStorage.getItem("USER_TOKEN");
@@ -40,7 +50,7 @@ const OtpVerificationModal = ({
 
     if (phoneNumber === "0769025444") {
       setOtpSent(true);
-      setError("OTP sent successfully (Test Mode: Enter '123456').");
+      setSuccessMessage("OTP sent successfully (Test Mode: Enter '123456').");
       setLoading(false);
       return;
     }
@@ -59,12 +69,12 @@ const OtpVerificationModal = ({
 
       if (response.data.success) {
         setOtpSent(true);
-        setError("OTP sent successfully.");
+        setSuccessMessage("OTP sent successfully.");
       } else {
-        setError("Failed to send OTP.");
+        setErrorMessage("Failed to send OTP.");
       }
     } catch (err) {
-      setError("Error sending OTP. Please try again.");
+      setErrorMessage("Error sending OTP. Please try again.");
     }
     setLoading(false);
   };
@@ -75,7 +85,13 @@ const OtpVerificationModal = ({
 
     if (phoneNumber === "0769025444" && otp === "123456") {
       setIsVerified(true);
-      setError("");
+      
+      // Show success message using Ant Design's message
+      message.success(textContent.successMessage);
+      
+      // Store verification data in localStorage
+      localStorage.setItem("VERIFIED_PHONE", phoneNumber);
+      
       onVerificationSuccess(phoneNumber);
       setTimeout(() => {
         onClose();
@@ -101,7 +117,17 @@ const OtpVerificationModal = ({
 
       if (response.data.success) {
         setIsVerified(true);
-        setError(""); // Clear any previous errors
+        
+        // Show success message using Ant Design's message
+        message.success(textContent.successMessage);
+        
+        // Store verification data in localStorage similar to your login example
+        localStorage.setItem("VERIFIED_PHONE", phoneNumber);
+        
+        if (response.data.token) {
+          localStorage.setItem("USER_TOKEN", response.data.token);
+        }
+        
         onVerificationSuccess(phoneNumber);
 
         // Wait for 2 seconds before closing the modal
@@ -110,11 +136,13 @@ const OtpVerificationModal = ({
         }, 2000);
       } else {
         setError("Invalid OTP. Try again.");
+        message.error("Invalid OTP. Try again.");
         setOtpSent(false);
       }
     } catch (err) {
       if (!isVerified) {
         setError("Error verifying OTP.");
+        message.error("Error verifying OTP.");
       }
       setOtpSent(false);
     }
@@ -169,7 +197,8 @@ const OtpVerificationModal = ({
             </div>
           )}
 
-          {error && <p className="error-message">{error}</p>}
+          {successMessage && <p className="success-message">{successMessage}</p>}
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
 
           <div className="verification-status">
             {isVerified ? (
