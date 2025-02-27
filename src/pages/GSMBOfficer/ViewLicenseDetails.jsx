@@ -4,6 +4,8 @@ import { Card, Row, Col, Form, Input, DatePicker, Button } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
+import officerService from "../../services/officerService"; // Import the updated officerService
+
 
 
 const ViewLicenseDetails = () => {
@@ -11,16 +13,12 @@ const ViewLicenseDetails = () => {
   const [licenseData, setLicenseData] = useState(null); // State for license data
   const [loading, setLoading] = useState(true);
   const [form] = Form.useForm();
+  // const navigate = useNavigate(); // Hook for navigation
+
 
   // Handle form submission and update data
   const onFinish = async (values) => {
     try {
-      const apiKey = localStorage.getItem("API_Key");
-
-      if (!apiKey) {
-        console.error("API Key not found in localStorage");
-        return;
-      }
 
       // Check tracker name to define payload structure
       const trackerName = licenseData?.trackerName;
@@ -56,47 +54,36 @@ const ViewLicenseDetails = () => {
         issue: { custom_fields: customFields },
       };
 
-      const response = await axios.put(
-        `/api/issues/${licenseId}.json`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Redmine-API-Key": apiKey,
-          },
-        }
-      );
+      
+      // Use the officerService to update the license
+      const response = await officerService.updateLicense(licenseId, payload);
 
-      console.log("Data updated successfully:", response.data);
-      alert("License details updated successfully!");
+      if (response) {
+        console.log("Data updated successfully:", response);
+        alert("License details updated successfully!");
+        // Optionally, navigate back to the dashboard or another page
+        navigate("/gsmb/dashboard");
+      } else {
+        throw new Error("Update failed");
+      }
     } catch (error) {
       console.error("Error updating data:", error);
       alert("Failed to update license details. Please try again.");
     }
   };
 
+
   // Fetch license data from the API
   useEffect(() => {
     const fetchLicenseData = async () => {
       try {
-        const apiKey = localStorage.getItem("API_Key");
+         const issue = await officerService.getLicenseById(licenseId);
 
-        if (!apiKey) {
-          console.error("API Key not found in localStorage");
+        if (!issue) {
+          console.error("License data not found.");
+          setLoading(false);
           return;
         }
-
-        const response = await axios.get(
-          `/api/issues/${licenseId}.json`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Redmine-API-Key": apiKey,
-            },
-          }
-        );
-
-        const issue = response.data.issue;
 
         // Extract tracker name
         const trackerName = issue.tracker?.name;
@@ -159,17 +146,17 @@ const ViewLicenseDetails = () => {
   return (
     <div
       style={{
-        maxWidth: "800px",
+        
         margin: "0 auto",
-        padding: "20px",
-        background: "#f0f2f5",
-        borderRadius: "10px",
+        // padding: "20px",
+        background: "#fff",
+        // borderRadius: "10px",
       }}
     >
       <Button
         type="link"
         icon={<ArrowLeftOutlined />}
-        style={{ marginBottom: "16px", paddingLeft: 0, color: "#000000" }}
+        style={{ marginBottom: "16px", paddingLeft: 0, color: "#000000" ,backgroundColor:'#FFE143'}}
         href="/gsmb/dashboard"
       >
         Back
@@ -177,12 +164,13 @@ const ViewLicenseDetails = () => {
 
       <Card
         title={<h3 style={{ margin: 0 }}>Edit License Details</h3>}
-        style={{ borderRadius: "10px" }}
+        style={{textAlign:'center',fontSize:'20px', fontWeight:'bold' }}
       >
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Row gutter={[16, 16]}>
             <Col xs={24} sm={12}>
               <Form.Item
+              style={{fontSize:'24px'}}
                 label="License Number"
                 name="licenseNumber"
                 rules={[{ required: true, message: "Please input the license number!" }]}
@@ -280,6 +268,7 @@ const ViewLicenseDetails = () => {
                   backgroundColor: "#950C33",
                   borderColor: "#950C33",
                   width: "100%",
+                  
                 }}
               >
                 Update

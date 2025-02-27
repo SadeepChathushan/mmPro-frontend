@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Table, Row, Col, DatePicker, Button } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import moment from "moment";
-import axios from "axios";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { fetchDispatchHistoryData } from "../../services/MLOService"; // Import the service
+import "../../styles/MLOwner/History.css"; // Import the CSS file
 
 const History = () => {
   const location = useLocation();
@@ -13,7 +14,7 @@ const History = () => {
   const [endDate, setEndDate] = useState(null);
   const [dispatchHistory, setDispatchHistory] = useState([]);
   const [licenseNumber, setLicenseNumber] = useState("");
-  const [clickCounts, setClickCounts] = useState({}); // Track click counts for each row
+  const [clickCounts, setClickCounts] = useState({});
   const { language } = useLanguage();
   const [formData, setFormData] = useState({
     DateTime: "",
@@ -22,11 +23,9 @@ const History = () => {
     lorryNumber: "",
     driverContact: "",
     dueDate: "",
-    cubes: 1,
+    cubes: "",
   });
   const [l_number, setl_number] = useState();
-
-  const apiKey = localStorage.getItem("API_Key");
 
   const go_home = () => {
     navigate("/mlowner/home");
@@ -35,57 +34,34 @@ const History = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const extractedLicenseNumber = queryParams.get("licenseNumber");
+
     if (extractedLicenseNumber) {
       setLicenseNumber(extractedLicenseNumber);
-      setl_number(extractedLicenseNumber); // Set the license number from URL
+      setl_number(extractedLicenseNumber);
     }
 
-    const fetchDispatchHistory = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get("/api/projects/gsmb/issues.json", {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Redmine-API-Key": apiKey,
-          },
-        });
+        // Fetch dispatch history data from the service, passing the extracted license number
+        const data = await fetchDispatchHistoryData(extractedLicenseNumber);
 
-        if (response.data && response.data.issues) {
-          const issues = response.data.issues;
-          // Filter issues related to the 'TPL' tracker (tracker.id === 8)
-          const filteredIssues = issues.filter(
-            (issue) => issue.tracker.id === 8
-          );
-
-          const formattedDispatchHistory = filteredIssues.map((issue) => {
-            const customFields = issue.custom_fields.reduce((acc, field) => {
-              acc[field.name] = field.value;
-              return acc;
-            }, {});
-
-            return {
-              licenseNumber: customFields["License Number"] || "",
-              owner: customFields["Owner Name"] || "",
-              location: customFields["Location"] || "",
-              Destination: customFields["Destination"] || "",
-              lorryNumber: customFields["Lorry Number"] || "",
-              cubes: customFields["Cubes"] || "",
-              dispatchDate: issue.start_date || "",
-              due_date: issue.due_date || "",
-              lorryDriverContact: customFields["Driver Contact"] || "",
-            };
-          });
-
-          setDispatchHistory(formattedDispatchHistory);
+        if (!data || data.length === 0) {
+          console.log("No dispatch history data found");
+          return;
         }
+        console.log("date", data);
+
+        // Set the dispatch history state
+        setDispatchHistory(data);
       } catch (error) {
         console.error("Error fetching dispatch history:", error);
       }
     };
 
-    fetchDispatchHistory();
-  }, [location.search]);
+    fetchData();
+  }, []);
+  // Empty dependency array ensures it runs once when the component mounts
 
-  // Filter dispatch history based on the extracted license number and date range
   const filteredDispatchHistory = dispatchHistory.filter((dispatch) => {
     let isLicenseMatch = true;
     if (licenseNumber) {
@@ -100,11 +76,10 @@ const History = () => {
         isLicenseMatch
       );
     } else {
-      return isLicenseMatch; // Only license number filter applied
+      return isLicenseMatch;
     }
   });
 
-  // Handle button click for each row
   const handleButtonClick = (record) => {
     setClickCounts((prevCounts) => {
       const newCounts = { ...prevCounts };
@@ -112,147 +87,146 @@ const History = () => {
         (newCounts[record.licenseNumber] || 0) + 1;
       return newCounts;
     });
+    // Assign formData with correct tpl data
+    const updatedFormData = {
+      DateTime: record.startDate,
+      licenseNumber: record.licenseNumber,
+      destination: record.destination,
+      lorryNumber: record.lorryNumber,
+      driverContact: record.lorryDriverContact,
+      dueDate: record.dueDate,
+      cubes: record.cubes,
+       // Corrected validity assignment
+    };
 
-    // setFormData({
-    //   DateTime: "",
-    //   licenseNumber: record.licenseNumber || "",
-    //   destination: record.Destination || "",
-    //   lorryNumber: record.lorryNumber || "",
-    //   driverContact: record.lorryDriverContact || "",
-    //   dueDate: record.due_date || "",
-    //   cubes: record.cubes || "",
-    // });
+    setFormData(updatedFormData);
 
-    // Navigate to the receipt page
     navigate("/mlowner/home/dispatchload/receipt", {
-      state: { formData, l_number },
+      state: { formData:updatedFormData, l_number },
     });
   };
 
   const columns = [
     {
-      title: `${
+      title:
         language === "en"
           ? "License Number"
-          : language == "si"
+          : language === "si"
           ? "බලපත්‍ර අංකය"
-          : ""
-      }`,
+          : "உரிம எண்",
       dataIndex: "licenseNumber",
       key: "licenseNumber",
     },
     {
-      title: `${
+      title:
         language === "en"
           ? "Driver Contact"
-          : language == "si"
+          : language === "si"
           ? "රියදුරුගේ දුරකථනය"
-          : ""
-      }`,
+          : "ஓட்டுநர் தொடர்பு",
       dataIndex: "lorryDriverContact",
       key: "lorryDriverContact",
     },
     {
-      title: `${
-        language === "en" ? "Owner" : language == "si" ? "අයිතිකරු" : ""
-      }`,
+      title:
+        language === "en"
+          ? "Owner"
+          : language === "si"
+          ? "අයිතිකරු"
+          : "உரிமையாளர்",
       dataIndex: "owner",
       key: "owner",
     },
     {
-      title: `${
-        language === "en" ? "Location" : language == "si" ? "ස්ථානය" : ""
-      }`,
+      title:
+        language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்",
       dataIndex: "location",
       key: "location",
     },
     {
-      title: `${
-        language === "en" ? "Lorry Number" : language == "si" ? "ලොරි අංකය" : ""
-      }`,
+      title:
+        language === "en"
+          ? "Lorry Number"
+          : language === "si"
+          ? "ලොරි අංකය"
+          : "லாரி எண்",
       dataIndex: "lorryNumber",
       key: "lorryNumber",
     },
     {
-      title: `${
-        language === "en" ? "Destination" : language == "si" ? "ගමනාන්තය" : ""
-      }`,
+      title:
+        language === "en"
+          ? "Destination"
+          : language === "si"
+          ? "ගමනාන්තය"
+          : "சேருமிடம்",
       dataIndex: "Destination",
       key: "Destination",
     },
     {
-      title: `${
-        language === "en" ? "Cubes" : language == "si" ? "කියුබ් ගණන" : ""
-      }`,
+      title:
+        language === "en"
+          ? "Cubes"
+          : language === "si"
+          ? "කියුබ් ගණන"
+          : "கனசதுரங்கள்",
       dataIndex: "cubes",
       key: "cubes",
     },
     {
-      title: `${
+      title:
         language === "en"
           ? "Dispatched Date"
-          : language == "si"
+          : language === "si"
           ? "යවන ලද දිනය"
-          : ""
-      }`,
-      dataIndex: "dispatchDate",
+          : "அனுப்பப்பட்ட தேதி",
+      dataIndex: "startDate",
       key: "dispatchDate",
       render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span>,
     },
     {
-      title: `${
-        language === "en" ? "Due Date" : language == "si" ? "අවසන් ලද දිනය" : ""
-      }`,
+      title:
+        language === "en"
+          ? "Due Date"
+          : language === "si"
+          ? "අවසන් ලද දිනය"
+          : "நிலுவைத் தேதி",
       dataIndex: "due_date",
       key: "due_date",
       render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span>,
     },
-
-    // New column for "Print Your Missed Receipt" button
     {
-      title: `${
-        language === "en" ? "Action" : language == "si" ? "ක්‍රියාමාර්ග" : ""
-      }`,
+      title:
+        language === "en"
+          ? "Action"
+          : language === "si"
+          ? "ක්‍රියාමාර්ග"
+          : "செயல்",
       key: "action",
       render: (_, record) => {
-        const buttonDisabled = (clickCounts[record.licenseNumber] || 0) >= 3; // Disable button after 3 clicks
-        setFormData({
-          DateTime: "",
-          licenseNumber: record.licenseNumber || "",
-          destination: record.Destination || "",
-          lorryNumber: record.lorryNumber || "",
-          driverContact: record.lorryDriverContact || "",
-          dueDate: record.due_date || "",
-          cubes: record.cubes || "",
-        });
+        const buttonDisabled = (clickCounts[record.licenseNumber] || 0) >= 3;
+
         return (
           <Button
-            type="primary"
-            style={{
-              backgroundColor: buttonDisabled ? "#d6d6d6" : "#28a745", // Grey out the button if disabled
-              borderColor: buttonDisabled ? "#d6d6d6" : "#28a745",
-              color: buttonDisabled ? "#a0a0a0" : "white",
-              width: "200px",
-              borderRadius: "8px",
-            }}
-            onClick={() => !buttonDisabled && handleButtonClick(record)} // Disable onClick if button is disabled
-            disabled={buttonDisabled} // Disable button
+            className={`history-action-button ${
+              buttonDisabled
+                ? "history-action-button-disabled"
+                : "history-action-button-enabled"
+            }`}
+            onClick={() => !buttonDisabled && handleButtonClick(record)}
+            disabled={buttonDisabled}
           >
             {buttonDisabled
-              ? `${
-                  language == "en"
-                    ? "Max Clicks Reached"
-                    : language == "si"
-                    ? "උපරිම ක්ලික් ගණන අවසන්"
-                    : ""
-                }`
-              : `${
-                  language == "en"
-                    ? "Print Your Missed Receipts"
-                    : language == "si"
-                    ? "රිසිට්පත මුද්‍රණය කරගන්න"
-                    : ""
-                }`}
+              ? language === "en"
+                ? "Max Clicks Reached"
+                : language === "si"
+                ? "උපරිම ක්ලික් ගණන අවසන්"
+                : "ரசீதை அச்சிடுங்கள்"
+              : language === "en"
+              ? "Print Your Missed Receipts"
+              : language === "si"
+              ? "රිසිට්පත මුද්‍රණය කරගන්න"
+              : "ரசீதை அச்சிடுங்கள்"}
           </Button>
         );
       },
@@ -260,13 +234,13 @@ const History = () => {
   ];
 
   return (
-    <div style={{ padding: "16px", backgroundColor: "#f0f2f5" }}>
-      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
-        {language == "en"
+    <div className="history-container">
+      <h1 className="history-title">
+        {language === "en"
           ? "Dispatch History"
-          : language == "si"
+          : language === "si"
           ? "යවන ලද ප්‍රමාණ"
-          : ""}
+          : "அனுப்புதல் வரலாறு"}
       </h1>
 
       <Row gutter={[16, 16]} style={{ marginBottom: "20px" }}>
@@ -274,26 +248,26 @@ const History = () => {
           <DatePicker
             onChange={(date) => setStartDate(moment(date).format("YYYY-MM-DD"))}
             placeholder={
-              language == "en"
+              language === "en"
                 ? "Start Date"
-                : language == "si"
+                : language === "si"
                 ? "ආරම්භක දිනය"
-                : ""
+                : "தொடக்க தேதி"
             }
-            style={{ width: "100%" }}
+            className="history-datepicker"
           />
         </Col>
         <Col xs={24} sm={12} md={6}>
           <DatePicker
             onChange={(date) => setEndDate(moment(date).format("YYYY-MM-DD"))}
             placeholder={
-              language == "en"
+              language === "en"
                 ? "End Date"
-                : language == "si"
+                : language === "si"
                 ? "අවසන් දිනය"
-                : ""
+                : "முடிவு தேதி"
             }
-            style={{ width: "100%" }}
+            className="history-datepicker"
           />
         </Col>
       </Row>
@@ -301,30 +275,17 @@ const History = () => {
       <Table
         dataSource={filteredDispatchHistory}
         columns={columns}
-        scroll={{ x: "max-content" }}
-        style={{
-          marginBottom: "20px",
-          backgroundColor: "white",
-          borderRadius: "8px",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-        }}
+        className="history-table"
         pagination={false}
       />
 
-      <div style={{ textAlign: "center" }}>
-        <Button
-          type="primary"
-          style={{
-            backgroundColor: "#FFA500",
-            borderColor: "#FFA500",
-            color: "white",
-            width: "200px",
-            borderRadius: "8px",
-            marginBottom: "12px",
-          }}
-          onClick={() => go_home()}
-        >
-          {language == "en" ? "Back to Home" : language == "si" ? "ආපසු" : ""}
+      <div className="history-button-container">
+        <Button className="history-back-button" onClick={() => go_home()}>
+          {language === "en"
+            ? "Back to Home"
+            : language === "si"
+            ? "ආපසු"
+            : "வீட்டிற்குத் திரும்பு"}
         </Button>
       </div>
     </div>

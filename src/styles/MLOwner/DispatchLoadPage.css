@@ -1,0 +1,102 @@
+/* Main layout styles */
+.dispatch-load-container {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.page-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Form field styles */
+.form-field {
+  margin-bottom: 16px;
+}
+
+.field-label {
+  font-weight: bold;
+}
+
+/* Cubes input styles */
+.cubes-input-container {
+  display: flex;
+  align-items: center;
+}
+
+.cubes-input {
+  width: 60px;
+  text-align: center;
+  margin: 0 8px;
+}
+
+/* Button styles */
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.cancel-button {
+  margin-right: 16px;
+  font-size: 16px;
+  padding: 10px 20px;
+  background-color: #FFA500;
+  border-color: #FFA500;
+  color: white;
+}
+
+.submit-button {
+  font-size: 16px;
+  padding: 10px 20px;
+  background-color: #781424;
+  border-color: #781424;
+  color: white;
+}
+
+/* Modal styles */
+.modal-icon {
+  font-size: 40px;
+  color: brown;
+}
+
+.modal-content {
+  text-align: center;
+}
+
+.modal-body {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.modal-button-home {
+  background-color: #FFA500;
+  color: white;
+  border-color: #FFA500;
+  margin-right: 20px;
+}
+
+.modal-button-print {
+  background-color: #781424;
+  color: white;
+  margin-left: 20px;
+}
+
+/* Container for the field label and input */
+.lorry-number-container {
+  margin-bottom: 16px;
+}
+
+/* Style for the label */
+.lorry-number-label {
+  font-weight: bold;
+}
+
+/* Style for error message */
+.lorry-number-error {
+  color: red;
+  font-size: 12px;
+}
+
+/* Input styling can be added here if needed */
+.lorry-number-input {
+  width: 100%;
+}

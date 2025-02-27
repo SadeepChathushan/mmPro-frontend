@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Button, Input, Row, Col, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import officerService from "../../services/officerService"; // Import the officerService
 import { useLanguage } from "../../contexts/LanguageContext";
 import StatsBox from "../../components/GSMBOfficer/StatsBox";
 import TabSection from "../../components/GSMBOfficer/TabSection";
 import LicenseTable from "../../components/GSMBOfficer/LicenseTable";
-// import ComplaintTable from "../../components/GSMBOfficer/ComplaintTable";
+import MlOwnersTable from "../../components/GSMBOfficer/MlOwnersTable"; // Import the new ML Owners component
 
 const { Text } = Typography;
 
@@ -22,60 +22,47 @@ const Dashboard = () => {
     { key: "ML", label: language === "en" ? "Mining License" : "බලපත්‍ර" },
     { key: "TPL", label: language === "en" ? "Transport License" : "ප්‍රවාහන බලපත්‍ර" },
     { key: "CMPLN", label: language === "en" ? "Complaints" : "පැමිණිලි" },
+    { key: "MLOWNER", label: language === "en" ? "ML Owners" : "ML හිමියන්" },
   ];
 
   useEffect(() => {
     console.log("Fetching data for the dashboard...");
     const fetchData = async () => {
       try {
-        // Retrieve API Key from localStorage
-        const apiKey = localStorage.getItem("API_Key");
-
-        console.log("API Key from localStorage:", apiKey);
-
-        if (!apiKey) {
-          console.error("API Key not found in localStorage");
-          return;
-        }
-
-        // Fetch data from API with API Key in Authorization header
-        const response = await axios.get("/api/projects/gsmb/issues.json", {
-          headers: { 
-            "Content-Type": "application/json",
-            "X-Redmine-API-Key": apiKey, // Pass the API Key in the header
-          },
-        });
-
-        console.log("Raw data from API:", response.data);
-
-        // Check if the 'issues' array exists and is valid
-        if (Array.isArray(response.data.issues)) {
-          const transformedData = response.data.issues.map((issue) => ({
+        const issuesData = await officerService.getIssuesData(); // Use the service to get data
+        if (Array.isArray(issuesData)) {
+          const transformedData = issuesData.map((issue) => ({
             id: issue.id,
-            tracker: issue.tracker.name === "Complaints"
-              ? "CMPLN"
-              : issue.tracker.name === "TPL"
-              ? "TPL"
-              : "ML",
-            licenseNumber: issue.custom_fields.find((field) => field.name === "License Number")?.value || "N/A",
-            ownerName: issue.custom_fields.find((field) => field.name === "Owner Name")?.value || "N/A",
-            mobileNumber: issue.custom_fields.find((field) => field.name === "Mobile Number")?.value || "N/A",
-            lorryNumber: issue.custom_fields.find((field) => field.name === "Lorry Number")?.value || "N/A",
-            assignee: issue.custom_fields.find((field) => field.name === "Assignee")?.value || "N/A",
-            complaintID: issue.custom_fields.find((field) => field.name === "Complaint ID")?.value || "N/A",
-            start_date: issue.custom_fields.find((field) => field.name === "startDate")?.value || issue.start_date || "N/A",
-          
-
+            tracker:
+              issue.tracker.name === "Complaints"
+                ? "CMPLN"
+                : issue.tracker.name === "TPL"
+                ? "TPL"
+                : "ML",
+            licenseNumber:
+              issue.custom_fields.find((field) => field.name === "License Number")?.value || "N/A",
+            ownerName:
+              issue.custom_fields.find((field) => field.name === "Owner Name")?.value || "N/A",
+            mobileNumber:
+              issue.custom_fields.find((field) => field.name === "Mobile Number")?.value || "N/A",
+            lorryNumber:
+              issue.custom_fields.find((field) => field.name === "Lorry Number")?.value || "N/A",
+            assignee:
+              issue.custom_fields.find((field) => field.name === "Assignee")?.value || "N/A",
+            complaintID:
+              issue.custom_fields.find((field) => field.name === "Complaint ID")?.value || "N/A",
+            start_date:
+              issue.custom_fields.find((field) => field.name === "startDate")?.value ||
+              issue.start_date ||
+              "N/A",
           }));
-          console.log("Transformed data:", transformedData);
-
-
-          console.log("Transformed data:", transformedData);
-
           setTableData(transformedData);
-          setFilteredData(transformedData.filter((item) => item.tracker === "ML"));
+          // Initially, if the active tab is a license type, filter the data
+          if (activeTab !== "MLOWNER") {
+            setFilteredData(transformedData.filter((item) => item.tracker === activeTab));
+          }
         } else {
-          console.error("Issues data is not an array:", response.data.issues);
+          console.error("Issues data is not an array:", issuesData);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -85,14 +72,16 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
+  // Update filtered data whenever activeTab or tableData changes
   useEffect(() => {
-    const filtered = tableData.filter((item) => item.tracker === activeTab);
-    console.log(`Filtered data for tab ${activeTab}:`, filtered); // Debug log
-    setFilteredData(filtered);
+    if (activeTab !== "MLOWNER") {
+      const filtered = tableData.filter((item) => item.tracker === activeTab);
+      setFilteredData(filtered);
+    }
   }, [activeTab, tableData]);
-  
+
+  // Handle search logic
   const handleSearch = (value) => {
-    console.log("Search input value:", value);
     setSearchText(value);
     const filtered = tableData
       .filter((item) => item.tracker === activeTab)
@@ -101,47 +90,28 @@ const Dashboard = () => {
           item.licenseNumber.toLowerCase().includes(value.toLowerCase()) ||
           item.ownerName.toLowerCase().includes(value.toLowerCase())
       );
-    console.log("Filtered data based on search input:", filtered);
     setFilteredData(filtered);
   };
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: "#f0f2f5", padding: "16px" }}
-    >
+    <div className="min-h-screen" style={{ backgroundColor: "#f0f2f5", padding: "16px" }}>
       {/* Stats Section */}
       <Row gutter={[16, 16]} justify="space-around">
-
-        {[
-          {
-            title: language === "en" ? "Total Licenses" : "මුළු බලපත්‍ර",
-            count: tableData.filter((item) => item.tracker === "ML").length,
-            color: "#1890ff",
-          },
-          {
-            title: language === "en" ? "Transport Licenses" : "ප්‍රවාහන බලපත්‍ර",
-            count: tableData.filter((item) => item.tracker === "TPL").length,
-            color: "#408220",
-          },
-          {
-            title: language === "en" ? "Complaints" : "පැමිණිලි",
-            count: tableData.filter((item) => item.tracker === "CMPLN").length,
-            color: "#950C33",
-          },
-
-        ].map((box, index) => (
-          <Col xs={24} sm={12} md={8} lg={6} key={index}>
-            <StatsBox title={box.title} count={box.count} color={box.color} />
-          </Col>
-        ))}
+        {[{ title: language === "en" ? "Total Licenses" : "මුළු බලපත්‍ර", count: tableData.filter((item) => item.tracker === "ML").length, color: "#1890ff" },
+          { title: language === "en" ? "Transport Licenses" : "ප්‍රවාහන බලපත්‍ර", count: tableData.filter((item) => item.tracker === "TPL").length, color: "#408220" },
+          { title: language === "en" ? "Complaints" : "පැමිණිලි", count: tableData.filter((item) => item.tracker === "CMPLN").length, color: "#950C33" }]
+          .map((box, index) => (
+            <Col xs={24} sm={12} md={8} lg={6} key={index}>
+              <StatsBox title={box.title} count={box.count} color={box.color} />
+            </Col>
+          ))}
       </Row>
 
-      {/* Tabs Section */}
+      {/* Tab Section */}
       <TabSection tabs={tabs} activeKey={activeTab} onChange={setActiveTab} />
 
-      {/* Search and Buttons */}
-      <Row gutter={[16, 16]} align="middle">
+      {/* Search and buttons */}
+      <Row gutter={[16, 16]} align="middle" style={{ marginTop: "16px" }}>
         <Col xs={24} sm={16}>
           <Input
             placeholder={language === "en" ? "Search" : "සොයන්න"}
@@ -160,25 +130,11 @@ const Dashboard = () => {
         <Col xs={24} sm={8} style={{ textAlign: "right" }}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
             <Link to="/gsmb/register-new-owner">
-              <Button
-                type="primary"
-                style={{ backgroundColor: "#950C33", color: "white" }}
-              >
-                {language === "en"
-                  ? "+ Register New Owner"
-                  : "+ අයිතිකරු ලියාපදිංචි කරන්න"}
+              <Button type="primary" style={{ backgroundColor: "#950C33", color: "white" }}>
+                {language === "en" ? "+ Register New Owner" : "+ අයිතිකරු ලියාපදිංචි කරන්න"}
               </Button>
             </Link>
-            <Link to="/gsmb/add-new-license">
-              <Button
-                type="default"
-                style={{ backgroundColor: "white", borderColor: "#d9d9d9" }}
-              >
-                {language === "en"
-                  ? "+ Add New License"
-                  : "+ නව අවසරපත්‍රයක් එකතු කරන්න"}
-              </Button>
-            </Link>
+           
           </div>
         </Col>
       </Row>
@@ -194,11 +150,14 @@ const Dashboard = () => {
           marginTop: "16px",
         }}
       >
-
-        <LicenseTable data={filteredData} tracker={activeTab} />
-
+        {activeTab === "MLOWNER" ? (
+          <MlOwnersTable data={filteredData} />
+        ) : (
+          <LicenseTable data={filteredData} tracker={activeTab} />
+        )}
       </div>
     </div>
   );
 };
+
 export default Dashboard;

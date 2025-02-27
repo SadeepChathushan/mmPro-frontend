@@ -3,9 +3,10 @@ import { Button, Typography, Layout, Row, Col, notification } from "antd";
 import { jsPDF } from "jspdf";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import "./ReceiptPage.css"; // Add this line at the top of your file
+import "../../styles/MLOwner/ReceiptPage.css"; // Add this line at the top of your file
 import axios from "axios";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { fetchMLData } from "../../services/MLOService"; // Extracted service import
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -14,40 +15,20 @@ const ReceiptPage = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   const [mldata, setmlData] = useState(null);
-  const apiKey = localStorage.getItem("API_Key");
   const location = useLocation();
   const { formData, l_number } = location.state || {}; // Ensure fallback to avoid undefined errors
 
-  console.log("Form Data:", formData);
-  console.log("ML  ID:", l_number);
-
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`/api/projects/gsmb/issues.json`, {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Redmine-API-Key": apiKey,
-          },
-        });
-        if (response.data && response.data.issues) {
-          const issues = response.data.issues;
-          const filteredMLIssues = issues.filter(issue => issue.subject === l_number);
-          setmlData(filteredMLIssues[0]);
-        }
-         // Store data in state
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
     if (l_number) {
-      // Ensure mLId is not undefined before calling fetchData
-      fetchData();
+      fetchMLData(l_number)
+        .then(data => setmlData(data))
+        .catch(error => console.error("Error fetching ML data:", error));
     }
-  }, [l_number, apiKey]); // Ensure useEffect runs when mLId changes
+    
+  }, [l_number]);
 
   // Ensure mldata and mldata.custom_fields exist before accessing
+  console.log("dataaaa",mldata);
   const mlcontact = mldata?.custom_fields?.find(
     (field) => field.name === "Mobile Number"
   ) || { value: "N/A" }; // Provide a default value if not found
@@ -55,14 +36,17 @@ const ReceiptPage = () => {
     (field) => field.name === "Location"
   ) || { value: "N/A" }; // Provide a default value if not found
 
-
   const currentDate = new Date();
   const printedDate = currentDate.toISOString().split("T")[0];
-  const range = printedDate + " to " + formData.dueDate;
-
+  let range;
+  if (formData.DateTime){
+    range = formData.DateTime + " to " + formData.dueDate;
+  }else{
+    range = printedDate + " to " + formData.dueDate;
+  }
+  
   const receiptData = {
     lorryNumber: formData.lorryNumber,
-    // reference: "892426242",
     mlNumber: mldata?.subject,
     mlOwner: mldata?.assigned_to?.name,
     mlContact: mlcontact.value,
@@ -75,26 +59,30 @@ const ReceiptPage = () => {
     printedDate: printedDate,
   };
 
+ 
   const handlePrintReceipt = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const marginLeft = 20;
     const lineHeight = 8; // Reduced line height for compact spacing
-
+  
     // Helper function to add text with proper alignment
     const addText = (text, x, y, size = 12, bold = false, align = "left") => {
+      // Ensure the text is a valid string, or fall back to an empty string
+      const validText = text ? String(text) : '';
+      
       doc.setFontSize(size);
       doc.setFont("helvetica", bold ? "bold" : "normal");
-      doc.text(text, x, y, { align });
+      doc.text(validText, x, y, { align });
     };
-
+  
     // Add Logo
     const logoUrl =
       "https://th.bing.com/th/id/OIP.lXqWzX4gCjamrXtOz172qAHaHa?rs=1&pid=ImgDetMain";
     const logoSize = 40;
     const logoX = (pageWidth - logoSize) / 2;
     doc.addImage(logoUrl, "JPEG", logoX, 10, logoSize, logoSize);
-
+  
     // Title and Contact Info
     addText(
       "Geological Survey and Mines Bureau",
@@ -112,14 +100,14 @@ const ReceiptPage = () => {
       false,
       "center"
     );
-
+  
     // Line separator after contact info
     doc.setDrawColor(0, 0, 0);
     doc.line(marginLeft, 70, pageWidth - marginLeft, 70);
-
+  
     // Receipt Title
     addText("License Owner's Receipt", pageWidth / 2, 80, 14, true, "center");
-
+  
     // Receipt Details
     const startY = 90;
     const details = [
@@ -136,13 +124,13 @@ const ReceiptPage = () => {
       { label: "Validity", value: receiptData.validity },
       { label: "Printed Date", value: receiptData.printedDate },
     ];
-
+  
     details.forEach((item, index) => {
       const yPosition = startY + index * (lineHeight + 5); // Adjusted spacing
       addText(`${item.label}:`, marginLeft, yPosition, 12, true);
-      addText(item.value, marginLeft + 60, yPosition, 12);
+      addText(item.value || '', marginLeft + 60, yPosition, 12); // Ensuring there's no undefined value
     });
-
+  
     // Footer Content
     const footerY = doc.internal.pageSize.height - 20; // Adjusted footer position
     addText(
@@ -154,7 +142,7 @@ const ReceiptPage = () => {
       "center"
     );
     doc.line(marginLeft, footerY - 5, pageWidth - marginLeft, footerY - 5);
-
+  
     // Copyright Text
     addText(
       "© 2025 Geological Survey and Mines Bureau. All rights reserved.",
@@ -164,23 +152,23 @@ const ReceiptPage = () => {
       false,
       "center"
     );
-
+  
     // Check if printer is available
     const isPrinterAvailable = () => window.matchMedia("print").matches;
-
+  
     if (isPrinterAvailable()) {
       doc.autoPrint(); // Automatically open print dialog
       doc.output("dataurlnewwindow");
     } else {
       doc.save(`${receiptData.lorryContact}.pdf`);
-
+  
       notification.info({
         message: "No printer detected",
         description: "The receipt will be downloaded as a PDF.",
       });
     }
   };
-
+  
   const handleBackToHome = () => {
     navigate("/mlowner/home");
   };
@@ -212,40 +200,17 @@ const ReceiptPage = () => {
               />
             </div>
 
-            <p>
-              <strong>{language === "en" ? "Lorry Number:" : language == 'si' ? "ලොරි අංකය:" : "லாரி எண்:"}</strong> {formData.lorryNumber}
-            </p>
-            {/* <p><strong>Reference:</strong> {receiptData.reference}</p> */}
-            <p>
-              <strong>{language === "en" ? "ML Number:" : language == 'si' ? "ML අංකය:" : "ML எண்:"}</strong> {receiptData.mlNumber}
-            </p>
-            <p>
-              <strong>{language === "en" ? "ML Owner:" : language == 'si' ? "ML හිමිකරු:" : "ML உரிமையாளர்:"}</strong> {receiptData.mlOwner}
-            </p>
-            <p>
-              <strong>{language === "en" ? "ML Contact:" : language == 'si' ? "ML සම්බන්ධතා:" : "ML தொடர்பு:"}</strong> {receiptData.mlContact}
-            </p>
-            <p>
-              <strong>{language === "en" ? "Start Location:" : language == 'si' ? "ආරම්භක ස්ථානය:" : "தொடக்க இடம்:"}</strong> {receiptData.startLocation}
-            </p>
-            <p>
-              <strong>{language === "en" ? "Mineral Type:" : language == 'si' ? "ඛනිජ වර්ගය:" : "கனிம வகை:"}</strong> {receiptData.mineralType}
-            </p>
-            <p>
-              <strong>{language === "en" ? "Driver Contact:" : language == 'si' ? "රියදුරු සම්බන්ධතා:" : "ஓட்டுனர் தொடர்பு:"}</strong> {receiptData.lorryContact}
-            </p>
-            <p>
-              <strong>{language === "en" ? "Load (Cube):" : language == 'si' ? "පැටවීම (Cube):" : "சுமை (Cube):"}</strong> {receiptData.loadCube}
-            </p>
-            <p>
-              <strong>{language === "en" ? "Destination:" : language == 'si' ? "ගමනාන්තය:" : "சேருமிடம்:"}</strong> {receiptData.destination}
-            </p>
-            <p>
-              <strong>{language === "en" ? "Validity:" : language == 'si' ? "වලංගුභාවය:" : "செல்லுபடியாகும்:"}</strong> {receiptData.validity}
-            </p>
-            <p>
-              <strong>{language === "en" ? "Printed Date:" : language == 'si' ? "මුද්‍රිත දිනය:" : "அச்சிடப்பட்ட தேதி:"}</strong> {receiptData.printedDate}
-            </p>
+            <p><strong>{language === "en" ? "Lorry Number:" : language == 'si' ? "ලොරි අංකය:" : "லாரி எண்:"}</strong> {formData.lorryNumber}</p>
+            <p><strong>{language === "en" ? "ML Number:" : language == 'si' ? "ML අංකය:" : "ML எண்:"}</strong> {receiptData.mlNumber}</p>
+            <p><strong>{language === "en" ? "ML Owner:" : language == 'si' ? "ML හිමිකරු:" : "ML உரிமையாளர்:"}</strong> {receiptData.mlOwner}</p>
+            <p><strong>{language === "en" ? "ML Contact:" : language == 'si' ? "ML සම්බන්ධතා:" : "ML தொடர்பு:"}</strong> {receiptData.mlContact}</p>
+            <p><strong>{language === "en" ? "Start Location:" : language == 'si' ? "ආරම්භක ස්ථානය:" : "தொடக்க இடம்:"}</strong> {receiptData.startLocation}</p>
+            <p><strong>{language === "en" ? "Mineral Type:" : language == 'si' ? "ඛනිජ වර්ගය:" : "கனிம வகை:"}</strong> {receiptData.mineralType}</p>
+            <p><strong>{language === "en" ? "Driver Contact:" : language == 'si' ? "රියදුරු සම්බන්ධතා:" : "ஓட்டுனர் தொடர்பு:"}</strong> {receiptData.lorryContact}</p>
+            <p><strong>{language === "en" ? "Load (Cube):" : language == 'si' ? "පැටවීම (Cube):" : "சுமை (Cube):"}</strong> {receiptData.loadCube}</p>
+            <p><strong>{language === "en" ? "Destination:" : language == 'si' ? "ගමනාන්තය:" : "சேருமிடம்:"}</strong> {receiptData.destination}</p>
+            <p><strong>{language === "en" ? "Validity:" : language == 'si' ? "වලංගුභාවය:" : "செல்லுபடியாகும்:"}</strong> {receiptData.validity}</p>
+            <p><strong>{language === "en" ? "Printed Date:" : language == 'si' ? "මුද්‍රිත දිනය:" : "அச்சிடப்பட்ட தேதி:"}</strong> {receiptData.printedDate}</p>
           </Col>
         </Row>
 

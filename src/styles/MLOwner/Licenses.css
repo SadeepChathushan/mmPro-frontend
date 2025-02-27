@@ -1,0 +1,105 @@
+/* Licenses.css */
+
+.container {
+    padding: 16px;
+    background-color: #fff;
+  }
+  
+  .title {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .filter-row {
+    text-align: center;
+    margin-bottom: 20px;
+    height: 50px;
+  }
+  
+  .date-picker-col {
+    width: 100%;
+  }
+  
+  .auto-complete-col {
+    width: 100%;
+  }
+  
+  .table-container {
+    margin-bottom: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0);
+  }
+  
+  .button {
+    width: 300px;
+    border-radius: 10px;
+  }
+  
+  .dispatch-button {
+    gap: 30px;
+    width: 200px;
+    height: 35px;
+    background-color: #fff500;
+    border-color: #fff500;
+    color: black;
+  }
+  
+  .dispatch-button-disabled {
+    background-color: #d9d9d9;
+    color: #888;
+  }
+  
+  .history-button {
+    width: 200px;
+    height: 35px;
+    background-color: #0066cc;
+    border-color: #0066cc;
+    border-radius: 10%;
+  }
+  
+  .history-button:hover {
+    background-color: rgb(46, 131, 214);
+  }
+  
+  .history-button-default {
+    background-color: #007bff;
+  }
+  
+  /* Styling for the Back to Home button container */
+  .back-to-home-button {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    margin-top: 20px;         /* Space from the table */
+  }
+  
+  /* Styling for the Back to Home button itself */
+  .home-button {
+    background-color: #ffa500;
+    border-color: #ffa500;
+    color: white;
+    width: 200px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .home-button:hover {
+    background-color: rgb(211, 153, 61);
+  }
+  
+  .home-button:focus {
+    background-color: rgb(211, 153, 61);
+  }
+  
+  .dispatch-button-disabled {
+    background-color: #f5f5f5;
+    color: #d9d9d9;
+    cursor: not-allowed;
+  }
+  
+  .dispatch-button {
+    background-color: #fff500;
+    color: #fff;
+    cursor: pointer;
+  }
