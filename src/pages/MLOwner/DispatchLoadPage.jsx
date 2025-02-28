@@ -324,6 +324,7 @@ const handleDatetime = (e) => {
         } else {
           // Update the issue using the service function
           const updatedIssue = { ...issueToUpdate, custom_fields: issueToUpdate.custom_fields };
+          console.log("Updated issue: id", issueToUpdate.id);
           await  updateIssue(issueToUpdate.id, updatedIssue);
   
           // Create a new issue if necessary

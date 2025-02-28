@@ -1,24 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { Layout, Row, Col, DatePicker, Typography } from 'antd';
+import { useEffect, useState } from 'react';
+import { Layout, Row, Col, Typography} from 'antd';
 import { KPICard, getDefaultKPIData } from "../../components/GSMBManagement/KPICard";
 import { MonthlyChart } from "../../components/GSMBManagement/MonthlyChart";
-import { MiningAreas } from "../../components/GSMBManagement/MiningAreas";
+import TopMiningLicenseHolders from "../../components/GSMBManagement/TopMiningLicenseHolders";
 import { TopContributors } from "../../components/GSMBManagement/TopContributors";
-import { TransportLicense } from "../../components/GSMBManagement/TransportLicense";
-import { LicenseCategories } from "/src/components/GSMBManagement/LicenseCategories.jsx";
+import { TransportLicense } from "../../components/GSMBManagement/PieChart";
+import { MapComponent } from "../../components/GSMBManagement/MiningMap";
+import { MiningLicenseChart } from "../../components/GSMBManagement/MLChart";
 import { 
   fetchComplaintCounts, 
   fetchRoleCounts, 
   fetchMiningLicenseCounts, 
-  fetchRoyaltyCounts 
+  fetchRoyaltyCounts,
 } from '../../services/management';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { fetchTotalLocationML} from '../../services/management';
+import { fetchTransportLicenseDestinations} from '../../services/management';
+
 
 const { Header, Content } = Layout;
-const { Title } = Typography;
-const { RangePicker } = DatePicker;
+const { Title } = Typography; 
 
 const Dashboard = () => {
-  const [activeIndex, setActiveIndex] = useState(null);
+
+  const { language } = useLanguage();
+
+  const [startLocationData, setStartLocationData] = useState([]);
+  const [transportData, setTransportData] = useState([]);
+
   const [roleCounts, setRoleCounts] = useState({
     licenceOwner: 0,
     activeGSMBOfficers: 0,
@@ -41,83 +50,6 @@ const Dashboard = () => {
     Executed: 0,
   });
 
-  // Sample chart data
-  const data = [
-    { name: 'Rathnapura', value: 400 },
-    { name: 'Galle', value: 300 },
-    { name: 'Matara', value: 200 },
-    { name: 'Colombo', value: 100 },
-  ];
-
-  const licenseData = [
-    { label: "Sand", value: 750, totalPercent: 100, successPercent: 75 },
-    { label: "Graphite", value: 500, totalPercent: 75, successPercent: 50 },
-    { label: "Gravel", value: 150, totalPercent: 53, successPercent: 20 },
-    { label: "Rutile", value: 30, totalPercent: 27, successPercent: 5 }
-  ];
-
-  const areadata = [
-    { label: "Lanka Sands Ltd", value: 45 },
-    { label: "Iluka Ltd", value: 28 },
-    { label: "Mahaweli River", value: 19 },
-    { label: "Pulmudai Beach", value: 10 },
-    { label: "Bogala Graphite", value: 4 },
-    { label: "Kahatagaha", value: 22 },
-    { label: "Eppawala Rock", value: 2 },
-    { label: "Puttalam", value: 30 },
-  ];
-
-  const monthlyData = [
-    { month: "Jan", sand: 1000, graphite: 800, mines: 1200 },
-    { month: "Feb", sand: 1100, graphite: 850, mines: 1300 },
-    { month: "Mar", sand: 1200, graphite: 900, mines: 1400 },
-    { month: "Apr", sand: 1050, graphite: 950, mines: 1500 },
-    { month: "May", sand: 1350, graphite: 1000, mines: 1600 },
-    { month: "Jun", sand: 1500, graphite: 1000, mines: 1700 },
-    { month: "Jul", sand: 1600, graphite: 1200, mines: 1800 },
-    { month: "Aug", sand: 1400, graphite: 1300, mines: 2300 },
-    { month: "Sep", sand: 1800, graphite: 1400, mines: 2000 },
-    { month: "Oct", sand: 1900, graphite: 1200, mines: 2100 },
-    { month: "Nov", sand: 2000, graphite: 1600, mines: 1200 },
-    { month: "Dec", sand: 2100, graphite: 1200, mines: 1300 },
-  ];
-
-  const transportData = [
-    { name: "Rathnapura", value: 15 },
-    { name: "Monaragala", value: 10 },
-    { name: "Kegalle", value: 8 },
-    { name: "Kurunegala", value: 12 },
-    { name: "Galle", value: 7 },
-    { name: "Matale", value: 5 },
-    { name: "Badulla", value: 10 },
-    { name: "Hambantota", value: 6 },
-    { name: "Colombo", value: 3 },
-    { name: "Anuradhapura", value: 4 },
-  ];
-
-  const recentOrders = [
-    {
-      title: "LLL/100/102",
-      description: "Kasun Nuwan - RS 50000",
-      avatar: "https://via.placeholder.com/40",
-    },
-    {
-      title: "LLL/100/105",
-      description: "Nimal Perera - Rs 35000",
-      avatar: "https://via.placeholder.com/40",
-    },
-    {
-      title: "LLL/100/106",
-      description: "Sahan Thathsara - Rs 18345",
-      avatar: "https://via.placeholder.com/40",
-    },
-    {
-      title: "LLL/100/110",
-      description: "Pasindu Lakshan - Rs 10234",
-      avatar: "https://via.placeholder.com/40",
-    },
-  ];
-
   const colors = [
     "#FFD700", "#FF8C00", "#B8860B", "#DAA520", "#FF4500",
     "#FF0000", "#B22222", "#8B0000", "#FF6347", "#CD5C5C",
@@ -131,9 +63,8 @@ const Dashboard = () => {
           fetchComplaintCounts(),
           fetchRoleCounts(),
           fetchMiningLicenseCounts(),
-          fetchRoyaltyCounts()
+          fetchRoyaltyCounts(),
         ]);
-
         setTotalComplaint(complaints);
         setRoleCounts(roles);
         setLicenseCounts(licenses);
@@ -145,15 +76,14 @@ const Dashboard = () => {
 
     loadDashboardData();
   }, []);
-
-  const handlePieChartHover = (index) => {
-    setActiveIndex(index);
-  };
-
-  const handlePieChartLeave = () => {
-    setActiveIndex(null);
-  };
-
+  useEffect(() => {
+    fetchTotalLocationML(setStartLocationData);
+  }, []);
+  
+  useEffect(() => {
+    fetchTransportLicenseDestinations(setTransportData);
+  }, []);
+  
   const handlePieChartClick = (e, index) => {
     console.log(`Clicked pie chart ${index}:`, e);
   };
@@ -177,10 +107,18 @@ const Dashboard = () => {
         }}
       >
         <Row justify="space-between" align="middle">
-          <Title level={3} style={{ WebkitBackgroundClip: "text", color: "#cacaca", margin: 0 }}>
-            DASHBOARD
-          </Title>
-          <RangePicker />
+        <Title
+          level={3}
+          style={{
+          background: "linear-gradient(to right, #cacaca, #ffffff)", 
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent", 
+          margin: 0,
+          }}
+        >
+        {language === "en"  ? "Dashboard" : language === "si" ? "උපකරණ පුවරුව" : "டாஷ்போர்டு"}
+     </Title>
+
         </Row>
       </Header>
 
@@ -201,18 +139,61 @@ const Dashboard = () => {
 
         {/* Charts Row */}
         <Row gutter={16} style={{ marginTop: "20px" }}>
-          <MonthlyChart lineData={monthlyData} />
-          <MiningAreas data={areadata} getDynamicColor={getDynamicColor} />
-        </Row>
+           <MonthlyChart />
+           <TopMiningLicenseHolders getDynamicColor={getDynamicColor} />
+           </Row>
 
         {/* Bottom Row */}
         <Row gutter={16} style={{ marginTop: "20px" }}>
-          <TopContributors orders = {recentOrders}/>
-          <LicenseCategories data = {licenseData} />
+          <TopContributors />
           <Col xs={24} md={8}>
-            <TransportLicense pieData={transportData} colors={colors} />
-          </Col>
+          <TransportLicense
+           pieData={startLocationData}
+           colors={colors}
+           title={
+             language === "en"
+             ? "Top Regions for Mining License Issuance"
+             : language === "si"
+             ? "වැඩිම පතල් බලපත්‍ර නිකුත් කිරීමේ ප්‍රදේශ"
+             : "சுரங்க அனுமதி வழங்கப்பட்ட முக்கிய பகுதிகள்"
+              }
+          description={
+           language === "en"
+           ? "Areas with the Highest Number of Approved Mining Licenses"
+           : language === "si"
+           ? "අනුමත කළ ඉහළම පතල් බලපත්‍ර ගණනක් ඇති ප්‍රදේශ"
+           : "அங்கீகரிக்கப்பட்ட சுரங்க அனுமதிகளின் அதிக எண்ணிக்கையுள்ள பகுதிகள்"
+          }
+       />
+       </Col>
+       <Col xs={24} md={8}>
+       <TransportLicense
+      pieData={transportData}
+      colors={colors}
+      title={
+         language === "en"
+           ? "Top Destinations"
+           : language === "si"
+           ? "ප්‍රමුඛ ගමනාන්ත"
+           : "சிறந்த இலக்குகள்"
+            }
+        description={
+         language === "en"
+              ? "Permitted locations for transport operations under license.": 
+              language === "si"? "බලපත්‍රය යටතේ ප්‍රවාහන මෙහෙයුම් සඳහා අනුමත ප්‍රදේශ."
+              : "உரிமையின் கீழ் போக்குவரத்து செயல்பாடுகளுக்கான அனுமதியளிக்கப்பட்ட இடங்கள்."
+           }
+       />
+       </Col>
         </Row>
+        <Row gutter={16} style={{ marginTop: "20px", width: "100%", display: "flex" }}>
+        <Col xs={24} md={8}>
+         <MapComponent/>
+        </Col>
+        <Col xs={24} md={16}>
+        <MiningLicenseChart/>
+        </Col>
+       </Row>
       </Content>
     </Layout>
   );
