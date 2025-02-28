@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Layout, Row, Col, Typography} from 'antd';
+import { Layout, Row, Col, Typography } from 'antd';
 import { KPICard, getDefaultKPIData } from "../../components/GSMBManagement/KPICard";
 import { MonthlyChart } from "../../components/GSMBManagement/MonthlyChart";
 import TopMiningLicenseHolders from "../../components/GSMBManagement/TopMiningLicenseHolders";
@@ -14,15 +14,13 @@ import {
   fetchRoyaltyCounts,
 } from '../../services/management';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { fetchTotalLocationML} from '../../services/management';
-import { fetchTransportLicenseDestinations} from '../../services/management';
-
+import { fetchTotalLocationML } from '../../services/management';
+import { fetchTransportLicenseDestinations } from '../../services/management';
 
 const { Header, Content } = Layout;
-const { Title } = Typography; 
+const { Title } = Typography;
 
 const Dashboard = () => {
-
   const { language } = useLanguage();
 
   const [startLocationData, setStartLocationData] = useState([]);
@@ -34,20 +32,22 @@ const Dashboard = () => {
     policeOfficers: 0,
     public: 0,
   });
-  
+
   const [licenseCounts, setLicenseCounts] = useState({
     valid: 0,
     expired: 0,
     rejected: 0,
+    total: 0,
   });
-  
+
   const [TotalRoyalty, setTotalRoyalty] = useState(0);
-  
+
   const [TotalComplaint, setTotalComplaint] = useState({
     New: 0,
     Rejected: 0,
     InProgress: 0,
     Executed: 0,
+    total: 0,
   });
 
   const colors = [
@@ -65,10 +65,24 @@ const Dashboard = () => {
           fetchMiningLicenseCounts(),
           fetchRoyaltyCounts(),
         ]);
-        setTotalComplaint(complaints);
-        setRoleCounts(roles);
-        setLicenseCounts(licenses);
-        setTotalRoyalty(royalty);
+
+        // Log responses for debugging
+        console.log("Admin Complaints:", complaints);
+        console.log("Admin Roles:", roles);
+        console.log("Admin Licenses:", licenses);
+        console.log("Admin Royalty:", royalty);
+
+        // Extract nested data from responses
+        const complaintData = complaints.issues; // Extract issues from complaints
+        const roleData = roles.issues; // Extract issues from roles
+        const licenseData = licenses.issues; // Extract issues from licenses
+        const royaltyData = royalty.totalRoyalty; // Extract totalRoyalty from royalty
+
+        // Update state with extracted data
+        setTotalComplaint(complaintData);
+        setRoleCounts(roleData);
+        setLicenseCounts(licenseData);
+        setTotalRoyalty(royaltyData);
       } catch (error) {
         console.error('Error loading dashboard data:', error);
       }
@@ -76,14 +90,15 @@ const Dashboard = () => {
 
     loadDashboardData();
   }, []);
+
   useEffect(() => {
     fetchTotalLocationML(setStartLocationData);
   }, []);
-  
+
   useEffect(() => {
     fetchTransportLicenseDestinations(setTransportData);
   }, []);
-  
+
   const handlePieChartClick = (e, index) => {
     console.log(`Clicked pie chart ${index}:`, e);
   };
@@ -107,18 +122,17 @@ const Dashboard = () => {
         }}
       >
         <Row justify="space-between" align="middle">
-        <Title
-          level={3}
-          style={{
-          background: "linear-gradient(to right, #cacaca, #ffffff)", 
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent", 
-          margin: 0,
-          }}
-        >
-        {language === "en"  ? "Dashboard" : language === "si" ? "උපකරණ පුවරුව" : "டாஷ்போர்டு"}
-     </Title>
-
+          <Title
+            level={3}
+            style={{
+              background: "linear-gradient(to right, #cacaca, #ffffff)", 
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent", 
+              margin: 0,
+            }}
+          >
+            {language === "en"  ? "Dashboard" : language === "si" ? "උපකරණ පුවරුව" : "டாஷ்போர்டு"}
+          </Title>
         </Row>
       </Header>
 
@@ -139,61 +153,62 @@ const Dashboard = () => {
 
         {/* Charts Row */}
         <Row gutter={16} style={{ marginTop: "20px" }}>
-           <MonthlyChart />
-           <TopMiningLicenseHolders getDynamicColor={getDynamicColor} />
-           </Row>
+          <MonthlyChart />
+          <TopMiningLicenseHolders getDynamicColor={getDynamicColor} />
+        </Row>
 
         {/* Bottom Row */}
         <Row gutter={16} style={{ marginTop: "20px" }}>
           <TopContributors />
           <Col xs={24} md={8}>
-          <TransportLicense
-           pieData={startLocationData}
-           colors={colors}
-           title={
-             language === "en"
-             ? "Top Regions for Mining License Issuance"
-             : language === "si"
-             ? "වැඩිම පතල් බලපත්‍ර නිකුත් කිරීමේ ප්‍රදේශ"
-             : "சுரங்க அனுமதி வழங்கப்பட்ட முக்கிய பகுதிகள்"
+            <TransportLicense
+              pieData={startLocationData}
+              colors={colors}
+              title={
+                language === "en"
+                  ? "Top Regions for Mining License Issuance"
+                  : language === "si"
+                  ? "වැඩිම පතල් බලපත්‍ර නිකුත් කිරීමේ ප්‍රදේශ"
+                  : "சுரங்க அனுமதி வழங்கப்பட்ட முக்கிய பகுதிகள்"
               }
-          description={
-           language === "en"
-           ? "Areas with the Highest Number of Approved Mining Licenses"
-           : language === "si"
-           ? "අනුමත කළ ඉහළම පතල් බලපත්‍ර ගණනක් ඇති ප්‍රදේශ"
-           : "அங்கீகரிக்கப்பட்ட சுரங்க அனுமதிகளின் அதிக எண்ணிக்கையுள்ள பகுதிகள்"
-          }
-       />
-       </Col>
-       <Col xs={24} md={8}>
-       <TransportLicense
-      pieData={transportData}
-      colors={colors}
-      title={
-         language === "en"
-           ? "Top Destinations"
-           : language === "si"
-           ? "ප්‍රමුඛ ගමනාන්ත"
-           : "சிறந்த இலக்குகள்"
-            }
-        description={
-         language === "en"
-              ? "Permitted locations for transport operations under license.": 
-              language === "si"? "බලපත්‍රය යටතේ ප්‍රවාහන මෙහෙයුම් සඳහා අනුමත ප්‍රදේශ."
-              : "உரிமையின் கீழ் போக்குவரத்து செயல்பாடுகளுக்கான அனுமதியளிக்கப்பட்ட இடங்கள்."
-           }
-       />
-       </Col>
+              description={
+                language === "en"
+                  ? "Areas with the Highest Number of Approved Mining Licenses"
+                  : language === "si"
+                  ? "අනුමත කළ ඉහළම පතල් බලපත්‍ර ගණනක් ඇති ප්‍රදේශ"
+                  : "அங்கீகரிக்கப்பட்ட சுரங்க அனுமதிகளின் அதிக எண்ணிக்கையுள்ள பகுதிகள்"
+              }
+            />
+          </Col>
+          <Col xs={24} md={8}>
+            <TransportLicense
+              pieData={transportData}
+              colors={colors}
+              title={
+                language === "en"
+                  ? "Top Destinations"
+                  : language === "si"
+                  ? "ප්‍රමුඛ ගමනාන්ත"
+                  : "சிறந்த இலக்குகள்"
+              }
+              description={
+                language === "en"
+                  ? "Permitted locations for transport operations under license."
+                  : language === "si"
+                  ? "බලපත්‍රය යටතේ ප්‍රවාහන මෙහෙයුම් සඳහා අනුමත ප්‍රදේශ."
+                  : "உரிமையின் கீழ் போக்குவரத்து செயல்பாடுகளுக்கான அனுமதியளிக்கப்பட்ட இடங்கள்."
+              }
+            />
+          </Col>
         </Row>
         <Row gutter={16} style={{ marginTop: "20px", width: "100%", display: "flex" }}>
-        <Col xs={24} md={8}>
-         <MapComponent/>
-        </Col>
-        <Col xs={24} md={16}>
-        <MiningLicenseChart/>
-        </Col>
-       </Row>
+          <Col xs={24} md={8}>
+            <MapComponent />
+          </Col>
+          <Col xs={24} md={16}>
+            <MiningLicenseChart />
+          </Col>
+        </Row>
       </Content>
     </Layout>
   );

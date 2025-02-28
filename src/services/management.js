@@ -1,254 +1,162 @@
 import { useState, useEffect } from 'react';
+import axios from "axios";
 
-const API_CREDENTIALS = {
-    username: '@achinthamihiran',
-    password: 'Ab2#*De#'
-  };
-  
-  const getAuthHeaders = () => {
-    const credentials = btoa(`${API_CREDENTIALS.username}:${API_CREDENTIALS.password}`);
-    return {
-      'Content-Type': 'application/json',
-      Authorization: `Basic ${credentials}`,
-    };
-  };
-  
-  const handleApiResponse = async (response) => {
-    if (!response.ok) {
+
+export const fetchComplaintCounts = async () => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    console.log("Token retrieved:", token);
+
+    if (!token) {
+      throw new Error("Authentication token is required. Please log in again.");
+    }
+
+    const response = await axios.get("http://127.0.0.1:5000/gsmb-management/complaint-counts", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return await response.json();
-  };
-  
-  export const fetchComplaintCounts = async () => {
-    try {
-      const response = await fetch('/api/projects/GSMB/issues.json', {
-        headers: getAuthHeaders(),
-      });
-      
-      const data = await handleApiResponse(response);
-      const counts = {
-        New: 0,
-        Rejected: 0,
-        InProgress: 0,
-        Executed: 0,
-      };
-  
-      const filteredIssues = data.issues.filter((issue) => {
-        const tracker = issue.tracker || {};
-        return tracker.id === 26 && tracker.name === 'Complaints';
-      });
-  
-      counts.total = filteredIssues.length;
-  
-      filteredIssues.forEach((issue) => {
-        const status = issue.status?.name || '';
-        if (status === 'New') counts.New++;
-        if (status === 'Rejected') counts.Rejected++;
-        if (status === 'In Progress') counts.InProgress++;
-        if (status === 'Executed') counts.Executed++;
-      });
-      
-      return counts;
-    } catch (error) {
-      console.error('Error fetching complaint data:', error);
-      throw error;
+
+    const data = response.data;
+    console.log("fetchComplaintCounts", data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching complaint data:', error);
+    throw error;
+  }
+};
+
+export const fetchRoleCounts = async () => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    console.log("Token retrieved:", token);
+
+    if (!token) {
+      throw new Error("Authentication token is required. Please log in again.");
     }
-  };
-  
-  export const fetchRoleCounts = async () => {
-    try {
-      const response = await fetch('/api/projects/GSMB/memberships.json', {
-        headers: getAuthHeaders(),
-      });
-      
-      const data = await handleApiResponse(response);
-      const counts = {
-        licenceOwner: 0,
-        activeGSMBOfficers: 0,
-        policeOfficers: 0,
-        public: 0,
-      };
-  
-      data.memberships.forEach((membership) => {
-        const roleName = membership.roles[0]?.name || '';
-        if (roleName === 'MLOwner') counts.licenceOwner++;
-        if (roleName === 'GSMBOfficer') counts.activeGSMBOfficers++;
-        if (roleName === 'PoliceOfficer') counts.policeOfficers++;
-        if (roleName === 'Public') counts.public++;
-      });
-  
-      return counts;
-    } catch (error) {
-      console.error('Error fetching role data:', error);
-      throw error;
+
+    const response = await axios.get("http://127.0.0.1:5000/gsmb-management/role-counts", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  };
-  
-  export const fetchMiningLicenseCounts = async () => {
-    try {
-      const response = await fetch('/api/projects/GSMB/issues.json', {
-        headers: getAuthHeaders(),
-      });
-      
-      const data = await handleApiResponse(response);
-      const counts = {
-        valid: 0,
-        expired: 0,
-        rejected: 0,
-      };
-  
-      const filteredIssues = data.issues.filter((issue) => {
-        const tracker = issue.tracker || {};
-        return tracker.id === 7 && tracker.name === 'ML';
-      });
-  
-      counts.total = filteredIssues.length;
-  
-      filteredIssues.forEach((issue) => {
-        const status = issue.status?.name || '';
-        if (status === 'Valid') counts.valid++;
-        if (status === 'Expired') counts.expired++;
-        if (status === 'Rejected') counts.rejected++;
-      });
-  
-      return counts;
-    } catch (error) {
-      console.error('Error fetching license data:', error);
-      throw error;
+
+    const data = response.data;
+    console.log("fetchRoleCounts", data)
+    return data;
+  } catch (error) {
+    console.error('Error fetching role data:', error);
+    throw error;
+  }
+};
+//mining-license-counts
+export const fetchMiningLicenseCounts = async () => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    
+    if (!token) {
+      throw new Error("Authentication token is required. Please log in again.");
     }
-  };
-  
+
+    const response = await axios.get("http://127.0.0.1:5000/gsmb-management/mining-license-count", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = response.data;
+    console.log("fetch Mining License Counts", data)
+    return data;
+  } catch (error) {
+    console.error('Error fetching mining license data:', error);
+    throw error;
+  }
+};
+
+
 /* ---------------------------------------------------------------------------------------------*/
-
-//monthly toal sand cubes
-
 export const fetchMonthlyCubesCounts = async () => {
   try {
-    const username = '@achinthamihiran';
-    const password = 'Ab2#*De#';
-    const credentials = btoa(`${username}:${password}`);
+    const token = localStorage.getItem("USER_TOKEN");
+    console.log("Token retrieved:", token);
 
-    let page = 1;
-    let hasMoreData = true;
-    const monthlyData = [
-      { month: 'Jan', cubes: 0 },
-      { month: 'Feb', cubes: 0 },
-      { month: 'Mar', cubes: 0 },
-      { month: 'Apr', cubes: 0 },
-      { month: 'May', cubes: 0 },
-      { month: 'Jun', cubes: 0 },
-      { month: 'Jul', cubes: 0 },
-      { month: 'Aug', cubes: 0 },
-      { month: 'Sep', cubes: 0 },
-      { month: 'Oct', cubes: 0 },
-      { month: 'Nov', cubes: 0 },
-      { month: 'Dec', cubes: 0 },
-    ];
-
-    while (hasMoreData) {
-      const response = await fetch(`/api/projects/GSMB/issues.json?page=${page}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Basic ${credentials}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (!data.issues || data.issues.length === 0) {
-        hasMoreData = false;
-        break;
-      }
-
-      // Filter issues with the 'TPL' tracker
-      const filteredIssues = data.issues.filter((issue) => {
-        const tracker = issue.tracker || {};
-        return tracker.id === 8 && tracker.name === 'TPL';
-      });
-
-      // Process and sum values for each month
-      filteredIssues.forEach((issue) => {
-        const cubeField = issue.custom_fields?.find((field) => field.id === 15 && field.name === 'Cubes');
-
-        if (cubeField && cubeField.value) {
-          const issueDate = new Date(issue.created_on);
-          const monthIndex = issueDate.getMonth();
-          monthlyData[monthIndex].cubes += parseFloat(cubeField.value);
-        }
-      });
-
-      page++;
+    if (!token) {
+      throw new Error("Authentication token is required. Please log in again.");
     }
 
-    return monthlyData;
+    const response = await axios.get("http://127.0.0.1:5000/gsmb-management/monthly-total-sand", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}, Message: ${response.data.error}`);
+    }
+
+
+    return response.data.issues;
   } catch (error) {
-    console.error('Error fetching Monthly cubes data:', error);
-    throw new Error('Failed to fetch data. Please try again later.');
+    console.error("Error fetching Monthly cubes data:", error);
+    throw new Error(`Failed to fetch data. Please try again later. Error: ${error.message}`);
   }
 };
 
-//Top Mining License Holders (by Capacity)
-
+// Top Mining License Holders (by Capacity)
 export const fetchTopMiningHolders = async () => {
   try {
-    console.log("Fetching mining license data...");
-    let page = 1;
-    let hasMoreData = true;
-    let miningData = [];
+    const token = localStorage.getItem("USER_TOKEN");
+    console.log("Token retrieved:", token);
 
-    // Use environment variables for credentials
-    const username = "@achinthamihiran";
-    const password = "Ab2#*De#";
-    const credentials = btoa(`${username}:${password}`);
-
-    while (hasMoreData) {
-      const response = await fetch(`/api/projects/GSMB/issues.json?page=${page}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Basic ${credentials}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (!data.issues || data.issues.length === 0) {
-        hasMoreData = false;
-        break;
-      }
-
-      // Process issues
-      data.issues.forEach((issue) => {
-        if (issue.tracker?.id === 7 && issue.tracker?.name === "ML") {
-          const owner = issue.custom_fields.find((field) => field.name === "Owner Name")?.value;
-          const capacity = parseFloat(issue.custom_fields.find((field) => field.name === "Capacity")?.value || 0);
-          const used = parseFloat(issue.custom_fields.find((field) => field.name === "Used")?.value || 0);
-
-          if (owner && capacity > 0) {
-            const percentageUsed = ((used / capacity) * 100).toFixed(2);
-            miningData.push({ label: owner, value: percentageUsed, capacity });
-          }
-        }
-      });
-
-      page++;
+    if (!token) {
+      throw new Error("Authentication token is required. Please log in again.");
     }
 
-    // Sort by capacity and get top 10
-    miningData.sort((a, b) => b.capacity - a.capacity);
-    return miningData.slice(0, 10);
+    const response = await axios.get("http://127.0.0.1:5000/gsmb-management/fetch-top-mining-holders", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}, Message: ${response.data.error}`);
+    }
+
+    const miningData = response.data.issues;
+
+
+    // Format the data
+    const formattedData = miningData.map(item => ({
+      label: item.label,
+      value: item.value,
+      capacity: item.capacity,
+    }));
+
+
+    return formattedData;
+
   } catch (error) {
-    console.error("Error fetching mining license holders:", error);
-    return [];
+    console.error("Error fetching Top Mining License Holders data:", error);
+    throw new Error(`Failed to fetch data. Please try again later. Error: ${error.message}`);
   }
 };
+
 
 // Utility function to fetch data from the API
 const fetchData = async (url, credentials, filterCondition, aggregationField) => {
@@ -294,7 +202,7 @@ const fetchData = async (url, credentials, filterCondition, aggregationField) =>
 // Fetch mining license data by location
 export const fetchTotalLocationML = async (setStartLocationData) => {
   try {
-    const username ='@achinthamihiran';
+    const username = '@achinthamihiran';
     const password = 'Ab2#*De#';
     const credentials = btoa(`${username}:${password}`);
 
@@ -305,7 +213,7 @@ export const fetchTotalLocationML = async (setStartLocationData) => {
       'Location' // Aggregation field
     );
 
-    console.log('Final Aggregated Data for PieChart:', formattedData);
+
     setStartLocationData(formattedData);
   } catch (error) {
     console.error('Error fetching mining license data:', error);
@@ -336,64 +244,51 @@ export const fetchTransportLicenseDestinations = async (setTransportData) => {
 // Top Royalty Contributors
 export const fetchRoyaltyCounts = async () => {
   try {
-    const username = "@achinthamihiran"; // Hardcoded credentials (use with caution)
-    const password = "Ab2#*De#";
-    const credentials = btoa(`${username}:${password}`);
+    console.log("Fetching Royalty Counts...");
 
-    let totalRoyalty = 0;
-    let page = 1;
-    let hasMoreData = true;
-    let fetchedOrders = [];
+    const token = localStorage.getItem("USER_TOKEN");
 
-    while (hasMoreData) {
-      const response = await fetch(`/api/projects/GSMB/issues.json?page=${page}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Basic ${credentials}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (!data.issues || data.issues.length === 0) {
-        hasMoreData = false;
-        break;
-      }
-
-      const filteredIssues = data.issues.filter(
-        (issue) => issue.tracker?.id === 7 && issue.tracker?.name === "ML"
-      );
-
-      totalRoyalty += filteredIssues.reduce((sum, issue) => {
-        const royaltyField = issue.custom_fields?.find(
-          (field) => field.name === "Royalty(sand)due"
-        );
-
-        return royaltyField && royaltyField.value ? sum + parseFloat(royaltyField.value) : sum;
-      }, 0);
-
-      fetchedOrders = [
-        ...fetchedOrders,
-        ...filteredIssues.map((issue) => ({
-          title: issue.author.name,
-          description: `Royalty: ${issue.custom_fields?.find((field) => field.name === "Royalty(sand)due")?.value || "N/A"}`,
-          avatar: "https://via.placeholder.com/40",
-        })),
-      ];
-
-      page++;
+    if (!token) {
+      throw new Error("Authentication token is required. Please log in again.");
     }
 
-    return { totalRoyalty, fetchedOrders };
+    console.log("User Token:", token);
+
+    const response = await axios.get(
+      "http://127.0.0.1:5000/gsmb-management/fetch-royalty-counts",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("fetchRoyaltyCounts response:", response.data);
+
+    if (response.status !== 200) {
+      throw new Error(
+        `HTTP error! Status: ${response.status}, Message: ${response.data.error}`
+      );
+    }
+
+    // Ensure the response has the expected structure
+    if (!response.data.total_royalty || !response.data.orders) {
+      throw new Error("Invalid response structure from the server");
+    }
+
+
+    const mappedData = {
+      totalRoyalty: response.data.total_royalty, // Fix typo: totalRoyalty
+      orders: response.data.orders,
+    };
+
+    return mappedData;
   } catch (error) {
-    console.error("Error fetching royalty data:", error);
-    return { totalRoyalty: 0, fetchedOrders: [] };
+    console.error("Error fetching Top Royalty Contributors data:", error);
+    return { totalRoyalty: 0, orders: [] }; // Return default values to prevent crashes
   }
 };
-
 
 export const useFetchMiningData = () => {
   const [miningLicenseData, setMonthlyMLLicenses] = useState([]);
