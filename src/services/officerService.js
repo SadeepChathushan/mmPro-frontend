@@ -3,11 +3,12 @@
 import axios from "axios";
 // import moment from "moment";
 
-const token = localStorage.getItem("USER_TOKEN");
+// const token = localStorage.getItem("USER_TOKEN");
 
 // Wrap your named functions in an object
 const officerService = {
   getIssuesData: async () => {
+    const token = localStorage.getItem("USER_TOKEN");
     try {
       if (!token) {
         console.error("User token not found in localStorage");
@@ -40,6 +41,7 @@ const officerService = {
   },
 
   getUserDetails: async (userId) => {
+    const token = localStorage.getItem("USER_TOKEN");
     try {
       if (!token) {
         console.error("User token not found in localStorage");
@@ -73,6 +75,7 @@ const officerService = {
   addNewLicense: async (payload) => {
     try {
       // const token = localStorage.getItem("USER_TOKEN");  // Use token for Authorization header
+      const token = localStorage.getItem("USER_TOKEN");
       if (!token) {
         console.error("User token not found in localStorage");
         return null; // Return null if the token is missing
@@ -105,6 +108,7 @@ const officerService = {
 
   // New Function: Fetch a single license by ID
   getLicenseById: async (licenseId) => {
+    const token = localStorage.getItem("USER_TOKEN");
     try {
       if (!token) {
         console.error("User token not found in localStorage");
@@ -131,6 +135,7 @@ const officerService = {
 
   // New Function: Update a license by ID
   updateLicense: async (licenseId, payload) => {
+    const token = localStorage.getItem("USER_TOKEN");
     try {
       if (!token) {
         console.error("User token not found in localStorage");
@@ -230,12 +235,15 @@ const officerService = {
       }
 
       // Make a GET request to the backend API
-      const response = await axios.get("http://127.0.0.1:5000/gsmb-officer/get-mlowners", {
-        headers: {
-          Authorization: `Bearer ${token}`, // Include the token in the request headers
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.get(
+        "http://127.0.0.1:5000/gsmb-officer/get-mlowners",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the request headers
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.data.success && Array.isArray(response.data.data)) {
         // Assuming the API returns an array of ML owners directly
@@ -249,11 +257,6 @@ const officerService = {
       return [];
     }
   },
-
-
-
-
-
 
   // // Fetch all licenses (ML) for a user by their ID
   // getUserLicenses: async (userId) => {
@@ -299,21 +302,16 @@ const officerService = {
   //   }
   // },
 
-
-
-
-
-  
   // Corrected method for fetching dispatch history data
   fetchDispatchHistoryData: async () => {
-    
-    try {
+    const token = localStorage.getItem("USER_TOKEN");
 
+    try {
       if (!token) {
         console.error("User token not found in localStorage");
         return null; // Return null if the token is missing
       }
-  
+
       // const response = await axios.get("/api/projects/gsmb/issues.json", {
       //   headers: {
       //     "Content-Type": "application/json",
@@ -365,5 +363,3 @@ const officerService = {
 
 // Now export the service object as the default
 export default officerService;
-
-
