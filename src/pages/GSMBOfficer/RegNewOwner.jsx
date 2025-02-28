@@ -37,21 +37,21 @@ const NewLicenseForm = () => {
   
       console.log("User registered successfully:", newUser);
   
-      // Assign user to GSMB project with ML Owner role
-      const projectId = 31; // GSMB Project ID
-      const mlOwnerRoleId = 10; // Ensure this is correct
+      // // Assign user to GSMB project with ML Owner role
+      // const projectId = 31; // GSMB Project ID
+      // const mlOwnerRoleId = 10; // Ensure this is correct
   
-      const membership = await officerService.assignUserToProject(
-        newUser.id,
-        projectId,
-        mlOwnerRoleId
-      );
+      // const membership = await officerService.assignUserToProject(
+      //   newUser.id,
+      //   projectId,
+      //   mlOwnerRoleId
+      // );
   
-      if (!membership) {
-        throw new Error("Failed to assign user to project.");
-      }
+      // if (!membership) {
+      //   throw new Error("Failed to assign user to project.");
+      // }
   
-      console.log("User assigned to GSMB project successfully:", membership);
+      // console.log("User assigned to GSMB project successfully:", membership);
       message.success(
         language === "en"
           ? "Mining License Owner registered successfully!"
@@ -247,7 +247,7 @@ const NewLicenseForm = () => {
                   justifyContent: "center",
                   alignItems: "center",
                   gap: "50px",
-                  alignItems: "center",
+                 
 
                 }}
               >
