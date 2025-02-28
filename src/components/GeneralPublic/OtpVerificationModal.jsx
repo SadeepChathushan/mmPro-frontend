@@ -48,6 +48,7 @@ const OtpVerificationModal = ({
     setLoading(true);
     setError("");
 
+
     if (phoneNumber === "0769025444") {
       setOtpSent(true);
       setSuccessMessage("OTP sent successfully (Test Mode: Enter '123456').");
