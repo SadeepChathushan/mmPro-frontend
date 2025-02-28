@@ -38,12 +38,12 @@ const OtpVerificationModal = ({
     setLoading(true);
     setError("");
 
-    if (phoneNumber === "0769025444") {
-      setOtpSent(true);
-      setError("OTP sent successfully (Test Mode: Enter '123456').");
-      setLoading(false);
-      return;
-    }
+    // if (phoneNumber === "0769025444") {
+    //   setOtpSent(true);
+    //   setError("OTP sent successfully (Test Mode: Enter '123456').");
+    //   setLoading(false);
+    //   return;
+    // }
 
     try {
       const response = await axios.post(
@@ -73,16 +73,16 @@ const OtpVerificationModal = ({
     setLoading(true);
     setError("");
 
-    if (phoneNumber === "0769025444" && otp === "123456") {
-      setIsVerified(true);
-      setError("");
-      onVerificationSuccess(phoneNumber);
-      setTimeout(() => {
-        onClose();
-      }, 2000);
-      setLoading(false);
-      return;
-    }
+    // if (phoneNumber === "0769025444" && otp === "123456") {
+    //   setIsVerified(true);
+    //   setError("");
+    //   onVerificationSuccess(phoneNumber);
+    //   setTimeout(() => {
+    //     onClose();
+    //   }, 2000);
+    //   setLoading(false);
+    //   return;
+    // }
 
     try {
       const response = await axios.post(
