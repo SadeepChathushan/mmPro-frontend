@@ -24,7 +24,6 @@ const SignInPage = () => {
       });
 
       if (response.data.token) {
-        
         message.success("Login successful!");
         // Save token in localStorage (or sessionStorage depending on your needs)
         localStorage.setItem("USER_ID", response.data.userId[0]);
@@ -76,7 +75,7 @@ const SignInPage = () => {
       if (res.data.token) {
         message.success("Google login successful!");
         // Save token in localStorage
-        localStorage.setItem("USER_ID", response.data.userId[0]);
+        localStorage.setItem("USER_ID", res.data.userId[0]);
         localStorage.setItem("USER_TOKEN", res.data.token);
         localStorage.setItem("USERROLE", res.data.role);
         redirectToDashboard(res.data.role);

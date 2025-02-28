@@ -24,9 +24,11 @@ const ReceiptPage = () => {
         .then(data => setmlData(data))
         .catch(error => console.error("Error fetching ML data:", error));
     }
+    
   }, [l_number]);
 
   // Ensure mldata and mldata.custom_fields exist before accessing
+  console.log("dataaaa",mldata);
   const mlcontact = mldata?.custom_fields?.find(
     (field) => field.name === "Mobile Number"
   ) || { value: "N/A" }; // Provide a default value if not found
@@ -36,8 +38,13 @@ const ReceiptPage = () => {
 
   const currentDate = new Date();
   const printedDate = currentDate.toISOString().split("T")[0];
-  const range = printedDate + " to " + formData.dueDate;
-
+  let range;
+  if (formData.DateTime){
+    range = formData.DateTime + " to " + formData.dueDate;
+  }else{
+    range = printedDate + " to " + formData.dueDate;
+  }
+  
   const receiptData = {
     lorryNumber: formData.lorryNumber,
     mlNumber: mldata?.subject,
