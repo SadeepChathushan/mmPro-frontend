@@ -13,6 +13,8 @@ import "../../styles/GeneralPublic/GeneralPublicdashboard.css";
 import backgroundImage from "../../assets/images/generalpublic.jpg";
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_BASE_URL; // ✅ For Vite (modern setup)
+
 const Dashboard = () => {
   const { language } = useLanguage();
   const [input, setInput] = useState("");
@@ -62,7 +64,7 @@ const Dashboard = () => {
 
     try {
       const result = await axios
-        .get("http://127.0.0.1:5000/general-public/validate-lorry-number", {
+        .get(`${BASE_URL}/general-public/validate-lorry-number`, {
           params: { lorry_number: input.trim() },
         })
         .then((response) => response.data)
