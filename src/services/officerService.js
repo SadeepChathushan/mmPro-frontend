@@ -1,9 +1,7 @@
-// officerService.js
-
 import axios from "axios";
 // import moment from "moment";
 
-// const token = localStorage.getItem("USER_TOKEN");
+const BASE_URL = import.meta.env.VITE_BASE_URL; // ✅ For Vite (modern setup)
 
 // Wrap your named functions in an object
 const officerService = {
@@ -16,7 +14,7 @@ const officerService = {
       }
 
       const response = await axios.get(
-        "http://127.0.0.1:5000/gsmb-officer/gsmb-issue",
+        `${BASE_URL}/gsmb-officer/gsmb-issue`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -49,7 +47,7 @@ const officerService = {
       }
 
       const response = await axios.get(
-        `http://127.0.0.1:5000/gsmb-officer/user-detail/${userId}`,
+        `${BASE_URL}/gsmb-officer/user-detail/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -84,7 +82,7 @@ const officerService = {
       console.log("Authorization Token:", token);
       console.log("Payload being sent:", JSON.stringify(payload, null, 2));
       const response = await axios.post(
-        "http://127.0.0.1:5000/gsmb-officer/add-license",
+        `${BASE_URL}/gsmb-officer/add-license`,
         payload,
         {
           headers: {
@@ -116,7 +114,7 @@ const officerService = {
       }
 
       const response = await axios.get(
-        `http://127.0.0.1:5000/gsmb-officer/get-license/${licenseId}`,
+        `${BASE_URL}/gsmb-officer/get-license/${licenseId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -144,7 +142,7 @@ const officerService = {
       console.log("This is upload in officer", payload);
 
       const response = await axios.put(
-        `http://127.0.0.1:5000/gsmb-officer/update-license/${licenseId}`,
+        `${BASE_URL}/gsmb-officer/update-license/${licenseId}`,
         payload,
         {
           headers: {
@@ -170,7 +168,7 @@ const officerService = {
       }
 
       const response = await axios.post(
-        "http://127.0.0.1:5000/gsmb-officer/add-mlowner",
+        `${BASE_URL}/gsmb-officer/add-mlowner`,
         userData,
         {
           headers: {
@@ -236,7 +234,7 @@ const officerService = {
 
       // Make a GET request to the backend API
       const response = await axios.get(
-        "http://127.0.0.1:5000/gsmb-officer/get-mlowners",
+        `${BASE_URL}/gsmb-officer/get-mlowners`,
         {
           headers: {
             Authorization: `Bearer ${token}`, // Include the token in the request headers
@@ -320,7 +318,7 @@ const officerService = {
       // });
 
       const response = await axios.get(
-        `http://127.0.0.1:5000/gsmb-officer/view-tpls`,
+        `${BASE_URL}/gsmb-officer/view-tpls`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

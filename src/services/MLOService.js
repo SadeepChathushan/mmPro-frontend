@@ -3,7 +3,7 @@ import moment from "moment";
 
 
 
-const BASE_URL = import.meta.env.REACT_APP_BASE_URL; // ✅ For Vite (modern setup)
+const BASE_URL = import.meta.env.VITE_BASE_URL; // ✅ For Vite (modern setup)
 
 // const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiTUxPd25lciIsImV4cCI6MTczOTkwNDg4NX0.A_rqIpfZMdI5dgS9lMzJaNvhwvERe72Zs29zG4C9JhI';
 
