@@ -66,19 +66,12 @@ const Dashboard = () => {
           fetchRoyaltyCounts(),
         ]);
 
-        // Log responses for debugging
-        console.log("Admin Complaints:", complaints);
-        console.log("Admin Roles:", roles);
-        console.log("Admin Licenses:", licenses);
-        console.log("Admin Royalty:", royalty);
-
         // Extract nested data from responses
         const complaintData = complaints.issues; // Extract issues from complaints
         const roleData = roles.issues; // Extract issues from roles
         const licenseData = licenses.issues; // Extract issues from licenses
         const royaltyData = royalty.totalRoyalty; // Extract totalRoyalty from royalty
 
-        // Update state with extracted data
         setTotalComplaint(complaintData);
         setRoleCounts(roleData);
         setLicenseCounts(licenseData);
