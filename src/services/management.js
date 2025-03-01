@@ -202,19 +202,28 @@ const fetchData = async (url, credentials, filterCondition, aggregationField) =>
 // Fetch mining license data by location
 export const fetchTotalLocationML = async (setStartLocationData) => {
   try {
-    const username = '@achinthamihiran';
-    const password = 'Ab2#*De#';
-    const credentials = btoa(`${username}:${password}`);
+    const token = localStorage.getItem("USER_TOKEN"); // Retrieve the token from localStorage
+    if (!token) {
+      throw new Error("Authentication token is required. Please log in again.");
+    }
 
-    const formattedData = await fetchData(
-      '/api/projects/GSMB/issues.json',
-      credentials,
-      (issue) => issue.tracker?.id === 7, // Filter condition for mining licenses
-      'Location' // Aggregation field
-    );
+    const response = await axios.get("http://127.0.0.1:5000/gsmb-management/total-location-ml", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
 
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-    setStartLocationData(formattedData);
+    const data = response.data;
+    console.log("Total Location ML Data:", data);
+
+    // Extract the "issues" key from the response
+    const formattedData = data.issues;
+    setStartLocationData(formattedData); // Update the state with the extracted data
   } catch (error) {
     console.error('Error fetching mining license data:', error);
   }
