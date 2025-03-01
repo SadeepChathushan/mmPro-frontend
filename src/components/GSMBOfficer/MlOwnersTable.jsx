@@ -28,6 +28,7 @@ const MlOwnersTable = () => {
     fetchData();
   }, []);
 
+  
   // Handle License Status Change (Activate/Deactivate)
   const handleLicenseStatusChange = async (licenseId, currentStatus) => {
     try {
@@ -39,13 +40,13 @@ const MlOwnersTable = () => {
         await officerService.activateLicense(licenseId);
       }
       // Optionally refresh data or show a success message
-      alert(`License status changed successfully.`);
+      message.success(`License status changed successfully.`)
     } catch (error) {
       console.error("Error updating license status:", error);
+      message.error("Failed to update license status.");
     }
   };
 
-  // Define columns for the ML owners table
   const columns = [
     {
       title: "ID",
@@ -54,33 +55,33 @@ const MlOwnersTable = () => {
     },
     {
       title: "Owner Name",
-      dataIndex: "ownerName",
+      dataIndex: "owner_name", // Changed from ownerName to owner_name
       key: "ownerName",
     },
     {
       title: "Email",
       key: "email",
-      render: (text, record) => {
-        // Check if email exists and use a fallback if missing
-        const email = record.userDetails?.mail || "No Email";
+      render: (_, record) => {
+        // Changed to access mail directly from user_details
+        const email = record.user_details?.mail || "No Email";
         return email;
       },
     },
     {
       title: "NIC",
       key: "nic",
-      render: (text, record) => {
-        // Access the NIC value from custom_fields
-        const nicField = record.userDetails.custom_fields.find(field => field.name === "NIC");
+      render: (_, record) => {
+        // Correctly accessing custom_fields from user_details
+        const nicField = record.user_details?.custom_fields?.find(field => field.name === "NIC");
         return nicField ? nicField.value : "N/A";
       },
     },
     {
       title: "Phone Number",
       key: "phone",
-      render: (text, record) => {
-        // Access the Phone Number value from custom_fields
-        const phoneField = record.userDetails.custom_fields.find(field => field.name === "Phone Number");
+      render: (_, record) => {
+        // Correctly accessing custom_fields from user_details
+        const phoneField = record.user_details?.custom_fields?.find(field => field.name === "Phone Number");
         return phoneField ? phoneField.value : "N/A";
       },
     },
@@ -88,7 +89,7 @@ const MlOwnersTable = () => {
       title: "Total Licenses",
       dataIndex: "licenses",
       key: "licenses",
-      render: (licenses) => licenses.length,
+      render: (licenses) => licenses?.length || 0,
     },
     {
       title: "Action",
@@ -102,6 +103,7 @@ const MlOwnersTable = () => {
       ),
     },
   ];
+  
 
   // Expanded row render to show the nested table of licenses for each owner
   const expandedRowRender = (record) => {

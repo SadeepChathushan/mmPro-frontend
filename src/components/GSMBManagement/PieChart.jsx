@@ -1,10 +1,13 @@
-import React from 'react';
 import { Card, Typography } from 'antd';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
-
 const { Title } = Typography;
 
-export const TransportLicense = ({ pieData = [], colors = [] }) => {
+export const TransportLicense = ({ 
+  pieData = [], 
+  colors = [], 
+  title = [], 
+  description = []
+}) => {
   return (
     <Card
       bordered={false}
@@ -13,19 +16,19 @@ export const TransportLicense = ({ pieData = [], colors = [] }) => {
         borderRadius: "8px",
         height: "100%",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
       }}
     >
-
       <Title level={5} style={{ color: "#fff", textAlign: "center" }}>
-        Transport License Destinations
+        {title}
       </Title>
       
       <p style={{color: "#ffef2f",textAlign: "center",marginBottom: "20px"}}>
-        Most Mining areas are located in Rathnapura District
+        {description}
       </p>
       
-      <ResponsiveContainer width="100%" height={320}>
+      <div style={{ marginTop: "15px" }}>
+      <ResponsiveContainer width="100%" height={320 }>
         <PieChart>
           <Pie
             data={pieData}
@@ -44,16 +47,17 @@ export const TransportLicense = ({ pieData = [], colors = [] }) => {
             ))}
           </Pie>
           <Tooltip 
-            formatter={(value, name) => [value, name]}
-            contentStyle={{
-              backgroundColor: "#333",
-              border: "none",
-              color: "#fff",
-              borderRadius: "6px",
+           formatter={(value, name) => [value, name]}
+           contentStyle={{
+           background: "linear-gradient(135deg,rgb(255, 228, 228),rgb(255, 150, 150))", // Gold gradient background
+           border: "2px solid rgb(255, 255, 255)",
+           color: "#fff",
+           borderRadius: "5px",
             }}
           />
         </PieChart>
       </ResponsiveContainer>
+      </div>
     </Card>
   );
 };
