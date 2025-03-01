@@ -7,10 +7,10 @@ import { TopContributors } from "../../components/GSMBManagement/TopContributors
 import { TransportLicense } from "../../components/GSMBManagement/PieChart";
 import { MapComponent } from "../../components/GSMBManagement/MiningMap";
 import { MiningLicenseChart } from "../../components/GSMBManagement/MLChart";
-import { 
-  fetchComplaintCounts, 
-  fetchRoleCounts, 
-  fetchMiningLicenseCounts, 
+import {
+  fetchComplaintCounts,
+  fetchRoleCounts,
+  fetchMiningLicenseCounts,
   fetchRoyaltyCounts,
 } from '../../services/management';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -113,25 +113,25 @@ const Dashboard = () => {
 
   return (
     <Layout style={{ minHeight: "100vh", backgroundColor: "#1e0000" }}>
-      <Header 
-        style={{ 
-          background: "rgba(0, 0, 0, 0.01)", 
-          padding: "20px", 
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", 
-          borderRadius: "8px" 
+      <Header
+        style={{
+          background: "rgba(0, 0, 0, 0.01)",
+          padding: "20px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          borderRadius: "8px"
         }}
       >
         <Row justify="space-between" align="middle">
           <Title
             level={3}
             style={{
-              background: "linear-gradient(to right, #cacaca, #ffffff)", 
+              background: "linear-gradient(to right, #cacaca, #ffffff)",
               WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent", 
+              WebkitTextFillColor: "transparent",
               margin: 0,
             }}
           >
-            {language === "en"  ? "Dashboard" : language === "si" ? "උපකරණ පුවරුව" : "டாஷ்போர்டு"}
+            {language === "en" ? "Dashboard" : language === "si" ? "උපකරණ පුවරුව" : "டாஷ்போர்டு"}
           </Title>
         </Row>
       </Header>
@@ -141,7 +141,7 @@ const Dashboard = () => {
         <Row gutter={16}>
           {kpiData.map((kpi, index) => (
             <Col xs={24} md={6} key={index}>
-              <KPICard 
+              <KPICard
                 kpi={kpi}
                 colors={colors}
                 handlePieChartClick={handlePieChartClick}
@@ -168,15 +168,15 @@ const Dashboard = () => {
                 language === "en"
                   ? "Top Regions for Mining License Issuance"
                   : language === "si"
-                  ? "වැඩිම පතල් බලපත්‍ර නිකුත් කිරීමේ ප්‍රදේශ"
-                  : "சுரங்க அனுமதி வழங்கப்பட்ட முக்கிய பகுதிகள்"
+                    ? "වැඩිම පතල් බලපත්‍ර නිකුත් කිරීමේ ප්‍රදේශ"
+                    : "சுரங்க அனுமதி வழங்கப்பட்ட முக்கிய பகுதிகள்"
               }
               description={
                 language === "en"
                   ? "Areas with the Highest Number of Approved Mining Licenses"
                   : language === "si"
-                  ? "අනුමත කළ ඉහළම පතල් බලපත්‍ර ගණනක් ඇති ප්‍රදේශ"
-                  : "அங்கீகரிக்கப்பட்ட சுரங்க அனுமதிகளின் அதிக எண்ணிக்கையுள்ள பகுதிகள்"
+                    ? "අනුමත කළ ඉහළම පතල් බලපත්‍ර ගණනක් ඇති ප්‍රදේශ"
+                    : "அங்கீகரிக்கப்பட்ட சுரங்க அனுமதிகளின் அதிக எண்ணிக்கையுள்ள பகுதிகள்"
               }
             />
           </Col>
@@ -188,15 +188,15 @@ const Dashboard = () => {
                 language === "en"
                   ? "Top Destinations"
                   : language === "si"
-                  ? "ප්‍රමුඛ ගමනාන්ත"
-                  : "சிறந்த இலக்குகள்"
+                    ? "ප්‍රමුඛ ගමනාන්ත"
+                    : "சிறந்த இலக்குகள்"
               }
               description={
                 language === "en"
                   ? "Permitted locations for transport operations under license."
                   : language === "si"
-                  ? "බලපත්‍රය යටතේ ප්‍රවාහන මෙහෙයුම් සඳහා අනුමත ප්‍රදේශ."
-                  : "உரிமையின் கீழ் போக்குவரத்து செயல்பாடுகளுக்கான அனுமதியளிக்கப்பட்ட இடங்கள்."
+                    ? "බලපත්‍රය යටතේ ප්‍රවාහන මෙහෙයුම් සඳහා අනුමත ප්‍රදේශ."
+                    : "உரிமையின் கீழ் போக்குவரத்து செயல்பாடுகளுக்கான அனுமதியளிக்கப்பட்ட இடங்கள்."
               }
             />
           </Col>
