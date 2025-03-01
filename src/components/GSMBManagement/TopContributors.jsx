@@ -51,9 +51,6 @@ export const TopContributors = () => {
           outline: "none",
         }}
       >
-        <p style={{ color: "#ffef2f", textAlign: "center", fontWeight: "bold" }}>
-          Total Royalty: {totalRoyalty}
-        </p>
         <List
           dataSource={orders}
           renderItem={(item) => (
