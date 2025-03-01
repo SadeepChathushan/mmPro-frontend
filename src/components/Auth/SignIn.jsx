@@ -18,7 +18,7 @@ const SignInPage = () => {
   const onFinish = async (values) => {
     const { username, password } = values;
     try {
-      const response = await axios.post("http://localhost:5000/auth/login", {
+      const response = await axios.post("http://slt.aasait.lk/auth/login", {
         username,
         password,
       });
@@ -69,7 +69,7 @@ const SignInPage = () => {
     const { credential } = response;
     console.log(credential);
     try {
-      const res = await axios.post("http://localhost:5000/auth/google-login", {
+      const res = await axios.post("http://slt.aasait.lk/auth/google-login", {
         token: credential,
       });
 
