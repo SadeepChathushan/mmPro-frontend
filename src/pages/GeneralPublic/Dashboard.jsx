@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import logo from "../../assets/images/gsmbLogo.jpg";
-import {
-  submitComplaintPublic,
-} from "../../services/complaint";
+import { submitComplaintPublic } from "../../services/complaint";
 import { fetchLorryNumber } from "../../services/GeneralPublic/fetchLorryNumber";
 import {
   validateVehicleNumber,
@@ -24,14 +22,14 @@ const Dashboard = () => {
   const [data, setData] = useState([]);
   const [phoneNumber, setPhoneNumber] = useState("");
 
-  useEffect(() => {
-    const loadLorryNumbers = async () => {
-      const lorryNumbers = await fetchLorryNumber();
-      setData(lorryNumbers);
-    };
-    loadLorryNumbers();
-  }, []);
-  
+  // useEffect(() => {
+  //   const loadLorryNumbers = async () => {
+  //     const lorryNumbers = await fetchLorryNumber();
+  //     setData(lorryNumbers);
+  //   };
+  //   loadLorryNumbers();
+  // }, []);
+
   const handleReport = async () => {
     if (!validatePhoneNumber(phoneNumber)) {
       setModalMessage(
@@ -63,27 +61,9 @@ const Dashboard = () => {
     }
 
     try {
-      const token = localStorage.getItem("USER_TOKEN");
-
-      if (!token) {
-        setModalMessage(
-          language === "en"
-            ? "Authentication required!"
-            : language === "si"
-            ? "සත්‍යාපනය අවශ්යයි!"
-            : "அங்கீகாரம் தேவை!"
-        );
-        setIsModalOpen(true);
-        return;
-      }
-
       const result = await axios
         .get("http://127.0.0.1:5000/general-public/validate-lorry-number", {
           params: { lorry_number: input.trim() },
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
         })
         .then((response) => response.data)
         .catch((error) => {

@@ -40,20 +40,11 @@ const Modal = ({
 
   const handleSubmitReport = async (phone, vehicleNumber) => {
     try {
-      const token = localStorage.getItem("USER_TOKEN"); // Or wherever you store your token
-
-      console.log(phone);
-      console.log(vehicleNumber);
       const response = await axios.post(
         "http://127.0.0.1:5000/general-public/create-complaint",
         {
           phoneNumber: phone,
           vehicleNumber: vehicleNumber,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         }
       );
 
