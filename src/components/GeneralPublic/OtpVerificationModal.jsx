@@ -18,7 +18,6 @@ const OtpVerificationModal = ({
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-
   // Language-specific text content
   const textContent = {
     title:
@@ -48,8 +47,7 @@ const OtpVerificationModal = ({
     setLoading(true);
     setError("");
 
-
-    if (phoneNumber === "0769025444") {
+    if (phoneNumber === "+94769025999") {
       setOtpSent(true);
       setSuccessMessage("OTP sent successfully (Test Mode: Enter '123456').");
       setLoading(false);
@@ -86,13 +84,13 @@ const OtpVerificationModal = ({
 
     if (phoneNumber === "0769025444" && otp === "123456") {
       setIsVerified(true);
-      
+
       // Show success message using Ant Design's message
       message.success(textContent.successMessage);
-      
+
       // Store verification data in localStorage
       localStorage.setItem("VERIFIED_PHONE", phoneNumber);
-      
+
       onVerificationSuccess(phoneNumber);
       setTimeout(() => {
         onClose();
@@ -118,17 +116,17 @@ const OtpVerificationModal = ({
 
       if (response.data.success) {
         setIsVerified(true);
-        
+
         // Show success message using Ant Design's message
         message.success(textContent.successMessage);
-        
+
         // Store verification data in localStorage similar to your login example
         localStorage.setItem("VERIFIED_PHONE", phoneNumber);
-        
+
         if (response.data.token) {
           localStorage.setItem("USER_TOKEN", response.data.token);
         }
-        
+
         onVerificationSuccess(phoneNumber);
 
         // Wait for 2 seconds before closing the modal
@@ -198,7 +196,9 @@ const OtpVerificationModal = ({
             </div>
           )}
 
-          {successMessage && <p className="success-message">{successMessage}</p>}
+          {successMessage && (
+            <p className="success-message">{successMessage}</p>
+          )}
           {errorMessage && <p className="error-message">{errorMessage}</p>}
 
           <div className="verification-status">

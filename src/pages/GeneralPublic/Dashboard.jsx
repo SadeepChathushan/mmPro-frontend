@@ -48,6 +48,7 @@ const Dashboard = () => {
     }
   };
   const handleCheck = async () => {
+    console.log("clicked handle check");
     if (!validateVehicleNumber(input)) {
       setModalMessage(
         language === "en"
