@@ -1,56 +1,84 @@
 import axios from "axios";
+import { message } from "antd";
+// import { useNavigate } from "react-router-dom";
 
-const BASE_URL = "/api";
+const BASE_URL = import.meta.env.VITE_BASE_URL; // ✅ Correct for Vite
+; // ✅ For Vite (modern setup)
+
 
 const authService = {
-  login: async (username, password) => {
-    console.log("Logging in with:");
+  login: async (values) => {
+    console.log("puka", BASE_URL);
+    const { username, password } = values;
     try {
-      const response = await axios.get(
-        `${BASE_URL}/users/current.json?include=memberships,groups`,
-        {
-          auth: {
-            username, // Use username instead of email
-            password,
-          },
-        }
-      );
-      console.log(response); // Add this to verify the response format
-      const user = response.data.user;
+      const response = await axios.post(`${BASE_URL}/auth/login`, {
+        username,
+        password,
+      });
 
-      // Updated logic to handle the project name or make it flexible
-      const userRole =
-        user.memberships.length > 0 ? user.memberships[0].roles[0]?.name : null;
-
-      if (!userRole) {
-        throw new Error("User role not found.");
-      }
-
-      // Save token and role in localStorage
-      localStorage.setItem("USERROLE", userRole);
-      console.log("Stored USERROLE:", localStorage.getItem("USERROLE")); // Debugging line
-
-      localStorage.setItem("USER", JSON.stringify(user));
-      // Assuming API key is in the response (adjust according to the API response format)
-      const apiKey = response.data.user.api_key; // Or whatever the API key field is named
-
-      if (apiKey) {
-        localStorage.setItem("API_Key", apiKey);
-        console.log("Stored API Key:", localStorage.getItem("API_Key")); // Debugging line
+      if (response.data.token) {
+        
+        message.success("Login successful!");
+        // Save token in localStorage (or sessionStorage depending on your needs)
+        localStorage.setItem("USER_ID", response.data.userId[0]);
+        localStorage.setItem("USER_TOKEN", response.data.token);
+        localStorage.setItem("USERROLE", response.data.role);
+        // authService.redirectToDashboard(response.data.role);
+        return response.data.role;
       } else {
-        console.warn("API Key not found in the response");
+        message.error("Login failed. Please try again.");
       }
-
-      return { success: true, role: userRole, user };
     } catch (error) {
       console.error("Login failed:", error);
+      message.error("Login failed. Please try again.");
+    }
+  },
 
-      const message =
-        error.response?.status === 401
-          ? "Invalid credentials, please try again."
-          : "Unable to connect to the server. Please try again later.";
+  handleGoogleLogin: async (response) => {
+    const { credential } = response;
+    console.log(credential);
+    try {
+      const res = await axios.post(`${BASE_URL}/auth/google-login`, {
+        token: credential,
+      });
 
-      return { success: false, message };
+      if (res.data.token) {
+        message.success("Google login successful!");
+        // Save token in localStorage
+        localStorage.setItem("USER_ID", response.data.userId[0]);
+        localStorage.setItem("USER_TOKEN", res.data.token);
+        localStorage.setItem("USERROLE", res.data.role);
+        // redirectToDashboard(res.data.role);
+        return res.data.role;
+      } else {
+        message.error("User role not found!");
+      }
+    } catch (err) {
+      console.error("Google login failed:", err);
+      message.error("Google login failed. Please try again.");
+    }
+  },
+
+  redirectToDashboard: (role, navigate) => { // Accept navigate as parameter
+    switch (role) {
+      case "GSMBOfficer":
+        navigate("/gsmb/dashboard");
+        break;
+      case "MLOwner":
+        navigate("/mlowner/home");
+        break;
+      case "PoliceOfficer":
+        navigate("/police-officer/dashboard");
+        break;
+      case "GeneralPublic":
+        navigate("/generalpublic/dashboard");
+        break;
+      case "GSMBManagement":
+        navigate("/gsmbmanagement/dashboard");
+        break;
+      default:
+        navigate("/");
+        break;
     }
   },
 
