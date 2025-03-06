@@ -61,8 +61,25 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error("Error fetching vehicle data:", error);
-      setModalMessage(translations.invalidLoad[language]);
-      setIsModalOpen(true);
+
+      if (error.response?.status === 401) {
+        // If access token is expired, try to refresh the token
+        const newToken = await authService.refreshToken(); // Refresh token
+
+        if (!newToken) {
+          // If refresh fails, redirect to login
+          message.error("Session expired. Please log in again.");
+          navigate("/login");
+        } else {
+          // Retry the original request with the new token
+          localStorage.setItem("ACCESS_TOKEN", newToken);
+          // Re-run the request with the new token
+          handleCheck();
+        }
+      } else {
+        setModalMessage(translations.invalidLoad[language]);
+        setIsModalOpen(true);
+      }
     }
   };
 

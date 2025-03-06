@@ -1,27 +1,25 @@
 import axios from "axios";
 import { message } from "antd";
+import api from "./axiosConfig";
 // import { useNavigate } from "react-router-dom";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL; // ✅ Correct for Vite
-; // ✅ For Vite (modern setup)
-
-
+const BASE_URL = import.meta.env.VITE_BASE_URL; // ✅ Correct for Vite // ✅ For Vite (modern setup)
 const authService = {
   login: async (values) => {
-    console.log("puka", BASE_URL);
     const { username, password } = values;
     try {
-      const response = await axios.post(`${BASE_URL}/auth/login`, {
+      console.log(BASE_URL);
+      const response = await api.post("/auth/login", {
         username,
         password,
       });
 
       if (response.data.token) {
-        
         message.success("Login successful!");
         // Save token in localStorage (or sessionStorage depending on your needs)
         localStorage.setItem("USER_ID", response.data.userId[0]);
-        localStorage.setItem("USER_TOKEN", response.data.token);
+        localStorage.setItem("USER_TOKEN", response.data.access_token);
+        localStorage.setItem("REFRESH_TOKEN", response.data.refresh_token);
         localStorage.setItem("USERROLE", response.data.role);
         // authService.redirectToDashboard(response.data.role);
         return response.data.role;
@@ -59,7 +57,8 @@ const authService = {
     }
   },
 
-  redirectToDashboard: (role, navigate) => { // Accept navigate as parameter
+  redirectToDashboard: (role, navigate) => {
+    // Accept navigate as parameter
     switch (role) {
       case "GSMBOfficer":
         navigate("/gsmb/dashboard");
