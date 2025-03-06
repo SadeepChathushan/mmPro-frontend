@@ -74,6 +74,7 @@ const SignInPage = () => {
 
       if (res.data.token) {
         message.success("Google login successful!");
+        console.log(res.data);
         // Save token in localStorage
         localStorage.setItem("USER_ID", res.data.userId[0]);
         localStorage.setItem("USER_TOKEN", res.data.token);
