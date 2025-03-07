@@ -80,7 +80,9 @@ const NewLicenseForm = () => {
       message.success(
         language === "en"
           ? "License created successfully!"
-          : "බලපත්‍රය සාර්ථකව සාදන ලදි!"
+          : language === "si"
+          ? "බලපත්‍රය සාර්ථකව සාදන ලදි!"
+          : "அனுமதி வெற்றிகரமாக உருவாக்கப்பட்டது!"
       );
       form.resetFields();
     } catch (error) {
@@ -88,7 +90,9 @@ const NewLicenseForm = () => {
       message.error(
         language === "en"
           ? "Failed to create license. Please try again."
-          : "බලපත්‍රය සාදීමට අසමත් විය. කරුණාකර නැවත උත්සාහ කරන්න."
+          : language === "si"
+          ? "බලපත්‍රය සාදීමට අසමත් විය. කරුණාකර නැවත උත්සාහ කරන්න."
+          : "அனுமதியை உருவாக்குவதில் தோல்வி. தயவுசெய்து மீண்டும் முயற்சிக்கவும்."
       );
     }
   };
@@ -108,7 +112,9 @@ const NewLicenseForm = () => {
     return Promise.reject(
       language === "en"
         ? "End Date must be after the Start Date!"
-        : "අවසාන දිනය ආරම්භක දිනයට පසු විය යුතුයි!"
+        : language === "si"
+        ? "අවසාන දිනය ආරම්භක දිනයට පසු විය යුතුයි!"
+        : "முடிவுத் தேதி தொடக்கத் தேதிக்கு பிறகு இருக்க வேண்டும்!"
     );
   };
 
@@ -132,7 +138,7 @@ const NewLicenseForm = () => {
         }}
         href="/gsmb/dashboard"
         >
-        {language === "en" ? "Back" : "ආපසු"}
+        {language === "en" ? "Back" : language === "si" ? "ආපසු" : "மீண்டும்"}
       </Button>
 
       <h2
@@ -143,7 +149,7 @@ const NewLicenseForm = () => {
           fontSize: "32px",
         }}
         >
-        {language === "en" ? "New License" : "නව බලපත්‍රය"}
+        {language === "en" ? "New License" : language === "si" ? "නව බලපත්‍රය" : "புதிய அனுமதி"}
       </h2>
 
       <Form
@@ -168,7 +174,7 @@ const NewLicenseForm = () => {
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "License Number" : "බලපත්‍රය අංකය"}
+              label={language === "en" ? "License Number" : language === "si" ? "බලපත්‍රය අංකය" : "அனுமதி எண்"}
               name="licenseNumber"
               rules={rules.licenseNumber}
             >
@@ -178,7 +184,7 @@ const NewLicenseForm = () => {
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "Owner Name" : "අයිතිකරුගේ නම"}
+              label={language === "en" ? "Owner Name" : language === "si" ? "අයිතිකරුගේ නම" : "உரிமையாளர் பெயர்"}
               name="ownerName"
             >
               <Input
@@ -191,7 +197,7 @@ const NewLicenseForm = () => {
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "Mobile" : "ජංගම දුරකථන අංකය"}
+              label={language === "en" ? "Mobile" : language === "si" ? "ජංගම දුරකථන අංකය" : "மொபைல் எண்"}
               name="mobile"
             >
               <Input
@@ -208,7 +214,7 @@ const NewLicenseForm = () => {
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "NIC" : "ජාතික හැඳුනුම්පත් අංකය"}
+              label={language === "en" ? "NIC" : language === "si" ? "ජාතික හැඳුනුම්පත් අංකය" : "தேசிய அடையாளம்"}
               name="NIC"
             >
               <Input
@@ -225,7 +231,7 @@ const NewLicenseForm = () => {
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "Capacity (Cubes)" : "කියුබ්ස් ගණන"}
+              label={language === "en" ? "Capacity (Cubes)" : language === "si" ? "කියුබ්ස් ගණන" : "கியூப்ஸ்"}
               name="capacity"
               rules={rules.capacity}
             >
@@ -235,7 +241,7 @@ const NewLicenseForm = () => {
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "Location" : "ස්ථානය"}
+              label={language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்"}
               name="location"
               rules={rules.location}
             >
@@ -246,7 +252,7 @@ const NewLicenseForm = () => {
           <Col xs={24} sm={24} md={12}>
             <Form.Item
               label={
-                language === "en" ? "Validity Start" : "වලංගුතාව ආරම්භක දිනය"
+                language === "en" ? "Validity Start" : language === "si" ? "වලංගුතාව ආරම්භක දිනය" : "செல்லுபடியாகும் ஆரம்ப தேதி"
               }
               name="validityStart"
               rules={rules.validityStart}
@@ -263,7 +269,7 @@ const NewLicenseForm = () => {
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "Valid Until" : "අවලංගු වන දිනය"}
+              label={language === "en" ? "Valid Until" : language === "si" ? "අවලංගු වන දිනය" : "செல்லுபடியாகும் தேதி"}
               name="endDate"
               rules={[...rules.endDate]}
             >
@@ -304,7 +310,7 @@ const NewLicenseForm = () => {
                     height: "40px",
                   }}
                 >
-                  {language === "en" ? "Create License" : "බලපත්‍රය සාදන්න"}
+                  {language === "en" ? "Create License" : language === "si" ? "බලපත්‍රය සාදන්න" : "அனுமதி உருவாக்கவும்"}
                 </Button>
 
                 <Button
@@ -318,7 +324,7 @@ const NewLicenseForm = () => {
                     height: "40px",
                   }}
                 >
-                  {language === "en" ? "Cancel" : "අවලංගු කරන්න"}
+                  {language === "en" ? "Cancel" : language === "si" ? "අවලංගු කරන්න" : "ரத்து செய்"}
                 </Button>
               </div>
             </Form.Item>
