@@ -21,7 +21,6 @@ const authService = {
         localStorage.setItem("USER_TOKEN", response.data.access_token);
         localStorage.setItem("REFRESH_TOKEN", response.data.refresh_token);
         localStorage.setItem("USERROLE", response.data.role);
-        // authService.redirectToDashboard(response.data.role);
         return response.data.role;
       } else {
         message.error("Login failed. Please try again.");
@@ -42,11 +41,11 @@ const authService = {
 
       if (res.data.token) {
         message.success("Google login successful!");
-        // Save token in localStorage
+
         localStorage.setItem("USER_ID", response.data.userId[0]);
         localStorage.setItem("USER_TOKEN", res.data.token);
         localStorage.setItem("USERROLE", res.data.role);
-        // redirectToDashboard(res.data.role);
+
         return res.data.role;
       } else {
         message.error("User role not found!");
@@ -58,7 +57,6 @@ const authService = {
   },
 
   redirectToDashboard: (role, navigate) => {
-    // Accept navigate as parameter
     switch (role) {
       case "GSMBOfficer":
         navigate("/gsmb/dashboard");
@@ -85,6 +83,7 @@ const authService = {
     localStorage.removeItem("USER_ID");
     localStorage.removeItem("USERROLE");
     localStorage.removeItem("USER_TOKEN");
+    localStorage.removeItem("REFRESH_TOKEN");
   },
 
   getCurrentUser: () => {
@@ -93,6 +92,33 @@ const authService = {
 
   getUserRole: () => {
     return localStorage.getItem("USERROLE");
+  },
+
+  refreshToken: async () => {
+    try {
+      const refreshToken = localStorage.getItem("REFRESH_TOKEN");
+
+      if (!refreshToken) {
+        authService.logout();
+        return null;
+      }
+
+      const response = await axios.post(`${BASE_URL}/auth/refresh-token`, {
+        refresh_token: refreshToken,
+      });
+
+      if (response.data.access_token) {
+        localStorage.setItem("USER_TOKEN", response.data.access_token);
+        return response.data.access_token; // Return new access token
+      } else {
+        authService.logout(); // If refresh fails, logout user
+        return null;
+      }
+    } catch (error) {
+      console.error("Error refreshing token:", error);
+      authService.logout(); // If error occurs, logout user
+      return null;
+    }
   },
 };
 
