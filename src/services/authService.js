@@ -18,7 +18,7 @@ const authService = {
         message.success("Login successful!");
         // Save token in localStorage (or sessionStorage depending on your needs)
         localStorage.setItem("USER_ID", response.data.userId[0]);
-        localStorage.setItem("USER_TOKEN", response.data.access_token);
+        localStorage.setItem("USER_TOKEN", response.data.token);
         localStorage.setItem("REFRESH_TOKEN", response.data.refresh_token);
         localStorage.setItem("USERROLE", response.data.role);
         return response.data.role;

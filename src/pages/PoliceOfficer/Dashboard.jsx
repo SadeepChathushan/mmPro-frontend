@@ -15,9 +15,7 @@ import logo from "../../assets/images/gsmbLogo.png";
 import backgroundImage from "../../assets/images/machinery.jpg";
 import "../../styles/PoliceOfficer/PoliceOfficerdashboard.css";
 import axios from "axios";
-import api from "./services/axiosConfig";
-
-const BASE_URL = import.meta.env.VITE_BASE_URL; // ✅ For Vite (modern setup)
+import api from "../../services/axiosConfig";
 
 const Dashboard = () => {
   const { language } = useLanguage();
@@ -26,7 +24,6 @@ const Dashboard = () => {
   const [modalMessage, setModalMessage] = useState("");
   const [isValidationModalOpen, setIsValidationModalOpen] = useState(false);
   const [validationMessage, setValidationMessage] = useState("");
-  const [data, setData] = useState([]);
   const navigate = useNavigate();
   const translations = getTranslations(language);
 
@@ -38,8 +35,6 @@ const Dashboard = () => {
     }
 
     try {
-      const token = localStorage.getItem("USER_TOKEN");
-
       const response = await api.get(`/police-officer/check-lorry-number`, {
         params: { lorry_number: input.trim() },
       });
