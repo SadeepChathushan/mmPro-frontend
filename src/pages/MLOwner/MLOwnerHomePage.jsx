@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Table, Space, Typography, Row, Col, AutoComplete, Input } from 'antd';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { SearchOutlined } from '@ant-design/icons';
 import { useLanguage } from "../../contexts/LanguageContext";
-import authService from '../../services/authService';
 import MLOService from '../../services/MLOService';
 import "../../styles/MLOwner/MLOwnerHomePage.css";
 
@@ -11,14 +10,33 @@ const { Title } = Typography;
 
 const MLOwnerHomePage = () => {
   const { language } = useLanguage();
-  const location = useLocation();
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchText, setSearchText] = useState("");
-  const [licenseNumberQuery, setLicenseNumberQuery] = useState("");
-  const [user, setUser] = useState(null);
 
   // Translation object for text and table headers
+  // const translations = {
+  //   en: {
+  //     searchPlaceholder: "Search License Number",
+  //     viewLicensesButton: "View Licenses",
+  //     columns: {
+  //       licenseNumber: "LICENSE NUMBER",
+  //       owner: "OWNER",
+  //       location: "LOCATION",
+  //       startDate: "START DATE",
+  //       dueDate: "DUE DATE",
+  //       capacity: "CAPACITY (CUBES)",
+  //       dispatchedCubes: "DISPATCHED (CUBES)",
+  //       remainingCubes: "REMAINING (CUBES)",
+  //       royalty: "ROYALTY(SAND) DUE [RS.]",
+  //       status: "STATUS",
+  //       action: "ACTION"
+  //     }
+  //   },
+  //   // Other languages omitted for brevity
+  // };
+
+
   const translations = {
     en: {
       searchPlaceholder: "Search License Number",
@@ -75,44 +93,31 @@ const MLOwnerHomePage = () => {
 
   const currentTranslations = translations[language] || translations['en'];
 
+
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem("USER_TOKEN"); // Use USER_TOKEN for authentication
-        if (!token) {
-          console.error("User token not found in localStorage");
-          return;
-        }
-  
-        // Fetch the projects (licenses) using the service method
+        // Fetching and mapping data from the service
         const projects = await MLOService.fetchProjects();
-        if (!projects || projects.length === 0) {
+        if (projects.length === 0) {
           console.log("No projects found");
           return;
         }
-  
-        // Map the fetched data
-        let mappedData = MLOService.mapProjectData(projects);
-  
-        // Filter for active licenses only (due date is in the future)
-        const activeData = mappedData.filter(item => new Date(item.dueDate) >= new Date());
-  
-        // Get only the most recent 5 active licenses
-        const recentActiveData = activeData.slice(0, 5);
-  
+
+        // Mapping project data using mapProjectData
+        const mappedData = MLOService.mapProjectData(projects);
+
         // Set the data state
-        setData(recentActiveData);
-        setFilteredData(recentActiveData);
+        setData(mappedData);
+        setFilteredData(mappedData);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-  
+
     fetchData();
-  }, []); // Empty dependency array ensures it runs once when the component mounts
-  
-  
-  
+  }, []);
 
   const handleSearch = (value) => {
     setSearchText(value);
@@ -142,9 +147,16 @@ const MLOwnerHomePage = () => {
       key: 'status',
       render: (text, record) => {
         const isActive = new Date() <= new Date(record.dueDate);
-        return <span style={{ color: isActive ? 'green' : 'red' }}>{isActive ? 'Active' : 'Inactive'}</span>;
+        const statusText = isActive ? (language === "en" ? "Active" : language === "si" ? "සක්‍රිය" : "செயலில்") 
+                                   : (language === "en" ? "Inactive" : language === "si" ? "අසක්‍රිය" : "செயலற்ற");
+        return (
+          <span className={isActive ? "valid-status" : "expired-status"}>
+            {statusText}
+          </span>
+        );
       },
     },
+    
     {
       title: currentTranslations.columns.action,
       key: 'action',
@@ -176,7 +188,7 @@ const MLOwnerHomePage = () => {
             <AutoComplete
               value={searchText}
               onSearch={handleSearch}
-              style={{ width: '100%', borderRadius: '4px', padding: '8px 16px' }}
+              style={{ width: '100%' }}
               options={filteredData.map(result => ({
                 value: result.licenseNumber,
               }))}
@@ -192,8 +204,6 @@ const MLOwnerHomePage = () => {
               <Button
                 type="primary"
                 className="view-licenses-button"
-                onMouseEnter={(e) => e.target.style.backgroundColor = 'rgb(211, 153, 61)'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#a52a2a'}
               >
                 {currentTranslations.viewLicensesButton}
               </Button>
