@@ -430,10 +430,16 @@
 }
 
 .error-message {
-  color: #FF0000;
+  color: red;
   font-size: 0.875rem;
   margin-top: 0.5rem;
   text-align: center;
+}
+.success-message{
+  color: green;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  text-align: center; 
 }
 
 .verification-status {

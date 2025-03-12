@@ -1,17 +1,7 @@
 
-// NewLicenseForm.js
-
-import React from "react";
-import {
-  Form,
-  Input,
-  Button,
-  DatePicker,
-  Row,
-  Col,
-  message,
-  InputNumber,
-} from "antd";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Form, Input, Button, DatePicker, Row, Col, message } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useLanguage } from "../../contexts/LanguageContext";
 import getValidationRules from "../../utils/validationRules";
@@ -22,24 +12,57 @@ const NewLicenseForm = () => {
   const { language } = useLanguage();
   const [form] = Form.useForm();
   const rules = getValidationRules(language);
+  const [userDetails, setUserDetails] = useState(null);
+  const [error, setError] = useState(null);
 
-  // Handle form submission
+  const { userId } = useParams();
+  console.log("user id is ", userId);
+
+  //###############################    UseEffect #################################################
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const data = await officerService.getUserDetails(userId);
+        console.log("Data fetch", data);
+        // Check if the data is in the expected format and set it to state
+        if (data && data.user_detail) {
+          setUserDetails(data.user_detail);  // Set the state correctly
+        } else {
+          setError("User details not found.");
+        }
+      } catch (error) {
+        setError("Failed to fetch user details. Please try again.");
+      }
+    };
+  
+    if (userId) {
+      fetchUserDetails();
+    }
+  }, [userId]);
+  
+
+  // Render a loading message while userDetails are being fetched
+  if (!userDetails) {
+    return <div>Loading user details...</div>;
+  }
+
+
+
   const onFinish = async (values) => {
     try {
-      // Build the payload to match Redmine's issue creation format
       const payload = {
         issue: {
-
-          project: { id: 31 }, // GSMB Project ID
-          tracker: { id: 7 }, // ML Tracker ID
-          subject: values.licenseNumber,
+          project: { id: 31 },
+          tracker: { id: 7 },
+          // Remove the duplicate subject key and only keep the correct one
+          // subject: language === "en" ? "New License" : "නව බලපත්‍රය",
           status: { id: 17 },
-          // priority: { id: 2 },
-          start_date: values.validityStart.format("YYYY-MM-DD"), // Start date
-          due_date: values.endDate.format("YYYY-MM-DD"), // End date
-          estimated_hours: 24.0, // Default estimated hour
-          subject: language === "en" ? "New License" : "නව බලපත්‍රය",
-
+          // assigned_to:{userID}
+          subject:values.licenseNumber,
+          start_date: values.validityStart.format("YYYY-MM-DD"),
+          due_date: values.endDate.format("YYYY-MM-DD"),
+          estimated_hours: 24.0,
           custom_fields: [
             { id: 8, name: "License Number", value: values.licenseNumber },
             { id: 2, name: "Owner Name", value: values.ownerName },
@@ -47,40 +70,37 @@ const NewLicenseForm = () => {
             { id: 5, name: "Capacity", value: values.capacity },
             { id: 11, name: "Location", value: values.location },
             { id: 37, name: "NIC", value: values.NIC },
-            // { id: 84, name: "Used", value: "0" }, // Initially, no capacity is used
-            // { id: 85, name: "Remaining", value: values.capacity }, // Full capacity at start
-            // { id: 86, name: "Royalty(sand)due", value: "0" }, // No royalty due initially
           ],
         },
       };
 
-      // Call the service function to add a new license
       const result = await officerService.addNewLicense(payload);
 
       console.log("Data posted successfully:", result);
       message.success(
         language === "en"
           ? "License created successfully!"
-          : "බලපත්‍රය සාර්ථකව සාදන ලදි!"
+          : language === "si"
+          ? "බලපත්‍රය සාර්ථකව සාදන ලදි!"
+          : "அனுமதி வெற்றிகரமாக உருவாக்கப்பட்டது!"
       );
-      // Reset the form after successful submission
       form.resetFields();
     } catch (error) {
       console.error("Error posting data:", error);
       message.error(
         language === "en"
           ? "Failed to create license. Please try again."
-          : "බලපත්‍රය සාදීමට අසමත් විය. කරුණාකර නැවත උත්සාහ කරන්න."
+          : language === "si"
+          ? "බලපත්‍රය සාදීමට අසමත් විය. කරුණාකර නැවත උත්සාහ කරන්න."
+          : "அனுமதியை உருவாக்குவதில் தோல்வி. தயவுசெய்து மீண்டும் முயற்சிக்கவும்."
       );
     }
   };
 
-  // Handle form cancel
   const handleCancel = () => {
     form.resetFields();
   };
 
-  // Custom validator to ensure endDate is after validityStart
   const validateEndDate = (_, value) => {
     const startDate = form.getFieldValue("validityStart");
     if (!value || !startDate) {
@@ -92,11 +112,21 @@ const NewLicenseForm = () => {
     return Promise.reject(
       language === "en"
         ? "End Date must be after the Start Date!"
-        : "අවසාන දිනය ආරම්භක දිනයට පසු විය යුතුයි!"
+        : language === "si"
+        ? "අවසාන දිනය ආරම්භක දිනයට පසු විය යුතුයි!"
+        : "முடிவுத் தேதி தொடக்கத் தேதிக்கு பிறகு இருக்க வேண்டும்!"
     );
   };
 
-  return (
+  if (error) {
+    return (
+      <div style={{ textAlign: "center", fontSize: "20px", color: "red" }}>
+        {error}
+      </div>
+    );
+  }
+    
+    return (
     <div>
       <Button
         type="link"
@@ -106,17 +136,9 @@ const NewLicenseForm = () => {
           paddingLeft: 0,
           color: "#000000",
         }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "#EFE29C";
-          e.currentTarget.style.borderColor = "#EFE29C";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "#ffffff";
-          e.currentTarget.style.borderColor = "#ffffff";
-        }}
         href="/gsmb/dashboard"
-      >
-        {language === "en" ? "Back" : "ආපසු"}
+        >
+        {language === "en" ? "Back" : language === "si" ? "ආපසු" : "மீண்டும்"}
       </Button>
 
       <h2
@@ -126,23 +148,33 @@ const NewLicenseForm = () => {
           color: "#1a1a1a",
           fontSize: "32px",
         }}
-      >
-        {language === "en" ? "New License" : "නව බලපත්‍රය"}
+        >
+        {language === "en" ? "New License" : language === "si" ? "නව බලපත්‍රය" : "புதிய அனுமதி"}
       </h2>
 
       <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        initialValues={{
-          validityStart: null,
-          endDate: null,
-        }}
-      >
+  form={form}
+  layout="vertical"
+  onFinish={onFinish}
+  initialValues={{
+    validityStart: null,
+    endDate: null,
+    NIC:
+      userDetails?.custom_fields?.find((field) => field.name === "NIC")
+        ?.value || "",
+    ownerName: `${userDetails?.firstname} ${userDetails?.lastname}` || "",
+    mobile:
+      userDetails?.custom_fields?.find((field) => field.name === "Phone Number")
+        ?.value || "",
+    capacity: "", // Default to empty for officer to fill
+    location: "", // Default to empty for officer to fill
+  }}
+>
+
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "License Number" : "බලපත්‍රය අංකය"}
+              label={language === "en" ? "License Number" : language === "si" ? "බලපත්‍රය අංකය" : "அனுமதி எண்"}
               name="licenseNumber"
               rules={rules.licenseNumber}
             >
@@ -152,69 +184,64 @@ const NewLicenseForm = () => {
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "Owner Name" : "අයිතිකරුගේ නම"}
+              label={language === "en" ? "Owner Name" : language === "si" ? "අයිතිකරුගේ නම" : "உரிமையாளர் பெயர்"}
               name="ownerName"
-              rules={rules.ownerName}
             >
-              <Input style={{ fontSize: "24px" }} />
+              <Input
+                style={{ fontSize: "24px" }}
+                value={`${userDetails?.firstname} ${userDetails?.lastname}`} // Fetched from user data
+                disabled
+              />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "Mobile" : "ජංගම දුරකථන අංකය"}
+              label={language === "en" ? "Mobile" : language === "si" ? "ජංගම දුරකථන අංකය" : "மொபைல் எண்"}
               name="mobile"
-              rules={rules.mobile}
             >
-              <Input style={{ fontSize: "24px" }} />
+              <Input
+                style={{ fontSize: "24px" }}
+                value={
+                  userDetails?.custom_fields?.find(
+                    (field) => field.name === "Phone Number"
+                  )?.value
+                }
+                disabled
+              />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "NIC" : "ජාතික හැඳුනුම්පත් අංකය"}
+              label={language === "en" ? "NIC" : language === "si" ? "ජාතික හැඳුනුම්පත් අංකය" : "தேசிய அடையாளம்"}
               name="NIC"
-              rules={rules.NIC} // Ensure you define validation for NIC in your rules
             >
-              <Input style={{ fontSize: "24px" }} />
+              <Input
+                style={{ fontSize: "24px" }}
+                value={
+                  userDetails?.custom_fields?.find(
+                    (field) => field.name === "NIC"
+                  )?.value
+                }
+                disabled
+              />
             </Form.Item>
           </Col>
 
-
-
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "Capacity (Cubes)" : "කියුබ්ස් ගණන"}
-              name="capacity"
-              rules={rules.capacity} // Ensure you define validation for NIC in your rules
-            >
-              <Input style={{ fontSize: "24px" }} />
-            </Form.Item>
-          </Col>
-
-
-          
-{/* 
-          <Col xs={24} sm={24} md={12}>
-            <Form.Item
-              label={language === "en" ? "Capacity (Cubes)" : "කියුබ්ස් ගණන"}
+              label={language === "en" ? "Capacity (Cubes)" : language === "si" ? "කියුබ්ස් ගණන" : "கியூப்ஸ்"}
               name="capacity"
               rules={rules.capacity}
             >
-              <InputNumber
-                style={{ width: "100%", fontSize: "24px" }}
-                min={1}
-                formatter={(value) =>
-                  `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                }
-                parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
-              />
+              <Input style={{ fontSize: "24px" }} />
             </Form.Item>
-          </Col> */}
+          </Col>
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "Location" : "ස්ථානය"}
+              label={language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்"}
               name="location"
               rules={rules.location}
             >
@@ -225,7 +252,7 @@ const NewLicenseForm = () => {
           <Col xs={24} sm={24} md={12}>
             <Form.Item
               label={
-                language === "en" ? "Validity Start" : "වලංගුතාව ආරම්භක දිනය"
+                language === "en" ? "Validity Start" : language === "si" ? "වලංගුතාව ආරම්භක දිනය" : "செல்லுபடியாகும் ஆரம்ப தேதி"
               }
               name="validityStart"
               rules={rules.validityStart}
@@ -242,12 +269,9 @@ const NewLicenseForm = () => {
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "Valid Until" : "අවලංගු වන දිනය"}
+              label={language === "en" ? "Valid Until" : language === "si" ? "අවලංගු වන දිනය" : "செல்லுபடியாகும் தேதி"}
               name="endDate"
-              rules={[
-                ...rules.endDate,
-                
-              ]}
+              rules={[...rules.endDate]}
             >
               <DatePicker
                 format="DD/MM/YYYY"
@@ -285,16 +309,8 @@ const NewLicenseForm = () => {
                     borderColor: "#950C33",
                     height: "40px",
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#FFE143";
-                    e.currentTarget.style.borderColor = "#FFE143";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#950C33";
-                    e.currentTarget.style.borderColor = "#950C33";
-                  }}
                 >
-                  {language === "en" ? "Create License" : "බලපත්‍රය සාදන්න"}
+                  {language === "en" ? "Create License" : language === "si" ? "බලපත්‍රය සාදන්න" : "அனுமதி உருவாக்கவும்"}
                 </Button>
 
                 <Button
@@ -307,16 +323,8 @@ const NewLicenseForm = () => {
                     borderColor: "#950C33",
                     height: "40px",
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#950C33";
-                    e.currentTarget.style.borderColor = "#950C33";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#FFFFFF";
-                    e.currentTarget.style.borderColor = "#950C33";
-                  }}
                 >
-                  {language === "en" ? "Cancel" : "අවලංගු කරන්න"}
+                  {language === "en" ? "Cancel" : language === "si" ? "අවලංගු කරන්න" : "ரத்து செய்"}
                 </Button>
               </div>
             </Form.Item>

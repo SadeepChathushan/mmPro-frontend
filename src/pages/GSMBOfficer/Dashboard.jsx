@@ -19,10 +19,10 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("ML");
 
   const tabs = [
-    { key: "ML", label: language === "en" ? "Mining License" : "බලපත්‍ර" },
-    { key: "TPL", label: language === "en" ? "Transport License" : "ප්‍රවාහන බලපත්‍ර" },
-    { key: "CMPLN", label: language === "en" ? "Complaints" : "පැමිණිලි" },
-    { key: "MLOWNER", label: language === "en" ? "ML Owners" : "ML හිමියන්" },
+    { key: "ML", label: language === "en" ? "Mining License" : language === "si" ? "බලපත්‍ර" : "சுரங்க அனுமதி" },
+    { key: "TPL", label: language === "en" ? "Transport License" : language === "si" ? "ප්‍රවාහන බලපත්‍ර" : "போக்குவரத்து அனுமதி" },
+    { key: "CMPLN", label: language === "en" ? "Complaints" : language === "si" ? "පැමිණිලි" : "முறையீடுகள்" },
+    { key: "MLOWNER", label: language === "en" ? "ML Owners" : language === "si" ? "ML හිමියන්" : "ML உரிமையாளர்கள்" },
   ];
 
   useEffect(() => {
@@ -97,9 +97,9 @@ const Dashboard = () => {
     <div className="min-h-screen" style={{ backgroundColor: "#f0f2f5", padding: "16px" }}>
       {/* Stats Section */}
       <Row gutter={[16, 16]} justify="space-around">
-        {[{ title: language === "en" ? "Total Licenses" : "මුළු බලපත්‍ර", count: tableData.filter((item) => item.tracker === "ML").length, color: "#1890ff" },
-          { title: language === "en" ? "Transport Licenses" : "ප්‍රවාහන බලපත්‍ර", count: tableData.filter((item) => item.tracker === "TPL").length, color: "#408220" },
-          { title: language === "en" ? "Complaints" : "පැමිණිලි", count: tableData.filter((item) => item.tracker === "CMPLN").length, color: "#950C33" }]
+        {[{ title: language === "en" ? "Total Licenses" : language === "si" ? "මුළු බලපත්‍ර" : "முழு உரிமங்கள்", count: tableData.filter((item) => item.tracker === "ML").length, color: "#1890ff" },
+          { title: language === "en" ? "Transport Licenses" : language === "si" ? "ප්‍රවාහන බලපත්‍ර" : "போக்குவரத்து உரிமங்கள்", count: tableData.filter((item) => item.tracker === "TPL").length, color: "#408220" },
+          { title: language === "en" ? "Complaints" : language === "si" ? "පැමිණිලි" : "முறையீடுகள்", count: tableData.filter((item) => item.tracker === "CMPLN").length, color: "#950C33" }]
           .map((box, index) => (
             <Col xs={24} sm={12} md={8} lg={6} key={index}>
               <StatsBox title={box.title} count={box.count} color={box.color} />
@@ -114,7 +114,7 @@ const Dashboard = () => {
       <Row gutter={[16, 16]} align="middle" style={{ marginTop: "16px" }}>
         <Col xs={24} sm={16}>
           <Input
-            placeholder={language === "en" ? "Search" : "සොයන්න"}
+            placeholder={language === "en" ? "Search" : language === "si" ? "සොයන්න" : "சேர்"}
             prefix={<SearchOutlined />}
             style={{
               width: "100%",
@@ -131,7 +131,7 @@ const Dashboard = () => {
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
             <Link to="/gsmb/register-new-owner">
               <Button type="primary" style={{ backgroundColor: "#950C33", color: "white" }}>
-                {language === "en" ? "+ Register New Owner" : "+ අයිතිකරු ලියාපදිංචි කරන්න"}
+                {language === "en" ? "+ Register New Owner" : language === "si" ? "+ අයිතිකරු ලියාපදිංචි කරන්න" : "+ புதிய உரிமையாளரை பதிவு செய்"}
               </Button>
             </Link>
            

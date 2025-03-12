@@ -5,6 +5,7 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
 import officerService from "../../services/officerService"; // Import the updated officerService
+import { useLanguage } from "../../contexts/LanguageContext";
 
 
 
@@ -13,6 +14,7 @@ const ViewLicenseDetails = () => {
   const [licenseData, setLicenseData] = useState(null); // State for license data
   const [loading, setLoading] = useState(true);
   const [form] = Form.useForm();
+  const { language } = useLanguage();
   // const navigate = useNavigate(); // Hook for navigation
 
 
@@ -159,11 +161,11 @@ const ViewLicenseDetails = () => {
         style={{ marginBottom: "16px", paddingLeft: 0, color: "#000000" ,backgroundColor:'#FFE143'}}
         href="/gsmb/dashboard"
       >
-        Back
+        {language === "en" ? "Back" : language === "si" ? "ආපසු" : "மீண்டும்"}
       </Button>
 
       <Card
-        title={<h3 style={{ margin: 0 }}>Edit License Details</h3>}
+        title={<h3 style={{ margin: 0 }}>{language === "en" ? "Edit License Details" : language === "si" ? "බලපත්‍ර විස්තර සංස්කරණය" : "உரிமம் விவரங்களைத் திருத்துக"}</h3>}
         style={{textAlign:'center',fontSize:'20px', fontWeight:'bold' }}
       >
         <Form form={form} layout="vertical" onFinish={onFinish}>
@@ -171,43 +173,43 @@ const ViewLicenseDetails = () => {
             <Col xs={24} sm={12}>
               <Form.Item
               style={{fontSize:'24px'}}
-                label="License Number"
+                label={language === "en" ? "License Number" : language === "si" ? "බලපත්‍රය අංකය" : "அனுமதி எண்"}
                 name="licenseNumber"
-                rules={[{ required: true, message: "Please input the license number!" }]}
+                rules={[{ required: true, message: language === "en" ? "Please input the license number!" : language === "si" ? "කරුණාකර බලපත්‍රය අංකය ඇතුළත් කරන්න!" : "தயவுசெய்து அனுமதி எண் உள்ளிடவும்!" }]}
               >
                 <Input />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Owner Name"
+                label={language === "en" ? "Owner Name" : language === "si" ? "අයිතිකරුගේ නම" : "உரிமையாளர் பெயர்"}
                 name="ownerName"
-                rules={[{ required: true, message: "Please input the owner name!" }]}
+                rules={[{ required: true, message: language === "en" ? "Please input the owner name!" : language === "si" ? "කරුණාකර අයිතිකරුගේ නම ඇතුළත් කරන්න!" : "தயவுசெய்து உரிமையாளர் பெயர் உள்ளிடவும்!" }]}
               >
                 <Input />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Location"
+                label={language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்"}
                 name="location"
-                rules={[{ required: true, message: "Please input the location!" }]}
+                rules={[{ required: true, message: language === "en" ? "Please input the location!" : language === "si" ? "කරුණාකර ස්ථානය ඇතුළත් කරන්න!" : "தயவுசெய்து இடம் உள்ளிடவும்!" }]}
               >
                 <Input />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Mobile"
+                label={language === "en" ? "Mobile" : language === "si" ? "ජංගම දුරකථන අංකය" : "மொபைல் எண்"}
                 name="mobile"
-                rules={[{ required: true, message: "Please input the mobile number!" }]}
+                rules={[{ required: true, message: language === "en" ? "Please input the mobile number!" : language === "si" ? "කරුණාකර ජංගම දුරකථන අංකය ඇතුළත් කරන්න!" : "தயவுசெய்து மொபைல் எண் உள்ளிடவும்!" }]}
               >
                 <Input />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Capacity (Cubes)"
+                label={language === "en" ? "Capacity (Cubes)" : language === "si" ? "කියුබ් ගණන" : "கொள்ளளவு (கனசதுரங்கள்)"}
                 name="capacity"
                 rules={[{ required: true, message: "Please input the capacity!" }]}
               >
@@ -216,18 +218,18 @@ const ViewLicenseDetails = () => {
             </Col>
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Issue Date"
+                label={language === "en" ? "Issue Date" : language === "si" ? "නිකුත් කළ දිනය" : "வெளியீட்டு தேதி"}
                 name="issueDate"
-                rules={[{ required: true, message: "Please select the issue date!" }]}
+                rules={[{ required: true, message: language === "en" ? "Please select the issue date!" : language === "si" ? "කරුණාකර නිකුත් කළ දිනය තෝරන්න!" : "தயவுசெய்து வெளியீட்டு தேதியை தேர்ந்தெடுக்கவும்!" }]}
               >
                 <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Expiry Date"
+                label={language === "en" ? "Expiry Date" : language === "si" ? "කල් ඉකුත් වන දිනය" : "காலாவதி தேதி"}
                 name="expiryDate"
-                rules={[{ required: true, message: "Please select the expiry date!" }]}
+                rules={[{ required: true, message: language === "en" ? "Please select the expiry date!" : language === "si" ? "කරුණාකර කල් ඉකුත් වන දිනය තෝරන්න!" : "தயவுசெய்து காலாவதி தேதியை தேர்ந்தெடுக்கவும்!" }]}
               >
                 <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} />
               </Form.Item>
@@ -235,17 +237,17 @@ const ViewLicenseDetails = () => {
             {licenseData.trackerName === "ML" && (
               <>
                 <Col xs={24} sm={12}>
-                  <Form.Item label="NIC" name="nic">
+                <Form.Item label={language === "en" ? "NIC" : language === "si" ? "ජාතික හැඳුනුම්පත් අංකය" : "தேசிய அடையாள அட்டை எண்"} name="nic">
                     <Input />
                   </Form.Item>
                 </Col>
                 <Col xs={24} sm={12}>
-                  <Form.Item label="Used" name="used">
+                <Form.Item label={language === "en" ? "Used" : language === "si" ? "භාවිත කළ ප්‍රමාණය" : "பயன்படுத்திய அளவு"} name="used">
                     <Input />
                   </Form.Item>
                 </Col>
                 <Col xs={24} sm={12}>
-                  <Form.Item label="Remaining" name="remaining">
+                <Form.Item label={language === "en" ? "Remaining" : language === "si" ? "ඉතිරි ප්‍රමාණය" : "மீதமுள்ள கியூப்ஸ்"} name="remaining">
                     <Input />
                   </Form.Item>
                 </Col>
@@ -253,7 +255,7 @@ const ViewLicenseDetails = () => {
             )}
             {licenseData.trackerName === "TPL" && (
               <Col xs={24} sm={12}>
-                <Form.Item label="Royalty Due" name="royaltyDue">
+                <Form.Item label={language === "en" ? "Royalty Due" : language === "si" ? "කර්තෘ භාගය" : "இளவரசர் கட்டணம்"} name="royaltyDue">
                   <Input />
                 </Form.Item>
               </Col>
@@ -271,7 +273,7 @@ const ViewLicenseDetails = () => {
                   
                 }}
               >
-                Update
+                {language === "en" ? "Update" : language === "si" ? "යාවත්කාලීන කරන්න" : "புதுப்பிக்கவும்"}
               </Button>
             </Col>
             <Col xs={12}>
@@ -280,7 +282,7 @@ const ViewLicenseDetails = () => {
                 onClick={handleCancel}
                 style={{ width: "100%", borderColor: "#950C33" }}
               >
-                Cancel
+                {language === "en" ? "Cancel" : language === "si" ? "අවලංගු කරන්න" : "ரத்து செய்"}
               </Button>
             </Col>
           </Row>

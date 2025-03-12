@@ -39,7 +39,12 @@ export const MiningLicenseChart = () => {
 
         <BarChart data={miningLicenseData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <XAxis dataKey="month" stroke="#ffffff" tick={{ fill: "#ffffff", fontSize: 14 }} tickLine={false} />
-          <YAxis stroke="#ffffff" tick={{ fill: "#ffffff", fontSize: 14 }} tickLine={false} />
+          <YAxis
+            stroke="#ffffff"
+            tick={{ fill: "#ffffff", fontSize: 14 }}
+            tickLine={false}
+            tickFormatter={(value) => Math.round(value)} // Format Y-axis ticks as integers
+          />
           <CartesianGrid strokeDasharray="3 3" stroke="#444" />
           <Tooltip
             formatter={(value, name) => [value, name]}

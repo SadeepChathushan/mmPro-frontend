@@ -37,25 +37,27 @@ const NewLicenseForm = () => {
   
       console.log("User registered successfully:", newUser);
   
-      // Assign user to GSMB project with ML Owner role
-      const projectId = 31; // GSMB Project ID
-      const mlOwnerRoleId = 10; // Ensure this is correct
+      // // Assign user to GSMB project with ML Owner role
+      // const projectId = 31; // GSMB Project ID
+      // const mlOwnerRoleId = 10; // Ensure this is correct
   
-      const membership = await officerService.assignUserToProject(
-        newUser.id,
-        projectId,
-        mlOwnerRoleId
-      );
+      // const membership = await officerService.assignUserToProject(
+      //   newUser.id,
+      //   projectId,
+      //   mlOwnerRoleId
+      // );
   
-      if (!membership) {
-        throw new Error("Failed to assign user to project.");
-      }
+      // if (!membership) {
+      //   throw new Error("Failed to assign user to project.");
+      // }
   
-      console.log("User assigned to GSMB project successfully:", membership);
+      // console.log("User assigned to GSMB project successfully:", membership);
       message.success(
         language === "en"
           ? "Mining License Owner registered successfully!"
-          : "පතල් බලපත්‍ර හිමිකරු සාර්ථකව ලියාපදිංචි කරන ලදී!"
+          : language === "si"
+          ? "පතල් බලපත්‍ර හිමිකරු සාර්ථකව ලියාපදිංචි කරන ලදී!"
+          : "சுரங்க அனுமதி உரிமையாளர் வெற்றிகரமாக பதிவு செய்யப்பட்டது!"
       );
   
 
@@ -65,7 +67,9 @@ const NewLicenseForm = () => {
       message.error(
         language === "en"
           ? "Failed to complete process. Please try again."
-          : "ක්‍රියාවලිය සම්පූර්ණ කිරීමට අසමත් විය. කරුණාකර නැවත උත්සාහ කරන්න."
+          : language === "si"
+          ? "ක්‍රියාවලිය සම්පූර්ණ කිරීමට අසමත් විය. කරුණාකර නැවත උත්සාහ කරන්න."
+          : "செயல்முறை முடிக்க தோல்வியுற்றது. தயவுசெய்து மீண்டும் முயற்சிக்கவும்."
       );
     }
   };
@@ -90,7 +94,7 @@ const NewLicenseForm = () => {
         }}
         href="/gsmb/dashboard"
       >
-        {language === "en" ? "Back" : "ආපසු"}
+        {language === "en" ? "Back" : language === "si" ? "ආපසු" : "மீண்டும்"}
       </Button>
 
       <h2
@@ -103,7 +107,9 @@ const NewLicenseForm = () => {
       >
         {language === "en"
           ? "Register New License Owner"
-          : "නව බලපත්‍ර අයිතිකරු ලියාපදිංචි කරන්න"}
+          : language === "si"
+          ? "නව බලපත්‍ර අයිතිකරු ලියාපදිංචි කරන්න"
+          : "புதிய அனுமதி உரிமையாளரை பதிவு செய்"}
       </h2>
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Row gutter={[16, 16]}>
@@ -111,7 +117,7 @@ const NewLicenseForm = () => {
             <Form.Item
               style={{ fontSize: "32px" }}
 
-              label={language === "en" ? "First Name" : "අයිතිකරුගේ මුල් නම"}
+              label={language === "en" ? "First Name" : language === "si" ? "අයිතිකරුගේ මුල් නම" : "உரிமையாளர் முதற்கொண்டு பெயர்"}
               name="firstname"
 
               rules={[
@@ -121,7 +127,9 @@ const NewLicenseForm = () => {
                     language === "en"
 
                       ? "Please input the first name!"
-                      : "අයිතිකරුගේ මුල් නම ඇතුළත් කරන්න!",
+                      : language === "si"
+                      ? "අයිතිකරුගේ මුල් නම ඇතුළත් කරන්න!"
+                      : "உரிமையாளர் முதற்கொண்டு பெயரை உள்ளிடவும்!",
 
                 },
               ]}
@@ -135,7 +143,7 @@ const NewLicenseForm = () => {
             <Form.Item
 
               style={{ fontSize: "32px" }}
-              label={language === "en" ? "Last Name" : "අයිතිකරුගේ අවසන් නම"}
+              label={language === "en" ? "Last Name" : language === "si" ? "අයිතිකරුගේ අවසන් නම" : "உரிமையாளர் கடைசி பெயர்"}
               name="lastname"
 
               rules={[
@@ -145,7 +153,9 @@ const NewLicenseForm = () => {
                     language === "en"
 
                       ? "Please input the last name!"
-                      : "අයිතිකරුගේ අවසන් නම ඇතුළත් කරන්න!",
+                      : language === "si"
+                      ? "අයිතිකරුගේ අවසන් නම ඇතුළත් කරන්න!"
+                      : "உரிமையாளர் கடைசி பெயரை உள்ளிடவும்!",
 
                 },
               ]}
@@ -157,7 +167,7 @@ const NewLicenseForm = () => {
           <Col xs={24} sm={24} md={12}>
             <Form.Item
 
-              label={language === "en" ? "Email Address" : "විද්‍යුත් තැපෑල"}
+              label={language === "en" ? "Email Address" : language === "si" ? "විද්‍යුත් තැපෑල" : "மின்னஞ்சல் முகவரி"}
               name="mail"
 
               rules={[
@@ -167,7 +177,9 @@ const NewLicenseForm = () => {
                     language === "en"
 
                       ? "Please input the Email!"
-                      : "විද්‍යුත් තැපෑල ඇතුළත් කරන්න!",
+                      : language === "si"
+                      ? "විද්‍යුත් තැපෑල ඇතුළත් කරන්න!"
+                      : "மின்னஞ்சலை உள்ளிடவும்!",
 
                 },
               ]}
@@ -179,7 +191,7 @@ const NewLicenseForm = () => {
           <Col xs={24} sm={24} md={12}>
             <Form.Item
 
-              label={language === "en" ? "Mobile Number" : "ජංගම දුරකථන අංකය"}
+              label={language === "en" ? "Mobile Number" : language === "si" ? "ජංගම දුරකථන අංකය" : "மொபைல் எண்"}
               name="phoneNumber"
 
               rules={[
@@ -189,7 +201,9 @@ const NewLicenseForm = () => {
                     language === "en"
 
                       ? "Please input the mobile number!"
-                      : "ජංගම දුරකථන අංකය ඇතුළත් කරන්න!",
+                      : language === "si"
+                      ? "ජංගම දුරකථන අංකය ඇතුළත් කරන්න!"
+                      : "மொபைல் எண்ணை உள்ளிடவும்!",
 
                 },
               ]}
@@ -200,7 +214,7 @@ const NewLicenseForm = () => {
          
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "Address" : "ලිපිනය"}
+              label={language === "en" ? "Address" : language === "si" ? "ලිපිනය" : "முகவரி"}
               name="address"
               rules={[
                 {
@@ -208,7 +222,9 @@ const NewLicenseForm = () => {
                   message:
                     language === "en"
                       ? "Please input the address!"
-                      : "ලිපිනය ඇතුළත් කරන්න!",
+                      : language === "si"
+                      ? "ලිපිනය ඇතුළත් කරන්න!"
+                      : "முகவரியை உள்ளிடவும்!",
                 },
               ]}
             >
@@ -218,7 +234,7 @@ const NewLicenseForm = () => {
 
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={language === "en" ? "NIC" : "ජාතික හැඳුනුම්පත"}
+              label={language === "en" ? "NIC" : language === "si" ? "ජාතික හැඳුනුම්පත" : "தேசிய அடையாளம்"}
               name="NIC"
 
               rules={[
@@ -228,7 +244,9 @@ const NewLicenseForm = () => {
                     language === "en"
 
                       ? "Please input the NIC Number!"
-                      : "ජාතික හැඳුනුම්පත ඇතුළත් කරන්න!",
+                      : language === "si"
+                      ? "ජාතික හැඳුනුම්පත ඇතුළත් කරන්න!"
+                      : "தேசிய அடையாள எண்ணை உள்ளிடவும்!",
                 },
               ]}
             >
@@ -247,7 +265,7 @@ const NewLicenseForm = () => {
                   justifyContent: "center",
                   alignItems: "center",
                   gap: "50px",
-                  alignItems: "center",
+                 
 
                 }}
               >
@@ -273,8 +291,10 @@ const NewLicenseForm = () => {
                 >
 
                   {language == "en"
-                    ? "Create Mining License Owner"
-                    : "පතල් බලපත්‍ර හිමිකරු සාදන්න"}
+                    ? "Create"
+                    : language === "si"
+                    ? "සාදන්න"
+                    : "உருவாக்க"}
 
                 </Button>
                 <Button
@@ -297,7 +317,7 @@ const NewLicenseForm = () => {
                     e.currentTarget.style.borderColor = "#950C33"; // Default border
                   }}
                 >
-                  {language == "en" ? "Cancel" : "අවලංගු කරන්න"}
+                  {language == "en" ? "Cancel" : language === "si" ? "අවලංගු කරන්න" : "ரத்து செய்"}
                 </Button>
               </div>
             </Form.Item>
