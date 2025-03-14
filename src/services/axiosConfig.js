@@ -1,23 +1,19 @@
-// services/axiosConfig.js
-
 import axios from "axios";
-import authService from "./authService"; // Assuming you have a service for handling auth actions
+import authService from "./authService";
 
-// Create an axios instance
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const api = axios.create({
-  baseURL: BASE_URL, // Set your base URL here
+  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Request Interceptor to attach access token to all requests
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("USER_TOKEN");
-    console.log(token);
+    console.log("old token", token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -28,32 +24,35 @@ api.interceptors.request.use(
   }
 );
 
-// Response Interceptor to handle token expiration and refresh
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
+    console.log(error);
     if (error.response && error.response.status === 401) {
-      // Token has expired, attempt to refresh it
+      console.log("error detected");
+
       const refreshToken = localStorage.getItem("REFRESH_TOKEN");
 
       if (refreshToken) {
         try {
           const newAccessToken = await authService.refreshToken(refreshToken);
+          console.log("new token", newAccessToken);
           if (newAccessToken) {
             localStorage.setItem("USER_TOKEN", newAccessToken);
             error.config.headers.Authorization = `Bearer ${newAccessToken}`;
-            return axios(error.config); // Retry the original request
+            return api(error.config);
           }
         } catch (refreshError) {
-          // If refresh fails, log out the user and redirect to login page
+          console.log("inside refresh error");
+
           localStorage.removeItem("USER_TOKEN");
           localStorage.removeItem("REFRESH_TOKEN");
-          window.location.href = "/login"; // Redirect to login page
+          window.location.href = "/signin";
         }
       } else {
-        // If no refresh token, redirect to login page
+        console.log("normal error");
         localStorage.removeItem("USER_TOKEN");
-        window.location.href = "/login";
+        window.location.href = "/signin";
       }
     }
     return Promise.reject(error);

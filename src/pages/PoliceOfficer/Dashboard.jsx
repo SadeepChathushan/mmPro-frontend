@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { fetchVehicleData } from "../../services/PoliceOfficer/vehicleService";
+import { checkVehicleNumber } from "../../services/PoliceOfficer/vehicleService";
 import { submitComplaint } from "../../services/complaint";
 import { getTranslations } from "../../utils/PoliceOfficer/languageUtils";
 import {
@@ -35,11 +35,7 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await api.get(`/police-officer/check-lorry-number`, {
-        params: { lorry_number: input.trim() },
-      });
-
-      const data = response.data;
+      const data = await checkVehicleNumber(input);
 
       if (data.license_details) {
         navigate("/police-officer/valid", {
@@ -52,27 +48,11 @@ const Dashboard = () => {
     } catch (error) {
       console.error("Error fetching vehicle data:", error);
 
-      if (error.response?.status === 401) {
-        // If access token is expired, try to refresh the token
-        const newToken = await authService.refreshToken(); // Refresh token
-
-        if (!newToken) {
-          // If refresh fails, redirect to login
-          message.error("Session expired. Please log in again.");
-          navigate("/login");
-        } else {
-          // Retry the original request with the new token
-          localStorage.setItem("ACCESS_TOKEN", newToken);
-          // Re-run the request with the new token
-          handleCheck();
-        }
-      } else {
-        setModalMessage(translations.invalidLoad[language]);
-        setIsModalOpen(true);
-      }
+      // Handle other errors or show messages based on the error
+      setModalMessage(translations.invalidLoad[language]);
+      setIsModalOpen(true);
     }
   };
-
   const handleReport = async () => {
     // if (!validatePhoneNumber(phoneNumber)) {
     //   setValidationMessage(translations.invalidPhoneNumber[language]);
@@ -84,6 +64,7 @@ const Dashboard = () => {
       const success = await submitComplaint(input, language);
       if (success) {
         setIsModalOpen(false);
+        setInput("");
       }
     } catch (error) {
       console.error("Failed to submit report:", error);

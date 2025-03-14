@@ -17,7 +17,7 @@ const authService = {
       if (response.data.token) {
         message.success("Login successful!");
         // Save token in localStorage (or sessionStorage depending on your needs)
-        localStorage.setItem("USER_ID", response.data.userId[0]);
+        localStorage.setItem("USER_ID", response.data.userId);
         localStorage.setItem("USER_TOKEN", response.data.token);
         localStorage.setItem("REFRESH_TOKEN", response.data.refresh_token);
         localStorage.setItem("USERROLE", response.data.role);
@@ -117,6 +117,7 @@ const authService = {
     } catch (error) {
       console.error("Error refreshing token:", error);
       authService.logout(); // If error occurs, logout user
+      window.location.href = "/signin";
       return null;
     }
   },
