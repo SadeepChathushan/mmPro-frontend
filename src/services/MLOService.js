@@ -1,7 +1,9 @@
 import axios from "axios";
 import moment from "moment";
 
-const BASE_URL = "/api";
+
+
+const BASE_URL = import.meta.env.VITE_BASE_URL; // ✅ For Vite (modern setup)
 
 // const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiTUxPd25lciIsImV4cCI6MTczOTkwNDg4NX0.A_rqIpfZMdI5dgS9lMzJaNvhwvERe72Zs29zG4C9JhI';
 
@@ -17,7 +19,7 @@ const MLOService = {
         return [];
       }
 
-      const response = await axios.get("http://127.0.0.1:5000/mining-owner/mining-homeLicenses", {
+      const response = await axios.get(`${BASE_URL}/mining-owner/mining-homeLicenses`, {
         headers: {
           "Authorization": `Bearer ${USER_TOKEN}`,
           "Content-Type": "application/json",
@@ -82,7 +84,7 @@ export const fetchLicenses = async () => {
     }
 
     // Send the GET request with the Authorization header
-    const response = await axios.get("http://127.0.0.1:5000/mining-owner/mining-licenses", {
+    const response = await axios.get(`${BASE_URL}/mining-owner/mining-licenses`, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`, // Attach the token to the Authorization header
@@ -144,7 +146,7 @@ export const fetchDispatchHistoryData = async (licenseNumber = "") => {
     }
 
     // Make the API request to fetch the dispatch history data
-    const response = await axios.get("http://127.0.0.1:5000/mining-owner/view-tpls", {
+    const response = await axios.get(`${BASE_URL}/mining-owner/view-tpls`, {
       headers: {
         "Authorization": `Bearer ${token}`, // Use the token in the Authorization header
         "Content-Type": "application/json",
@@ -197,7 +199,7 @@ export const fetchMLData = async (l_number) => {
   const e_l_number = encodeURIComponent(l_number);
   const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.get(`http://127.0.0.1:5000/mining-owner/ml-detail?l_number=${e_l_number}`, {
+    const response = await axios.get(`${BASE_URL}/mining-owner/ml-detail?l_number=${e_l_number}`, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`,
@@ -238,7 +240,7 @@ export const fetchLocationSuggestions = async (value) => {
 export const fetchIssues = async () => {
   const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.get("http://127.0.0.1:5000/mining-owner/mining-licenses", {
+    const response = await axios.get(`${BASE_URL}/mining-owner/mining-licenses`, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`,
@@ -271,7 +273,7 @@ export const fetchIssues = async () => {
 export const updateIssue = async (issueId, updatedIssue) => {
   const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.put(`http://127.0.0.1:5000/mining-owner/update-ml/${issueId}`, {
+    const response = await axios.put(`${BASE_URL}/mining-owner/update-ml/${issueId}`, {
       issue: updatedIssue,
     }, {
       headers: {
@@ -290,7 +292,7 @@ export const updateIssue = async (issueId, updatedIssue) => {
 export const createIssue = async (data) => {
   const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.post("http://127.0.0.1:5000/mining-owner/create-tpl", {
+    const response = await axios.post(`${BASE_URL}/mining-owner/create-tpl`, {
       issue: data,
     }, {
       headers: {
@@ -309,7 +311,7 @@ export const get_user = async () => {
   const token = localStorage.getItem("USER_TOKEN");
   const userId = localStorage.getItem("USER_ID");
   try {
-    const response = await axios.get(`http://127.0.0.1:5000/mining-owner/user-detail/${userId}`, {
+    const response = await axios.get(`${BASE_URL}/mining-owner/user-detail/${userId}`, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`,

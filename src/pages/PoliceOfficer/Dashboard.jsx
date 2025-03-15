@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { fetchVehicleData } from "../../services/PoliceOfficer/vehicleService";
+import { checkVehicleNumber } from "../../services/PoliceOfficer/vehicleService";
 import { submitComplaint } from "../../services/complaint";
 import { getTranslations } from "../../utils/PoliceOfficer/languageUtils";
 import {
@@ -15,6 +15,7 @@ import logo from "../../assets/images/gsmbLogo.png";
 import backgroundImage from "../../assets/images/machinery.jpg";
 import "../../styles/PoliceOfficer/PoliceOfficerdashboard.css";
 import axios from "axios";
+import api from "../../services/axiosConfig";
 
 const Dashboard = () => {
   const { language } = useLanguage();
@@ -23,7 +24,6 @@ const Dashboard = () => {
   const [modalMessage, setModalMessage] = useState("");
   const [isValidationModalOpen, setIsValidationModalOpen] = useState(false);
   const [validationMessage, setValidationMessage] = useState("");
-  const [data, setData] = useState([]);
   const navigate = useNavigate();
   const translations = getTranslations(language);
 
@@ -35,19 +35,7 @@ const Dashboard = () => {
     }
 
     try {
-      const token = localStorage.getItem("USER_TOKEN");
-
-      const response = await axios.get(
-        `http://127.0.0.1:5000/police-officer/check-lorry-number`,
-        {
-          params: { lorry_number: input.trim() },
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = response.data;
+      const data = await checkVehicleNumber(input);
 
       if (data.license_details) {
         navigate("/police-officer/valid", {
@@ -59,11 +47,12 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error("Error fetching vehicle data:", error);
+
+      // Handle other errors or show messages based on the error
       setModalMessage(translations.invalidLoad[language]);
       setIsModalOpen(true);
     }
   };
-
   const handleReport = async () => {
     // if (!validatePhoneNumber(phoneNumber)) {
     //   setValidationMessage(translations.invalidPhoneNumber[language]);
@@ -75,6 +64,7 @@ const Dashboard = () => {
       const success = await submitComplaint(input, language);
       if (success) {
         setIsModalOpen(false);
+        setInput("");
       }
     } catch (error) {
       console.error("Failed to submit report:", error);

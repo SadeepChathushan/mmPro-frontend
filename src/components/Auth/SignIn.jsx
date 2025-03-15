@@ -5,9 +5,11 @@ import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import background from "../../assets/images/lake.avif";
 import logo from "../../assets/images/gsmbLogo.png";
-import googleLogo from "../../assets/images/google_icon.png";
+// import googleLogo from "../../assets/images/google_icon.png";
 import "./Signin.css";
-import authService from "../../services/authService";
+// import authService from "../../services/authService";
+// import { login, redirectToDashboard, handleGoogleLogin } from '../../services/authService';
+import authService from "../../services/authService"; 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 console.log("clientId", clientId);
@@ -16,76 +18,13 @@ const SignInPage = () => {
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
-    const { username, password } = values;
-    try {
-      const response = await axios.post("http://localhost:5000/auth/login", {
-        username,
-        password,
-      });
-
-      if (response.data.token) {
-        message.success("Login successful!");
-        // Save token in localStorage (or sessionStorage depending on your needs)
-        localStorage.setItem("USER_ID", response.data.userId[0]);
-        localStorage.setItem("USER_TOKEN", response.data.token);
-        localStorage.setItem("USERROLE", response.data.role);
-        redirectToDashboard(response.data.role);
-      } else {
-        message.error("Login failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("Login failed:", error);
-      message.error("Login failed. Please try again.");
-    }
-  };
-
-  const redirectToDashboard = (role) => {
-    console.log("user role: ", localStorage.getItem("USERROLE"));
-    console.log("token: ", localStorage.getItem("USER_TOKEN"));
-    switch (role) {
-      case "GSMBOfficer":
-        navigate("/gsmb/dashboard");
-        break;
-      case "MLOwner":
-        navigate("/mlowner/home");
-        break;
-      case "PoliceOfficer":
-        navigate("/police-officer/dashboard");
-        break;
-      case "GeneralPublic":
-        navigate("/generalpublic/dashboard");
-        break;
-      case "GSMBManagement":
-        navigate("/gsmbmanagement/dashboard");
-        break;
-      default:
-        navigate("/");
-        break;
-    }
+    const role = await authService.login(values);
+    authService.redirectToDashboard(role, navigate);
   };
 
   const handleGoogleLoginSuccess = async (response) => {
-    const { credential } = response;
-    console.log(credential);
-    try {
-      const res = await axios.post("http://localhost:5000/auth/google-login", {
-        token: credential,
-      });
-
-      if (res.data.token) {
-        message.success("Google login successful!");
-        // Save token in localStorage
-        localStorage.setItem("USER_ID", res.data.userId[0]);
-        localStorage.setItem("USER_TOKEN", res.data.token);
-        localStorage.setItem("USERROLE", res.data.role);
-        redirectToDashboard(res.data.role);
-      } else {
-        message.error("User role not found!");
-      }
-    } catch (err) {
-      console.error("Google login failed:", err);
-      message.error("Google login failed. Please try again.");
-    }
+    const role = await authService.handleGoogleLogin(response);
+    authService.redirectToDashboard(role, navigate);
   };
 
   return (

@@ -7,12 +7,24 @@ const { Title } = Typography;
 const TopMiningLicenseHolders = ({ getDynamicColor }) => {
   const [topMiningHolders, setTopMiningHolders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const getMiningData = async () => {
-      const miningData = await fetchTopMiningHolders();
-      setTopMiningHolders(miningData);
-      setLoading(false);
+      try {
+        const miningData = await fetchTopMiningHolders();
+        
+        // Ensure the data returned from the service is in the correct format
+        if (Array.isArray(miningData)) {
+          setTopMiningHolders(miningData);
+        } else {
+          setError("Invalid data format received from the API.");
+        }
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
     };
 
     getMiningData();
@@ -33,6 +45,26 @@ const TopMiningLicenseHolders = ({ getDynamicColor }) => {
             Top Mining License Holders (by Capacity)
           </Title>
           <Spin size="large" />
+        </Card>
+      </Col>
+    );
+  }
+
+  if (error) {
+    return (
+      <Col xs={24} md={8}>
+        <Card
+          bordered={false}
+          style={{
+            backgroundColor: "rgba(254, 118, 118, 0.1)",
+            borderRadius: "8px",
+            color: "#fff",
+          }}
+        >
+          <Title level={5} style={{ color: "#fff", marginBottom: "20px" }}>
+            Error
+          </Title>
+          <p style={{ color: "#fff" }}>{error}</p>
         </Card>
       </Col>
     );

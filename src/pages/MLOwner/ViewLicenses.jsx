@@ -98,40 +98,62 @@ const Licenses = () => {
     {
       title: language === "en" ? "Status" : language === "si" ? "තත්වය" : "நிலை",
       key: "status",
-      render: (_, record) => (
-        <span className={record.status === "Active" ? "valid-status" : "expired-status"}>
-          {record.status}
-        </span>
-      ),
+      render: (_, record) => {
+        const isActive = new Date() <= new Date(record.endDate);
+        const statusText = isActive
+          ? language === "en"
+            ? "Active"
+            : language === "si"
+            ? "සක්‍රිය"
+            : "செயலில்"
+          : language === "en"
+          ? "Inactive"
+          : language === "si"
+          ? "අසක්‍රිය"
+          : "செயலற்ற";
+
+        return (
+          <span className={isActive ? "valid-status" : "expired-status"}>
+            {statusText}
+          </span>
+        );
+      },
     },
     {
       title: language === "en" ? "Action" : language === "si" ? "ක්‍රියාමාර්ග" : "செயல்",
       key: "action",
-      render: (_, record) => (
-        <Space size="middle">
-          <Link to={`/mlowner/home/dispatchload/${record.licenseNumber}`}>
-            <Button
-              className={record.status === "Inactive" ? "dispatch-button-disabled" : "dispatch-button"}
-              disabled={record.status === "Inactive"}
-            >
-              {language === "en" ? "Dispatch Load" : language === "si" ? "යවන ලද ප්‍රමාණ" : "அனுப்புதல் சுமை"}
-            </Button>
-          </Link>
+      render: (_, record) => {
+        const isActive = new Date() <= new Date(record.endDate);
+        return (
+          <Space size="middle">
+            <Link to={`/mlowner/home/dispatchload/${record.licenseNumber}`}>
+              <Button
+                className={isActive ? "dispatch-button" : "dispatch-button-disabled"}
+                disabled={!isActive} // Disable button if the status is "Inactive"
+              >
+                {language === "en" ? "Dispatch Load" : language === "si" ? "යවන ලද ප්‍රමාණ" : "அனுப்புதல் சுமை"}
+              </Button>
+            </Link>
 
-          <Link to={`/mlowner/history?licenseNumber=${record.licenseNumber}`}>
-            <Button className="history-button">
-              {language === "en" ? "History" : language === "si" ? "ඉතිහාසය" : "வரலாறு"}
-            </Button>
-          </Link>
-        </Space>
-      ),
+            <Link to={`/mlowner/history?licenseNumber=${record.licenseNumber}`}>
+              <Button className="history-button">
+                {language === "en" ? "History" : language === "si" ? "ඉතිහාසය" : "வரலாறு"}
+              </Button>
+            </Link>
+          </Space>
+        );
+      },
     },
   ];
 
   return (
     <div className="container">
       <h1 className="title">
-        {language === "en" ? "Licenses of Mining License Owner" : language === "si" ? "පතල් අයිතිකරුගේ බලපත්‍ර" : "ML உரிமையாளரின் உரிமங்கள்"}
+        {language === "en"
+          ? "Licenses of Mining License Owner"
+          : language === "si"
+          ? "පතල් අයිතිකරුගේ බලපත්‍ර"
+          : "ML உரிமையாளரின் உரிமங்கள்"}
       </h1>
 
       <Row className="filter-row" gutter={[16, 16]}>
