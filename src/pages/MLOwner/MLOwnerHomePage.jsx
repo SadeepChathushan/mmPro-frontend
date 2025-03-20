@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button, Card, Space, Row, Col, Spin, Empty } from 'antd';
 import { Link } from 'react-router-dom';
 import { useLanguage } from "../../contexts/LanguageContext";
-import MLOService from '../../services/MLOService';
+import {fetchHomeLicense} from '../../services/MLOService';
 import "../../styles/MLOwner/MLOwnerHomePage.css";
 
 const MLOwnerHomePage = () => {
@@ -70,23 +70,46 @@ const MLOwnerHomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const projects = await MLOService.fetchProjects();
-        if (projects.length === 0) {
-          console.log("No projects found");
+        console.log("Fetching home licenses...");
+        const homeLicenses = await fetchHomeLicense(); // Use the imported function
+        console.log("API Response - Home Licenses:", homeLicenses); // Debug API response
+  
+        if (homeLicenses.length === 0) {
+          console.log("No home licenses found");
           return;
         }
-        const mappedData = MLOService.mapProjectData(projects);
+  
+        // Map the data to match the expected structure
+        const mappedData = homeLicenses.map(license => ({
+          licenseNumber: license["License Number"],
+          owner: license["Owner Name"],
+          location: license["Location"],
+          startDate: license["Start Date"],
+          dueDate: license["Due Date"],
+          remainingCubes: license["Remaining Cubes"],
+          status: license["Status"]
+        }));
+  
+        console.log("Mapped Data:", mappedData); // Debug mapped data
+  
+        // Update state with the mapped data
         setData(mappedData);
         setFilteredData(mappedData);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching home licenses:', error);
+        notification.error({
+          message: 'Error',
+          description: 'Failed to fetch home licenses. Please try again later.',
+        });
       } finally {
-        setLoading(false); 
+        setLoading(false);
+        console.log("Loading set to false"); // Debug loading state
       }
     };
+  
     fetchData();
   }, []);
-
+  
   return (
     <div className="page-container1">
        <h1 className="title1">{currentTranslations.title}</h1>
