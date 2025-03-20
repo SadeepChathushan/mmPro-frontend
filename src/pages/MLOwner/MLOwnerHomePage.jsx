@@ -1,223 +1,155 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Table, Space, Typography, Row, Col, AutoComplete, Input } from 'antd';
+import { useState, useEffect } from 'react';
+import { Button, Card, Space, Row, Col, Spin, Empty } from 'antd';
 import { Link } from 'react-router-dom';
-import { SearchOutlined } from '@ant-design/icons';
 import { useLanguage } from "../../contexts/LanguageContext";
 import MLOService from '../../services/MLOService';
 import "../../styles/MLOwner/MLOwnerHomePage.css";
-
-const { Title } = Typography;
 
 const MLOwnerHomePage = () => {
   const { language } = useLanguage();
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [searchText, setSearchText] = useState("");
-
-  // Translation object for text and table headers
-  // const translations = {
-  //   en: {
-  //     searchPlaceholder: "Search License Number",
-  //     viewLicensesButton: "View Licenses",
-  //     columns: {
-  //       licenseNumber: "LICENSE NUMBER",
-  //       owner: "OWNER",
-  //       location: "LOCATION",
-  //       startDate: "START DATE",
-  //       dueDate: "DUE DATE",
-  //       capacity: "CAPACITY (CUBES)",
-  //       dispatchedCubes: "DISPATCHED (CUBES)",
-  //       remainingCubes: "REMAINING (CUBES)",
-  //       royalty: "ROYALTY(SAND) DUE [RS.]",
-  //       status: "STATUS",
-  //       action: "ACTION"
-  //     }
-  //   },
-  //   // Other languages omitted for brevity
-  // };
-
+  const [loading, setLoading] = useState(true);
 
   const translations = {
     en: {
+      title: "Mining Licenses Overview",
+      subtitle: "As a Mining License Owner, you can view currently active licenses here.",
       searchPlaceholder: "Search License Number",
-      viewLicensesButton: "View Licenses",
-      columns: {
-        licenseNumber: "LICENSE NUMBER",
-        owner: "OWNER",
-        location: "LOCATION",
-        startDate: "START DATE",
-        dueDate: "DUE DATE",
-        capacity: "CAPACITY (CUBES)",
-        dispatchedCubes: "DISPATCHED (CUBES)",
-        remainingCubes: "REMAINING (CUBES)",
-        royalty: "ROYALTY(SAND) DUE [RS.]",
-        status: "STATUS",
-        action: "ACTION"
-      }
+      viewLicensesButton: "View All Licenses",
+      noDataMessage: "No Data Available",
+      owner: "Owner",
+      location: "Location",
+      startDate: "Start Date",
+      dueDate: "Expire Date",
+      remainingCubes: "Remaining",
+      status: "Status",
+      active: "Active",
+      inactive: "Inactive",
+      dispatchLoad: "Dispatch Load",
+      history: "History",  
     },
     si: {
-      searchPlaceholder: "සර්වකරණ අංකය සෙවීම",
-      viewLicensesButton: "ලයිසන්ස් බැලීම",
-      columns: {
-        licenseNumber: "ලයිසන්ස් අංකය",
-        owner: "අයිතිකරු",
-        location: "ස්ථානය",
-        startDate: "ආරම්භ දිනය",
-        dueDate: "ඉවතලීමේ දිනය",
-        capacity: "කූබ් (කොටස්)",
-        dispatchedCubes: "ප්‍රවේශිත කොටස්",
-        remainingCubes: "බැකෑම කූබ්",
-        royalty: "රොයල්ටි (කන්ක්) පවසයි [රු.]",
-        status: "තත්වය",
-        action: "ක්‍රියා"
-      }
+      title: " කැණීමේ බලපත්‍ර",
+      subtitle: "කැණීමේ බලපත්‍ර හිමිකරු ලෙස, ඔබට දැන් ක්‍රියාත්මක වන බලපත්‍රයන් මෙහි බලන්න පුළුවන්.",
+      searchPlaceholder: "බලපත්‍ර අංකය සොයන්න",
+      viewLicensesButton: "සියලුම බලපත්‍ර බලන්න",
+      noDataMessage: "දත්ත නොමැත",
+      owner: "හිමිකරු",
+      location: "ස්ථානය",
+      startDate: "ආරම්භක දිනය",
+      dueDate: "කල්පිරෙන දිනය",
+      remainingCubes: "ඉතිරිව ඇති කැට",
+      status: "තත්වය",
+      active: "සක්‍රීයයි",
+      inactive: "අක්‍රීයයි",
+      dispatchLoad: "නව ප්‍රවාහන බලපත්‍රයක්", 
+      history: "ඉතිහාසය",
     },
     ta: {
+      title: "சுரங்க அனுமதிகள் மேலோட்டம்",
+      subtitle: "சுரங்க அனுமதி உரிமையாளராக, நீங்கள் தற்போதைய செயல்படும் அனுமதிகளை இங்கு காணலாம்.",
       searchPlaceholder: "லائسன்ஸ் எண் தேடல்",
       viewLicensesButton: "லையசன்ஸ் பார்வை",
-      columns: {
-        licenseNumber: "லையசன்ஸ் எண்",
-        owner: "உரிமையாளர்",
-        location: "இடம்",
-        startDate: "தொடக்கம் தேதி",
-        dueDate: "கடைசி தேதி",
-        capacity: "திறன் (கியூப்ஸ்)",
-        dispatchedCubes: "வெளியே அனுப்பப்பட்ட கியூப்ஸ்",
-        remainingCubes: "மீதமுள்ள கியூப்ஸ்",
-        royalty: "ராயல் (சந்தி) கட்டணம் [ரூ.]",
-        status: "நிலை",
-        action: "செயல்"
-      }
+      noDataMessage: "தரவு இல்லை",
+      owner: "உரிமையாளர்",
+      location: "இடம்",
+      startDate: "தொடக்க தேதி",
+      dueDate: "காலக்கெடு",
+      remainingCubes: "மீதமுள்ள கன சதுரங்கள்",
+      status: "நிலை",
+      active: "செயலில்",
+      inactive: "செயலற்றது",
+      dispatchLoad: "சரக்கு அனுப்பு",
+      history: "வரலாறு", 
     }
   };
 
   const currentTranslations = translations[language] || translations['en'];
 
-
-  
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetching and mapping data from the service
         const projects = await MLOService.fetchProjects();
         if (projects.length === 0) {
           console.log("No projects found");
           return;
         }
-
-        // Mapping project data using mapProjectData
         const mappedData = MLOService.mapProjectData(projects);
-
-        // Set the data state
         setData(mappedData);
         setFilteredData(mappedData);
       } catch (error) {
         console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false); 
       }
     };
-
     fetchData();
   }, []);
 
-  const handleSearch = (value) => {
-    setSearchText(value);
-    if (value) {
-      const filteredResults = data.filter(item =>
-        item.licenseNumber.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredData(filteredResults);
-    } else {
-      setFilteredData(data);
-    }
-  };
-
-  const columns = [
-    { title: currentTranslations.columns.licenseNumber, dataIndex: 'licenseNumber', key: 'licenseNumber' },
-    { title: currentTranslations.columns.owner, dataIndex: 'owner', key: 'owner' },
-    { title: currentTranslations.columns.location, dataIndex: 'location', key: 'location' },
-    { title: currentTranslations.columns.startDate, dataIndex: 'startDate', key: 'startDate' },
-    { title: currentTranslations.columns.dueDate, dataIndex: 'dueDate', key: 'dueDate' },
-    { title: currentTranslations.columns.capacity, dataIndex: 'capacity', key: 'capacity' },
-    { title: currentTranslations.columns.dispatchedCubes, dataIndex: 'dispatchedCubes', key: 'dispatchedCubes' },
-    { title: currentTranslations.columns.remainingCubes, dataIndex: 'remainingCubes', key: 'remainingCubes' },
-    { title: currentTranslations.columns.royalty, dataIndex: 'royalty', key: 'royalty' },
-    {
-      title: currentTranslations.columns.status,
-      dataIndex: 'status',
-      key: 'status',
-      render: (text, record) => {
-        const isActive = new Date() <= new Date(record.dueDate);
-        const statusText = isActive ? (language === "en" ? "Active" : language === "si" ? "සක්‍රිය" : "செயலில்") 
-                                   : (language === "en" ? "Inactive" : language === "si" ? "අසක්‍රිය" : "செயலற்ற");
-        return (
-          <span className={isActive ? "valid-status" : "expired-status"}>
-            {statusText}
-          </span>
-        );
-      },
-    },
-    
-    {
-      title: currentTranslations.columns.action,
-      key: 'action',
-      render: (_, record) => (
-        <Space size="middle">
-          <Link to={`/mlowner/home/dispatchload/${record.licenseNumber}`}>
-            <Button
-              className="dispatch-load-button"
-              disabled={parseInt(record.remainingCubes, 10) === 0 || new Date(record.dueDate) < new Date()}
-            >
-              Dispatch Load
-            </Button>
-          </Link>
-          <Link to={{ pathname: "/mlowner/history", search: `?licenseNumber=${record.licenseNumber}` }}>
-            <Button className="history-button1">
-              History
-            </Button>
-          </Link>
-        </Space>
-      ),
-    },
-  ];
-
   return (
     <div className="page-container1">
+       <h1 className="title1">{currentTranslations.title}</h1>
+       <p className="subtitle1">{currentTranslations.subtitle}</p>
+       <Row>
+                <Link to="/mlowner/home/viewlicenses">
+                  <Button className="view-licenses-button">
+                    {currentTranslations.viewLicensesButton}
+                  </Button>
+                </Link>
+       </Row>
       <div className="page-content1">
-        <Row gutter={16} justify="space-between" align="middle">
-          <Col xs={24} sm={24} md={12} lg={12}>
-            <AutoComplete
-              value={searchText}
-              onSearch={handleSearch}
-              style={{ width: '100%' }}
-              options={filteredData.map(result => ({
-                value: result.licenseNumber,
-              }))}
-            >
-              <Input
-                prefix={<SearchOutlined />}
-                placeholder={currentTranslations.searchPlaceholder}
-              />
-            </AutoComplete>
-          </Col>
-          <Col xs={24} sm={24} md={12} lg={12} className="search-col">
-            <Link to="/mlowner/home/viewlicenses">
-              <Button
-                type="primary"
-                className="view-licenses-button"
-              >
-                {currentTranslations.viewLicensesButton}
-              </Button>
-            </Link>
-          </Col>
-        </Row>
-
-        <Table
-          columns={columns}
-          dataSource={filteredData}
-          pagination={false}
-          className="table-container1"
-          scroll={{ x: 'max-content' }}
-        />
+        {loading ? (
+          <div className="loading-container">
+            <Spin size="large" className="loading-icon" />
+          </div>
+        ) : (
+          <>
+            {/* Show "No Data" if filteredData is empty */}
+            {filteredData.length === 0 ? (
+              <div className="no-data-container">
+                <Empty
+                  description={currentTranslations.noDataMessage} 
+                  image={Empty.PRESENTED_IMAGE_SIMPLE} 
+                />
+              </div>
+            ) : (
+              <Row gutter={[16, 16]} className="card-container" justify="center">
+                {filteredData.map(record => (
+                  <Col xs={24} sm={8} md={8} lg={8} key={record.licenseNumber}>
+                    <Card title={record.licenseNumber} className="license-card">
+                      <p><strong>{currentTranslations.owner}:</strong> {record.owner}</p>
+                      <p><strong>{currentTranslations.location}:</strong> {record.location}</p>
+                      <p><strong>{currentTranslations.startDate}:</strong> {record.startDate}</p>
+                      <p><strong>{currentTranslations.dueDate}:</strong> {record.dueDate}</p>
+                      <p><strong>{currentTranslations.remainingCubes}:</strong> {record.remainingCubes} cubes</p>
+                      <p>
+                        <strong>{currentTranslations.status}:</strong>
+                        <span className={new Date() <= new Date(record.dueDate) ? "valid-status" : "expired-status"}>
+                          {new Date() <= new Date(record.dueDate) ? currentTranslations.active : currentTranslations.inactive}
+                        </span>
+                      </p>
+                      <Space style={{ width: "100%", display: "flex", justifyContent: "center"}}>
+                        <Link to={`/mlowner/home/dispatchload/${record.licenseNumber}`}>
+                          <Button className="dispatch-load-button" disabled={parseInt(record.remainingCubes, 10) === 0 || new Date(record.dueDate) < new Date()}>
+                            {currentTranslations.dispatchLoad} {/* Updated to use translation */}
+                          </Button>
+                        </Link>
+                      </Space>
+                      <Space style={{ width: "100%", display: "flex", justifyContent: "center"}}>
+                      <Link to={{ pathname: "/mlowner/history", search: `?licenseNumber=${record.licenseNumber}` }}>
+                          <Button className="history-button1">
+                            {currentTranslations.history} {/* Updated to use translation */}
+                          </Button>
+                        </Link>
+                      </Space>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
