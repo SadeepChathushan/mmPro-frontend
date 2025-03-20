@@ -13,15 +13,12 @@ const officerService = {
         return [];
       }
 
-      const response = await axios.get(
-        `${BASE_URL}/gsmb-officer/gsmb-issue`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/gsmb-officer/gsmb-issue`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (
         response.status === 200 &&
@@ -317,15 +314,12 @@ const officerService = {
       //   },
       // });
 
-      const response = await axios.get(
-        `${BASE_URL}/gsmb-officer/view-tpls`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/gsmb-officer/view-tpls`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (response.data && response.data.view_tpls) {
         const issues = response.data.view_tpls;

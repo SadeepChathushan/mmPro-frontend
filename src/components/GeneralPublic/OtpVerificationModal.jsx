@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { message } from "antd";
+import { sendOtpService, verifyOtpService } from "../../services/otpService";
 
 const OtpVerificationModal = ({
   isOpen,
@@ -17,7 +18,6 @@ const OtpVerificationModal = ({
   const [attempts, setAttempts] = useState(0);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
 
   // Language-specific text content
   const textContent = {
@@ -44,111 +44,157 @@ const OtpVerificationModal = ({
 
   const token = localStorage.getItem("USER_TOKEN");
 
-  const sendOtp = async () => {
+  // const sendOtp = async () => {
+  //   setLoading(true);
+  //   setError("");
+
+  //   if (phoneNumber === "0769025999") {
+  //     setOtpSent(true);
+  //     setSuccessMessage("OTP sent successfully");
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await axios.post(
+  //       "http://127.0.0.1:5000/general-public/send-verification",
+  //       { phone: phoneNumber },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+
+  //     if (response.data.success) {
+  //       setOtpSent(true);
+  //       setSuccessMessage("OTP sent successfully.");
+  //     } else {
+  //       setErrorMessage("Failed to send OTP.");
+  //     }
+  //   } catch (err) {
+  //     setErrorMessage("Error sending OTP. Please try again.");
+  //   }
+  //   setLoading(false);
+  // };
+
+  const handleSendOtp = async () => {
     setLoading(true);
-    setError("");
-
-
-    if (phoneNumber === "0769025444") {
-      setOtpSent(true);
-      setSuccessMessage("OTP sent successfully (Test Mode: Enter '123456').");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:5000/general-public/send-verification",
-        { phone: phoneNumber },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.data.success) {
+      const response = await sendOtpService(phoneNumber);
+      if (response.success) {
         setOtpSent(true);
-        setSuccessMessage("OTP sent successfully.");
+        message.success(response.message || "OTP sent successfully.");
       } else {
         setErrorMessage("Failed to send OTP.");
       }
-    } catch (err) {
-      setErrorMessage("Error sending OTP. Please try again.");
+    } catch (error) {
+      setErrorMessage("Error sending OTP.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  const verifyOtp = async () => {
+  // const verifyOtp = async () => {
+  //   setLoading(true);
+  //   setError("");
+
+  //   if (phoneNumber === "0769025999" && otp === "123456") {
+  //     setIsVerified(true);
+
+  //     // Show success message using Ant Design's message
+  //     message.success(textContent.successMessage);
+
+  //     // Store verification data in localStorage
+  //     localStorage.setItem("VERIFIED_PHONE", phoneNumber);
+
+  //     onVerificationSuccess(phoneNumber);
+  //     setTimeout(() => {
+  //       onClose();
+  //     }, 2000);
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await axios.post(
+  //       "http://127.0.0.1:5000/general-public/verify-code",
+  //       {
+  //         phone: phoneNumber,
+  //         code: otp,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+
+  //     if (response.data.success) {
+  //       setIsVerified(true);
+
+  //       // Show success message using Ant Design's message
+  //       message.success(textContent.successMessage);
+
+  //       // Store verification data in localStorage similar to your login example
+  //       localStorage.setItem("VERIFIED_PHONE", phoneNumber);
+
+  //       if (response.data.token) {
+  //         localStorage.setItem("USER_TOKEN", response.data.token);
+  //       }
+
+  //       onVerificationSuccess(phoneNumber);
+
+  //       // Wait for 2 seconds before closing the modal
+  //       setTimeout(() => {
+  //         onClose();
+  //       }, 2000);
+  //     } else {
+  //       setError("Invalid OTP. Try again.");
+  //       message.error("Invalid OTP. Try again.");
+  //       setOtpSent(false);
+  //     }
+  //   } catch (err) {
+  //     if (!isVerified) {
+  //       setError("Error verifying OTP.");
+  //       message.error("Error verifying OTP.");
+  //     }
+  //     setOtpSent(false);
+  //   }
+
+  //   setLoading(false);
+  // };
+
+  const handleVerifyOtp = async () => {
     setLoading(true);
-    setError("");
-
-    if (phoneNumber === "0769025444" && otp === "123456") {
-      setIsVerified(true);
-      
-      // Show success message using Ant Design's message
-      message.success(textContent.successMessage);
-      
-      // Store verification data in localStorage
-      localStorage.setItem("VERIFIED_PHONE", phoneNumber);
-      
-      onVerificationSuccess(phoneNumber);
-      setTimeout(() => {
-        onClose();
-      }, 2000);
-      setLoading(false);
-      return;
-    }
-
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:5000/general-public/verify-code",
-        {
-          phone: phoneNumber,
-          code: otp,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.data.success) {
+      const response = await verifyOtpService(phoneNumber, otp);
+      if (response.success) {
         setIsVerified(true);
-        
-        // Show success message using Ant Design's message
         message.success(textContent.successMessage);
-        
-        // Store verification data in localStorage similar to your login example
+
+        // Store data in localStorage
         localStorage.setItem("VERIFIED_PHONE", phoneNumber);
-        
-        if (response.data.token) {
-          localStorage.setItem("USER_TOKEN", response.data.token);
+        if (response.token) {
+          localStorage.setItem("USER_TOKEN", response.token);
         }
-        
+
+        // Trigger parent function
         onVerificationSuccess(phoneNumber);
 
-        // Wait for 2 seconds before closing the modal
         setTimeout(() => {
           onClose();
         }, 2000);
       } else {
-        setError("Invalid OTP. Try again.");
-        message.error("Invalid OTP. Try again.");
-        setOtpSent(false);
+        setErrorMessage("Invalid OTP. Try again.");
       }
-    } catch (err) {
-      if (!isVerified) {
-        setError("Error verifying OTP.");
-        message.error("Error verifying OTP.");
-      }
-      setOtpSent(false);
+    } catch (error) {
+      setErrorMessage("Error verifying OTP.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   if (!isOpen) return null;
@@ -172,7 +218,7 @@ const OtpVerificationModal = ({
           />
 
           <button
-            onClick={sendOtp}
+            onClick={handleSendOtp}
             disabled={loading}
             className="verify-button"
           >
@@ -189,7 +235,7 @@ const OtpVerificationModal = ({
                 className="otp-input"
               />
               <button
-                onClick={verifyOtp}
+                onClick={handleVerifyOtp}
                 disabled={loading}
                 className="submit-otp-button"
               >
@@ -198,7 +244,9 @@ const OtpVerificationModal = ({
             </div>
           )}
 
-          {successMessage && <p className="success-message">{successMessage}</p>}
+          {successMessage && (
+            <p className="success-message">{successMessage}</p>
+          )}
           {errorMessage && <p className="error-message">{errorMessage}</p>}
 
           <div className="verification-status">
