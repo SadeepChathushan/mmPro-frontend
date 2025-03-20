@@ -40,9 +40,12 @@ const DispatchLoadPage = () => {
       DateTime: "",
       licenseNumber: l_number,
       destination: "",
-      lorryNumber: "",
+      lorryNumber: "", 
       driverContact: "",
       dueDate: "",
+      Root1: "",
+      Root2: "",
+      Root3: "",
       cubes: 1,
     });
   };
@@ -121,6 +124,21 @@ const DispatchLoadPage = () => {
       {
         id: 15,
         name: "Cubes",
+        value: "",
+      },
+      {
+        id: 16,
+        name: "Root1",
+        value: "",
+      },
+      {
+        id: 17,
+        name: "Root2",
+        value: "",
+      },
+      {
+        id: 18,
+        name: "Root3",
         value: "",
       },
     ],
@@ -301,6 +319,10 @@ const handleDatetime = (e) => {
         const tplCubeField = issueData.custom_fields.find((field) => field.name === "Cubes");
         const tplL_numberField = issueData.custom_fields.find((field) => field.name === "License Number");
         const tplO_nameField = issueData.custom_fields.find((field) => field.name === "Owner Name");
+        const tplRoot1Field = issueData.custom_fields.find((field) => field.name === "Root1");
+        const tplRoot2Field = issueData.custom_fields.find((field) => field.name === "Root2");
+        const tplRoot3Field = issueData.custom_fields.find((field) => field.name === "Root3");
+
 
         // set data to Create tpl 
         tplLocationField.value = (locateField.value).toString();
@@ -313,6 +335,9 @@ const handleDatetime = (e) => {
         issueData.due_date = formData.dueDate;
         issueData.assigned_to_id = userData.id;
         tplL_numberField.value = (formData.licenseNumber).toString();
+        tplRoot1Field.value = (formData.Root1).toString();
+        tplRoot2Field.value = (formData.Root2).toString();
+        tplRoot3Field.value = (formData.Root3).toString();
   
         console.log("issue:", issueData);
   
@@ -485,7 +510,13 @@ const handleDatetime = (e) => {
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
             <div className="form-field">
-              <span className="field-label">LORRY NUMBER:</span>
+              <span className="field-label">
+                {language === "en"
+                  ? "LORRY NUMBER:"
+                  : language === "si"
+                  ? "ලොරිය අංකය:"
+                  : "லொறி எண்:"}
+              </span>
               <Input
                 value={formData.lorryNumber}
                 onChange={(e) =>
@@ -504,7 +535,13 @@ const handleDatetime = (e) => {
         <Row gutter={16}>
           <Col xs={24} sm={24} md={12} lg={12}>
             <div className="form-field">
-              <span className="field-label">DRIVER CONTACT:</span>
+              <span className="field-label">
+                {language === "en"
+                  ? "DRIVER CONTACT:"
+                  : language === "si"
+                  ? "රියදුරු සම්බන්ධතා:"
+                  : "இயக்குநர் தொடர்பு:"}
+              </span>
               <Input
                 value={formData.driverContact}
                 onChange={(e) =>
@@ -537,6 +574,63 @@ const handleDatetime = (e) => {
                 }}
                 style={{ width: "100%" }}
                 required
+              />
+            </div>
+          </Col>
+        </Row>
+
+        {/* Root1 Input */}
+        <Row gutter={16}>
+          <Col xs={24} sm={24} md={12} lg={12}>
+            <div className="form-field">
+              <span className="field-label">
+                {language === "en"
+                  ? "ROOT 1:"
+                  : language === "si"
+                  ? "මාර්ගය 1:"
+                  : "வழி 1:"}
+              </span>
+              <Input
+                value={formData.Root1}
+                onChange={(e) => setFormData({ ...formData, Root1: e.target.value })}
+              />
+            </div>
+          </Col>
+        </Row>
+
+        {/* Root2 Input */}
+        <Row gutter={16}>
+          <Col xs={24} sm={24} md={12} lg={12}>
+            <div className="form-field">
+              <span className="field-label">
+                {language === "en"
+                  ? "ROOT 2:"
+                  : language === "si"
+                  ? "මාර්ගය 2:"
+                  : "வழி 2:"}
+              </span>
+              <Input
+                value={formData.Root2}
+                onChange={(e) => setFormData({ ...formData, Root2: e.target.value })}
+              />
+            </div>
+          </Col>
+        </Row>
+
+        {/* Root3 Input */}
+        <Row gutter={16}>
+          <Col xs={24} sm={24} md={12} lg={12}>
+            <div className="form-field">
+              <span className="field-label">
+                {language === "en"
+                  ? "ROOT 3:"
+                  : language === "si"
+                  ? "මාර්ගය 3:"
+                  : "வழி 3:"}
+              </span>
+              <Input
+                value={formData.Root3}
+                onChange={(e) => setFormData({ ...formData, Root3: e.target.value })}
               />
             </div>
           </Col>
