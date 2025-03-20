@@ -106,59 +106,59 @@ const MlOwnersTable = () => {
   
 
   // Expanded row render to show the nested table of licenses for each owner
-  const expandedRowRender = (record) => {
-    const licenseColumns = [
-      { title: "License Number", dataIndex: "licenseNumber", key: "licenseNumber" },
-      { title: "Location", dataIndex: "location", key: "location" },
-      { title: "Capacity", dataIndex: "capacity", key: "capacity" },
-      { title: "Issue Date", dataIndex: "issueDate", key: "issueDate" },
-      { title: "Expiry Date", dataIndex: "expiryDate", key: "expiryDate" },
-      {
-        title: "License Status",
-        key: "status",
-        render: (_, license) => {
-          const buttonText = license.status === 'active' ? 'Deactivate' : 'Activate';
-          return (
-            <Popconfirm
-              title={`Are you sure you want to ${buttonText.toLowerCase()} this license?`}
-              onConfirm={() => handleLicenseStatusChange(license.licenseNumber, license.status)}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Button type={buttonText === 'Activate' ? 'primary' : 'danger'}>
-                {buttonText}
-              </Button>
-            </Popconfirm>
-          );
-        },
-      },
-      {
-        title: "Transport License History",
-        key: "history",
-        render: (_, record) => (
-          <Link to={`/gsmb/dashboard/TPLHistory?licenseNumber=${record.licenseNumber}`}>
-            <Button type="link" style={{ color: "#000000", backgroundColor: "#ca8282", borderColor: "#ca8282" }}>
-              View History
-            </Button>
-          </Link>
-        ),
-      },
-    ];
+  // const expandedRowRender = (record) => {
+  //   const licenseColumns = [
+  //     { title: "License Number", dataIndex: "licenseNumber", key: "licenseNumber" },
+  //     { title: "Location", dataIndex: "location", key: "location" },
+  //     { title: "Capacity", dataIndex: "capacity", key: "capacity" },
+  //     { title: "Issue Date", dataIndex: "issueDate", key: "issueDate" },
+  //     { title: "Expiry Date", dataIndex: "expiryDate", key: "expiryDate" },
+  //     {
+  //       title: "License Status",
+  //       key: "status",
+  //       render: (_, license) => {
+  //         const buttonText = license.status === 'active' ? 'Deactivate' : 'Activate';
+  //         return (
+  //           <Popconfirm
+  //             title={`Are you sure you want to ${buttonText.toLowerCase()} this license?`}
+  //             onConfirm={() => handleLicenseStatusChange(license.licenseNumber, license.status)}
+  //             okText="Yes"
+  //             cancelText="No"
+  //           >
+  //             <Button type={buttonText === 'Activate' ? 'primary' : 'danger'}>
+  //               {buttonText}
+  //             </Button>
+  //           </Popconfirm>
+  //         );
+  //       },
+  //     },
+  //     {
+  //       title: "Transport License History",
+  //       key: "history",
+  //       render: (_, record) => (
+  //         <Link to={`/gsmb/dashboard/TPLHistory?licenseNumber=${record.licenseNumber}`}>
+  //           <Button type="link" style={{ color: "#000000", backgroundColor: "#ca8282", borderColor: "#ca8282" }}>
+  //             View History
+  //           </Button>
+  //         </Link>
+  //       ),
+  //     },
+  //   ];
 
-    return (
-      <Table
-        columns={licenseColumns}
-        dataSource={record.licenses}
-        pagination={false}
-        rowKey="licenseNumber"
-        style={{
-          margin: 0,
-          backgroundColor: "#f9f9f9", // Change background color here
-        }}
-        rowClassName="expanded-row" // Add a CSS class for row customization
-      />
-    );
-  };
+  //   return (
+  //     <Table
+  //       columns={licenseColumns}
+  //       dataSource={record.licenses}
+  //       pagination={false}
+  //       rowKey="licenseNumber"
+  //       style={{
+  //         margin: 0,
+  //         backgroundColor: "#f9f9f9", // Change background color here
+  //       }}
+  //       rowClassName="expanded-row" // Add a CSS class for row customization
+  //     />
+  //   );
+  // };
 
   return (
     <div
@@ -174,7 +174,7 @@ const MlOwnersTable = () => {
         dataSource={ownersData}
         columns={columns}
         loading={loading}
-        expandable={{ expandedRowRender }}
+        //expandable={{ expandedRowRender }}
         rowKey="id"
       />
     </div>
