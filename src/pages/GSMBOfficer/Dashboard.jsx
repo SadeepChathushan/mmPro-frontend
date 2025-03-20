@@ -16,13 +16,14 @@ const Dashboard = () => {
   const [searchText, setSearchText] = useState("");
   const [tableData, setTableData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [activeTab, setActiveTab] = useState("ML");
+  const [activeTab, setActiveTab] = useState("MLOWNER");
+  const [mlOwnersCount, setMlOwnersCount] = useState(0);
 
   const tabs = [
+    { key: "MLOWNER", label: language === "en" ? "ML Owners" : language === "si" ? "ML හිමියන්" : "ML உரிமையாளர்கள்" },
     { key: "ML", label: language === "en" ? "Mining License" : language === "si" ? "බලපත්‍ර" : "சுரங்க அனுமதி" },
     { key: "TPL", label: language === "en" ? "Transport License" : language === "si" ? "ප්‍රවාහන බලපත්‍ර" : "போக்குவரத்து அனுமதி" },
     { key: "CMPLN", label: language === "en" ? "Complaints" : language === "si" ? "පැමිණිලි" : "முறையீடுகள்" },
-    { key: "MLOWNER", label: language === "en" ? "ML Owners" : language === "si" ? "ML හිමියන්" : "ML உரிமையாளர்கள்" },
   ];
 
   useEffect(() => {
@@ -64,6 +65,9 @@ const Dashboard = () => {
         } else {
           console.error("Issues data is not an array:", issuesData);
         }
+          // Fetch ML owners count
+        const mlOwners = await officerService.getMlOwners();
+        setMlOwnersCount(mlOwners.length);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -97,7 +101,8 @@ const Dashboard = () => {
     <div className="min-h-screen" style={{ backgroundColor: "#f0f2f5", padding: "16px" }}>
       {/* Stats Section */}
       <Row gutter={[16, 16]} justify="space-around">
-        {[{ title: language === "en" ? "Total Licenses" : language === "si" ? "මුළු බලපත්‍ර" : "முழு உரிமங்கள்", count: tableData.filter((item) => item.tracker === "ML").length, color: "#1890ff" },
+        {[{ title: language === "en" ? "ML Owners" : language === "si" ? "ML හිමියන්" : "ML உரிமையாளர்கள்", count: mlOwnersCount, color: "#FF8C00" },
+          { title: language === "en" ? "Total Licenses" : language === "si" ? "මුළු බලපත්‍ර" : "முழு உரிமங்கள்", count: tableData.filter((item) => item.tracker === "ML").length, color: "#1890ff" },
           { title: language === "en" ? "Transport Licenses" : language === "si" ? "ප්‍රවාහන බලපත්‍ර" : "போக்குவரத்து உரிமங்கள்", count: tableData.filter((item) => item.tracker === "TPL").length, color: "#408220" },
           { title: language === "en" ? "Complaints" : language === "si" ? "පැමිණිලි" : "முறையீடுகள்", count: tableData.filter((item) => item.tracker === "CMPLN").length, color: "#950C33" }]
           .map((box, index) => (
