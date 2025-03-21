@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Form, Input, Button, DatePicker, Row, Col, message, Checkbox, ConfigProvider } from "antd";
@@ -7,6 +6,7 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import getValidationRules from "../../utils/validationRules";
 import officerService from "../../services/officerService";
 import moment from "moment";
+import "../../styles/GSMBofficer/gsmbofficer.css";
 
 const NewLicenseForm = () => {
   const { language } = useLanguage();
@@ -47,19 +47,14 @@ const NewLicenseForm = () => {
     return <div>Loading user details...</div>;
   }
 
-
-
   const onFinish = async (values) => {
     try {
       const payload = {
         issue: {
           project: { id: 31 },
           tracker: { id: 7 },
-          // Remove the duplicate subject key and only keep the correct one
-          // subject: language === "en" ? "New License" : "නව බලපත්‍රය",
           status: { id: 17 },
-          // assigned_to:{userID}
-          subject:values.licenseNumber,
+          subject: values.licenseNumber,
           start_date: values.validityStart.format("YYYY-MM-DD"),
           due_date: values.endDate.format("YYYY-MM-DD"),
           estimated_hours: 24.0,
@@ -132,23 +127,8 @@ const NewLicenseForm = () => {
     );
   }
 
-  const inputStyle = { fontSize: "20px" };
-
-    return (
-    <div>
-      {/* <Button
-        type="link"
-        icon={<ArrowLeftOutlined />}
-        style={{
-          marginBottom: "10px",
-          paddingLeft: 0,
-          color: "#000000",
-        }}
-        href="/gsmb/dashboard"
-        >
-        {language === "en" ? "Back" : language === "si" ? "ආපසු" : "மீண்டும்"}
-      </Button> */}
-
+  return (
+    <div className="license-form-container">
       <h2
         style={{
           textAlign: "center",
@@ -156,70 +136,81 @@ const NewLicenseForm = () => {
           color: "#1a1a1a",
           fontSize: "32px",
         }}
-        >
+      >
         {language === "en" ? "New License" : language === "si" ? "නව බලපත්‍රය" : "புதிய அனுமதி"}
       </h2>
 
-      <Form
-  form={form}
-  layout="vertical"
-  onFinish={onFinish}
-  initialValues={{
-    validityStart: null,
-    endDate: null,
-    NIC:
-      userDetails?.custom_fields?.find((field) => field.name === "NIC")
-        ?.value || "",
-    ownerName: `${userDetails?.firstname} ${userDetails?.lastname}` || "",
-    mobile:
-      userDetails?.custom_fields?.find((field) => field.name === "Phone Number")
-        ?.value || "",
-    capacity: "", // Default to empty for officer to fill
-    location: "", // Default to empty for officer to fill
-    licenseNumber: "",
-    explorationLicenseNumber: "",
-    landName: "",
-    landOwnerName: "",
-    villageName: "",
-    gramaNiladhariDivision: "",
-    divisionalSecretaryDivision: "",
-    administrativeDistrict: ""
-  }}
->
-
-        <ConfigProvider 
-          theme={{ 
-            token: {
-              fontSize: 18,
+      <ConfigProvider 
+        theme={{ 
+          token: {
+            fontSize: 18,
+            colorText: "black",
+            colorPrimary: "#950C33",
+            colorTextPlaceholder: "rgba(0, 0, 0, 0.45)",
+            colorTextDisabled: "rgba(0, 0, 0, 0.65)",
+          },
+          components: { 
+            Input: { 
+              colorText: "black",
+              colorTextDisabled: "rgba(0, 0, 0, 0.65)",
+              colorTextPlaceholder: "rgba(0, 0, 0, 0.45)",
             },
-            components: { 
-              Input: { 
-                fontSize: 24
-              },
-              DatePicker: {
-                fontSize: 24
-              } 
-            } 
+            DatePicker: {
+              colorText: "black",
+              colorTextDisabled: "rgba(0, 0, 0, 0.65)",
+              colorTextPlaceholder: "rgba(0, 0, 0, 0.45)",
+            },
+            Form: {
+              colorTextLabel: "black",
+            },
+            Checkbox: {
+              colorText: "black",
+            }
+          } 
+        }}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          className="black-text-form"
+          initialValues={{
+            validityStart: null,
+            endDate: null,
+            NIC: userDetails?.custom_fields?.find((field) => field.name === "NIC")?.value || "",
+            ownerName: `${userDetails?.firstname} ${userDetails?.lastname}` || "",
+            mobile: userDetails?.custom_fields?.find((field) => field.name === "Phone Number")?.value || "",
+            capacity: "",
+            location: "",
+            licenseNumber: "",
+            explorationLicenseNumber: "",
+            landName: "",
+            landOwnerName: "",
+            villageName: "",
+            gramaNiladhariDivision: "",
+            divisionalSecretaryDivision: "",
+            administrativeDistrict: ""
           }}
         >
-        <Row gutter={[16, 16]}>
-          <Col xs={24} sm={24} md={12}>
-            <Form.Item
-              label={language === "en" ? "Industrial Mining License Number" : language === "si" ? "කාර්මික මැණික් බලපත්‍ර අංකය" : "தொழில்துறை சுரங்க அனுமதி எண்"}
-              name="licenseNumber"
-              rules={rules.licenseNumber}
-            >
-              <Input style={inputStyle} />
-            </Form.Item>
-          </Col>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={24} md={12}>
+              <Form.Item
+                label={language === "en" ? "Industrial Mining License Number" : language === "si" ? "කාර්මික මැණික් බලපත්‍ර අංකය" : "தொழில்துறை சுரங்க அனுமதி எண்"}
+                name="licenseNumber"
+                rules={rules.licenseNumber}
+              >
+                <Input className="text-input" style={{ color: "black", fontSize: "20px" }} />
+              </Form.Item>
+            </Col>
 
-          <Col xs={24} sm={24} md={12}>
+            <Col xs={24} sm={24} md={12}>
               <Form.Item
                 label={language === "en" ? "Name Of Applicant Or Company" : language === "si" ? "අයදුම්කරු හෝ සමාගමේ නම" : "அய்தும்காரரின் அல்லது நிறுவனத்தின் பெயர்"}
                 name="ownerName"
               >
                 <Input 
-                  style={inputStyle}
+                  className="text-input"
+                  style={{ color: "black", fontSize: "20px" }}
                   disabled
                 />
               </Form.Item>
@@ -231,7 +222,7 @@ const NewLicenseForm = () => {
                 name="explorationLicenseNumber"
                 rules={rules.licenseNumber}
               >
-                <Input style={inputStyle} />
+                <Input className="text-input" style={{ color: "black", fontSize: "20px" }} />
               </Form.Item>
             </Col>
 
@@ -239,9 +230,9 @@ const NewLicenseForm = () => {
               <Form.Item
                 label={language === "en" ? "Land Name(License Details)" : language === "si" ? "ඉඩමේ නම (බලපත්‍ර විස්තර)" : "நிலத்தின் பெயர் (அனுமதி விவரங்கள்)"}
                 name="landName"
-                rules={rules.licenseNumber}
+                rules={rules.landName}
               >
-                <Input style={inputStyle} />
+                <Input className="text-input" style={{ color: "black", fontSize: "20px" }} />
               </Form.Item>
             </Col>
 
@@ -249,9 +240,9 @@ const NewLicenseForm = () => {
               <Form.Item
                 label={language === "en" ? "Land Owners' Name" : language === "si" ? "ඉඩම් හිමිකරුගේ නම" : "நில உரிமையாளரின் பெயர்"}
                 name="landOwnerName"
-                rules={rules.capacity}
+                rules={rules.ownerName}
               >
-                <Input style={inputStyle} />
+                <Input className="text-input" style={{ color: "black", fontSize: "20px" }} />
               </Form.Item>
             </Col>
 
@@ -259,9 +250,9 @@ const NewLicenseForm = () => {
               <Form.Item
                 label={language === "en" ? "Name Of Village" : language === "si" ? "ගමේ නම" : "கிராமத்தின் பெயர்"}
                 name="villageName"
-                rules={rules.capacity}
+                rules={rules.villageName}
               >
-                <Input style={inputStyle} />
+                <Input className="text-input" style={{ color: "black", fontSize: "20px" }} />
               </Form.Item>
             </Col>
 
@@ -269,9 +260,9 @@ const NewLicenseForm = () => {
               <Form.Item
                 label={language === "en" ? "Grama Niladhari Division" : language === "si" ? "ග්‍රාම නිලධාරි කොට්ඨාසය" : "கிராம நிர்வாகி பிரிவு"}
                 name="gramaNiladhariDivision"
-                rules={rules.capacity}
+                rules={rules.gramaNiladhariDivision}
               >
-                <Input style={inputStyle} />
+                <Input className="text-input" style={{ color: "black", fontSize: "20px" }} />
               </Form.Item>
             </Col>
 
@@ -279,9 +270,9 @@ const NewLicenseForm = () => {
               <Form.Item
                 label={language === "en" ? "Divisional Secretary Division" : language === "si" ? "ප්‍රාදේශීය ලේකම් කොට්ඨාසය" : "பிரதேச செயலாளர் பிரிவு"}
                 name="divisionalSecretaryDivision"
-                rules={rules.capacity}
+                rules={rules.divisionalSecretaryDivision}
               >
-                <Input style={inputStyle} />
+                <Input className="text-input" style={{ color: "black", fontSize: "20px" }} />
               </Form.Item>
             </Col>
 
@@ -289,9 +280,9 @@ const NewLicenseForm = () => {
               <Form.Item
                 label={language === "en" ? "Administrative District" : language === "si" ? "පරිපාලන දිස්ත්‍රික්කය" : "நிர்வாக மாவட்டம்"}
                 name="administrativeDistrict"
-                rules={rules.capacity}
+                rules={rules.administrativeDistrict}
               >
-                <Input style={inputStyle} />
+                <Input className="text-input" style={{ color: "black", fontSize: "20px" }} />
               </Form.Item>
             </Col>
 
@@ -301,7 +292,7 @@ const NewLicenseForm = () => {
                 name="capacity"
                 rules={rules.capacity}
               >
-                <Input style={inputStyle} />
+                <Input className="text-input" style={{ color: "black", fontSize: "20px" }} />
               </Form.Item>
             </Col>
 
@@ -311,7 +302,7 @@ const NewLicenseForm = () => {
                 name="location"
                 rules={rules.location}
               >
-                <Input style={inputStyle} />
+                <Input className="text-input" style={{ color: "black", fontSize: "20px" }} />
               </Form.Item>
             </Col>
 
@@ -320,7 +311,7 @@ const NewLicenseForm = () => {
                 label={language === "en" ? "NIC" : language === "si" ? "ජාතික හැඳුනුම්පත් අංකය" : "தேசிய அடையாள அட்டை எண்"}
                 name="NIC"
               >
-                <Input style={inputStyle} disabled />
+                <Input className="text-input" style={{ color: "black", fontSize: "20px" }} disabled />
               </Form.Item>
             </Col>
 
@@ -334,7 +325,8 @@ const NewLicenseForm = () => {
               >
                 <DatePicker
                   format="DD/MM/YYYY"
-                  style={{ width: "100%", fontSize: "24px" }}
+                  style={{ width: "100%", fontSize: "20px", color: "black" }}
+                  className="date-picker-input"
                   disabledDate={(current) =>
                     current && current < moment().startOf("day")
                   }
@@ -350,7 +342,8 @@ const NewLicenseForm = () => {
               >
                 <DatePicker
                   format="DD/MM/YYYY"
-                  style={{ width: "100%", fontSize: "24px" }}
+                  style={{ width: "100%", fontSize: "20px", color: "black" }}
+                  className="date-picker-input"
                   disabledDate={(current) => {
                     const startDate = form.getFieldValue("validityStart");
                     if (!startDate) {
@@ -363,37 +356,37 @@ const NewLicenseForm = () => {
             </Col>
 
             <Col xs={24} sm={24} md={24}>
-              <div style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "bold" }}>
+              <div style={{ marginBottom: "16px", fontSize: "16px", fontWeight: "bold", color: "black" }}>
                 {language === "en" ? "Required Documents" : language === "si" ? "අවශ්‍ය ලේඛන" : "தேவையான ஆவணங்கள்"}
               </div>
             </Col>
 
             <Col span={12}>
-              <Checkbox name="licensedBoundarySurvey" style={{ fontSize: "18px" }}>
+              <Checkbox name="licensedBoundarySurvey" style={{ fontSize: "18px", color: "black" }}>
                 {language === "en" ? "Licensed Boundary Survey" : language === "si" ? "බලපත්‍රිත සීමා පරීක්ෂණය" : "அனுமதிக்கப்பட்ட எல்லை ஆய்வு"}
               </Checkbox>
             </Col>
 
             <Col span={12}>
-              <Checkbox name="professional" style={{ fontSize: "18px" }}>
+              <Checkbox name="professional" style={{ fontSize: "18px", color: "black" }}>
                 {language === "en" ? "Professional" : language === "si" ? "වෘත්තීය" : "விருத்தி"}
               </Checkbox>
             </Col>
 
             <Col span={12}>
-              <Checkbox name="economicViabilityReport" style={{ fontSize: "18px" }}>
+              <Checkbox name="economicViabilityReport" style={{ fontSize: "18px", color: "black" }}>
                 {language === "en" ? "Economic Viability Report" : language === "si" ? "ආර්ථික ශක්යතා වාර්තාව" : "பொருளாதார நம்பகத்தன்மை அறிக்கை"}
               </Checkbox>
             </Col>
 
             <Col span={12}>
-              <Checkbox name="detailedMineRestorationPlan" style={{ fontSize: "18px" }}>
+              <Checkbox name="detailedMineRestorationPlan" style={{ fontSize: "18px", color: "black" }}>
                 {language === "en" ? "Detailed Mine Restoration Plan" : language === "si" ? "පතල් ප්‍රතිසංස්කරණ සැලසුම" : "சுரங்க மீட்புத் திட்டம்"}
               </Checkbox>
             </Col>
 
             <Col span={12}>
-              <Checkbox name="licenseFeeReceipt" style={{ fontSize: "18px" }}>
+              <Checkbox name="licenseFeeReceipt" style={{ fontSize: "18px", color: "black" }}>
                 {language === "en" ? "License fee receipt" : language === "si" ? "බලපත්ර ගාස්තු කුවිතාන්සිය" : "உரிமக் கட்டண ரசீது"}
               </Checkbox>
             </Col>
@@ -433,6 +426,7 @@ const NewLicenseForm = () => {
                       backgroundColor: "#FFFFFF",
                       borderColor: "#950C33",
                       height: "40px",
+                      color: "black",
                     }}
                   >
                     {language === "en" ? "Cancel" : language === "si" ? "අවලංගු කරන්න" : "ரத்து செய்"}
@@ -441,8 +435,8 @@ const NewLicenseForm = () => {
               </Form.Item>
             </Col>
           </Row>
-        </ConfigProvider>
-      </Form>
+        </Form>
+      </ConfigProvider>
     </div>
   );
 };
