@@ -139,7 +139,7 @@ const MLOwnerHomePage = () => {
                       <Space style={{ width: "100%", display: "flex", justifyContent: "center"}}>
                       <Link to={{ pathname: "/mlowner/history", search: `?licenseNumber=${record.licenseNumber}` }}>
                           <Button className="history-button1">
-                            {currentTranslations.history} {/* Updated to use translation */}
+                            {currentTranslations.history}
                           </Button>
                         </Link>
                       </Space>
