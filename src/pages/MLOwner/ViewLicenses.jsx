@@ -14,7 +14,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
 import moment from "moment";
-import { fetchLicenses } from "../../services/MLOService";
+import { fetchAllLicense } from "../../services/MLOService";
 import "../../styles/MLOwner/Licenses.css";
 import { FaArrowLeft } from "react-icons/fa";
 
@@ -77,37 +77,81 @@ const Licenses = () => {
 
   useEffect(() => {
     const loadLicenses = async () => {
-      const data = await fetchLicenses();
-      setLicenses(data);
-      setFilteredLicenses(data);
+      try {
+        const allLicenses = await fetchAllLicense();
+
+        const mappedData = allLicenses.map((license) => ({
+          licenseNumber: license["License Number"],
+          owner: license["Owner Name"],
+          location: license["Location"],
+          startDate: license["Start Date"],
+          dueDate: license["Due Date"],
+          remainingCubes: license["Remaining Cubes"],
+          status: license["Status"],
+        }));
+
+        setLicenses(mappedData);
+        setFilteredLicenses(mappedData); // Initialize filteredLicenses with all licenses
+      } catch (error) {
+        console.error("Failed to fetch licenses:", error);
+      }
     };
     loadLicenses();
   }, []);
 
+  // Handle search by license number
   const handleSearch = (value) => {
     setSearchText(value);
-    setFilteredLicenses(
-      value
-        ? licenses.filter((item) =>
-            item.licenseNumber.toLowerCase().includes(value.toLowerCase())
-          )
-        : licenses
-    );
+    filterLicenses(value, startDate, endDate);
+  };
+
+  // Handle start date change
+  const handleStartDateChange = (date) => {
+    setStartDate(date);
+    filterLicenses(searchText, date, endDate);
+  };
+
+  // Handle end date change
+  const handleEndDateChange = (date) => {
+    setEndDate(date);
+    filterLicenses(searchText, startDate, date);
+  };
+
+  // Filter licenses based on search text and date range
+  const filterLicenses = (searchText, startDate, endDate) => {
+    let filtered = licenses;
+
+    // Filter by license number
+    if (searchText) {
+      filtered = filtered.filter((item) =>
+        item.licenseNumber.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    // Filter by start date and end date
+    if (startDate || endDate) {
+      filtered = filtered.filter((item) => {
+        const licenseStartDate = moment(item.startDate);
+        const licenseDueDate = moment(item.dueDate);
+
+        // Check if the license falls within the selected date range
+        const isAfterStartDate = startDate
+          ? licenseStartDate.isSameOrAfter(moment(startDate))
+          : true; // If no start date is selected, include all licenses
+        const isBeforeEndDate = endDate
+          ? licenseDueDate.isSameOrBefore(moment(endDate))
+          : true; // If no end date is selected, include all licenses
+
+        return isAfterStartDate && isBeforeEndDate;
+      });
+    }
+
+    setFilteredLicenses(filtered);
   };
 
   const go_home = () => {
     navigate("/mlowner/home");
   };
-
-  const filteredLicensesByDate = filteredLicenses.filter((license) => {
-    if (startDate && endDate) {
-      return (
-        new Date(license.startDate) >= new Date(startDate) &&
-        new Date(license.endDate) <= new Date(endDate)
-      );
-    }
-    return true;
-  });
 
   const datePickerStyle = {
     borderColor: "#fff2f2",
@@ -124,7 +168,7 @@ const Licenses = () => {
             <AutoComplete
               value={searchText}
               onSearch={handleSearch}
-              options={licenses.map(({ licenseNumber }) => ({ value: licenseNumber }))}
+              options={filteredLicenses.map(({ licenseNumber }) => ({ value: licenseNumber }))}
               style={{ width: "100%" }}
             >
               <Input
@@ -137,35 +181,35 @@ const Licenses = () => {
         </Col>
         <Col xs={24} sm={12} md={8}>
           <DatePicker
-            onChange={(date) => setStartDate(date)}
+            onChange={handleStartDateChange}
             placeholder={currentTranslations.startDatePlaceholder}
             style={{ ...datePickerStyle, width: "100%" }}
           />
         </Col>
         <Col xs={24} sm={12} md={8}>
           <DatePicker
-            onChange={(date) => setEndDate(date)}
+            onChange={handleEndDateChange}
             placeholder={currentTranslations.endDatePlaceholder}
             style={{ ...datePickerStyle, width: "100%" }}
           />
         </Col>
       </Row>
 
-      {filteredLicensesByDate.length === 0 ? (
+      {filteredLicenses.length === 0 ? (
         <div className="no-data-container">
           <Empty
             description={currentTranslations.noDataMessage}
-            image={Empty.PRESENTED_IMAGE_SIMPLE} 
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         </div>
       ) : (
         <div className="card-container">
-          {filteredLicensesByDate.map((license) => (
+          {filteredLicenses.map((license) => (
             <Card key={license.licenseNumber} title={`License Number: ${license.licenseNumber}`} className="license-card">
               <p><strong>{currentTranslations.owner}:</strong> {license.owner}</p>
               <p><strong>{currentTranslations.location}:</strong> {license.location}</p>
               <p><strong>{currentTranslations.startDate}:</strong> {moment(license.startDate).format("YYYY-MM-DD")}</p>
-              <p><strong>{currentTranslations.dueDate}:</strong> {moment(license.endDate).format("YYYY-MM-DD")}</p>
+              <p><strong>{currentTranslations.dueDate}:</strong> {moment(license.dueDate).format("YYYY-MM-DD")}</p>
               <Space>
                 <Link to={`/mlowner/home/dispatchload/${license.licenseNumber}`}>
                   <Button className="dispatch-load-button">{currentTranslations.dispatchLoad}</Button>
