@@ -7,6 +7,7 @@
   /* Target input placeholder text */
   .text-input::placeholder {
     color: rgba(0, 0, 0, 0.45) !important;
+    border: 1px solid #d9d9d9;
   }
   
   /* Style for disabled inputs */
@@ -55,6 +56,16 @@
   .ant-select-dropdown {
     color: black !important;
   }
+
+  /* Change the color of the required field indicators (stars) to red */
+.ant-form-item-label > label.ant-form-item-required::before {
+    color: #ff4d4f !important; /* Red color */
+  }
+  
+  /* Override the ConfigProvider styles that might be setting it to black */
+  .ant-form-item-required::before {
+    color: #ff4d4f !important; /* Red color */
+  }
   
   /* Add this if you need to target specific form elements */
   #licenseNumber,
@@ -68,6 +79,10 @@
   #administrativeDistrict,
   #capacity,
   #location,
+  #validityStart,
+  #endDate,
+  #firstname,
+  #lastname,
   #NIC {
     color: black !important;
   }
