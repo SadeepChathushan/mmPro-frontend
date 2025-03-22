@@ -221,7 +221,9 @@ export const fetchMLData = async (l_number) => {
         "Authorization": `Bearer ${token}`,
       },
     });
+    console.log(response);
     return response.data.ml_detail;
+
   } catch (error) {
     console.error("Error fetching data:", error);
     return null;
@@ -306,20 +308,31 @@ export const updateIssue = async (issueId, updatedIssue) => {
 
 // Create a new issue
 export const createIssue = async (data) => {
-  const token = localStorage.getItem("USER_TOKEN");
+  const token = localStorage.getItem("USER_TOKEN"); // Retrieve the token from localStorage
   try {
-    const response = await axios.post(`${BASE_URL}/mining-owner/create-tpl`, {
-      issue: data,
-    }, {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+    const response = await axios.post(
+      `${BASE_URL}/mining-owner/create-tpl`,
+      {
+        mining_license_number: data.mining_license_number,
+        destination: data.destination,
+        lorry_number: data.lorryNumber, // Map lorryNumber to lorry_number
+        driver_contact: data.driverContact, // Map driverContact to driver_contact
+        route_01: data.Root1, // Map Root1 to route_01
+        route_02: data.Root2, // Map Root2 to route_02
+        route_03: data.Root3, // Map Root3 to route_03
+        cubes: data.cubes,
       },
-    });
-    return response.data;
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Add the token to the request headers
+        },
+      }
+    );
+    return response.data; // Return the response data
   } catch (error) {
     console.error("Error creating issue:", error);
-    throw error;
+    throw error; // Throw the error for handling in the component
   }
 };
 
@@ -340,48 +353,7 @@ export const get_user = async () => {
   }
 };
 
-//Achintha
-// Home License 
-/** 
-export const fetchHomeLicense = async () => {
-  const token = localStorage.getItem("USER_TOKEN");
-  console.log("Token from localStorage:", token); // Debug token
 
-  if (!token) {
-    console.error("No token found in localStorage");
-    throw new Error("No token found");
-  }
-
-  try {
-    console.log("Fetching home licenses...");
-    const apiUrl = `${BASE_URL}/mining-owner/mining-homeLicenses`;
-    console.log("API Endpoint:", apiUrl); // Debug API endpoint
-
-    const response = await axios.get(apiUrl, {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-    });
-
-    console.log(" Achinth API Response home licenses :", response); // Debug API response
-
-    if (response.data.error) {
-      console.error("Error in API response:", response.data.error);
-      throw new Error(response.data.error);
-    }
-
-   // Access the correct data structure
-   const homeLicenses = response.data.mining_home;
-   console.log("Fetched Home Licenses Data:", homeLicenses); // Debug fetched data
-
-   return homeLicenses;
-  } catch (error) {
-    console.error("Error fetching home licenses:", error);
-    throw error;
-  }
-};
- */
 /** ---------------------------------------------------*/
 //Achintha
 export const fetchHomeLicense = async () => {

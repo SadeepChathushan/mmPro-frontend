@@ -16,9 +16,18 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
 import "../../styles/MLOwner/DispatchLoadPage.css";
-import { fetchIssues, updateIssue, createIssue, get_user } from '../../services/MLOService';
+import {
+  fetchIssues,
+  updateIssue,
+  createIssue,
+  get_user,
+} from "../../services/MLOService";
 import Modals from "./Modals";
-import { handleDriverContactChange, handleLorryNumberChange } from '../../utils//MLOUtils/DispatchValidation';
+import {
+  handleDriverContactChange,
+  handleLorryNumberChange,
+} from "../../utils/MLOUtils/DispatchValidation";
+import { message } from "antd";
 const { Content } = Layout;
 const { Title } = Typography;
 
@@ -28,7 +37,12 @@ const DispatchLoadPage = () => {
 
   useEffect(() => {
     const pathSegments = uRLlocation.pathname.split("/");
-    setl_number(pathSegments.slice(-3).join("/"));
+    const licenseNumber = pathSegments.slice(-3).join("/");
+    setl_number(licenseNumber);
+
+    // Log l_number and related data
+    console.log("License Number (l_number):", licenseNumber);
+    console.log("Form Data:", formData);
   }, [uRLlocation]);
 
   const resetFormdata = () => {
@@ -46,16 +60,16 @@ const DispatchLoadPage = () => {
       cubes: 1,
     });
   };
-  const [driverContactError, setDriverContactError] = useState('');
-  const [lorryNumberError, setLorryNumberError] = useState('');
+  const [driverContactError, setDriverContactError] = useState("");
+  const [lorryNumberError, setLorryNumberError] = useState("");
   const user_Details = JSON.parse(localStorage.getItem("USER")) || {};
   const apiKey = localStorage.getItem("API_Key");
-  console.log("user", user_Details.lastname);
-  console.log("mee", apiKey);
+  console.log("User details from localStorage:", user_Details);
+  console.log("API Key from localStorage:", apiKey);
   const userf_name = user_Details.firstname;
   const userl_name = user_Details.lastname;
   const user_name = userf_name + " " + userl_name;
-  console.log("mee", user_name);
+  console.log("User Name", user_name);   
 
   const [number, setLNumber] = useState("");
   const { language } = useLanguage();
@@ -66,97 +80,33 @@ const DispatchLoadPage = () => {
   const [isLoyalErrModalVisible, setIsLoyalErrModalVisible] = useState(false);
   const [location, setLocation] = useState([6.9271, 79.8612]); // Default to Colombo coordinates
   const [locationSuggestions, setLocationSuggestions] = useState([]);
-  // const [mLId, setmId] = useState("");
+   const [mLId, setmId] = useState("");
   const [formData, setFormData] = useState({
-    DateTime: "",
-    licenseNumber: "",
+    mining_license_number: "",
     destination: "",
-    lorryNumber: "",
-    driverContact: "",
-    dueDate: "",
+    lorry_number: "",
+    driver_contact: "",
+    route_01: "",
+    route_02: "",
+    route_03: "",
     cubes: 1,
   });
   const [previousSearches, setPreviousSearches] = useState([]);
-  const [issueData, setIssueData] = useState({
-    project_id: 31,
-    tracker_id: 8,
-    status_id: 47,
-    assigned_to_id: "",
-    subject: "TPL", //TPL0004
-    due_date: "",
-    estimated_hours: 24.0,
-    custom_fields: [
-      {
-        id: 2,
-        name: "Owner Name",
-        value: "",
-      },
-      {
-        id: 8,
-        name: "License Number",
-        value: "",
-      },
-      {
-        id: 11,
-        name: "Location",
-        value: "",
-      },
-      {
-        id: 12,
-        name: "Destination",
-        value: "",
-      },
-      {
-        id: 13,
-        name: "Lorry Number",
-        value: "",
-      },
-      {
-        id: 14,
-        name: "Driver Contact",
-        value: "",
-      },
-      {
-        id: 15,
-        name: "Cubes",
-        value: "",
-      },
-      {
-        id: 16,
-        name: "Root1",
-        value: "",
-      },
-      {
-        id: 17,
-        name: "Root2",
-        value: "",
-      },
-      {
-        id: 18,
-        name: "Root3",
-        value: "",
-      },
-    ],
-  });
-
   const navigate = useNavigate();
-
-  // Load previous searches from localStorage when component mounts
-  useEffect(() => {
-    const savedSearches = JSON.parse(localStorage.getItem("previousSearches")) || [];
-    setPreviousSearches(savedSearches);
-  }, []);
 
   // Fetch location suggestions from Nominatim API, restricted to Sri Lanka
   const fetchLocationSuggestions = async (value) => {
-    if (!value.trim()) { // Ensure value is not empty or just spaces
+    if (!value.trim()) {
+      // Ensure value is not empty or just spaces
       setLocationSuggestions([]);
       return;
     }
 
     try {
       const response = await axios.get(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(value)}&addressdetails=1&countrycodes=LK&limit=5`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          value
+        )}&addressdetails=1&countrycodes=LK&limit=5`
       );
 
       const validSuggestions = response.data
@@ -232,6 +182,7 @@ const DispatchLoadPage = () => {
       due_date: dateString,
     }));
   };
+
   useEffect(() => {
     setFormData((prevData) => ({
       ...prevData,
@@ -239,122 +190,50 @@ const DispatchLoadPage = () => {
     }));
   }, [l_number]);
 
-  const handleSubmit = async (event) => {
-    console.log("entered");
-    event.preventDefault();
-
-    // Trim the values before validation
-    setIssueData({
-      ...issueData,
-      due_date: formData.dueDate, // Assign the new due_date value
-    });
-
-    // Log form data to check values
-    console.log("Form data on submit:", formData);
-
-    if (
-      !formData.licenseNumber.trim() ||
-      !formData.destination.trim() ||
-      !formData.lorryNumber.trim() ||
-      !formData.driverContact.trim() ||
-      !formData.dueDate.trim()
-    ) {
-      // Log if validation fails
-      console.log("One or more fields are empty!");
-      setIsErrModalVisible(true);
-      return;
-    }
-
+  const handleSubmit = async () => {
     try {
-      // Fetch issues using the service
-      const issues = await fetchIssues();
-      console.log("Issues:", issues);
-
-      const issueToUpdate = issues.find((issue) => issue.subject === formData.licenseNumber);
-      console.log("Issue to update:", issueToUpdate);
-
-      if (issueToUpdate) {
-        // get user details
-        const userData = await get_user();
-        console.log("userdata", userData.id)
-
-        // Find custom fields and perform necessary calculations
-        const usedField = issueToUpdate.custom_fields.find((field) => field.name === "Used") || 0;
-        const remainingField = issueToUpdate.custom_fields.find((field) => field.name === "Remaining");
-        const royaltysanddueField = issueToUpdate.custom_fields.find((field) => field.name === "Royalty(sand)due");
-        const locateField = issueToUpdate.custom_fields.find((field) => field.name === "Location");
-
-        // Handle new field updates
-        const cubesUsed = parseInt(formData.cubes, 10);
-        const usedValue = parseInt(usedField ? usedField.value : "0", 10);
-        const remainingValue = parseInt(remainingField ? remainingField.value : "0", 10);
-        const royaltysanddueValue = parseInt(royaltysanddueField ? royaltysanddueField.value : "0", 10);
-
-        // console.log("Cubes used:", cubesUsed);
-        // console.log("Used value:", usedValue);
-        // console.log("Remaining value:", remainingValue);
-
-        // Update fields
-        usedField.value = (usedValue + cubesUsed).toString();
-        remainingField.value = (remainingValue - cubesUsed).toString();
-        royaltysanddueField.value = (royaltysanddueValue - cubesUsed * 100).toString();
-
-        console.log("Updated fields:", usedField, remainingField);
-
-        // Create tpl details
-        const tplLocationField = issueData.custom_fields.find((field) => field.name === "Location");
-        const tplDestinationField = issueData.custom_fields.find((field) => field.name === "Destination") || 0;
-        const tplLorrynumberField = issueData.custom_fields.find((field) => field.name === "Lorry Number");
-        const tplDrivercontactField = issueData.custom_fields.find((field) => field.name === "Driver Contact");
-        const tplCubeField = issueData.custom_fields.find((field) => field.name === "Cubes");
-        const tplL_numberField = issueData.custom_fields.find((field) => field.name === "License Number");
-        const tplO_nameField = issueData.custom_fields.find((field) => field.name === "Owner Name");
-        const tplRoot1Field = issueData.custom_fields.find((field) => field.name === "Root1");
-        const tplRoot2Field = issueData.custom_fields.find((field) => field.name === "Root2");
-        const tplRoot3Field = issueData.custom_fields.find((field) => field.name === "Root3");
-
-
-        // set data to Create tpl 
-        tplLocationField.value = (locateField.value).toString();
-        tplDestinationField.value = (formData.destination).toString();
-        tplLorrynumberField.value = (formData.lorryNumber).toString();
-        tplDrivercontactField.value = (formData.driverContact).toString();
-        tplCubeField.value = (formData.cubes).toString();
-        const userName = userData.firstname + " " + userData.lastname;
-        tplO_nameField.value = (userName).toString();
-        issueData.due_date = formData.dueDate;
-        issueData.assigned_to_id = userData.id;
-        tplL_numberField.value = (formData.licenseNumber).toString();
-        tplRoot1Field.value = (formData.Root1).toString();
-        tplRoot2Field.value = (formData.Root2).toString();
-        tplRoot3Field.value = (formData.Root3).toString();
-
-        console.log("issue:", issueData);
-
-        // Check for errors before updating the issue
-        if (royaltysanddueValue < 1000) {
-          setIsLoyalErrModalVisible(true);
-        } else if (cubesUsed > remainingValue) {
-          setIsContErrModalVisible(true);
-        } else {
-          // Update the issue using the service function
-          const updatedIssue = { ...issueToUpdate, custom_fields: issueToUpdate.custom_fields };
-          console.log("Updated issue: id", issueToUpdate.id);
-          await updateIssue(issueToUpdate.id, updatedIssue);
-
-          // Create a new issue if necessary
-          console.log("issueData", issueData);
-          await createIssue(issueData);
-
-          setIsModalVisible(true); // Show success modal if the issue is updated successfully
-        }
-      } else {
-        console.error("Issue not found for license number", formData.licenseNumber);
-        setIsProErrModalVisible(true); // Show error modal if the issue is not found
+      const USER_TOKEN = localStorage.getItem("USER_TOKEN"); // Retrieve the token from localStorage
+      if (!USER_TOKEN) {
+        console.error("User token not found in localStorage");
+        return;
       }
+
+      // Send the POST request with token in the authorization header
+      const response = await axios.post(
+        "http://127.0.0.1:5000/mining-owner/create-tpl",
+        {
+          mining_license_number: l_number,
+          destination: formData.destination,
+          lorry_number: formData.lorryNumber,
+          driver_contact: formData.driverContact,
+          route_01: formData.Root1,
+          route_02: formData.Root2,
+          route_03: formData.Root3,
+          cubes: formData.cubes,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${USER_TOKEN}`,
+          },
+        }
+      );
+
+      console.log("Response:", response.data);
+
+      setIsModalVisible(true);
     } catch (error) {
-      console.error("Error processing issue:", error);
-      setIsProErrModalVisible(true); // Show error modal on any API request failure
+      console.error("Error submitting data:", error);
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.error === "Insufficient remaining cubes"
+      ) {
+        setIsContErrModalVisible(true);
+      } else {
+        message.error("Failed to submit data.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -371,14 +250,6 @@ const DispatchLoadPage = () => {
   const handleCancel = () => {
     navigate("/mlowner/home");
   };
-
-  // useEffect(() => {
-  //   const queryParams = new URLSearchParams(location.search);
-  //   const licenseNumber = queryParams.get("licenseNumber"); // Adjust the key if needed
-  //   if (licenseNumber) {
-  //     setFormData((prevData) => ({ ...prevData, licenseNumber }));
-  //   }
-  // }, [location.search]);
 
   const [currentDateTime, setCurrentDateTime] = useState("");
 
@@ -510,12 +381,19 @@ const DispatchLoadPage = () => {
               <Input
                 value={formData.lorryNumber}
                 onChange={(e) =>
-                  handleLorryNumberChange(e, formData, setFormData, setLorryNumberError)
+                  handleLorryNumberChange(
+                    e,
+                    formData,
+                    setFormData,
+                    setLorryNumberError
+                  )
                 }
                 required
               />
               {lorryNumberError && (
-                <div style={{ color: "red", fontSize: "12px" }}>{lorryNumberError}</div>
+                <div style={{ color: "red", fontSize: "12px" }}>
+                  {lorryNumberError}
+                </div>
               )}
             </div>
           </Col>
@@ -535,36 +413,20 @@ const DispatchLoadPage = () => {
               <Input
                 value={formData.driverContact}
                 onChange={(e) =>
-                  handleDriverContactChange(e, formData, setFormData, setDriverContactError)
+                  handleDriverContactChange(
+                    e,
+                    formData,
+                    setFormData,
+                    setDriverContactError
+                  )
                 }
                 required
               />
               {driverContactError && (
-                <div style={{ color: "red", fontSize: "12px" }}>{driverContactError}</div>
+                <div style={{ color: "red", fontSize: "12px" }}>
+                  {driverContactError}
+                </div>
               )}
-            </div>
-          </Col>
-        </Row>
-
-        {/* Due Date Input */}
-        <Row gutter={16}>
-          <Col xs={24} sm={24} md={16} lg={16}>
-            <div className="form-field">
-              <span className="field-label">
-                {language === "en"
-                  ? "DUE DATE:"
-                  : language === "si"
-                  ? "නියමිත දිනය:"
-                  : "இறுதி தேதி:"}
-              </span>
-              <DatePicker
-                value={formData.dueDate ? dayjs(formData.dueDate) : null}
-                onChange={(date, dateString) => {
-                  handleDueDateChange(date, dateString);
-                }}
-                style={{ width: "100%" }}
-                required
-              />
             </div>
           </Col>
         </Row>
@@ -575,14 +437,16 @@ const DispatchLoadPage = () => {
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
-                  ? "ROOT 1:"
+                  ? "ROUTE 1:"
                   : language === "si"
                   ? "මාර්ගය 1:"
                   : "வழி 1:"}
               </span>
               <Input
                 value={formData.Root1}
-                onChange={(e) => setFormData({ ...formData, Root1: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, Root1: e.target.value })
+                }
               />
             </div>
           </Col>
@@ -594,14 +458,16 @@ const DispatchLoadPage = () => {
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
-                  ? "ROOT 2:"
+                  ? "ROUTE 2:"
                   : language === "si"
                   ? "මාර්ගය 2:"
                   : "வழி 2:"}
               </span>
               <Input
                 value={formData.Root2}
-                onChange={(e) => setFormData({ ...formData, Root2: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, Root2: e.target.value })
+                }
               />
             </div>
           </Col>
@@ -613,14 +479,16 @@ const DispatchLoadPage = () => {
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
-                  ? "ROOT 3:"
+                  ? "ROUTE 3:"
                   : language === "si"
                   ? "මාර්ගය 3:"
                   : "வழி 3:"}
               </span>
               <Input
                 value={formData.Root3}
-                onChange={(e) => setFormData({ ...formData, Root3: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, Root3: e.target.value })
+                }
               />
             </div>
           </Col>
@@ -660,13 +528,7 @@ const DispatchLoadPage = () => {
 
         {/* Submit and Cancel Buttons */}
         <Row gutter={16} justify="center">
-          <Col
-            xs={24}
-            sm={24}
-            md={16}
-            lg={16}
-            className="button-container"
-          >
+          <Col xs={24} sm={24} md={16} lg={16} className="button-container">
             <Button
               type="primary"
               onClick={handleCancel}
@@ -711,7 +573,6 @@ const DispatchLoadPage = () => {
             setIsLoyalErrModalVisible={setIsLoyalErrModalVisible}
           />
         </div>
-
       </Content>
     </Layout>
   );
