@@ -3,11 +3,32 @@ import moment from "moment";
 
 
 
-const BASE_URL = import.meta.env.VITE_BASE_URL; // ✅ For Vite (modern setup)
+//const BASE_URL = import.meta.env.VITE_BASE_URL; // ✅ For Vite (modern setup)
 
 // const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiTUxPd25lciIsImV4cCI6MTczOTkwNDg4NX0.A_rqIpfZMdI5dgS9lMzJaNvhwvERe72Zs29zG4C9JhI';
 
 // const token = localStorage.getItem("USER_TOKEN");
+
+const BASE_URL = "http://127.0.0.1:5000/";
+const axiosInstance = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
   
 const MLOService = {
@@ -69,10 +90,6 @@ const MLOService = {
 };
 
 
-
-
-
-
 export const fetchLicenses = async () => {
   try {
     // Get the JWT token from localStorage using the correct key name
@@ -132,7 +149,6 @@ export const fetchLicenses = async () => {
 // src/services/dispatchHistoryService.js
 
 // Fetch dispatch history data
-
 
 
 
@@ -320,6 +336,86 @@ export const get_user = async () => {
     return response.data.user_detail;
   } catch (error) {
     console.error("Error fetching issues:", error);
+    throw error;
+  }
+};
+
+//Achintha
+// Home License 
+/** 
+export const fetchHomeLicense = async () => {
+  const token = localStorage.getItem("USER_TOKEN");
+  console.log("Token from localStorage:", token); // Debug token
+
+  if (!token) {
+    console.error("No token found in localStorage");
+    throw new Error("No token found");
+  }
+
+  try {
+    console.log("Fetching home licenses...");
+    const apiUrl = `${BASE_URL}/mining-owner/mining-homeLicenses`;
+    console.log("API Endpoint:", apiUrl); // Debug API endpoint
+
+    const response = await axios.get(apiUrl, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    console.log(" Achinth API Response home licenses :", response); // Debug API response
+
+    if (response.data.error) {
+      console.error("Error in API response:", response.data.error);
+      throw new Error(response.data.error);
+    }
+
+   // Access the correct data structure
+   const homeLicenses = response.data.mining_home;
+   console.log("Fetched Home Licenses Data:", homeLicenses); // Debug fetched data
+
+   return homeLicenses;
+  } catch (error) {
+    console.error("Error fetching home licenses:", error);
+    throw error;
+  }
+};
+ */
+/** ---------------------------------------------------*/
+//Achintha
+export const fetchHomeLicense = async () => {
+  try {
+    console.log("Fetching home licenses...");
+    const response = await axiosInstance.get("mining-owner/mining-homeLicenses");
+    console.log("API Response:", response);
+
+    if (!response.data?.mining_home) {
+      throw new Error("Invalid API response structure");
+    }
+
+    console.log("Fetched Home Licenses Data:", response.data.mining_home);
+    return response.data.mining_home;
+  } catch (error) {
+    console.error("Error fetching home licenses:", error);
+    throw error;
+  }
+};
+
+export const fetchAllLicense = async () => {
+  try {
+    console.log("Fetching All licenses...");
+    const response = await axiosInstance.get("mining-owner/mining-licenses");
+    console.log("All License API Response:", response);
+
+    if (!response.data?.issues) {
+      throw new Error("Invalid API response structure");
+    }
+
+    console.log("Fetched All Licenses Data:", response.data.issues);
+    return response.data.issues;
+  } catch (error) {
+    console.error("Error fetching All licenses:", error);
     throw error;
   }
 };
