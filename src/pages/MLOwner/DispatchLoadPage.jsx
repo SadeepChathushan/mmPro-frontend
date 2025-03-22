@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Layout,
   Button,
@@ -6,14 +6,11 @@ import {
   Row,
   Col,
   Typography,
-  Modal,
   AutoComplete,
   DatePicker,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { IoIosDoneAll } from "react-icons/io";
-import { IoIosCloseCircle } from "react-icons/io";
 import axios from "axios";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { useLocation } from "react-router-dom";
@@ -21,7 +18,7 @@ import dayjs from "dayjs";
 import "../../styles/MLOwner/DispatchLoadPage.css";
 import { fetchIssues, updateIssue, createIssue, get_user } from '../../services/MLOService';
 import Modals from "./Modals";
-import { handleDriverContactChange,handleLorryNumberChange } from '../../utils//MLOUtils/DispatchValidation'; 
+import { handleDriverContactChange, handleLorryNumberChange } from '../../utils//MLOUtils/DispatchValidation';
 const { Content } = Layout;
 const { Title } = Typography;
 
@@ -40,7 +37,7 @@ const DispatchLoadPage = () => {
       DateTime: "",
       licenseNumber: l_number,
       destination: "",
-      lorryNumber: "", 
+      lorryNumber: "",
       driverContact: "",
       dueDate: "",
       Root1: "",
@@ -51,8 +48,6 @@ const DispatchLoadPage = () => {
   };
   const [driverContactError, setDriverContactError] = useState('');
   const [lorryNumberError, setLorryNumberError] = useState('');
-
-  
   const user_Details = JSON.parse(localStorage.getItem("USER")) || {};
   const apiKey = localStorage.getItem("API_Key");
   console.log("user", user_Details.lastname);
@@ -151,19 +146,19 @@ const DispatchLoadPage = () => {
     const savedSearches = JSON.parse(localStorage.getItem("previousSearches")) || [];
     setPreviousSearches(savedSearches);
   }, []);
-  
+
   // Fetch location suggestions from Nominatim API, restricted to Sri Lanka
   const fetchLocationSuggestions = async (value) => {
     if (!value.trim()) { // Ensure value is not empty or just spaces
       setLocationSuggestions([]);
       return;
     }
-  
+
     try {
       const response = await axios.get(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(value)}&addressdetails=1&countrycodes=LK&limit=5`
       );
-  
+
       const validSuggestions = response.data
         .filter((item) => {
           const lat = parseFloat(item.lat);
@@ -175,38 +170,37 @@ const DispatchLoadPage = () => {
           lat: parseFloat(item.lat),
           lon: parseFloat(item.lon),
         }));
-  
+
       setLocationSuggestions(validSuggestions);
     } catch (error) {
       console.error("Error fetching location suggestions:", error);
       setLocationSuggestions([]);
     }
   };
-  
+
   // Handle selection of a location suggestion
   const handleLocationSelect = (value, option) => {
     const { lat, lon } = option;
-  
+
     if (!lat || !lon || isNaN(lat) || isNaN(lon)) {
       console.error("Invalid lat/lon selected:", lat, lon);
       return;
     }
-  
+
     setLocation([lat, lon]); // Update the location state
     setFormData((prev) => ({ ...prev, destination: value })); // Update form data
-  
+
     // Update the previous searches in localStorage
     const updatedSearches = [
       value,
       ...previousSearches.filter((search) => search !== value),
     ].slice(0, 5); // Keep only the last 5 searches
-  
+
     setPreviousSearches(updatedSearches);
     localStorage.setItem("previousSearches", JSON.stringify(updatedSearches));
   };
-  
 
-const handleDatetime = (e) => {
+  const handleDatetime = (e) => {
     setFormData({ ...formData, DateTime: e.target.value });
   };
 
@@ -245,23 +239,19 @@ const handleDatetime = (e) => {
     }));
   }, [l_number]);
 
- 
- 
-  
-
   const handleSubmit = async (event) => {
     console.log("entered");
     event.preventDefault();
-  
+
     // Trim the values before validation
     setIssueData({
       ...issueData,
       due_date: formData.dueDate, // Assign the new due_date value
     });
-  
+
     // Log form data to check values
     console.log("Form data on submit:", formData);
-  
+
     if (
       !formData.licenseNumber.trim() ||
       !formData.destination.trim() ||
@@ -274,20 +264,20 @@ const handleDatetime = (e) => {
       setIsErrModalVisible(true);
       return;
     }
-  
+
     try {
       // Fetch issues using the service
       const issues = await fetchIssues();
       console.log("Issues:", issues);
-  
+
       const issueToUpdate = issues.find((issue) => issue.subject === formData.licenseNumber);
       console.log("Issue to update:", issueToUpdate);
-  
+
       if (issueToUpdate) {
         // get user details
         const userData = await get_user();
-        console.log("userdata",userData.id)
-  
+        console.log("userdata", userData.id)
+
         // Find custom fields and perform necessary calculations
         const usedField = issueToUpdate.custom_fields.find((field) => field.name === "Used") || 0;
         const remainingField = issueToUpdate.custom_fields.find((field) => field.name === "Remaining");
@@ -299,16 +289,16 @@ const handleDatetime = (e) => {
         const usedValue = parseInt(usedField ? usedField.value : "0", 10);
         const remainingValue = parseInt(remainingField ? remainingField.value : "0", 10);
         const royaltysanddueValue = parseInt(royaltysanddueField ? royaltysanddueField.value : "0", 10);
-  
+
         // console.log("Cubes used:", cubesUsed);
         // console.log("Used value:", usedValue);
         // console.log("Remaining value:", remainingValue);
-  
+
         // Update fields
         usedField.value = (usedValue + cubesUsed).toString();
         remainingField.value = (remainingValue - cubesUsed).toString();
         royaltysanddueField.value = (royaltysanddueValue - cubesUsed * 100).toString();
-  
+
         console.log("Updated fields:", usedField, remainingField);
 
         // Create tpl details
@@ -330,7 +320,7 @@ const handleDatetime = (e) => {
         tplLorrynumberField.value = (formData.lorryNumber).toString();
         tplDrivercontactField.value = (formData.driverContact).toString();
         tplCubeField.value = (formData.cubes).toString();
-        const userName = userData.firstname +" "+ userData.lastname;
+        const userName = userData.firstname + " " + userData.lastname;
         tplO_nameField.value = (userName).toString();
         issueData.due_date = formData.dueDate;
         issueData.assigned_to_id = userData.id;
@@ -338,9 +328,9 @@ const handleDatetime = (e) => {
         tplRoot1Field.value = (formData.Root1).toString();
         tplRoot2Field.value = (formData.Root2).toString();
         tplRoot3Field.value = (formData.Root3).toString();
-  
+
         console.log("issue:", issueData);
-  
+
         // Check for errors before updating the issue
         if (royaltysanddueValue < 1000) {
           setIsLoyalErrModalVisible(true);
@@ -350,12 +340,12 @@ const handleDatetime = (e) => {
           // Update the issue using the service function
           const updatedIssue = { ...issueToUpdate, custom_fields: issueToUpdate.custom_fields };
           console.log("Updated issue: id", issueToUpdate.id);
-          await  updateIssue(issueToUpdate.id, updatedIssue);
-  
+          await updateIssue(issueToUpdate.id, updatedIssue);
+
           // Create a new issue if necessary
           console.log("issueData", issueData);
           await createIssue(issueData);
-  
+
           setIsModalVisible(true); // Show success modal if the issue is updated successfully
         }
       } else {
@@ -367,7 +357,7 @@ const handleDatetime = (e) => {
       setIsProErrModalVisible(true); // Show error modal on any API request failure
     }
   };
-  
+
   const handlePrintReceipt = () => {
     navigate("/mlowner/home/dispatchload/receipt", {
       state: { formData, l_number },
@@ -415,9 +405,9 @@ const handleDatetime = (e) => {
       setLNumber(value);
     }
   };
-  
+
   return (
-   <Layout className="dispatch-load-container">
+    <Layout className="dispatch-load-container">
       <Content style={{ padding: "24px" }}>
         <Title level={3} className="page-title">
           {language === "en"
@@ -429,7 +419,7 @@ const handleDatetime = (e) => {
 
         {/* Date and Time Input */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
@@ -449,28 +439,28 @@ const handleDatetime = (e) => {
 
         {/* License Number Input */}
         <Row gutter={16}>
-      <Col xs={24} sm={24} md={12} lg={12}>
-        <div className="form-field">
-          <span className="field-label">
-            {language === "en"
-              ? "LICENSE NUMBER:"
-              : language === "si"
-              ? "බලපත්‍ර අංකය:"
-              : "உரிம எண்:"}
-          </span>
-          <Input
-            value={l_number}
-            onChange={handleInputChange}
-            style={{ width: "100%" }}
-            required
-          />
-        </div>
-      </Col>
-    </Row>
+          <Col xs={24} sm={24} md={16} lg={16}>
+            <div className="form-field">
+              <span className="field-label">
+                {language === "en"
+                  ? "LICENSE NUMBER:"
+                  : language === "si"
+                  ? "බලපත්‍ර අංකය:"
+                  : "உரிம எண்:"}
+              </span>
+              <Input
+                value={l_number}
+                onChange={handleInputChange}
+                style={{ width: "100%" }}
+                required
+              />
+            </div>
+          </Col>
+        </Row>
 
         {/* Destination Input with Search Options */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
@@ -508,7 +498,7 @@ const handleDatetime = (e) => {
 
         {/* Lorry Number Input */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
@@ -533,7 +523,7 @@ const handleDatetime = (e) => {
 
         {/* Driver Contact Input */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
@@ -558,7 +548,7 @@ const handleDatetime = (e) => {
 
         {/* Due Date Input */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
@@ -581,7 +571,7 @@ const handleDatetime = (e) => {
 
         {/* Root1 Input */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
@@ -600,7 +590,7 @@ const handleDatetime = (e) => {
 
         {/* Root2 Input */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
@@ -619,7 +609,7 @@ const handleDatetime = (e) => {
 
         {/* Root3 Input */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
@@ -638,7 +628,7 @@ const handleDatetime = (e) => {
 
         {/* Cubes Input with Increment and Decrement Buttons */}
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
                 {language === "en"
@@ -673,8 +663,8 @@ const handleDatetime = (e) => {
           <Col
             xs={24}
             sm={24}
-            md={12}
-            lg={12}
+            md={16}
+            lg={16}
             className="button-container"
           >
             <Button
@@ -704,26 +694,27 @@ const handleDatetime = (e) => {
             </Button>
           </Col>
         </Row>
-<div>
-      <Modals
-        isModalVisible={isModalVisible}
-        resetFormdata={resetFormdata}
-        handleBackToHome={handleBackToHome}
-        handlePrintReceipt={handlePrintReceipt}
-        language={language}
-        isProErrModalVisible={isProErrModalVisible}
-        setIsProErrModalVisible={setIsProErrModalVisible}
-        isErrModalVisible={isErrModalVisible}
-        setIsErrModalVisible={setIsErrModalVisible}
-        isContErrModalVisible={isContErrModalVisible}
-        setIsContErrModalVisible={setIsContErrModalVisible}
-        isLoyalErrModalVisible={isLoyalErrModalVisible}
-        setIsLoyalErrModalVisible={setIsLoyalErrModalVisible}
-      />
-    </div>
-       
+        <div>
+          <Modals
+            isModalVisible={isModalVisible}
+            resetFormdata={resetFormdata}
+            handleBackToHome={handleBackToHome}
+            handlePrintReceipt={handlePrintReceipt}
+            language={language}
+            isProErrModalVisible={isProErrModalVisible}
+            setIsProErrModalVisible={setIsProErrModalVisible}
+            isErrModalVisible={isErrModalVisible}
+            setIsErrModalVisible={setIsErrModalVisible}
+            isContErrModalVisible={isContErrModalVisible}
+            setIsContErrModalVisible={setIsContErrModalVisible}
+            isLoyalErrModalVisible={isLoyalErrModalVisible}
+            setIsLoyalErrModalVisible={setIsLoyalErrModalVisible}
+          />
+        </div>
+
       </Content>
-    </Layout>  );
+    </Layout>
+  );
 };
 
 export default DispatchLoadPage;
