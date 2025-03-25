@@ -1,5 +1,5 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import React, { useState } from "react";
+import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 import "antd/dist/reset.css";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
@@ -12,12 +12,13 @@ import { useAuth } from "./hooks/useAuth";
 import PrivateRoute from "./routes/PrivateRoute";
 import SignUp from "./components/Auth/SignUp";
 import GeneralPublicDashboard from "../src/pages/GeneralPublic/Dashboard";
-// import GeneralPublicRoutes from './routes/GeneralPublicRoutes';
+import ResetPasswordModal from "../src/components/Auth/ResetPassword";
 import Footer from "./components/layout/Footer";
-
 import GSMBManagementRoutes from "./routes/GSMBManagementRoutes";
 
 const App = () => {
+  const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false);
+
   return (
     <Router>
       <Routes>
@@ -25,16 +26,24 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUp />} />
-        {/* <Route path="/public" element={<GeneralPublicDashboard />} /> */}
+        <Route
+          path="/reset-password"
+          element={
+            <ResetPasswordPage
+              showModal={() => setIsResetPasswordModalVisible(true)}
+              hideModal={() => setIsResetPasswordModalVisible(false)}
+            />
+          }
+        />
         <Route path="/" element={<AppLayout />}>
-        <Route path="/public" element={<GeneralPublicDashboard />} /></Route>
+          <Route path="/public" element={<GeneralPublicDashboard />} />
+        </Route>
         <Route path="*" element={<NotFound />} />
 
         {/* Protected Routes */}
         <Route
           element={
             <PrivateRoute
-              // allowedRoles={['GSMBOfficer', 'PoliceOfficer','MLOwner','GSMBManagement','GeneralPublic']}
               allowedRoles={[
                 "GSMBOfficer",
                 "PoliceOfficer",
@@ -69,11 +78,6 @@ const App = () => {
               <Route path="*" element={<PoliceOfficerRoutes />} />
             </Route>
 
-            {/* GeneralPublic Routes */}
-            {/* <Route path="generalpublic/*" element={<PrivateRoute allowedRoles={['GeneralPublic']} />}>
-              <Route path="*" element={<GeneralPublicRoutes />} />
-            </Route> */}
-
             {/* GSMB management routes*/}
             <Route
               path="gsmbmanagement/*"
@@ -84,8 +88,32 @@ const App = () => {
           </Route>
         </Route>
       </Routes>
+
+      {/* Reset Password Modal */}
+      <ResetPasswordModal
+        visible={isResetPasswordModalVisible}
+        onClose={() => setIsResetPasswordModalVisible(false)}
+      />
     </Router>
   );
+};
+
+// ResetPasswordPage Component
+const ResetPasswordPage = ({ showModal, hideModal }) => {
+  const navigate = useNavigate();
+
+  // Show the modal when this page loads
+  React.useEffect(() => {
+    showModal();
+  }, [showModal]);
+
+  // Handle modal close
+  const handleModalClose = () => {
+    hideModal();
+    navigate("/signin"); // Redirect to the sign-in page after closing the modal
+  };
+
+  return null; // This page doesn't render anything; it just triggers the modal
 };
 
 export default App;
