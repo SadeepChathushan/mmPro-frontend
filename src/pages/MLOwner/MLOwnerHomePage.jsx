@@ -165,7 +165,7 @@ const MLOwnerHomePage = () => {
                             {currentTranslations.history}
                           </Button>
                         </Link>
-                      </Space>
+                      </Space>       
                     </Card>
                   </Col>
                 ))}
