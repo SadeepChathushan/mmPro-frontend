@@ -50,8 +50,8 @@ const Dashboard = () => {
               issue.custom_fields.find((field) => field.name === "Lorry Number")?.value || "N/A",
             assignee:
               issue.custom_fields.find((field) => field.name === "Assignee")?.value || "N/A",
-            complaintID:
-              issue.custom_fields.find((field) => field.name === "Complaint ID")?.value || "N/A",
+            // complaintID:
+            //   issue.custom_fields.find((field) => field.name === "Complaint ID")?.value || "N/A",
             start_date:
               issue.custom_fields.find((field) => field.name === "startDate")?.value ||
               issue.start_date ||
