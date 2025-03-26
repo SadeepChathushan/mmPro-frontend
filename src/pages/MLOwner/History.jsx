@@ -1,108 +1,130 @@
 import React, { useState, useEffect } from "react";
-import { Table, Row, Col, DatePicker, Button } from "antd";
+import { Table, Row, Col, DatePicker, Button, notification } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import moment from "moment";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { fetchDispatchHistoryData } from "../../services/MLOService"; // Import the service
-import "../../styles/MLOwner/History.css"; // Import the CSS file
+import { fetchDispatchHistoryData } from "../../services/MLOService";
+import "../../styles/MLOwner/History.css";
 
 const History = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // State declarations
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dispatchHistory, setDispatchHistory] = useState([]);
   const [licenseNumber, setLicenseNumber] = useState("");
   const [clickCounts, setClickCounts] = useState({});
+  const [l_number, setl_number] = useState("");
+  const [loading, setLoading] = useState(false); // Added loading state
+  const [error, setError] = useState(null); // Added error state
   const { language } = useLanguage();
-  const [formData, setFormData] = useState({
-    DateTime: "",
-    licenseNumber: "",
-    destination: "",
-    lorryNumber: "",
-    driverContact: "",
-    dueDate: "",
-    cubes: "",
-  });
-  const [l_number, setl_number] = useState();
 
   const go_home = () => {
     navigate("/mlowner/home");
   };
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const extractedLicenseNumber = queryParams.get("licenseNumber");
-
-    if (extractedLicenseNumber) {
-      setLicenseNumber(extractedLicenseNumber);
-      setl_number(extractedLicenseNumber);
-    }
-
     const fetchData = async () => {
       try {
-        // Fetch dispatch history data from the service, passing the extracted license number
-        const data = await fetchDispatchHistoryData(extractedLicenseNumber);
+        setLoading(true);
+        setError(null);
 
-        if (!data || data.length === 0) {
-          console.log("No dispatch history data found");
+        const queryParams = new URLSearchParams(location.search);
+        const licenseNumber = queryParams.get("licenseNumber");
+
+        if (!licenseNumber) {
+          setError("No license number provided");
           return;
         }
-        console.log("date", data);
 
-        // Set the dispatch history state
-        setDispatchHistory(data);
+        setLicenseNumber(licenseNumber);
+        setl_number(licenseNumber);
+
+        const apiResponse = await fetchDispatchHistoryData(licenseNumber);
+        console.log("API Response:", apiResponse);
+
+        // Ensure we have valid data
+        if (!apiResponse) {
+          setError("No data received from server");
+          return;
+        }
+
+        // Convert to array if needed
+        const responseData = Array.isArray(apiResponse)
+          ? apiResponse
+          : [apiResponse];
+
+        if (responseData.length === 0) {
+          setError("No TPL history found for this license");
+          return;
+        }
+
+        // Transform data with proper fallbacks
+        const transformedData = responseData.map((item) => ({
+          licenseNumber: item.license_number,
+          lorryDriverContact: item.driver_contact,
+          lorryNumber: item.lorry_number,
+          cubes: item.cubes,
+          destination: item.destination,
+          Route_01: item.Route_01,
+          Route_02: item.Route_02,
+          Route_03: item.Route_03,
+          startDate: item.start_date,
+          dueDate: item.due_date,
+          status: item.status,
+          dispatchDate: item.start_date, // Using start_date as dispatch date
+          tpl_id: item.tpl_id, // Including the ID if needed
+          created_on: item["Create Date"], // Handling the Create Date field
+        }));
+
+        setDispatchHistory(transformedData);
       } catch (error) {
-        console.error("Error fetching dispatch history:", error);
+        console.error("Error in fetchData:", error);
+        setError(error.message || "Failed to load TPL history");
+        notification.error({
+          message: "Error",
+          description: error.message || "Failed to fetch TPL history",
+          duration: 5,
+        });
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
-  // Empty dependency array ensures it runs once when the component mounts
+  }, [location.search]);
 
   const filteredDispatchHistory = dispatchHistory.filter((dispatch) => {
-    let isLicenseMatch = true;
-    if (licenseNumber) {
-      isLicenseMatch = dispatch.licenseNumber === licenseNumber;
-    }
-
     if (startDate && endDate) {
       const dispatchDate = new Date(dispatch.dispatchDate);
       return (
-        dispatchDate >= new Date(startDate) &&
-        dispatchDate <= new Date(endDate) &&
-        isLicenseMatch
+        dispatchDate >= new Date(startDate) && dispatchDate <= new Date(endDate)
       );
-    } else {
-      return isLicenseMatch;
     }
+    return true;
   });
 
   const handleButtonClick = (record) => {
-    setClickCounts((prevCounts) => {
-      const newCounts = { ...prevCounts };
-      newCounts[record.licenseNumber] =
-        (newCounts[record.licenseNumber] || 0) + 1;
-      return newCounts;
-    });
-    // Assign formData with correct tpl data
-    const updatedFormData = {
-      DateTime: record.startDate,
-      licenseNumber: record.licenseNumber,
-      destination: record.destination,
-      lorryNumber: record.lorryNumber,
-      driverContact: record.lorryDriverContact,
-      dueDate: record.dueDate,
-      cubes: record.cubes,
-       // Corrected validity assignment
-    };
-
-    setFormData(updatedFormData);
+    setClickCounts((prevCounts) => ({
+      ...prevCounts,
+      [record.licenseNumber]: (prevCounts[record.licenseNumber] || 0) + 1,
+    }));
 
     navigate("/mlowner/home/dispatchload/receipt", {
-      state: { formData:updatedFormData, l_number },
+      state: {
+        formData: {
+          DateTime: record.startDate,
+          licenseNumber: record.licenseNumber,
+          destination: record.destination,
+          lorryNumber: record.lorryNumber,
+          driverContact: record.lorryDriverContact,
+          dueDate: record.dueDate,
+          cubes: record.cubes,
+        },
+        l_number,
+      },
     });
   };
 
@@ -130,38 +152,12 @@ const History = () => {
     {
       title:
         language === "en"
-          ? "Owner"
-          : language === "si"
-          ? "අයිතිකරු"
-          : "உரிமையாளர்",
-      dataIndex: "owner",
-      key: "owner",
-    },
-    {
-      title:
-        language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்",
-      dataIndex: "location",
-      key: "location",
-    },
-    {
-      title:
-        language === "en"
           ? "Lorry Number"
           : language === "si"
           ? "ලොරි අංකය"
           : "லாரி எண்",
       dataIndex: "lorryNumber",
       key: "lorryNumber",
-    },
-    {
-      title:
-        language === "en"
-          ? "Destination"
-          : language === "si"
-          ? "ගමනාන්තය"
-          : "சேருமிடம்",
-      dataIndex: "Destination",
-      key: "Destination",
     },
     {
       title:
@@ -176,36 +172,68 @@ const History = () => {
     {
       title:
         language === "en"
-          ? "Dispatched Date"
+          ? "Destination"
+          : language === "si"
+          ? "ගමනාන්තය"
+          : "சேருமிடம்",
+      dataIndex: "destination",
+      key: "destination",
+    },
+    {
+      title:
+        language === "en"
+          ? "Route 01"
+          : language === "si"
+          ? "මාර්ගය 01"
+          : "வழி 01",
+      dataIndex: "Route_01",
+      key: "Route_01",
+    },
+    {
+      title:
+        language === "en"
+          ? "Route 02"
+          : language === "si"
+          ? "මාර්ගය 02"
+          : "வழி 02",
+      dataIndex: "Route_02",
+      key: "Route_02",
+    },
+    {
+      title:
+        language === "en"
+          ? "Route 03"
+          : language === "si"
+          ? "මාර්ගය 03"
+          : "வழி 03",
+      dataIndex: "Route_03",
+      key: "Route_03",
+    },
+    {
+      title:
+        language === "en"
+          ? "Create Date"
           : language === "si"
           ? "යවන ලද දිනය"
           : "அனுப்பப்பட்ட தேதி",
       dataIndex: "startDate",
-      key: "dispatchDate",
+      key: "startDate",
       render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span>,
     },
     {
       title:
         language === "en"
-          ? "Due Date"
-          : language === "si"
-          ? "අවසන් ලද දිනය"
-          : "நிலுவைத் தேதி",
-      dataIndex: "due_date",
-      key: "due_date",
-      render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span>,
-    },
-    {
-      title:
-        language === "en"
-          ? "Action"
+          ? "Status"
           : language === "si"
           ? "ක්‍රියාමාර්ග"
           : "செயல்",
+      dataIndex: "status",
+      key: "status",
+    },
+    {
       key: "action",
       render: (_, record) => {
         const buttonDisabled = (clickCounts[record.licenseNumber] || 0) >= 3;
-
         return (
           <Button
             className={`history-action-button ${
@@ -221,12 +249,12 @@ const History = () => {
                 ? "Max Clicks Reached"
                 : language === "si"
                 ? "උපරිම ක්ලික් ගණන අවසන්"
-                : "ரசீதை அச்சிடுங்கள்"
+                : "அதிகபட்ச கிளிக்குகள்"
               : language === "en"
-              ? "Print Your Missed Receipts"
+              ? "Print Receipt"
               : language === "si"
-              ? "රිසිට්පත මුද්‍රණය කරගන්න"
-              : "ரசீதை அச்சிடுங்கள்"}
+              ? "රිසිට්පත මුද්‍රණය කරන්න"
+              : "ரசீதை அச்சிடுக"}
           </Button>
         );
       },
@@ -243,10 +271,14 @@ const History = () => {
           : "அனுப்புதல் வரலாறு"}
       </h1>
 
+      {error && <div className="error-message">{error}</div>}
+
       <Row gutter={[16, 16]} style={{ marginBottom: "20px" }}>
         <Col xs={24} sm={12} md={6}>
           <DatePicker
-            onChange={(date) => setStartDate(moment(date).format("YYYY-MM-DD"))}
+            onChange={(date) =>
+              setStartDate(date ? moment(date).format("YYYY-MM-DD") : null)
+            }
             placeholder={
               language === "en"
                 ? "Start Date"
@@ -259,7 +291,9 @@ const History = () => {
         </Col>
         <Col xs={24} sm={12} md={6}>
           <DatePicker
-            onChange={(date) => setEndDate(moment(date).format("YYYY-MM-DD"))}
+            onChange={(date) =>
+              setEndDate(date ? moment(date).format("YYYY-MM-DD") : null)
+            }
             placeholder={
               language === "en"
                 ? "End Date"
@@ -277,10 +311,12 @@ const History = () => {
         columns={columns}
         className="history-table"
         pagination={false}
+        loading={loading}
+        rowKey="licenseNumber"
       />
 
       <div className="history-button-container">
-        <Button className="history-back-button" onClick={() => go_home()}>
+        <Button className="history-back-button" onClick={go_home}>
           {language === "en"
             ? "Back to Home"
             : language === "si"

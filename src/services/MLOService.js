@@ -148,68 +148,6 @@ export const fetchLicenses = async () => {
 
 // src/services/dispatchHistoryService.js
 
-// Fetch dispatch history data
-
-
-
-export const fetchDispatchHistoryData = async (licenseNumber = "") => {
-  try {
-    // Retrieve the user token from localStorage
-    const token = localStorage.getItem("USER_TOKEN");
-    if (!token) {
-      console.error("User token not found in localStorage");
-      return [];
-    }
-
-    // Make the API request to fetch the dispatch history data
-    const response = await axios.get(`${BASE_URL}/mining-owner/view-tpls`, {
-      headers: {
-        "Authorization": `Bearer ${token}`, // Use the token in the Authorization header
-        "Content-Type": "application/json",
-      },
-      params: {
-        licenseNumber: licenseNumber, // Send the licenseNumber as a query parameter
-      },
-    });
-    // Check if the response is valid and contains the expected data
-    if (response.data && response.data.view_tpls && Array.isArray(response.data.view_tpls)) {
-      const dispatchHistory = response.data.view_tpls;
-
-      // Format the dispatch history data
-      const formattedDispatchHistory = dispatchHistory.map((item) => {
-        // Safely extract custom fields
-        const customFields = item.custom_fields ? item.custom_fields.reduce((acc, field) => {
-          acc[field.name] = field.value;
-          return acc;
-        }, {}) : {};
-
-        return {
-          licenseNumber: customFields["License Number"] || "",
-          owner: customFields["Owner Name"] || "",
-          location: customFields["Location"] || "",
-          destination: customFields["Destination"] || "",
-          lorryNumber: customFields["Lorry Number"] || "",
-          cubes: customFields["Cubes"] || "",
-          startDate: item.start_date || "", // Using created_on instead of start_date
-          dueDate: item.due_date || "",
-          status: item.status || "Unknown",  // Default status if not found
-          lorryDriverContact: customFields["Driver Contact"] || "",
-        };
-      });
-
-      return formattedDispatchHistory;
-    } else {
-      console.error("Invalid data structure received from API.");
-      return [];
-    }
-  } catch (error) {
-    console.error("Error fetching dispatch history:", error);
-    return [];  // Return an empty array in case of an error
-  }
-};
-
-
-
 // Fetch ML data by license number
 export const fetchMLData = async (l_number) => {
   const e_l_number = encodeURIComponent(l_number);
@@ -270,22 +208,6 @@ export const fetchIssues = async () => {
     throw error;
   }
 };
-
-// // Fetch issue from the API using issue id
-// export const fetchIssue = async () => {
-//   try {
-//     const response = await axios.get("/api/projects/gsmb/issues.json", {
-//       headers: {
-//         "Content-Type": "application/json",
-//         "X-Redmine-API-Key": localStorage.getItem("API_Key"),
-//       },
-//     });
-//     return response.data.issues;
-//   } catch (error) {
-//     console.error("Error fetching issues:", error);
-//     throw error;
-//   }
-// };
 
 // Update an issue with new data
 export const updateIssue = async (issueId, updatedIssue) => {
@@ -391,5 +313,99 @@ export const fetchAllLicense = async () => {
     throw error;
   }
 };
+
+// Fetch dispatch history data
+export const fetchDispatchHistoryData = async (licenseNumber) => {
+  try {
+    const response = await axiosInstance.get(`mining-owner/view-tpls`, {
+      params: { mining_license_number: licenseNumber }
+    });
+
+    console.log("Raw API response:", response); // Debug raw response
+
+    if (!response.data) {
+      throw new Error("Empty API response");
+    }
+
+    // Debug response structure
+    console.log("Response data structure:", {
+      isArray: Array.isArray(response.data),
+      keys: Object.keys(response.data),
+      hasViewTpls: !!response.data.view_tpls
+    });
+
+    // Handle the response structure with view_tpls
+    if (response.data.view_tpls && Array.isArray(response.data.view_tpls)) {
+      return response.data.view_tpls; // Return the array from view_tpls
+    }
+    if (Array.isArray(response.data)) {
+      return response.data; // Direct array response (fallback)
+    }
+
+    // If we get here, the response format is unexpected
+    console.error("Unexpected API response format:", response.data);
+    throw new Error(`Unexpected API response format. Received: ${JSON.stringify(response.data)}`);
+  } catch (error) {
+    console.error("Error fetching TPL History:", error);
+    throw error;
+  }
+};
+/** 
+export const fetchDispatchHistoryData = async (licenseNumber = "") => {
+  try {
+    // Retrieve the user token from localStorage
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return [];
+    }
+
+    // Make the API request to fetch the dispatch history data
+    const response = await axios.get(`${BASE_URL}/mining-owner/view-tpls`, {
+      headers: {
+        "Authorization": `Bearer ${token}`, // Use the token in the Authorization header
+        "Content-Type": "application/json",
+      },
+      params: {
+        licenseNumber: licenseNumber, // Send the licenseNumber as a query parameter
+      },
+    });
+    // Check if the response is valid and contains the expected data
+    if (response.data && response.data.view_tpls && Array.isArray(response.data.view_tpls)) {
+      const dispatchHistory = response.data.view_tpls;
+
+      // Format the dispatch history data
+      const formattedDispatchHistory = dispatchHistory.map((item) => {
+        // Safely extract custom fields
+        const customFields = item.custom_fields ? item.custom_fields.reduce((acc, field) => {
+          acc[field.name] = field.value;
+          return acc;
+        }, {}) : {};
+
+        return {
+          licenseNumber: customFields["License Number"] || "",
+          owner: customFields["Owner Name"] || "",
+          location: customFields["Location"] || "",
+          destination: customFields["Destination"] || "",
+          lorryNumber: customFields["Lorry Number"] || "",
+          cubes: customFields["Cubes"] || "",
+          startDate: item.start_date || "", // Using created_on instead of start_date
+          dueDate: item.due_date || "",
+          status: item.status || "Unknown",  // Default status if not found
+          lorryDriverContact: customFields["Driver Contact"] || "",
+        };
+      });
+
+      return formattedDispatchHistory;
+    } else {
+      console.error("Invalid data structure received from API.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching dispatch history:", error);
+    return [];  // Return an empty array in case of an error
+  }
+};
+*/
 
 export default MLOService;
