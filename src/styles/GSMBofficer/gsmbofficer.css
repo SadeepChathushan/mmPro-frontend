@@ -1,0 +1,73 @@
+/* Target all text inputs */
+.text-input {
+    color: black !important;
+    font-size: 20px !important;
+  }
+  
+  /* Target input placeholder text */
+  .text-input::placeholder {
+    color: rgba(0, 0, 0, 0.45) !important;
+  }
+  
+  /* Style for disabled inputs */
+  .text-input[disabled] {
+    color: rgba(0, 0, 0, 0.65) !important;
+  }
+  
+  /* Target DatePicker input */
+  .ant-picker-input > input {
+    color: black !important;
+    font-size: 20px !important;
+  }
+  
+  /* Target checkboxes text */
+  .ant-checkbox-wrapper {
+    color: black !important;
+  }
+  
+  /* Target form labels */
+  .ant-form-item-label > label {
+    color: black !important;
+  }
+  
+  /* Target DatePicker panel text */
+  .ant-picker-panel-container {
+    color: black !important;
+  }
+  
+  /* Target form validation error messages */
+  .ant-form-item-explain-error {
+    color: #ff4d4f !important; /* Keep error messages red */
+  }
+  
+  /* Ensure the "Required Documents" text is black */
+  .ant-form-item-required,
+  .ant-form-item-label > label.ant-form-item-required::before {
+    color: black !important;
+  }
+  
+  /* Style for the form container */
+  .ant-form {
+    color: black;
+  }
+  
+  /* Ensure dropdown options are black */
+  .ant-select-dropdown {
+    color: black !important;
+  }
+  
+  /* Add this if you need to target specific form elements */
+  #licenseNumber,
+  #ownerName,
+  #explorationLicenseNumber,
+  #landName,
+  #landOwnerName,
+  #villageName,
+  #gramaNiladhariDivision,
+  #divisionalSecretaryDivision,
+  #administrativeDistrict,
+  #capacity,
+  #location,
+  #NIC {
+    color: black !important;
+  }

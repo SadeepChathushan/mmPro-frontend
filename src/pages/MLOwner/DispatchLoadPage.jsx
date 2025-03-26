@@ -322,7 +322,7 @@ const DispatchLoadPage = () => {
               <Input
                 value={l_number}
                 onChange={handleInputChange}
-                style={{ width: "100%" }}
+                className="text-input"
                 required
               />
             </div>
