@@ -3,7 +3,7 @@ import { message } from "antd";
 import api from "./axiosConfig";
 // import { useNavigate } from "react-router-dom";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL; // ✅ Correct for Vite // ✅ For Vite (modern setup)
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const authService = {
   login: async (values) => {
     const { username, password } = values;
@@ -31,6 +31,39 @@ const authService = {
     }
   },
 
+  initiatePasswordReset: async (email) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/auth/forgot-password`, {
+        email
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.error('Password reset initiation failed:', error);
+      throw error;
+    }
+  },
+
+  resetPassword: async (token, newPassword) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/auth/reset-password`, {
+        token,
+        new_password: newPassword
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        // Forward the backend error message
+        throw new Error(error.response.data.error || error.response.data.message);
+      }
+      throw error;
+    }
+  },
+
   handleGoogleLogin: async (response) => {
     const { credential } = response;
     console.log(credential);
@@ -55,6 +88,8 @@ const authService = {
       message.error("Google login failed. Please try again.");
     }
   },
+
+
 
   redirectToDashboard: (role, navigate) => {
     switch (role) {

@@ -9,6 +9,10 @@ const ConfirmationModal = ({ visible, onClose }) => {
     console.log("Resending email...");
     message.success("Email resent successfully!");
   };
+  
+  const openEmailClient = () => {
+    window.open("https://mail.google.com/mail/u/0/#inbox", "_blank");
+  };
 
   return (
     <Modal
@@ -18,37 +22,38 @@ const ConfirmationModal = ({ visible, onClose }) => {
       centered
       className="confirmation-modal"
     >
-    <div className="modal-container">
+      <div className="modal-container">
         <div className="icon-container">
-        <img src={emailIcon} alt="Forgot Password Icon" className="fp-icon" />
-      </div>
+          <img src={emailIcon} alt="Forgot Password Icon" className="fp-icon" />
+        </div>
 
-      <div className="modal-title">Check Your Email !</div>
+        <div className="modal-title">Check Your Email !</div>
 
-      <div className="modal-p">
-        Thanks! An email was sent that will ask you to click on a link to verify
-        that you own this account.
-      </div>
+        <div className="modal-p">
+          Thanks! An email was sent that will ask you to click on a link to
+          verify that you own this account.
+        </div>
 
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <Button
-          type="primary"
-          size="large"
-          className="submit-button"
-          style={{ marginBottom: "10px" }}
-        >
-          Open Email Inbox
-        </Button>
-        <Button
-          type="default"
-          size="large"
-          className="resend-button"
-          onClick={handleResendEmail}
-          icon={<ArrowRightOutlined />}
-        >
-          Resend Email
-        </Button>
-      </div>
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <Button
+            type="primary"
+            size="large"
+            className="submit-button"
+            style={{ marginBottom: "10px" }}
+            onClick={openEmailClient}
+          >
+            Open Email Inbox
+          </Button>
+          <Button
+            type="default"
+            size="large"
+            className="resend-button"
+            onClick={handleResendEmail}
+            icon={<ArrowRightOutlined />}
+          >
+            Resend Email
+          </Button>
+        </div>
       </div>
     </Modal>
   );

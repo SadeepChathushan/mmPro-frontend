@@ -1,38 +1,71 @@
 import React from "react";
 import { Modal, Form, Input, Button, message } from "antd";
 import { LockOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate, useSearchParams } from "react-router-dom";
+import authService from "../../services/authService";
 import "../../styles/forgotpassword.css";
 import reset from "../../assets/images/reset_password.png";
 
-const ResetPasswordModal = ({ visible, onCancel }) => {
+const ResetPasswordModal = ({ visible, onClose }) => {
   const [form] = Form.useForm();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token"); 
 
   const handleSubmit = async (values) => {
     try {
-      console.log("New password submitted:", values.newPassword);
+      if (!token) {
+        console.error("No token found in URL");
+        throw new Error("Invalid reset token");
+      }
+
+      if (values.newPassword !== values.confirmPassword) {
+        console.error("Passwords don't match");
+        throw new Error("Passwords do not match");
+      }
+
+      if (values.newPassword.length < 8) {
+        console.error("Password too short");
+        throw new Error("Password must be at least 8 characters");
+      }
+
+      console.log("Calling resetPassword service with:", {
+        token,
+        newPassword: values.newPassword,
+      });
+
+      // Call the reset password service
+      const response = await authService.resetPassword(
+        token,
+        values.newPassword
+      );
+      console.log("Reset password response:", response);
+
       message.success("Password reset successfully!");
-
-      onCancel();
-
       navigate("/signin");
+      if (typeof onCancel === "function") {
+        onClose();
+      }
     } catch (error) {
-      console.error("Error:", error);
-      message.error("An error occurred. Please try again.");
+      console.error("Error in handleSubmit:", {
+        error: error.message,
+        stack: error.stack,
+        response: error.response?.data,
+      });
+      message.error(error.message || "An error occurred. Please try again.");
     }
   };
 
   return (
     <Modal
       visible={visible}
-      onCancel={onCancel}
+      onCancel={onClose} 
       footer={null}
       centered
       className="reset-password-modal"
     >
       <div className="icon-container">
-        <img src={reset} alt="Forgot Password Icon" className="fp-icon" />
+        <img src={reset} alt="Reset Password Icon" className="fp-icon" />
       </div>
 
       <div className="modal-title">Reset Your Password</div>
