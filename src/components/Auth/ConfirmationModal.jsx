@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types';
-import { Modal, Button, message } from "antd";
-import { ArrowRightOutlined } from "@ant-design/icons";
+import { Modal, Button } from "antd";
+import { ArrowRightOutlined } from "@ant-design/icons"; // Import the arrow icon
 import emailIcon from "../../assets/images/check_email.png";
 import "../../styles/forgotpassword.css";
 
@@ -31,9 +30,8 @@ const ConfirmationModal = ({ visible, onClose }) => {
         <div className="modal-title">Check Your Email !</div>
 
         <div className="modal-p">
-          Thanks! An email was sent that will ask you to click on a link to verify
-          that you own this account.
-
+          Thanks! An email was sent that will ask you to click on a link to
+          verify that you own this account.
         </div>
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
@@ -58,9 +56,7 @@ const ConfirmationModal = ({ visible, onClose }) => {
         </div>
       </div>
     </Modal>
-ConfirmationModal.propTypes = {
-  visible: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired
+  );
 };
 
 export default ConfirmationModal;
