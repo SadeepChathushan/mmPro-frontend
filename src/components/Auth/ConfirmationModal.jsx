@@ -10,6 +10,10 @@ const ConfirmationModal = ({ visible, onClose }) => {
     console.log("Resending email...");
     message.success("Email resent successfully!");
   };
+  
+  const openEmailClient = () => {
+    window.open("https://mail.google.com/mail/u/0/#inbox", "_blank");
+  };
 
   return (
     <Modal
@@ -29,6 +33,7 @@ const ConfirmationModal = ({ visible, onClose }) => {
         <div className="modal-p">
           Thanks! An email was sent that will ask you to click on a link to verify
           that you own this account.
+
         </div>
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
@@ -37,6 +42,7 @@ const ConfirmationModal = ({ visible, onClose }) => {
             size="large"
             className="submit-button"
             style={{ marginBottom: "10px" }}
+            onClick={openEmailClient}
           >
             Open Email Inbox
           </Button>
@@ -52,9 +58,6 @@ const ConfirmationModal = ({ visible, onClose }) => {
         </div>
       </div>
     </Modal>
-  );
-};
-
 ConfirmationModal.propTypes = {
   visible: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired
