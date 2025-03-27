@@ -8,6 +8,7 @@ import "./Signin.css";
 import authService from "../../services/authService";
 import ForgotPasswordModal from "./forgotPassword";
 import ResetPasswordModal from "./ResetPassword"; 
+import CreateAccountModal from "./CreateAccount";
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 console.log("clientId", clientId);
@@ -16,9 +17,10 @@ const SignInPage = () => {
   const navigate = useNavigate();
   const [isForgotPasswordModalVisible, setIsForgotPasswordModalVisible] = useState(false);
   const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false);
+  const [isCreateAccountModalVisible, setIsCreateAccountModalVisible] = useState(false);
 
   // Toggle the overlay when the Forgot Password modal opens/closes
-  const isAnyModalVisible = isForgotPasswordModalVisible || isResetPasswordModalVisible;
+  const isAnyModalVisible = isForgotPasswordModalVisible || isResetPasswordModalVisible || isCreateAccountModalVisible;
 
   useEffect(() => {
     if (isAnyModalVisible) {
@@ -59,6 +61,14 @@ const SignInPage = () => {
 
   const handleResetPasswordCancel = () => {
     setIsResetPasswordModalVisible(false);
+  };
+
+  const showCreateAccountModal = () => {
+    setIsCreateAccountModalVisible(true);
+  };
+
+  const handleCreateAccountCancel = () => {
+    setIsCreateAccountModalVisible(false);
   };
 
   return (
@@ -138,9 +148,13 @@ const SignInPage = () => {
               </Button>
             </Form.Item>
             <Form.Item className="center-text">
-              <a href="/create-account" className="links">
+              <Button 
+                type="link" 
+                onClick={showCreateAccountModal} 
+                className="links"
+              >
                 Not registered yet? Create an Account
-              </a>
+              </Button>
             </Form.Item>
 
             {/* Google Login Button */}
@@ -171,6 +185,12 @@ const SignInPage = () => {
       <ResetPasswordModal
         visible={isResetPasswordModalVisible}
         onCancel={handleResetPasswordCancel}
+      />
+
+      {/* New Create Account Modal */}
+      <CreateAccountModal
+        visible={isCreateAccountModalVisible}
+        onCancel={handleCreateAccountCancel}
       />
     </div>
   );
