@@ -6,9 +6,9 @@ const LicenseTable = ({ data, tracker }) => {
   const columns = {
     ML: [
       { title: "ID", dataIndex: "id" },
-      { title: "Owner Name", dataIndex: "ownerName" },
-      { title: "License Number", dataIndex: "licenseNumber" },
-      { title: "Mobile Number", dataIndex: "mobileNumber" },
+      { title: "Owner Name", dataIndex: "author" },
+      { title: "License Number", dataIndex: "subject" },
+      { title: "Mobile Number", dataIndex: "mobile_number" },
       { title: "Action", render: (_, record) => renderAction(record, "license") },
     ],
     TPL: [
@@ -27,6 +27,13 @@ const LicenseTable = ({ data, tracker }) => {
       { title: "Lorry Number", dataIndex: "lorryNumber" },
       { title: "Complaint Date", dataIndex: "start_date" },
       { title: "Action", render: (_, record) => renderComplaintAction(record) },
+    ],
+    MEA: [
+      { title: "ID", dataIndex: "id" },
+      { title: "Owner Name", dataIndex: "author" },
+      { title: "License Number", dataIndex: "subject" },
+      { title: "Mobile Number", dataIndex: "mobile_number" },
+      { title: "Action", render: (_, record) => renderAction(record, "license") },
     ],
   };
   

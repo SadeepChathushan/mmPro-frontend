@@ -20,6 +20,7 @@ const Dashboard = () => {
   const [mlOwnersCount, setMlOwnersCount] = useState(0);
   const [tplData, setTplData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [mlData, setMlData] = useState([]);
 
   const tabs = [
     { 
@@ -37,6 +38,10 @@ const Dashboard = () => {
     { 
       key: "CMPLN", 
       label: language === "en" ? "Complaints" : language === "si" ? "පැමිණිලි" : "முறையீடுகள்" 
+    },
+    { 
+      key: "MEA", 
+      label: language === "en" ? "ME Approved" : language === "si" ? "පතල් ඉංජිනේරු අනුමත කර ඇත" : "சுரங்கப் பொறியாளர் ஒப்புதல் அளித்துள்ளார்" 
     },
   ];
 
@@ -114,17 +119,43 @@ const Dashboard = () => {
     fetchTplData();
   }, []);
 
+  useEffect(() => {
+    const fetchMlData = async () => {
+      try {
+        setLoading(true);
+        const mlData = await officerService.getMiningLicenses();
+        console.log("ML Data from service:", mlData);
+        
+        // Transform ML data if needed
+        const formattedMlData = mlData.map(ml => ({
+          ...ml,
+          tracker: "ML" // Explicitly set tracker for ML items
+        }));
+        
+        setMlData(formattedMlData);
+      } catch (error) {
+        console.error("Error fetching ML data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchMlData();
+  }, []);
+
   // Update filtered data when tab or data changes
   useEffect(() => {
     if (activeTab === "MLOWNER") {
       setFilteredData([]);
     } else if (activeTab === "TPL") {
       setFilteredData(tplData);
+    } else if (activeTab === "ML") {
+      setFilteredData(mlData);
     } else {
       const filtered = tableData.filter(item => item.tracker === activeTab);
       setFilteredData(filtered);
     }
-  }, [activeTab, tableData, tplData]);
+  }, [activeTab, tableData, tplData, mlData]);
 
   // Handle search
   const handleSearch = (value) => {
@@ -135,6 +166,13 @@ const Dashboard = () => {
         (item.mining_license_number?.toLowerCase().includes(value.toLowerCase())) ||
         (item.lorry_number?.toLowerCase().includes(value.toLowerCase())) ||
         (item.driver_contact?.toLowerCase().includes(value.toLowerCase()))
+      );
+      setFilteredData(filtered);
+          } else if (activeTab === "ML") {
+      const filtered = mlData.filter(item =>
+        (item.subject?.toLowerCase().includes(value.toLowerCase())) ||
+        (item.author?.toLowerCase().includes(value.toLowerCase())) ||
+        (item.mobile_number?.toLowerCase().includes(value.toLowerCase()))
       );
       setFilteredData(filtered);
     } else {
@@ -157,7 +195,7 @@ const Dashboard = () => {
     },
     { 
       title: language === "en" ? "Mining Licenses" : language === "si" ? "පතල් බලපත්‍ර" : "சுரங்க உரிமங்கள்", 
-      count: tableData.filter(item => item.tracker === "ML").length, 
+      count: mlData.length,
       color: "#1890ff" 
     },
     { 
