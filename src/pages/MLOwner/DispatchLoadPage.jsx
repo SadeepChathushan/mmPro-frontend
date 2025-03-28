@@ -100,7 +100,6 @@ const DispatchLoadPage = () => {
   // Fetch location suggestions from Nominatim API, restricted to Sri Lanka
   const fetchLocationSuggestions = async (value) => {
     if (!value.trim()) {
-      // Ensure value is not empty or just spaces
       setLocationSuggestions([]);
       return;
     }
