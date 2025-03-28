@@ -8,6 +8,7 @@ import {
   Typography,
   AutoComplete,
   DatePicker,
+  Grid,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
@@ -30,8 +31,10 @@ import {
 import { message } from "antd";
 const { Content } = Layout;
 const { Title } = Typography;
+const { useBreakpoint } = Grid;
 
 const DispatchLoadPage = () => {
+  const screens = useBreakpoint();
   const uRLlocation = useLocation();
   const [l_number, setl_number] = useState("");
 
@@ -279,8 +282,12 @@ const DispatchLoadPage = () => {
 
   return (
     <Layout className="dispatch-load-container">
-      <Content style={{ padding: "24px" }}>
-        <Title level={3} className="page-title">
+      <Content style={{ padding: screens.xs ? "16px" : "24px" }}>
+        <Title 
+          level={3} 
+          className="page-title"
+          style={{ fontSize: screens.xs ? "1.5rem" : "1.75rem" }}
+          >
           {language === "en"
             ? "Dispatch Your Load Here"
             : language === "si"
@@ -289,7 +296,7 @@ const DispatchLoadPage = () => {
         </Title>
 
         {/* Date and Time Input */}
-        <Row gutter={16}>
+        <Row gutter={screens.xs ? [16, 8] : [16, 16]}>
           <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
@@ -303,13 +310,13 @@ const DispatchLoadPage = () => {
                 value={currentDateTime}
                 onChange={handleDatetime}
                 disabled
+                className={screens.xs ? "mobile-input" : ""}
               />
             </div>
           </Col>
-        </Row>
+
 
         {/* License Number Input */}
-        <Row gutter={16}>
           <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
@@ -322,15 +329,13 @@ const DispatchLoadPage = () => {
               <Input
                 value={l_number}
                 onChange={handleInputChange}
-                className="text-input"
+                className={`text-input ${screens.xs ? "mobile-input" : ""}`}
                 required
               />
             </div>
           </Col>
-        </Row>
 
         {/* Destination Input with Search Options */}
-        <Row gutter={16}>
           <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
@@ -341,7 +346,10 @@ const DispatchLoadPage = () => {
                   : "சேருமிடம்:"}
               </span>
               <div style={{ display: "flex", alignItems: "center" }}>
-                <SearchOutlined style={{ marginRight: "8px" }} />
+                <SearchOutlined style={{ 
+                  marginRight: screens.xs ? "4px" : "8px",
+                  fontSize: screens.xs ? "14px" : "16px"
+                 }} />
                 <AutoComplete
                   value={formData.destination}
                   onChange={(value) => {
@@ -354,6 +362,7 @@ const DispatchLoadPage = () => {
                     value: item.value,
                     label: item.value,
                   }))}
+                  className={screens.xs ? "mobile-input" : ""}
                 >
                   <AutoComplete.Option
                     value={formData.destination}
@@ -365,10 +374,8 @@ const DispatchLoadPage = () => {
               </div>
             </div>
           </Col>
-        </Row>
 
         {/* Lorry Number Input */}
-        <Row gutter={16}>
           <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
@@ -389,6 +396,7 @@ const DispatchLoadPage = () => {
                   )
                 }
                 required
+                className={screens.xs ? "mobile-input" : ""}
               />
               {lorryNumberError && (
                 <div style={{ color: "red", fontSize: "12px" }}>
@@ -397,10 +405,8 @@ const DispatchLoadPage = () => {
               )}
             </div>
           </Col>
-        </Row>
 
         {/* Driver Contact Input */}
-        <Row gutter={16}>
           <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
@@ -421,6 +427,7 @@ const DispatchLoadPage = () => {
                   )
                 }
                 required
+                className={screens.xs ? "mobile-input" : ""}
               />
               {driverContactError && (
                 <div style={{ color: "red", fontSize: "12px" }}>
@@ -429,73 +436,31 @@ const DispatchLoadPage = () => {
               )}
             </div>
           </Col>
-        </Row>
 
-        {/* Root1 Input */}
-        <Row gutter={16}>
-          <Col xs={24} sm={24} md={16} lg={16}>
-            <div className="form-field">
-              <span className="field-label">
-                {language === "en"
-                  ? "ROUTE 1:"
-                  : language === "si"
-                  ? "මාර්ගය 1:"
-                  : "வழி 1:"}
-              </span>
-              <Input
-                value={formData.Root1}
-                onChange={(e) =>
-                  setFormData({ ...formData, Root1: e.target.value })
-                }
-              />
-            </div>
-          </Col>
-        </Row>
+          {/* Routes */}
+          {[1, 2, 3].map((routeNum) => (
+            <Col xs={24} sm={24} md={16} lg={16} key={`route-${routeNum}`}>
+              <div className="form-field">
+                <span className="field-label">
+                  {language === "en"
+                    ? `ROUTE ${routeNum}:`
+                    : language === "si"
+                    ? `මාර්ගය ${routeNum}:`
+                    : `வழி ${routeNum}:`}
+                </span>
+                <Input
+                  value={formData[`Root${routeNum}`]}
+                  onChange={(e) =>
+                    setFormData({ ...formData, [`Root${routeNum}`]: e.target.value })
+                  }
+                  className={screens.xs ? "mobile-input" : ""}
+                />
+              </div>
+            </Col>
+          ))}
 
-        {/* Root2 Input */}
-        <Row gutter={16}>
-          <Col xs={24} sm={24} md={16} lg={16}>
-            <div className="form-field">
-              <span className="field-label">
-                {language === "en"
-                  ? "ROUTE 2:"
-                  : language === "si"
-                  ? "මාර්ගය 2:"
-                  : "வழி 2:"}
-              </span>
-              <Input
-                value={formData.Root2}
-                onChange={(e) =>
-                  setFormData({ ...formData, Root2: e.target.value })
-                }
-              />
-            </div>
-          </Col>
-        </Row>
-
-        {/* Root3 Input */}
-        <Row gutter={16}>
-          <Col xs={24} sm={24} md={16} lg={16}>
-            <div className="form-field">
-              <span className="field-label">
-                {language === "en"
-                  ? "ROUTE 3:"
-                  : language === "si"
-                  ? "මාර්ගය 3:"
-                  : "வழி 3:"}
-              </span>
-              <Input
-                value={formData.Root3}
-                onChange={(e) =>
-                  setFormData({ ...formData, Root3: e.target.value })
-                }
-              />
-            </div>
-          </Col>
-        </Row>
 
         {/* Cubes Input with Increment and Decrement Buttons */}
-        <Row gutter={16}>
           <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
@@ -508,7 +473,10 @@ const DispatchLoadPage = () => {
               <div className="cubes-input-container">
                 <Button
                   onClick={decrementCubes}
-                  style={{ marginRight: "8px" }}
+                  style={{ 
+                    marginRight: screens.xs ? "4px" : "8px",
+                    minWidth: screens.xs ? "32px" : "auto"
+                  }}
                   disabled={formData.cubes <= 1}
                 >
                   -
@@ -516,9 +484,13 @@ const DispatchLoadPage = () => {
                 <Input
                   value={formData.cubes}
                   onChange={handleCubesChange}
-                  className="cubes-input"
+                  className={`cubes-input ${screens.xs ? "mobile-input" : ""}`}
+                  style={{ width: screens.xs ? "50px" : "60px" }}
                 />
-                <Button onClick={incrementCubes} style={{ marginLeft: "8px" }}>
+                <Button onClick={incrementCubes} style={{
+                    marginLeft: screens.xs ? "4px" : "8px",
+                    minWidth: screens.xs ? "32px" : "auto"
+                }}>
                   +
                 </Button>
               </div>
@@ -527,35 +499,75 @@ const DispatchLoadPage = () => {
         </Row>
 
         {/* Submit and Cancel Buttons */}
-        <Row gutter={16} justify="center">
-          <Col xs={24} sm={24} md={16} lg={16} className="button-container">
-            <Button
-              type="primary"
-              onClick={handleCancel}
-              danger
-              className="cancel-button"
-              size="large"
-            >
-              {language === "en"
-                ? "Cancel"
-                : language === "si"
-                ? "අවලංගු කරන්න"
-                : "ரத்து செய்"}
-            </Button>
-            <Button
-              type="primary"
-              onClick={handleSubmit}
-              className="submit-button"
-              size="large"
-            >
-              {language === "en"
-                ? "Submit"
-                : language === "si"
-                ? "සටහන් කරන්න"
-                : "சமர்ப்பிக்கவும்"}
-            </Button>
-          </Col>
-        </Row>
+{/* Submit and Cancel Buttons */}
+<Row 
+  gutter={screens.xs ? 8 : 16} 
+  justify="center" 
+  align="middle"
+  style={{ 
+    marginTop: screens.xs ? "16px" : "24px",
+    width: '100%'
+  }}
+>
+  <Col 
+    xs={24} 
+    sm={12} 
+    md={8} 
+    lg={8}
+    style={{ 
+      padding: screens.xs ? "0 4px" : "0 8px",
+      marginBottom: screens.xs ? "8px" : "0"
+    }}
+  >
+    <Button
+      type="primary"
+      onClick={handleCancel}
+      className="form-action-button cancel-button"
+      size="large"
+      block
+      style={{
+        height: '40px',
+        fontSize: '16px',
+        borderRadius: '4px'
+      }}
+    >
+      {language === "en"
+        ? "Cancel"
+        : language === "si"
+        ? "අවලංගු කරන්න"
+        : "ரத்து செய்"}
+    </Button>
+  </Col>
+  <Col 
+    xs={24} 
+    sm={12} 
+    md={8} 
+    lg={8}
+    style={{ 
+      padding: screens.xs ? "0 4px" : "0 8px",
+      marginBottom: screens.xs ? "8px" : "0"
+    }}
+  >
+    <Button
+      type="primary"
+      onClick={handleSubmit}
+      className="form-action-button submit-button"
+      size="large"
+      block
+      style={{
+        height: '40px',
+        fontSize: '16px',
+        borderRadius: '4px'
+      }}
+    >
+      {language === "en"
+        ? "Submit"
+        : language === "si"
+        ? "සටහන් කරන්න"
+        : "சமர்ப்பிக்கவும்"}
+    </Button>
+  </Col>
+</Row>
         <div>
           <Modals
             isModalVisible={isModalVisible}

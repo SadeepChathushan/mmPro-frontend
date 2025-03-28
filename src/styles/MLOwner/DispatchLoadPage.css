@@ -1,106 +1,112 @@
-/* Main layout styles */
+/* Base styles */
 .dispatch-load-container {
   min-height: 100vh;
-  padding: 24px;
 }
 
-.page-title {
-  text-align: center;
-  margin-bottom: 20px;
+/* Responsive padding */
+.dispatch-load-container .ant-layout-content {
+  padding: 16px;
 }
 
-/* Form field styles */
+@media (min-width: 768px) {
+  .dispatch-load-container .ant-layout-content {
+    padding: 24px;
+  }
+}
+
+/* Form fields */
 .form-field {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+}
+
+@media (min-width: 768px) {
+  .form-field {
+    margin-bottom: 16px;
+  }
 }
 
 .field-label {
   font-weight: bold;
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
 }
 
-/* Cubes input styles */
+@media (min-width: 768px) {
+  .field-label {
+    font-size: 16px;
+  }
+}
+
+/* Input fields */
+.ant-input,
+.ant-picker,
+.ant-select-selector {
+  width: 100% !important;
+}
+
+.mobile-input {
+  padding: 8px 11px;
+  font-size: 14px;
+}
+
+/* Cubes input */
 .cubes-input-container {
   display: flex;
   align-items: center;
 }
 
 .cubes-input {
-  width: 1000px;
   text-align: center;
   margin: 0 8px;
+  width: 60px;
 }
 
-/* Button styles */
-.button-container {
-  display: flex;
-  justify-content: center;
+@media (max-width: 576px) {
+  .cubes-input {
+    width: 50px;
+    margin: 0 4px;
+  }
 }
 
+/* Buttons */
 .cancel-button {
-  margin-right: 16px;
-  font-size: 16px;
-  padding: 10px 20px;
   background-color: #FFA500;
   border-color: #FFA500;
   color: white;
 }
 
 .submit-button {
-  font-size: 16px;
-  padding: 10px 20px;
   background-color: #781424;
   border-color: #781424;
   color: white;
 }
 
-/* Modal styles */
-.modal-icon {
-  font-size: 40px;
-  color: brown;
+@media (max-width: 576px) {
+  .cancel-button,
+  .submit-button {
+    width: 100%;
+    margin-bottom: 8px;
+  }
 }
 
-.modal-content {
-  text-align: center;
-}
-
-.modal-body {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.modal-button-home {
-  background-color: #FFA500;
-  color: white;
-  border-color: #FFA500;
-  margin-right: 20px;
-}
-
-.modal-button-print {
-  background-color: #781424;
-  color: white;
-  margin-left: 20px;
-}
-
-/* Container for the field label and input */
-.lorry-number-container {
-  margin-bottom: 16px;
-}
-
-/* Style for the label */
-.lorry-number-label {
-  font-weight: bold;
-}
-
-/* Style for error message */
-.lorry-number-error {
+/* Error messages */
+.error-message {
   color: red;
   font-size: 12px;
+  margin-top: 4px;
 }
 
-/* Input styling can be added here if needed */
-.lorry-number-input {
-  width: 100%;
+/* Search icon */
+.ant-input-group-addon {
+  padding: 0 8px !important;
 }
 
-.text-input{
-  color: black !important;
+/* Modal adjustments for mobile */
+@media (max-width: 576px) {
+  .modal-button-home,
+  .modal-button-print {
+    width: 100%;
+    margin: 8px 0 !important;
+  }
 }
