@@ -353,6 +353,37 @@ const officerService = {
     }
   },
 
+  // Add this to your officerService object
+getMiningLicenses: async () => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return [];
+    }
+
+    const response = await axios.get(
+      `${BASE_URL}/gsmb-officer/get-mining-licenses`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.data.success && Array.isArray(response.data.data)) {
+      return response.data.data;
+    } else {
+      console.error("Failed to fetch mining licenses: Unexpected data format");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch mining licenses:", error);
+    return [];
+  }
+},
+
 };
 
 // Now export the service object as the default
