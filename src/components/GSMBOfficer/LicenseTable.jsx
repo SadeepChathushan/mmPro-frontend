@@ -12,12 +12,15 @@ const LicenseTable = ({ data, tracker }) => {
       { title: "Action", render: (_, record) => renderAction(record, "license") },
     ],
     TPL: [
-      { title: "ID", dataIndex: "id" },
-      { title: "Mining Owner", dataIndex: "ownerName" },
-      { title: "License Number", dataIndex: "licenseNumber" },
-      { title: "Lorry Number", dataIndex: "lorryNumber" },
-      { title: "Action", render: (_, record) => renderAction(record, "license") },
-    ],
+      { title: "License Number", dataIndex: "mining_license_number" },
+      { title: "Mining Owner", dataIndex: "author" },
+      { title: "Lorry Driver Name", dataIndex: "lorry_driver_name" },
+      { title: "Lorry Number", dataIndex: "lorry_number" },
+      { title: "Lorry Driver Contact Number", dataIndex: "driver_contact" },
+      { title: "Cubes", dataIndex: "cubes" },
+      { title: "Destination", dataIndex: "destination" },
+      { title: "Status", render: (_, record) => renderAction(record, "license") },
+    ], 
     CMPLN: [
       { title: "ID", dataIndex: "id" },
       { title: "Mobile Number", dataIndex: "mobileNumber" },
@@ -27,20 +30,6 @@ const LicenseTable = ({ data, tracker }) => {
     ],
   };
   
-
-  // const renderAction = (record, path) => (
-  //   <Link to={`/gsmb/${path}/${record.id}`} state={{ record }}>
-  //     <Button type="link">View</Button>
-  //   </Link>
-  // );
-  // const renderAction = (record, path, isComplaint = false) => (
-  //   <Link to={`/gsmb/${path}/${record.id}`} state={{ record }}>
-  //     <Button type="link">
-  //       {isComplaint ? "✓" : "View"}
-  //     </Button>
-  //   </Link>
-  // );
-
   const renderAction = (record, path) => (
     <Link to={`/gsmb/${path}/${record.id}`} state={{ record }}>
       <Button type="link">View</Button>
