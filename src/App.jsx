@@ -8,12 +8,10 @@ import GSMBRoutes from "./routes/GSMBRoutes";
 import MLOwnerRoutes from "./routes/MLOwnerRoutes";
 import PoliceOfficerRoutes from "./routes/PoliceOfficerRoutes";
 import SignInPage from "./components/Auth/SignIn";
-import { useAuth } from "./hooks/useAuth";
 import PrivateRoute from "./routes/PrivateRoute";
 import SignUp from "./components/Auth/SignUp";
 import GeneralPublicDashboard from "../src/pages/GeneralPublic/Dashboard";
 import ResetPasswordModal from "../src/components/Auth/ResetPassword";
-import Footer from "./components/layout/Footer";
 import GSMBManagementRoutes from "./routes/GSMBManagementRoutes";
 
 const App = () => {
@@ -110,7 +108,7 @@ const ResetPasswordPage = ({ showModal, hideModal }) => {
   // Handle modal close
   const handleModalClose = () => {
     hideModal();
-    navigate("/signin"); // Redirect to the sign-in page after closing the modal
+    navigate("/signin"); 
   };
 
   return null; // This page doesn't render anything; it just triggers the modal
