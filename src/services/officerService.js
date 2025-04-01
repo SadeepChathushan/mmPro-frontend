@@ -1,10 +1,11 @@
 import axios from "axios";
 // import moment from "moment";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL; // ✅ For Vite (modern setup)
+const BASE_URL = import.meta.env.VITE_BASE_URL; 
 
 // Wrap your named functions in an object
 const officerService = {
+  /** 
   getIssuesData: async () => {
     const token = localStorage.getItem("USER_TOKEN");
     try {
@@ -34,7 +35,7 @@ const officerService = {
       return [];
     }
   },
-
+*/
   getUserDetails: async (userId) => {
     const token = localStorage.getItem("USER_TOKEN");
     try {
@@ -186,41 +187,6 @@ const officerService = {
       return null;
     }
   },
-
-  // // Step 2: Assign user to GSMB project with ML Owner role
-  // assignUserToProject: async (userId, projectId, roleId) => {
-  //   try {
-  //     const token = localStorage.getItem("USER_TOKEN");
-  //     if (!token) {
-  //       console.error("User token not found in localStorage");
-  //       return null;
-  //     }
-
-  //     const response = await axios.post(
-  //       `http://127.0.0.1:5000/gsmb-officer/assign-user-to-project`,
-  //       { userId, projectId, roleId },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     if (response.status === 201) {
-  //       return response.data; // Return the project assignment details
-  //     } else {
-  //       console.error("Failed to assign user to project:", response.data);
-  //       return null;
-  //     }
-  //   } catch (error) {
-  //     console.error("Error assigning user to project:", error);
-  //     return null;
-  //   }
-  // },
-
-  // Get users with the "MLOwner" role
-  // Get users with the "MLOwner" role
   getMlOwners: async () => {
     try {
       const token = localStorage.getItem("USER_TOKEN"); // Get the token from localStorage
@@ -351,6 +317,73 @@ const officerService = {
       throw error;
     }
   },
+   
+
+  getAllTpls: async () => {
+    try {
+      const token = localStorage.getItem("USER_TOKEN"); 
+      if (!token) {
+        console.error("User token not found in localStorage");
+        return [];
+      }
+
+      // Make a GET request to the backend API
+      const response = await axios.get(
+        `${BASE_URL}/gsmb-officer/get-tpls`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, 
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      
+      console.log("Get All Tpl Full API response:", response);
+
+      if (response.data.success && Array.isArray(response.data.data)) {
+        // Assuming the API returns an array of ML owners directly
+        return response.data.data;
+      } else {
+        console.error("Failed to fetch ML owners: Unexpected data format");
+        return [];
+      }
+    } catch (error) {
+      console.error("Failed to fetch ML owners:", error);
+      return [];
+    }
+  },
+
+  // Add this to your officerService object
+getMiningLicenses: async () => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return [];
+    }
+
+    const response = await axios.get(
+      `${BASE_URL}/gsmb-officer/get-mining-licenses`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.data.success && Array.isArray(response.data.data)) {
+      return response.data.data;
+    } else {
+      console.error("Failed to fetch mining licenses: Unexpected data format");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch mining licenses:", error);
+    return [];
+  }
+},
+
 };
 
 // Now export the service object as the default
