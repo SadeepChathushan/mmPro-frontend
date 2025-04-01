@@ -1,0 +1,141 @@
+/* ML request styles */
+
+/* Main container styles */
+.mining-license-form {
+    max-width: 1290px;
+    margin: 20px auto;
+    padding: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+  
+  /* Form header styles */
+  .mining-license-form .ant-card-head {
+    background-color: #ece4e4;
+    border-bottom: 2px solid #810202;
+  }
+  
+  .mining-license-form .ant-card-head-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #721a1a;
+    text-align: center;
+  }
+  
+  /* Section header styles */
+  .mining-license-form h3 {
+    color: #721a1a;
+    margin-top: 24px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e8e8e8;
+    font-size: 20px;
+    font-weight: 500;
+  }
+  
+  .mining-license-form h4 {
+    color: #5d1616;
+    margin: 16px 0 12px 0;
+    font-size: 18px;
+  }
+  
+  /* Form item styles */
+  .mining-license-form .ant-form-item {
+    margin-bottom: 16px;
+  }
+  
+  .mining-license-form .ant-form-item-label {
+    font-weight: 500;
+  }
+  
+  /* Input field styles */
+  .mining-license-form.ant-card .ant-form-item .ant-input,
+  .mining-license-form.ant-card .ant-form-item .ant-input-affix-wrapper,
+  .mining-license-form.ant-card .ant-form-item .ant-input-textarea,
+  .mining-license-form.ant-card .ant-form-item .ant-picker {
+    border: 1px solid #ff3535 !important;
+    border-radius: 4px !important;
+  }
+  
+  .mining-license-form .ant-input:focus,
+  .mining-license-form .ant-input-textarea:focus,
+  .mining-license-form .ant-picker-focused {
+    border-color: #470000;
+    box-shadow: 0 0 0 2px rgba(255, 24, 24, 0.2);
+  }
+  
+  /* File input styles */
+  .mining-license-form .ant-upload {
+    width: 100%;
+  }
+  
+  .mining-license-form .ant-upload.ant-upload-select {
+    display: block;
+  }
+  
+  /* Declaration section styles */
+  .declaration-section {
+    background-color: #f9f9f9;
+    padding: 16px;
+    border-radius: 4px;
+    margin: 24px 0;
+    border-left: 4px solid #ff1818;
+  }
+  
+  .declaration-section p {
+    margin-bottom: 16px;
+    font-style: italic;
+    color: #555;
+  }
+  
+  /* Submit button styles */
+  .mining-license-form .ant-btn-primary {
+    background-color: #ff1818;
+    border-color: #ff1818;
+    width: 200px;
+    height: 40px;
+    font-size: 16px;
+    margin-top: 16px;
+  }
+  
+  .mining-license-form .ant-btn-primary:hover {
+    background-color: #ff4040;
+    border-color: #40a9ff;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .mining-license-form {
+      padding: 16px;
+    }
+    
+    .mining-license-form .ant-card-head-title {
+      font-size: 20px;
+    }
+    
+    .mining-license-form .ant-row {
+      margin-right: 0 !important;
+      margin-left: 0 !important;
+    }
+    
+    .mining-license-form .ant-col {
+      padding-right: 8px !important;
+      padding-left: 8px !important;
+    }
+  }
+  
+  /* Form field spacing */
+  .mining-license-form .ant-form-item-control {
+    line-height: 1.5;
+  }
+  
+  /* Required field indicators */
+  .mining-license-form .ant-form-item-required::before {
+    display: inline-block;
+    margin-right: 4px;
+    color: #ff4d4f;
+    font-size: 14px;
+    font-family: SimSun, sans-serif;
+    line-height: 1;
+    content: "*";
+  }
