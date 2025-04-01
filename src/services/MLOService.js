@@ -20,6 +20,9 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("USER_TOKEN");
+    const username = localStorage.getItem("USERNAME");
+    console.log("User Name01", username);
+    console.log("User token", token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -350,6 +353,7 @@ export const fetchDispatchHistoryData = async (licenseNumber) => {
     throw error;
   }
 };
+
 /** 
 export const fetchDispatchHistoryData = async (licenseNumber = "") => {
   try {

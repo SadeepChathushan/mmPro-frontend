@@ -82,7 +82,7 @@ const MLOwnerHomePage = () => {
         // Map the data to match the expected structure
         const mappedData = homeLicenses.map(license => ({
           licenseNumber: license["License Number"],
-          owner: license["Owner Name"],
+          owner:  localStorage.getItem("USERNAME") || 'Unknown Owner',
           location: license["Location"],
           startDate: license["Start Date"],
           dueDate: license["Due Date"],
