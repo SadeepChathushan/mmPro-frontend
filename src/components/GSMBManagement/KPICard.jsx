@@ -1,22 +1,25 @@
-import React from 'react';
-import { Card, Space, Typography, Row, Col } from 'antd';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
-import { UserOutlined, FileTextOutlined, ExclamationCircleOutlined, MoneyCollectOutlined } from '@ant-design/icons';
-import { useLanguage } from '../../contexts/LanguageContext';
-
+import React from "react";
+import { Card, Space, Typography, Row, Col } from "antd";
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
+import {
+  UserOutlined,
+  FileTextOutlined,
+  ExclamationCircleOutlined,
+  MoneyCollectOutlined,
+} from "@ant-design/icons";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const { Title, Text } = Typography;
 // In your parent component:
-const colors = ['#ff4d4f', '#1890ff', '#52c41a', '#faad14']; // Define your colors
-
+const colors = ["#ff4d4f", "#1890ff", "#52c41a", "#faad14"]; // Define your colors
 
 export const KPICard = ({ kpi, colors, handlePieChartClick, index }) => {
-
   return (
-    <Card 
-      bordered={false} 
-      style={{ 
-        background: "linear-gradient(135deg,rgb(50, 0, 0),rgb(84, 1, 1),rgb(130, 0, 0))" 
+    <Card
+      bordered={false}
+      style={{
+        background:
+          "linear-gradient(135deg,rgb(50, 0, 0),rgb(84, 1, 1),rgb(130, 0, 0))",
       }}
     >
       <Space
@@ -29,7 +32,7 @@ export const KPICard = ({ kpi, colors, handlePieChartClick, index }) => {
         }}
       >
         {kpi.icon}
-        
+
         <div>
           <Title level={5} style={{ color: "white", margin: 0 }}>
             {kpi.title}
@@ -38,9 +41,7 @@ export const KPICard = ({ kpi, colors, handlePieChartClick, index }) => {
             {kpi.value}
           </Text>
           {kpi.description && (
-            <p style={{ color: "white", margin: 0 }}>
-              {kpi.description}
-            </p>
+            <p style={{ color: "white", margin: 0 }}>{kpi.description}</p>
           )}
         </div>
 
@@ -82,9 +83,9 @@ export const KPICard = ({ kpi, colors, handlePieChartClick, index }) => {
                 onClick={(e) => handlePieChartClick(e, index)}
               >
                 {kpi.donutData.map((_, cellIndex) => (
-                  <Cell 
-                    key={`cell-${cellIndex}`} 
-                    fill={colors[cellIndex % colors.length]} 
+                  <Cell
+                    key={`cell-${cellIndex}`}
+                    fill={colors[cellIndex % colors.length]}
                   />
                 ))}
               </Pie>
@@ -98,10 +99,14 @@ export const KPICard = ({ kpi, colors, handlePieChartClick, index }) => {
 
 // Example data structure
 
-
-export const getDefaultKPIData = (roleCounts, licenseCounts, TotalComplaint, TotalRoyalty) => {
-  const { language } = useLanguage(); // Move this inside the function body
-
+export const getDefaultKPIData = (
+  roleCounts={},
+  licenseCounts,
+  TotalComplaint,
+  TotalRoyalty = 0,
+  language
+) => {
+  
   return [
     {
       title:
@@ -199,16 +204,16 @@ export const getDefaultKPIData = (roleCounts, licenseCounts, TotalComplaint, Tot
           ? "පැමිණිලි සංඛ්‍යානය"
           : "முறையீட்டு புள்ளிவிவரம்",
       value: TotalComplaint?.total || 0,
-      icon: <ExclamationCircleOutlined style={{ fontSize: "30px", color: "#faad14" }} />,
+      icon: (
+        <ExclamationCircleOutlined
+          style={{ fontSize: "30px", color: "#faad14" }}
+        />
+      ),
       color: "#faad14",
       donutData: [
         {
           name:
-            language === "en"
-              ? "New"
-              : language === "si"
-              ? "නව"
-              : "புதியது",
+            language === "en" ? "New" : language === "si" ? "නව" : "புதியது",
           value: TotalComplaint?.New || 0,
         },
         {
@@ -248,12 +253,12 @@ export const getDefaultKPIData = (roleCounts, licenseCounts, TotalComplaint, Tot
           ? "මුළු Royalty ගාස්තුව"
           : "மொத்த காப்புரிமை",
       value: `LKR ${(TotalRoyalty || 0).toLocaleString()}`,
-      icon: <MoneyCollectOutlined style={{ fontSize: "30px", color: "#ff4d4f" }} />,
+      icon: (
+        <MoneyCollectOutlined style={{ fontSize: "30px", color: "#ff4d4f" }} />
+      ),
       color: "#ff4d4f",
     },
   ];
 };
-
-
 
 export default KPICard;

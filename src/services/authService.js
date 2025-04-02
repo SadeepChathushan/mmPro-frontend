@@ -21,6 +21,7 @@ const authService = {
         localStorage.setItem("USER_TOKEN", response.data.token);
         localStorage.setItem("REFRESH_TOKEN", response.data.refresh_token);
         localStorage.setItem("USERROLE", response.data.role);
+        localStorage.setItem("USERNAME", response.data.username);
         return response.data.role;
       } else {
         message.error("Login failed. Please try again.");
