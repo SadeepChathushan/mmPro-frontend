@@ -7,11 +7,8 @@ import {
   Col,
   Typography,
   AutoComplete,
-<<<<<<< HEAD
-=======
   DatePicker,
   Grid,
->>>>>>> be2b08d6f8ad1c9959dd7b0b512e5933b42372a0
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
