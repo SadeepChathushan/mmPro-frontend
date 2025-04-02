@@ -35,11 +35,11 @@ const Dashboard = () => {
     }
 
     try {
-      const data = await checkVehicleNumber(input);
+      const licenseData  = await checkVehicleNumber(input);
 
-      if (data.license_details) {
+      if (licenseData.isValid) {
         navigate("/police-officer/valid", {
-          state: { licenseDetails: data.license_details },
+          state: { licenseDetails: licenseData }
         });
       } else {
         setModalMessage(translations.invalidLoad[language]);
