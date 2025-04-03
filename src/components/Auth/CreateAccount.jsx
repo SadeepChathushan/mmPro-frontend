@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Form, Input, Select, Button, message } from "antd";
 import { UserOutlined, MailOutlined, LockOutlined } from "@ant-design/icons";
+import authService from "../../services/authService";
 
 const CreateAccountModal = ({ visible, onCancel }) => {
   const [form] = Form.useForm();
@@ -8,27 +9,37 @@ const CreateAccountModal = ({ visible, onCancel }) => {
 
   const handleSubmit = async (values) => {
     try {
-      // Combine values with selected role
-      const accountData = {
-        ...values,
-        role: selectedRole
+      // Prepare the payload including files
+      const payload = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        password: values.password,
+        designation: values.designation, // Note: Fix typo from 'designation' to match your form
+        nic: values.nic,
+        mobile: values.mobile,
       };
 
-      console.log("Create Account Submission:", accountData);
-      
-      // TODO: Add actual account creation logic
-      message.success("Account creation request submitted");
-      onCancel(); // Close the modal after submission
+      // Call the registration service
+      const result = await authService.registerUser(payload, selectedRole);
+
+      if (result) {
+        message.success("Account created successfully!");
+        form.resetFields();
+        onCancel();
+      }
     } catch (error) {
       console.error("Account Creation Error:", error);
-      message.error("Failed to create account. Please try again.");
+      message.error(
+        error.message || "Failed to create account. Please try again."
+      );
     }
   };
 
   const roles = [
-    { value: 'gsmb_officer', label: 'GSMB Officer' },
-    { value: 'police', label: 'Police' },
-    { value: 'ml_owner', label: 'Mining License Owner' }
+    { value: "gsmb_officer", label: "GSMB Officer" },
+    { value: "police", label: "Police" },
+    { value: "ml_owner", label: "Mining License Owner" },
   ];
 
   return (
@@ -39,20 +50,24 @@ const CreateAccountModal = ({ visible, onCancel }) => {
       footer={null}
       centered
     >
-      <Form 
-        form={form} 
-        layout="vertical" 
-        onFinish={handleSubmit}
-      >
+      <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <Form.Item
-          label="Full Name"
-          name="fullName"
-          rules={[{ required: true, message: "Please enter your full name" }]}
+          label="First Name"
+          name="firstName"
+          rules={[{ required: true, message: "Please enter your First name" }]}
         >
-          <Input 
-            prefix={<UserOutlined />} 
-            placeholder="Enter your full name" 
+          <Input
+            prefix={<UserOutlined />}
+            placeholder="Enter your First name"
           />
+        </Form.Item>
+
+        <Form.Item
+          label="Last Name"
+          name="lastName"
+          rules={[{ required: true, message: "Please enter your Last name" }]}
+        >
+          <Input prefix={<UserOutlined />} placeholder="Enter your Last name" />
         </Form.Item>
 
         <Form.Item
@@ -60,13 +75,10 @@ const CreateAccountModal = ({ visible, onCancel }) => {
           name="email"
           rules={[
             { required: true, message: "Please input your email!" },
-            { type: "email", message: "Please enter a valid email!" }
+            { type: "email", message: "Please enter a valid email!" },
           ]}
         >
-          <Input 
-            prefix={<MailOutlined />} 
-            placeholder="Enter your email" 
-          />
+          <Input prefix={<MailOutlined />} placeholder="Enter your email" />
         </Form.Item>
 
         <Form.Item
@@ -78,7 +90,7 @@ const CreateAccountModal = ({ visible, onCancel }) => {
             placeholder="Select your role"
             onChange={(value) => setSelectedRole(value)}
           >
-            {roles.map(role => (
+            {roles.map((role) => (
               <Select.Option key={role.value} value={role.value}>
                 {role.label}
               </Select.Option>
@@ -87,47 +99,85 @@ const CreateAccountModal = ({ visible, onCancel }) => {
         </Form.Item>
 
         <Form.Item
+          label="NIC Number"
+          name="nic"
+          rules={[
+            { required: true, message: "Please input your nic!" },
+            { type: "nic", message: "Please enter a NIC Number!" },
+          ]}
+        >
+          <Input
+            prefix={<MailOutlined />}
+            placeholder="Enter your Nic Number"
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Mobile Number"
+          name="mobile"
+          rules={[
+            { required: true, message: "Please input your Mobile Number!" },
+            { type: "mobile", message: "Please enter a Mobile Number!" },
+          ]}
+        >
+          <Input
+            prefix={<MailOutlined />}
+            placeholder="Enter your Mobile Number"
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Designation"
+          name="designation"
+          rules={[
+            { required: true, message: "Please input your Designation!" },
+            { type: "designation", message: "Please enter a Designation!" },
+          ]}
+        >
+          <Input
+            prefix={<MailOutlined />}
+            placeholder="Enter your Designation"
+          />
+        </Form.Item>
+
+        <Form.Item
           label="Password"
           name="password"
           rules={[
             { required: true, message: "Please input your password!" },
-            { min: 8, message: "Password must be at least 8 characters" }
+            { min: 8, message: "Password must be at least 8 characters" },
           ]}
         >
-          <Input.Password 
-            prefix={<LockOutlined />} 
-            placeholder="Create a password" 
+          <Input.Password
+            prefix={<LockOutlined />}
+            placeholder="Create a password"
           />
         </Form.Item>
 
         <Form.Item
           label="Confirm Password"
           name="confirmPassword"
-          dependencies={['password']}
+          dependencies={["password"]}
           rules={[
             { required: true, message: "Please confirm your password!" },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if (!value || getFieldValue('password') === value) {
+                if (!value || getFieldValue("password") === value) {
                   return Promise.resolve();
                 }
-                return Promise.reject(new Error('Passwords do not match!'));
+                return Promise.reject(new Error("Passwords do not match!"));
               },
             }),
           ]}
         >
-          <Input.Password 
-            prefix={<LockOutlined />} 
-            placeholder="Confirm password" 
+          <Input.Password
+            prefix={<LockOutlined />}
+            placeholder="Confirm password"
           />
         </Form.Item>
 
         <Form.Item>
-          <Button 
-            type="primary" 
-            htmlType="submit" 
-            block
-          >
+          <Button type="primary" htmlType="submit" block>
             Create Account
           </Button>
         </Form.Item>
@@ -180,16 +230,16 @@ export default CreateAccountModal;
 //       footer={null}
 //       centered
 //     >
-//       <div style={{ 
-//         display: 'flex', 
-//         flexDirection: 'column', 
-//         gap: '16px', 
-//         padding: '20px' 
+//       <div style={{
+//         display: 'flex',
+//         flexDirection: 'column',
+//         gap: '16px',
+//         padding: '20px'
 //       }}>
 //         {roleButtons.map((item) => (
-//           <Button 
+//           <Button
 //             key={item.role}
-//             type="primary" 
+//             type="primary"
 //             icon={item.icon}
 //             size="large"
 //             block
