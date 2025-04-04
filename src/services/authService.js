@@ -108,6 +108,9 @@ const authService = {
       case "GSMBManagement":
         navigate("/gsmbmanagement/dashboard");
         break;
+      case "RegionalOfficer":
+        navigate("/regional/dashboard");
+        break;
       default:
         navigate("/");
         break;

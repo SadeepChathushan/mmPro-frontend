@@ -15,6 +15,7 @@ import GeneralPublicDashboard from "../src/pages/GeneralPublic/Dashboard";
 import ResetPasswordModal from "../src/components/Auth/ResetPassword";
 import Footer from "./components/layout/Footer";
 import GSMBManagementRoutes from "./routes/GSMBManagementRoutes";
+import RegionalOfficerRoutes from "./routes/RegionalOfficerRoutes";
 
 const App = () => {
   const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false);
@@ -49,6 +50,7 @@ const App = () => {
                 "PoliceOfficer",
                 "MLOwner",
                 "GSMBManagement",
+                "RegionalOfficer",
               ]}
             />
           }
@@ -84,6 +86,14 @@ const App = () => {
               element={<PrivateRoute allowedRoles={["GSMBManagement"]} />}
             >
               <Route path="*" element={<GSMBManagementRoutes />} />
+            </Route>
+
+            {/* Regional Officer Routes */}
+            <Route
+              path="regional/*"
+              element={<PrivateRoute allowedRoles={["RegionalOfficer"]} />}
+            >
+              <Route path="*" element={<RegionalOfficerRoutes />} />
             </Route>
           </Route>
         </Route>
