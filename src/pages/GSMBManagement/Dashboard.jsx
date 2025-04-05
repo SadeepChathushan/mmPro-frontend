@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Layout, Row, Col, Typography } from "antd";
+import { useNavigate } from "react-router-dom";
+import { Layout, Row, Col, Typography, Button } from "antd";
 import {
   KPICard,
   getDefaultKPIData,
@@ -25,6 +26,7 @@ const { Title } = Typography;
 
 const Dashboard = () => {
   const { language } = useLanguage();
+  const navigate = useNavigate();
 
   const [startLocationData, setStartLocationData] = useState([]);
   const [transportData, setTransportData] = useState([]);
@@ -77,23 +79,26 @@ const Dashboard = () => {
           fetchRoyaltyCounts(),
         ]);
 
-        // Extract nested data from responses
-        const complaintData = complaints.issues; // Extract issues from complaints
-        const roleData = roles.issues; // Extract issues from roles
-        const licenseData = licenses.issues; // Extract issues from licenses
-        const royaltyData = royalty.totalRoyalty; // Extract totalRoyalty from royalty
-
-        setTotalComplaint(complaintData);
-        setRoleCounts(roleData);
-        setLicenseCounts(licenseData);
-        setTotalRoyalty(royaltyData);
-
-        console.log("State After Update:", {
-          TotalComplaint: complaintData,
-          roleCounts: roleData,
-          licenseCounts: licenseData,
-          TotalRoyalty: royaltyData,
+        setTotalComplaint(complaints.issues || {
+          New: 0,
+          Rejected: 0,
+          InProgress: 0,
+          Executed: 0,
+          total: 0,
         });
+        setRoleCounts(roles.issues || {
+          licenceOwner: 0,
+          activeGSMBOfficers: 0,
+          policeOfficers: 0,
+          public: 0,
+        });
+        setLicenseCounts(licenses.issues || {
+          valid: 0,
+          expired: 0,
+          rejected: 0,
+          total: 0,
+        });
+        setTotalRoyalty(royalty.totalRoyalty || 0);
       } catch (error) {
         console.error("Error loading dashboard data:", error);
       }
@@ -103,11 +108,11 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    fetchTotalLocationML(setStartLocationData);
+    fetchTotalLocationML(setStartLocationData).catch(() => setStartLocationData([]));
   }, []);
 
   useEffect(() => {
-    fetchTransportLicenseDestinations(setTransportData);
+    fetchTransportLicenseDestinations(setTransportData).catch(() => setTransportData([]));
   }, []);
 
   const handlePieChartClick = (e, index) => {
@@ -120,7 +125,6 @@ const Dashboard = () => {
     return "#dc3545";
   };
 
-  // In Dashboard.js
   const kpiData = getDefaultKPIData(
     roleCounts,
     licenseCounts,
@@ -155,6 +159,9 @@ const Dashboard = () => {
               ? "උපකරණ පුවරුව"
               : "டாஷ்போர்டு"}
           </Title>
+          <Button onClick={() => navigate("/gsmbmanagement/activateofficers")} className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700">
+            Activation
+          </Button>
         </Row>
       </Header>
 
