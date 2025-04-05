@@ -51,14 +51,16 @@ const ValidPage = () => {
             ? "காலாவதியாகிறது"
             : "Expires",
           dataIndex: "expires",
+          render: (text) => text, // Directly display the pre-formatted text
         },
+
         {
           label: isSinhala
             ? "පැටවූ දිනය / වේලාව"
             : isTamil
             ? "ஏற்றப்பட்ட தேதி/நேரம்"
-            : "Loaded date/time",
-          dataIndex: "start",
+            : "Destination",
+          dataIndex: "destination",
         },
       ],
       [
@@ -75,22 +77,18 @@ const ValidPage = () => {
             ? "අවලංගු දිනය/ වේලාව"
             : isTamil
             ? "நிலுவைத் தேதி/நேரம்"
-            : "Due date/Time",
-          dataIndex: "dueDate",
+            : "Route 01",
+          dataIndex: "Route_01",
         },
       ],
       [
         {
-          label: isSinhala
-            ? "පැටවුම් අංකය"
-            : isTamil
-            ? "சுமை எண்"
-            : "Load Number",
-          dataIndex: "loadNumber",
+          label: isSinhala ? "පැටවුම් අංකය" : isTamil ? "சுமை எண்" : "Route 02",
+          dataIndex: "Route_02",
         },
         {
-          label: isSinhala ? "ගමනාන්තය" : isTamil ? "சேருமிடம்" : "Destination",
-          dataIndex: "destination",
+          label: isSinhala ? "ගමනාන්තය" : isTamil ? "சேருமிடம்" : "Route 03",
+          dataIndex: "Route_03",
         },
       ],
       [
@@ -101,6 +99,14 @@ const ValidPage = () => {
             ? "உரிமம் வைத்திருப்பவர்"
             : "License Holder",
           dataIndex: "owner",
+        },
+        {
+          label: isSinhala
+            ? "බලපත්‍ර හිමිකරු"
+            : isTamil
+            ? "உரிமம் வைத்திருப்பவர்"
+            : "Mining License Expire Date",
+          dataIndex: "dueDate",
         },
       ],
     ],

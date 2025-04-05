@@ -6,10 +6,21 @@ const LicenseTable = ({ data, tracker }) => {
   const columns = {
     ML: [
       { title: "ID", dataIndex: "id" },
-      { title: "Owner Name", dataIndex: "author" },
+      { title: "Owner Name", dataIndex: "assigned_to" },
       { title: "License Number", dataIndex: "subject" },
       { title: "Mobile Number", dataIndex: "mobile_number" },
-      { title: "Action", render: (_, record) => renderAction(record, "license") },
+      { title: "Capacity", dataIndex: "capacity" },
+      { title: "Used", dataIndex: "used" },
+      { title: "Remaining", dataIndex: "remaining" },
+      { title: "Royalty", dataIndex: "royalty" },
+      {
+        title: "Valid Period",
+        render: (_, record) => `${record.start_date} - ${record.due_date}`,
+      },
+      {
+        title: "Action",
+        render: (_, record) => renderAction(record, "license"),
+      },
     ],
     TPL: [
       { title: "License Number", dataIndex: "mining_license_number" },
@@ -19,8 +30,11 @@ const LicenseTable = ({ data, tracker }) => {
       { title: "Lorry Driver Contact Number", dataIndex: "driver_contact" },
       { title: "Cubes", dataIndex: "cubes" },
       { title: "Destination", dataIndex: "destination" },
-      { title: "Status", render: (_, record) => renderAction(record, "license") },
-    ], 
+      {
+        title: "Status",
+        render: (_, record) => renderAction(record, "license"),
+      },
+    ],
     CMPLN: [
       { title: "ID", dataIndex: "id" },
       { title: "Mobile Number", dataIndex: "mobileNumber" },
@@ -33,14 +47,42 @@ const LicenseTable = ({ data, tracker }) => {
       { title: "Owner Name", dataIndex: "author" },
       { title: "License Number", dataIndex: "subject" },
       { title: "Mobile Number", dataIndex: "mobile_number" },
-      { title: "Action", render: (_, record) => renderAction(record, "license") },
+      {
+        title: "Action",
+        render: (_, record) => renderAction(record, "license"),
+      },
     ],
   };
-  
+
   const renderAction = (record, path) => (
-    <Link to={`/gsmb/${path}/${record.id}`} state={{ record }}>
-      <Button type="link">View</Button>
-    </Link>
+    <div style={{ display: "flex", gap: "8px" }}>
+      <Link to={`/gsmb/${path}/${record.id}`} state={{ record }}>
+        <Button
+          type="link"
+          style={{
+            background: "blue",
+            color: "white",
+            borderRadius: "10%",
+            padding: "0 8px",
+          }}
+        >
+          View
+        </Button>
+      </Link>
+      <Link to={`/gsmb/${path}/${record.id}`} state={{ record }}>
+        <Button
+          type="link"
+          style={{
+            background: "#ff4d4f",
+            color: "white",
+            borderRadius: "10%",
+            padding: "0 8px",
+          }}
+        >
+          Cancel
+        </Button>
+      </Link>
+    </div>
   );
 
   const renderComplaintAction = (record) => (
@@ -48,12 +90,15 @@ const LicenseTable = ({ data, tracker }) => {
       style={{ fontSize: "18px", color: "black" }}
       onChange={(e) => {
         // Handle checkbox change
-        console.log(`Checkbox for record ${record.id} is ${e.target.checked ? "checked" : "unchecked"}`);
+        console.log(
+          `Checkbox for record ${record.id} is ${
+            e.target.checked ? "checked" : "unchecked"
+          }`
+        );
         // You can update the state or perform any other action here
       }}
     />
   );
-
 
   return <Table dataSource={data} columns={columns[tracker]} rowKey="id" />;
 };
