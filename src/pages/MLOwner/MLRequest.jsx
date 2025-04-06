@@ -18,7 +18,7 @@ const MLRequest = () => {
       section8: "Bond Information",
       section9: "Minerals to be Mined",
       section10: "License Fee",
-      submitText: "Submit Application",
+      submitText: "Add License",
       // Form labels
       explorationLicenseNo: "Exploration Licence No: (where applicable)",
       applicantName: "Name of Applicant / Authorized Agent",
