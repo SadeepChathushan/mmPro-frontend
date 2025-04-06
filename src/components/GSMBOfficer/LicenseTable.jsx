@@ -70,7 +70,7 @@ const LicenseTable = ({ data, tracker }) => {
         </Button>
       </Link>
       <Link to={`/gsmb/${path}/${record.id}`} state={{ record }}>
-        <Button
+        {/* <Button
           type="link"
           style={{
             background: "#ff4d4f",
@@ -80,7 +80,7 @@ const LicenseTable = ({ data, tracker }) => {
           }}
         >
           Cancel
-        </Button>
+        </Button> */}
       </Link>
     </div>
   );
