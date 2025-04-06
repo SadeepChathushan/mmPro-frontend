@@ -354,7 +354,46 @@ export const fetchDispatchHistoryData = async (licenseNumber) => {
   }
 };
 
-/** 
+
+/**
+export const fetchTPLPrintHistoryData = async (tpl_id,licenseNumber) => {
+  try {
+    const response = await axiosInstance.get(`mining-owner/view-tpls/${tpl_id}`, {
+      params: { mining_license_number: licenseNumber }
+    });
+
+    console.log("Raw API response:", response); // Debug raw response
+
+    if (!response.data) {
+      throw new Error("Empty API response");
+    }
+
+    // Debug response structure
+    console.log("Response data structure:", {
+      isArray: Array.isArray(response.data),
+      keys: Object.keys(response.data),
+      hasViewTpls: !!response.data.view_tpls
+    });
+
+    // Handle the response structure with view_tpls
+    if (response.data.view_tpls && Array.isArray(response.data.view_tpls)) {
+      return response.data.view_tpls; // Return the array from view_tpls
+    }
+    if (Array.isArray(response.data)) {
+      return response.data; // Direct array response (fallback)
+    }
+
+    // If we get here, the response format is unexpected
+    console.error("Unexpected API response format:", response.data);
+    throw new Error(`Unexpected API response format. Received: ${JSON.stringify(response.data)}`);
+  } catch (error) {
+    console.error("Error fetching TPL History:", error);
+    throw error;
+  }
+};
+
+
+ 
 export const fetchDispatchHistoryData = async (licenseNumber = "") => {
   try {
     // Retrieve the user token from localStorage

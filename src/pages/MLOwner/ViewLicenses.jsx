@@ -82,7 +82,7 @@ const Licenses = () => {
 
         const mappedData = allLicenses.map((license) => ({
           licenseNumber: license["License Number"],
-          owner: license["Owner Name"],
+          owner: localStorage.getItem("USERNAME") || "Unknown Owner",
           location: license["Location"],
           startDate: license["Start Date"],
           dueDate: license["Due Date"],
@@ -168,7 +168,9 @@ const Licenses = () => {
             <AutoComplete
               value={searchText}
               onSearch={handleSearch}
-              options={filteredLicenses.map(({ licenseNumber }) => ({ value: licenseNumber }))}
+              options={filteredLicenses.map(({ licenseNumber }) => ({
+                value: licenseNumber,
+              }))}
               style={{ width: "100%" }}
             >
               <Input
@@ -205,17 +207,46 @@ const Licenses = () => {
       ) : (
         <div className="card-container">
           {filteredLicenses.map((license) => (
-            <Card key={license.licenseNumber} title={`License Number: ${license.licenseNumber}`} className="license-card">
-              <p><strong>{currentTranslations.owner}:</strong> {license.owner}</p>
-              <p><strong>{currentTranslations.location}:</strong> {license.location}</p>
-              <p><strong>{currentTranslations.startDate}:</strong> {moment(license.startDate).format("YYYY-MM-DD")}</p>
-              <p><strong>{currentTranslations.dueDate}:</strong> {moment(license.dueDate).format("YYYY-MM-DD")}</p>
+            <Card
+              key={license.licenseNumber}
+              title={`License Number: ${license.licenseNumber}`}
+              className="license-card"
+            >
+              <p>
+                <strong>{currentTranslations.owner}:</strong> {license.owner}
+              </p>
+              <p>
+                <strong>{currentTranslations.location}:</strong>{" "}
+                {license.location}
+              </p>
+              <p>
+                <strong>{currentTranslations.startDate}:</strong>{" "}
+                {moment(license.startDate).format("YYYY-MM-DD")}
+              </p>
+              <p>
+                <strong>{currentTranslations.dueDate}:</strong>{" "}
+                {moment(license.dueDate).format("YYYY-MM-DD")}
+              </p>
               <Space>
-                <Link to={`/mlowner/home/dispatchload/${license.licenseNumber}`}>
-                  <Button className="dispatch-load-button">{currentTranslations.dispatchLoad}</Button>
+                <Link
+                  to={`/mlowner/home/dispatchload/${license.licenseNumber}`}
+                >
+                  <Button
+                    className="dispatch-load-button"
+                    disabled={
+                      parseInt(license.remainingCubes, 10) === 0 ||
+                      new Date(license.dueDate) < new Date()
+                    }
+                  >
+                    {currentTranslations.dispatchLoad}
+                  </Button>
                 </Link>
-                <Link to={`/mlowner/history?licenseNumber=${license.licenseNumber}`}>
-                  <Button className="history-button1">{currentTranslations.history}</Button>
+                <Link
+                  to={`/mlowner/history?licenseNumber=${license.licenseNumber}`}
+                >
+                  <Button className="history-button1">
+                    {currentTranslations.history}
+                  </Button>
                 </Link>
               </Space>
             </Card>
