@@ -21,6 +21,7 @@ const authService = {
         localStorage.setItem("USER_TOKEN", response.data.token);
         localStorage.setItem("REFRESH_TOKEN", response.data.refresh_token);
         localStorage.setItem("USERROLE", response.data.role);
+        localStorage.setItem("USERNAME", response.data.username);
         return response.data.role;
       } else {
         message.error("Login failed. Please try again.");
@@ -159,6 +160,91 @@ const authService = {
       return null;
     }
   },
-};
 
+  registerUser: async (payload, role) => {
+    try {
+      let endpoint;
+      
+      // Determine endpoint based on role
+      if (role === 'police') {
+        endpoint = `${BASE_URL}/auth/register-police-officer`;
+      } else if (role === 'gsmb_officer') {
+        endpoint = `${BASE_URL}/auth/register-gsmb-officer`;
+      } else {
+        throw new Error('Invalid role selected');
+      }
+  
+      const formData = new FormData();
+      formData.append('login', payload.email);
+      formData.append('first_name', payload.firstName);
+      formData.append('last_name', payload.lastName);
+      formData.append('email', payload.email);
+      formData.append('password', payload.password);
+      formData.append('designation', payload.designation);
+      formData.append('nic_number', payload.nic);
+      formData.append('mobile_number', payload.mobile);
+  
+      const response = await axios.post(endpoint, formData);
+  
+      if (response.status === 201) {
+        return response.data;
+      } else {
+        console.error("Failed to register user:", response.data);
+        throw new Error(response.data.error || 'Registration failed');
+      }
+    } catch (error) {
+      console.error("Error registering user:", error);
+      throw error;
+    }
+  },
+}
 export default authService;
+
+/** 
+export const registerUser = async (payload, role) => {
+  try {
+    let endpoint;
+    const token = localStorage.getItem("USER_TOKEN");
+    
+    if (!token) {
+      throw new Error('Authentication token not found');
+    }
+
+    // Determine endpoint based on role
+    if (role === 'police') {
+      endpoint = `${BASE_URL}/auth/register-police-officer`;
+    } else if (role === 'gsmb_officer') {
+      endpoint = `${BASE_URL}/auth/register-gsmb-officer`;
+    } else {
+      throw new Error('Invalid role selected');
+    }
+
+    const formData = new FormData();
+    formData.append('login', payload.email);
+    formData.append('first_name', payload.firstName);
+    formData.append('last_name', payload.lastName);
+    formData.append('email', payload.email);
+    formData.append('password', payload.password);
+    formData.append('designation', payload.designation);
+    formData.append('nic_number', payload.nic);
+    formData.append('mobile_number', payload.mobile);
+
+    const response = await axios.post(endpoint, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 201) {
+      return response.data;
+    } else {
+      console.error("Failed to register user:", response.data);
+      throw new Error(response.data.error || 'Registration failed');
+    }
+  } catch (error) {
+    console.error("Error registering user:", error);
+    throw error;
+  }
+};
+*/

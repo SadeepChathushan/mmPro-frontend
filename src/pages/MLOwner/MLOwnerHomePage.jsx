@@ -28,6 +28,7 @@ const MLOwnerHomePage = () => {
       inactive: "Inactive",
       dispatchLoad: "Dispatch Load",
       history: "History",  
+      mlRequest: "Request a Mining License"
     },
     si: {
       title: " කැණීමේ බලපත්‍ර",
@@ -45,6 +46,7 @@ const MLOwnerHomePage = () => {
       inactive: "අක්‍රීයයි",
       dispatchLoad: "නව ප්‍රවාහන බලපත්‍රයක්", 
       history: "ඉතිහාසය",
+      mlRequest: ""
     },
     ta: {
       title: "சுரங்க அனுமதிகள் மேலோட்டம்",
@@ -62,6 +64,7 @@ const MLOwnerHomePage = () => {
       inactive: "செயலற்றது",
       dispatchLoad: "சரக்கு அனுப்பு",
       history: "வரலாறு", 
+      mlRequest: ""
     }
   };
 
@@ -71,18 +74,17 @@ const MLOwnerHomePage = () => {
     const fetchData = async () => {
       try {
         console.log("Fetching home licenses...");
-        const homeLicenses = await fetchHomeLicense(); // Use the imported function
-        console.log("API Response - Home Licenses:", homeLicenses); // Debug API response
+        const homeLicenses = await fetchHomeLicense(); 
+        console.log("API Response - Home Licenses:", homeLicenses);
   
         if (homeLicenses.length === 0) {
           console.log("No home licenses found");
           return;
         }
   
-        // Map the data to match the expected structure
         const mappedData = homeLicenses.map(license => ({
           licenseNumber: license["License Number"],
-          owner: license["Owner Name"],
+          owner:  localStorage.getItem("USERNAME") || 'Unknown Owner',
           location: license["Location"],
           startDate: license["Start Date"],
           dueDate: license["Due Date"],
@@ -90,9 +92,8 @@ const MLOwnerHomePage = () => {
           status: license["Status"]
         }));
   
-        console.log("Mapped Data:", mappedData); // Debug mapped data
+        console.log("Mapped Data:", mappedData);
   
-        // Update state with the mapped data
         setData(mappedData);
         setFilteredData(mappedData);
       } catch (error) {
@@ -120,6 +121,12 @@ const MLOwnerHomePage = () => {
                     {currentTranslations.viewLicensesButton}
                   </Button>
                 </Link>
+
+                <Link to="/mlowner/home/mlrequest">
+                  <Button className="ml-request-button">
+                    {currentTranslations.mlRequest}
+                  </Button>
+                </Link>
        </Row>
       <div className="page-content1">
         {loading ? (
@@ -139,7 +146,7 @@ const MLOwnerHomePage = () => {
             ) : (
               <Row gutter={[16, 16]} className="card-container" justify="center">
                 {filteredData.map(record => (
-                  <Col xs={24} sm={8} md={8} lg={8} key={record.licenseNumber}>
+                  <Col xs={24} sm={12} md={8} lg={8} key={record.licenseNumber}>
                     <Card title={record.licenseNumber} className="license-card">
                       <p><strong>{currentTranslations.owner}:</strong> {record.owner}</p>
                       <p><strong>{currentTranslations.location}:</strong> {record.location}</p>
@@ -155,7 +162,7 @@ const MLOwnerHomePage = () => {
                       <Space style={{ width: "100%", display: "flex", justifyContent: "center"}}>
                         <Link to={`/mlowner/home/dispatchload/${record.licenseNumber}`}>
                           <Button className="dispatch-load-button" disabled={parseInt(record.remainingCubes, 10) === 0 || new Date(record.dueDate) < new Date()}>
-                            {currentTranslations.dispatchLoad} {/* Updated to use translation */}
+                            {currentTranslations.dispatchLoad}
                           </Button>
                         </Link>
                       </Space>

@@ -35,7 +35,6 @@
 .card-container {
   display: flex;
   justify-content: center;
-  gap: 16px;
   flex-wrap: wrap;
   margin-top: 20px;
 }
@@ -46,7 +45,8 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-align: left;
   background: linear-gradient(135deg, #e3c29b, #ebd4b7);
-  outline: 1px solid #ffcd91;}
+  outline: 1px solid #ffcd91;
+}
 
 .license-card:hover {
   transform: translateY(-8px);
@@ -91,11 +91,23 @@
 }
 
 .view-licenses-button {
-  width: 300px;
+  width: 400px;
   background: linear-gradient(135deg, #cd595a, #e77c7e); 
   border: none;
   color: rgb(255, 255, 255);
   margin-bottom: 20px;
+  margin-left: 50px;
+  margin-right: 50px;
+}
+
+.ml-request-button{
+  width: 400px;
+  background: linear-gradient(135deg, #cd595a, #e77c7e); 
+  border: none;
+  color: rgb(255, 255, 255);
+  margin-bottom: 20px;
+  margin-left: 50px;
+  margin-right: 50px;
 }
 
 .back_button_container {
@@ -158,6 +170,12 @@
 }
 
 .view-licenses-button:hover {
+  background: linear-gradient(135deg, #ffffff,  #efefef)!important; 
+  color: #c40000 !important;
+  outline:1PX solid #c40000;
+}
+
+.ml-request-button:hover {
   background: linear-gradient(135deg, #ffffff,  #efefef)!important; 
   color: #c40000 !important;
   outline:1PX solid #c40000;

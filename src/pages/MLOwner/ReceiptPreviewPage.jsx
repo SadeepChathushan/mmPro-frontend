@@ -6,7 +6,7 @@ import { useLocation } from "react-router-dom";
 import "../../styles/MLOwner/ReceiptPage.css"; // Add this line at the top of your file
 import axios from "axios";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { fetchMLData } from "../../services/MLOService"; // Extracted service import
+import { fetchMLData } from "../../services/MLOService";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -25,6 +25,16 @@ const ReceiptPage = () => {
         .catch((error) => console.error("Error fetching ML data:", error));
     }
   }, [l_number]);
+
+  /**
+   useEffect(() => {
+    if (l_number) {
+      fetchMLData(l_number)
+        .then((data) => setmlData(data))
+        .catch((error) => console.error("Error fetching ML data:", error));
+    }
+  }, [l_number]);
+   */
 
   // Ensure mldata and mldata.custom_fields exist before accessing
   console.log("dataaaa", mldata);
@@ -119,7 +129,7 @@ const ReceiptPage = () => {
       { label: "Lorry Contact", value: receiptData.lorryContact },
       { label: "Load (Cube)", value: receiptData.loadCube },
       { label: "Destination", value: receiptData.destination },
-      { label: "Validity", value: receiptData.validity },
+      // { label: "Validity", value: receiptData.validity },
       { label: "Printed Date", value: receiptData.printedDate },
     ];
 
@@ -283,7 +293,8 @@ const ReceiptPage = () => {
               </strong>{" "}
               {receiptData.destination}
             </p>
-            <p>
+
+            {/* <p>
               <strong>
                 {language === "en"
                   ? "Validity:"
@@ -292,7 +303,7 @@ const ReceiptPage = () => {
                   : "செல்லுபடியாகும்:"}
               </strong>{" "}
               {receiptData.validity}
-            </p>
+            </p> */}
             <p>
               <strong>
                 {language === "en"
