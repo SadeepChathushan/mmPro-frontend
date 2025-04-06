@@ -110,7 +110,7 @@ const LicenseTable = ({ data, tracker, loading }) => {
       });
     }
   };
-  
+
   const renderAction = (record) => (
     <div style={{ display: "flex", gap: "8px" }}>
       <Button
