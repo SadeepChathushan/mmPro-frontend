@@ -5,6 +5,7 @@ import History from '../pages/MLOwner/History';
 import Licenses from '../pages/MLOwner/ViewLicenses';
 import Receipt from '../pages/MLOwner/ReceiptPreviewPage';
 import MLRequest from '../pages/MLOwner/MLRequest';
+import TPLReceipt from '../pages/MLOwner/TPLHistoryRecipt';
 
 const MLOwnerRoutes = () => {
   return (
@@ -15,6 +16,7 @@ const MLOwnerRoutes = () => {
       <Route path="home/mlrequest" element={<MLRequest />} />
       <Route path="history" element={<History />} />
       <Route path="home/viewlicenses" element={<Licenses />} />
+      <Route path="home/dispatchload/TPLreceipt" element={<TPLReceipt />} />
     </Routes>
   );
 };
