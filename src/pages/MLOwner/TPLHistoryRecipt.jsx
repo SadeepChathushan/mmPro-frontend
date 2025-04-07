@@ -1,84 +1,110 @@
 import React, { useState, useEffect } from "react";
-import { Button, Typography, Layout, Row, Col, notification } from "antd";
+import { Button, Typography, Layout, Row, Col, notification, Spin } from "antd";
 import { jsPDF } from "jspdf";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import "../../styles/MLOwner/ReceiptPage.css"; // Add this line at the top of your file
-import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
+import "../../styles/MLOwner/ReceiptPage.css";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { fetchMLData } from "../../services/MLOService";
+import {
+  fetchMLData,
+  fetchDispatchHistoryData,
+} from "../../services/MLOService"; // Import fetchTPLData
 
 const { Content } = Layout;
 const { Title } = Typography;
 
-const ReceiptPage = () => {
+const TPLReceiptPage = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   const [mldata, setmlData] = useState(null);
+  const [tpldata, setTplData] = useState(null); // State for TPL data
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
-  const { formData, l_number } = location.state || {}; // Ensure fallback to avoid undefined errors
+  const { tpl_id, l_number, lorryNumber, driverContact, cubes, destination } =
+    location.state || {};
 
   useEffect(() => {
-    if (l_number) {
-      fetchMLData(l_number)
-        .then((data) => setmlData(data))
-        .catch((error) => console.error("Error fetching ML data:", error));
-    }
-  }, [l_number]);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
 
-  /**
-   useEffect(() => {
-    if (l_number) {
-      fetchMLData(l_number)
-        .then((data) => setmlData(data))
-        .catch((error) => console.error("Error fetching ML data:", error));
-    }
-  }, [l_number]);
-   */
+        // Fetch TPL data first
+        const tplResponse = await fetchDispatchHistoryData(tpl_id, lorryNumber);
+        console.log("tpl_id12345", tplResponse);
+        setTplData(tplResponse);
 
-  // Ensure mldata and mldata.custom_fields exist before accessing
-  console.log("dataaaa", mldata);
+        // Then fetch ML data if we have the license number
+        if (l_number) {
+          const mlResponse = await fetchMLData(l_number);
+          setmlData(mlResponse);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        notification.error({
+          message: "Error",
+          description: "Failed to load receipt data",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (tpl_id) {
+      fetchData();
+    } else {
+      notification.error({
+        message: "Error",
+        description: "No TPL ID provided",
+      });
+      navigate("/mlowner/home");
+    }
+  }, [
+    tpl_id,
+    l_number,
+    lorryNumber,
+    driverContact,
+    cubes,
+    destination,
+    navigate,
+  ]);
+
+  // Extract ML contact and location from custom fields
   const mlcontact = mldata?.custom_fields?.find(
     (field) => field.name === "Mobile Number"
-  ) || { value: "N/A" }; // Provide a default value if not found
+  ) || { value: "N/A" };
+
   const mllocation = mldata?.custom_fields?.find(
     (field) => field.name === "Grama Niladhari Division"
-  ) || { value: "N/A" }; // Provide a default value if not found // Provide a default value if not found
+  ) || { value: "N/A" };
 
   const currentDate = new Date();
   const printedDate = currentDate.toISOString().split("T")[0];
-  let range;
-  if (formData.DateTime) {
-    range = formData.DateTime + " to " + formData.dueDate;
-  } else {
-    range = printedDate + " to " + formData.dueDate;
-  }
 
+  // Prepare receipt data from TPL and ML data
   const receiptData = {
-    lorryNumber: formData.lorryNumber,
-    mlNumber: mldata?.subject,
-    mlOwner: mldata?.assigned_to?.name,
-    //mlContact: mlcontact.value,
+    //lorryNumber: tpldata?.lorry_number || "N/A",
+    mlNumber: mldata?.subject || "N/A",
+    mlOwner: mldata?.assigned_to?.name || "N/A",
     startLocation: mllocation.value,
     mineralType: "Sand",
-    lorryContact: formData.driverContact,
-    loadCube: formData.cubes,
-    destination: formData.destination,
-    validity: range,
+    lorryContact: tpldata?.driver_contact || "N/A",
+    // loadCube: tpldata?.cubes || "N/A",
+    //destination: tpldata?.destination || "N/A",
     printedDate: printedDate,
+    tplId: tpl_id, //lorryNumber
+    lorryNumber: lorryNumber,
+    loadCube: cubes,
+    lorryContact: driverContact,
+    destination: destination,
   };
 
   const handlePrintReceipt = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const marginLeft = 20;
-    const lineHeight = 8; // Reduced line height for compact spacing
+    const lineHeight = 8;
 
-    // Helper function to add text with proper alignment
     const addText = (text, x, y, size = 12, bold = false, align = "left") => {
-      // Ensure the text is a valid string, or fall back to an empty string
       const validText = text ? String(text) : "";
-
       doc.setFontSize(size);
       doc.setFont("helvetica", bold ? "bold" : "normal");
       doc.text(validText, x, y, { align });
@@ -109,38 +135,43 @@ const ReceiptPage = () => {
       "center"
     );
 
-    // Line separator after contact info
+    // Line separator
     doc.setDrawColor(0, 0, 0);
     doc.line(marginLeft, 70, pageWidth - marginLeft, 70);
 
     // Receipt Title
     addText("License Owner's Receipt", pageWidth / 2, 80, 14, true, "center");
+    addText(
+      `TPL ID: ${receiptData.tplId}`,
+      pageWidth / 2,
+      90,
+      12,
+      true,
+      "center"
+    );
 
     // Receipt Details
-    const startY = 90;
+    const startY = 100;
     const details = [
       { label: "Lorry Number", value: receiptData.lorryNumber },
-      { label: "Reference", value: receiptData.reference },
       { label: "ML Number", value: receiptData.mlNumber },
       { label: "ML Owner", value: receiptData.mlOwner },
-      // { label: "ML Contact", value: receiptData.mlContact },
       { label: "Start Location", value: receiptData.startLocation },
       { label: "Mineral Type", value: receiptData.mineralType },
-      { label: "Lorry Contact", value: receiptData.lorryContact },
+      { label: "Driver Contact", value: receiptData.lorryContact },
       { label: "Load (Cube)", value: receiptData.loadCube },
       { label: "Destination", value: receiptData.destination },
-      // { label: "Validity", value: receiptData.validity },
       { label: "Printed Date", value: receiptData.printedDate },
     ];
 
     details.forEach((item, index) => {
-      const yPosition = startY + index * (lineHeight + 5); // Adjusted spacing
+      const yPosition = startY + index * (lineHeight + 5);
       addText(`${item.label}:`, marginLeft, yPosition, 12, true);
-      addText(item.value || "", marginLeft + 60, yPosition, 12); // Ensuring there's no undefined value
+      addText(item.value || "", marginLeft + 60, yPosition, 12);
     });
 
-    // Footer Content
-    const footerY = doc.internal.pageSize.height - 20; // Adjusted footer position
+    // Footer
+    const footerY = doc.internal.pageSize.height - 20;
     addText(
       "Thank you for using our services!",
       pageWidth / 2,
@@ -150,8 +181,6 @@ const ReceiptPage = () => {
       "center"
     );
     doc.line(marginLeft, footerY - 5, pageWidth - marginLeft, footerY - 5);
-
-    // Copyright Text
     addText(
       "© 2025 Geological Survey and Mines Bureau. All rights reserved.",
       pageWidth / 2,
@@ -161,15 +190,11 @@ const ReceiptPage = () => {
       "center"
     );
 
-    // Check if printer is available
-    const isPrinterAvailable = () => window.matchMedia("print").matches;
-
-    if (isPrinterAvailable()) {
-      doc.autoPrint(); // Automatically open print dialog
+    if (window.matchMedia("print").matches) {
+      doc.autoPrint();
       doc.output("dataurlnewwindow");
     } else {
-      doc.save(`${receiptData.lorryContact}.pdf`);
-
+      doc.save(`TPL_${receiptData.tplId}.pdf`);
       notification.info({
         message: "No printer detected",
         description: "The receipt will be downloaded as a PDF.",
@@ -181,6 +206,21 @@ const ReceiptPage = () => {
     navigate("/mlowner/home");
   };
 
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Content style={{ padding: "24px" }}>
@@ -189,12 +229,13 @@ const ReceiptPage = () => {
             <Title level={3} style={{ textAlign: "center" }}>
               {language === "en"
                 ? "Print or Save Your Receipt"
-                : language == "si"
+                : language === "si"
                 ? "ඔබේ රිසිට්පත මුද්‍රණය කරන්න හෝ සුරකින්න"
                 : "உங்கள் ரசீதை அச்சிடவும் அல்லது சேமிக்கவும்"}
             </Title>
           </Col>
         </Row>
+
         <Row justify="center">
           <Col
             xs={24}
@@ -208,25 +249,24 @@ const ReceiptPage = () => {
               <img
                 src="https://th.bing.com/th/id/OIP.lXqWzX4gCjamrXtOz172qAHaHa?rs=1&pid=ImgDetMain"
                 alt="Logo"
-                style={{ borderRadius: "50%", width: "60px", height: "60px" }} // Set the image size to 60x60px
+                style={{ borderRadius: "50%", width: "60px", height: "60px" }}
               />
             </div>
-
             <p>
               <strong>
                 {language === "en"
                   ? "Lorry Number:"
-                  : language == "si"
+                  : language === "si"
                   ? "ලොරි අංකය:"
                   : "லாரி எண்:"}
               </strong>{" "}
-              {formData.lorryNumber}
+              {receiptData.lorryNumber}
             </p>
             <p>
               <strong>
                 {language === "en"
                   ? "ML Number:"
-                  : language == "si"
+                  : language === "si"
                   ? "ML අංකය:"
                   : "ML எண்:"}
               </strong>{" "}
@@ -236,18 +276,17 @@ const ReceiptPage = () => {
               <strong>
                 {language === "en"
                   ? "ML Owner:"
-                  : language == "si"
+                  : language === "si"
                   ? "ML හිමිකරු:"
                   : "ML உரிமையாளர்:"}
               </strong>{" "}
               {receiptData.mlOwner}
             </p>
-            {/* <p><strong>{language === "en" ? "ML Contact:" : language == 'si' ? "ML සම්බන්ධතා:" : "ML தொடர்பு:"}</strong> {receiptData.mlContact}</p> */}
             <p>
               <strong>
                 {language === "en"
                   ? "Start Location:"
-                  : language == "si"
+                  : language === "si"
                   ? "ආරම්භක ස්ථානය:"
                   : "தொடக்க இடம்:"}
               </strong>{" "}
@@ -257,7 +296,7 @@ const ReceiptPage = () => {
               <strong>
                 {language === "en"
                   ? "Mineral Type:"
-                  : language == "si"
+                  : language === "si"
                   ? "ඛනිජ වර්ගය:"
                   : "கனிம வகை:"}
               </strong>{" "}
@@ -267,7 +306,7 @@ const ReceiptPage = () => {
               <strong>
                 {language === "en"
                   ? "Driver Contact:"
-                  : language == "si"
+                  : language === "si"
                   ? "රියදුරු සම්බන්ධතා:"
                   : "ஓட்டுனர் தொடர்பு:"}
               </strong>{" "}
@@ -277,7 +316,7 @@ const ReceiptPage = () => {
               <strong>
                 {language === "en"
                   ? "Load (Cube):"
-                  : language == "si"
+                  : language === "si"
                   ? "පැටවීම (Cube):"
                   : "சுமை (Cube):"}
               </strong>{" "}
@@ -287,28 +326,17 @@ const ReceiptPage = () => {
               <strong>
                 {language === "en"
                   ? "Destination:"
-                  : language == "si"
+                  : language === "si"
                   ? "ගමනාන්තය:"
                   : "சேருமிடம்:"}
               </strong>{" "}
               {receiptData.destination}
             </p>
-
-            {/* <p>
-              <strong>
-                {language === "en"
-                  ? "Validity:"
-                  : language == "si"
-                  ? "වලංගුභාවය:"
-                  : "செல்லுபடியாகும்:"}
-              </strong>{" "}
-              {receiptData.validity}
-            </p> */}
             <p>
               <strong>
                 {language === "en"
                   ? "Printed Date:"
-                  : language == "si"
+                  : language === "si"
                   ? "මුද්‍රිත දිනය:"
                   : "அச்சிடப்பட்ட தேதி:"}
               </strong>{" "}
@@ -329,18 +357,18 @@ const ReceiptPage = () => {
             >
               {language === "en"
                 ? "Back to Home"
-                : language == "si"
+                : language === "si"
                 ? "ආපසු"
                 : "முகப்புக்குத் திரும்பு"}
             </Button>
             <Button
               type="primary"
               onClick={handlePrintReceipt}
-              className="glitter-button" // Apply the glitter button class
+              className="glitter-button"
             >
               {language === "en"
                 ? "Print Receipt"
-                : language == "si"
+                : language === "si"
                 ? "මුද්‍රණ ලදුපත"
                 : "அச்சு ரசீது"}
             </Button>
@@ -351,4 +379,4 @@ const ReceiptPage = () => {
   );
 };
 
-export default ReceiptPage;
+export default TPLReceiptPage;

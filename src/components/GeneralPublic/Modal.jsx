@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import OtpVerificationModal from "./OtpVerificationModal.jsx";
 import axios from "axios";
+import { submitComplaintPublic } from "../../services/complaint.js";
 
 const Modal = ({
   modalMessage,
   language,
   closeModal,
   vehicleNumber,
+  setInput,
   //reportDetails
 }) => {
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
@@ -39,22 +41,14 @@ const Modal = ({
   };
 
   const handleSubmitReport = async (phone, vehicleNumber) => {
-    try {
-      const response = await axios.post(
-        "http://127.0.0.1:5000/general-public/create-complaint",
-        {
-          phoneNumber: phone,
-          vehicleNumber: vehicleNumber,
-        }
-      );
-
-      if (response.data.success) {
-        onClose();
-      } else {
-        console.error("Report submission failed");
-      }
-    } catch (error) {
-      console.error("Error submitting report", error);
+    const isSubmitted = await submitComplaintPublic(
+      phone,
+      vehicleNumber,
+      language
+    );
+    if (isSubmitted) {
+      setInput("");
+      onClose(); // Close the modal if submission is successful
     }
   };
 

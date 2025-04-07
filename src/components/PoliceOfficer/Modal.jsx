@@ -1,5 +1,4 @@
 // src/components/PoliceOfficer/Modal.jsx
-
 import React from "react";
 import { getTranslations } from "../../utils/PoliceOfficer/languageUtils";
 

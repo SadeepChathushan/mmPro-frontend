@@ -13,6 +13,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("USER_TOKEN");
+    
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -26,7 +27,7 @@ axiosInstance.interceptors.request.use(
 export const fetchComplaintCounts = async () => {
   try {
     const response = await axiosInstance.get("gsmb-management/complaint-counts");
-    console.log("fetchComplaintCounts", response.data);
+    
     return response.data;
   } catch (error) {
     console.error("Error fetching complaint data:", error);
@@ -37,7 +38,7 @@ export const fetchComplaintCounts = async () => {
 export const fetchRoleCounts = async () => {
   try {
     const response = await axiosInstance.get("gsmb-management/role-counts");
-    console.log("fetchRoleCounts", response.data);
+   
     return response.data;
   } catch (error) {
     console.error("Error fetching role data:", error);
@@ -107,7 +108,7 @@ export const fetchTransportLicenseDestinations = async (setTransportData) => {
     
     // Assuming the response data structure has an `issues` field
     setTransportData(response.data.issues);
-    console.log("fetchTransportLicenseDestinations", response.data.issues);
+    
   } catch (error) {
     console.error('Error fetching transport license data:', error);
   }
@@ -120,6 +121,7 @@ export const fetchRoyaltyCounts = async () => {
       totalRoyalty: response.data.total_royalty, 
       orders: response.data.orders,
     };
+    
     return mappedData;
   } catch (error) {
     console.error("Error fetching Top Royalty Contributors data:", error);

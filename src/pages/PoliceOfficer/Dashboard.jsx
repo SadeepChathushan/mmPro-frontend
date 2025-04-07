@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { fetchVehicleData } from "../../services/PoliceOfficer/vehicleService";
+import { checkVehicleNumber } from "../../services/PoliceOfficer/vehicleService";
 import { submitComplaint } from "../../services/complaint";
 import { getTranslations } from "../../utils/PoliceOfficer/languageUtils";
 import {
@@ -15,8 +15,7 @@ import logo from "../../assets/images/gsmbLogo.png";
 import backgroundImage from "../../assets/images/machinery.jpg";
 import "../../styles/PoliceOfficer/PoliceOfficerdashboard.css";
 import axios from "axios";
-
-const BASE_URL = import.meta.env.VITE_BASE_URL; // ✅ For Vite (modern setup)
+import api from "../../services/axiosConfig";
 
 const Dashboard = () => {
   const { language } = useLanguage();
@@ -25,7 +24,6 @@ const Dashboard = () => {
   const [modalMessage, setModalMessage] = useState("");
   const [isValidationModalOpen, setIsValidationModalOpen] = useState(false);
   const [validationMessage, setValidationMessage] = useState("");
-  const [data, setData] = useState([]);
   const navigate = useNavigate();
   const translations = getTranslations(language);
 
@@ -37,23 +35,11 @@ const Dashboard = () => {
     }
 
     try {
-      const token = localStorage.getItem("USER_TOKEN");
+      const licenseData  = await checkVehicleNumber(input);
 
-      const response = await axios.get(
-        `${BASE_URL}/police-officer/check-lorry-number`,
-        {
-          params: { lorry_number: input.trim() },
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = response.data;
-
-      if (data.license_details) {
+      if (licenseData.isValid) {
         navigate("/police-officer/valid", {
-          state: { licenseDetails: data.license_details },
+          state: { licenseDetails: licenseData }
         });
       } else {
         setModalMessage(translations.invalidLoad[language]);
@@ -61,11 +47,12 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error("Error fetching vehicle data:", error);
+
+      // Handle other errors or show messages based on the error
       setModalMessage(translations.invalidLoad[language]);
       setIsModalOpen(true);
     }
   };
-
   const handleReport = async () => {
     // if (!validatePhoneNumber(phoneNumber)) {
     //   setValidationMessage(translations.invalidPhoneNumber[language]);
@@ -77,6 +64,7 @@ const Dashboard = () => {
       const success = await submitComplaint(input, language);
       if (success) {
         setIsModalOpen(false);
+        setInput("");
       }
     } catch (error) {
       console.error("Failed to submit report:", error);

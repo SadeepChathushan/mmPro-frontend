@@ -1,21 +1,41 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { Form, Input, Button, Checkbox, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import axios from "axios";
 import background from "../../assets/images/lake.avif";
 import logo from "../../assets/images/gsmbLogo.png";
-// import googleLogo from "../../assets/images/google_icon.png";
 import "./Signin.css";
-// import authService from "../../services/authService";
-// import { login, redirectToDashboard, handleGoogleLogin } from '../../services/authService';
-import authService from "../../services/authService"; 
+import authService from "../../services/authService";
+import ForgotPasswordModal from "./forgotPassword";
+import ResetPasswordModal from "./ResetPassword"; 
+import CreateAccountModal from "./CreateAccount";
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 console.log("clientId", clientId);
 
 const SignInPage = () => {
   const navigate = useNavigate();
+  const [isForgotPasswordModalVisible, setIsForgotPasswordModalVisible] = useState(false);
+  const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false);
+  const [isCreateAccountModalVisible, setIsCreateAccountModalVisible] = useState(false);
+
+  // Toggle the overlay when the Forgot Password modal opens/closes
+  const isAnyModalVisible = isForgotPasswordModalVisible || isResetPasswordModalVisible || isCreateAccountModalVisible;
+
+  useEffect(() => {
+    if (isAnyModalVisible) {
+      document.body.classList.add("modal-overlay");
+      document.querySelector('.background-container').classList.add('modal-active');
+    } else {
+      document.body.classList.remove("modal-overlay");
+      document.querySelector('.background-container').classList.remove('modal-active');
+    }
+
+    return () => {
+      document.body.classList.remove("modal-overlay");
+      document.querySelector('.background-container')?.classList.remove('modal-active');
+    };
+  }, [isAnyModalVisible]);
 
   const onFinish = async (values) => {
     const role = await authService.login(values);
@@ -25,6 +45,30 @@ const SignInPage = () => {
   const handleGoogleLoginSuccess = async (response) => {
     const role = await authService.handleGoogleLogin(response);
     authService.redirectToDashboard(role, navigate);
+  };
+
+  const showForgotPasswordModal = () => {
+    setIsForgotPasswordModalVisible(true);
+  };
+
+  const handleForgotPasswordCancel = () => {
+    setIsForgotPasswordModalVisible(false);
+  };
+
+  const showResetPasswordModal = () => {
+    setIsResetPasswordModalVisible(true);
+  };
+
+  const handleResetPasswordCancel = () => {
+    setIsResetPasswordModalVisible(false);
+  };
+
+  const showCreateAccountModal = () => {
+    setIsCreateAccountModalVisible(true);
+  };
+
+  const handleCreateAccountCancel = () => {
+    setIsCreateAccountModalVisible(false);
   };
 
   return (
@@ -99,14 +143,18 @@ const SignInPage = () => {
             </Form.Item>
 
             <Form.Item className="center-text">
-              <a href="/forgot-password" className="links">
+              <Button type="link" onClick={showForgotPasswordModal} className="links">
                 Forgot password?
-              </a>
+              </Button>
             </Form.Item>
             <Form.Item className="center-text">
-              <a href="/create-account" className="links">
+              <Button 
+                type="link" 
+                onClick={showCreateAccountModal} 
+                className="links"
+              >
                 Not registered yet? Create an Account
-              </a>
+              </Button>
             </Form.Item>
 
             {/* Google Login Button */}
@@ -121,6 +169,29 @@ const SignInPage = () => {
           </Form>
         </div>
       </div>
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal
+        visible={isForgotPasswordModalVisible}
+        onCancel={handleForgotPasswordCancel}
+        onResetPassword={() => {
+          setIsForgotPasswordModalVisible(false); 
+          showResetPasswordModal();
+        }}
+        maskStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.9)' }}
+      />
+
+      {/* Reset Password Modal */}
+      <ResetPasswordModal
+        visible={isResetPasswordModalVisible}
+        onCancel={handleResetPasswordCancel}
+      />
+
+      {/* New Create Account Modal */}
+      <CreateAccountModal
+        visible={isCreateAccountModalVisible}
+        onCancel={handleCreateAccountCancel}
+      />
     </div>
   );
 };

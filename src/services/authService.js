@@ -1,29 +1,27 @@
 import axios from "axios";
 import { message } from "antd";
+import api from "./axiosConfig";
 // import { useNavigate } from "react-router-dom";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL; // ✅ Correct for Vite
-; // ✅ For Vite (modern setup)
-
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const authService = {
   login: async (values) => {
-    console.log("puka", BASE_URL);
     const { username, password } = values;
     try {
-      const response = await axios.post(`${BASE_URL}/auth/login`, {
+      console.log(BASE_URL);
+      const response = await api.post("/auth/login", {
         username,
         password,
       });
 
       if (response.data.token) {
-        
         message.success("Login successful!");
         // Save token in localStorage (or sessionStorage depending on your needs)
-        localStorage.setItem("USER_ID", response.data.userId[0]);
+        localStorage.setItem("USER_ID", response.data.userId);
         localStorage.setItem("USER_TOKEN", response.data.token);
+        localStorage.setItem("REFRESH_TOKEN", response.data.refresh_token);
         localStorage.setItem("USERROLE", response.data.role);
-        // authService.redirectToDashboard(response.data.role);
+        localStorage.setItem("USERNAME", response.data.username);
         return response.data.role;
       } else {
         message.error("Login failed. Please try again.");
@@ -31,6 +29,39 @@ const authService = {
     } catch (error) {
       console.error("Login failed:", error);
       message.error("Login failed. Please try again.");
+    }
+  },
+
+  initiatePasswordReset: async (email) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/auth/forgot-password`, {
+        email
+      });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.error('Password reset initiation failed:', error);
+      throw error;
+    }
+  },
+
+  resetPassword: async (token, newPassword) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/auth/reset-password`, {
+        token,
+        new_password: newPassword
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        // Forward the backend error message
+        throw new Error(error.response.data.error || error.response.data.message);
+      }
+      throw error;
     }
   },
 
@@ -44,11 +75,11 @@ const authService = {
 
       if (res.data.token) {
         message.success("Google login successful!");
-        // Save token in localStorage
+
         localStorage.setItem("USER_ID", response.data.userId[0]);
         localStorage.setItem("USER_TOKEN", res.data.token);
         localStorage.setItem("USERROLE", res.data.role);
-        // redirectToDashboard(res.data.role);
+
         return res.data.role;
       } else {
         message.error("User role not found!");
@@ -59,7 +90,9 @@ const authService = {
     }
   },
 
-  redirectToDashboard: (role, navigate) => { // Accept navigate as parameter
+
+
+  redirectToDashboard: (role, navigate) => {
     switch (role) {
       case "GSMBOfficer":
         navigate("/gsmb/dashboard");
@@ -76,6 +109,9 @@ const authService = {
       case "GSMBManagement":
         navigate("/gsmbmanagement/dashboard");
         break;
+      case "RegionalOfficer":
+        navigate("/regional/dashboard");
+        break;
       default:
         navigate("/");
         break;
@@ -86,6 +122,7 @@ const authService = {
     localStorage.removeItem("USER_ID");
     localStorage.removeItem("USERROLE");
     localStorage.removeItem("USER_TOKEN");
+    localStorage.removeItem("REFRESH_TOKEN");
   },
 
   getCurrentUser: () => {
@@ -95,6 +132,119 @@ const authService = {
   getUserRole: () => {
     return localStorage.getItem("USERROLE");
   },
-};
 
+  refreshToken: async () => {
+    try {
+      const refreshToken = localStorage.getItem("REFRESH_TOKEN");
+
+      if (!refreshToken) {
+        authService.logout();
+        return null;
+      }
+
+      const response = await axios.post(`${BASE_URL}/auth/refresh-token`, {
+        refresh_token: refreshToken,
+      });
+
+      if (response.data.access_token) {
+        localStorage.setItem("USER_TOKEN", response.data.access_token);
+        return response.data.access_token; // Return new access token
+      } else {
+        authService.logout(); // If refresh fails, logout user
+        return null;
+      }
+    } catch (error) {
+      console.error("Error refreshing token:", error);
+      authService.logout(); // If error occurs, logout user
+      window.location.href = "/signin";
+      return null;
+    }
+  },
+
+  registerUser: async (payload, role) => {
+    try {
+      let endpoint;
+      
+      // Determine endpoint based on role
+      if (role === 'police') {
+        endpoint = `${BASE_URL}/auth/register-police-officer`;
+      } else if (role === 'gsmb_officer') {
+        endpoint = `${BASE_URL}/auth/register-gsmb-officer`;
+      } else {
+        throw new Error('Invalid role selected');
+      }
+  
+      const formData = new FormData();
+      formData.append('login', payload.email);
+      formData.append('first_name', payload.firstName);
+      formData.append('last_name', payload.lastName);
+      formData.append('email', payload.email);
+      formData.append('password', payload.password);
+      formData.append('designation', payload.designation);
+      formData.append('nic_number', payload.nic);
+      formData.append('mobile_number', payload.mobile);
+  
+      const response = await axios.post(endpoint, formData);
+  
+      if (response.status === 201) {
+        return response.data;
+      } else {
+        console.error("Failed to register user:", response.data);
+        throw new Error(response.data.error || 'Registration failed');
+      }
+    } catch (error) {
+      console.error("Error registering user:", error);
+      throw error;
+    }
+  },
+}
 export default authService;
+
+/** 
+export const registerUser = async (payload, role) => {
+  try {
+    let endpoint;
+    const token = localStorage.getItem("USER_TOKEN");
+    
+    if (!token) {
+      throw new Error('Authentication token not found');
+    }
+
+    // Determine endpoint based on role
+    if (role === 'police') {
+      endpoint = `${BASE_URL}/auth/register-police-officer`;
+    } else if (role === 'gsmb_officer') {
+      endpoint = `${BASE_URL}/auth/register-gsmb-officer`;
+    } else {
+      throw new Error('Invalid role selected');
+    }
+
+    const formData = new FormData();
+    formData.append('login', payload.email);
+    formData.append('first_name', payload.firstName);
+    formData.append('last_name', payload.lastName);
+    formData.append('email', payload.email);
+    formData.append('password', payload.password);
+    formData.append('designation', payload.designation);
+    formData.append('nic_number', payload.nic);
+    formData.append('mobile_number', payload.mobile);
+
+    const response = await axios.post(endpoint, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 201) {
+      return response.data;
+    } else {
+      console.error("Failed to register user:", response.data);
+      throw new Error(response.data.error || 'Registration failed');
+    }
+  } catch (error) {
+    console.error("Error registering user:", error);
+    throw error;
+  }
+};
+*/
