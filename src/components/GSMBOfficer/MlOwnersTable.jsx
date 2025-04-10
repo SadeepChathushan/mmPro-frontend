@@ -133,13 +133,13 @@ const MlOwnersTable = () => {
             {language === "en" ? "+ Add New License" : "+ නව අවසරපත්‍රයක් එකතු කරන්න"}
           </Button>
         </Link>
-        <Button 
+        {/* <Button 
             type="primary" 
             onClick={() => showAppointmentModal(record)}
             style={{ backgroundColor: "black" }}
           >
             {language === "en" ? "Appointment" : "වේලාවක් ගන්න"}
-          </Button>
+          </Button> */}
         </div>
       ),
     },

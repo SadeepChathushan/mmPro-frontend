@@ -32,11 +32,6 @@ const Activation = () => {
     });
   };
 
-  const handleSave = () => {
-    // Add your save logic here
-    console.log("Officers data saved:", officers);
-  };
-
   const columns = [
     {
       title: 'Name',
@@ -101,15 +96,6 @@ const Activation = () => {
           />
         </TabPane>
       </Tabs>
-
-      <Button 
-        type="primary" 
-        onClick={handleSave}
-        className="mt-4"
-        size="large"
-      >
-        Save All Changes
-      </Button>
     </div>
   );
 };
