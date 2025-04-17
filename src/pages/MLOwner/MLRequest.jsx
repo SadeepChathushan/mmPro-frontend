@@ -1,10 +1,83 @@
-import { Card, Form, Input, Button, DatePicker, Row, Col } from 'antd';
-import { useLanguage } from '../../contexts/LanguageContext';
-import '../../styles/MLOwner/MLRequest.css'
+import React, { useState } from 'react'; // <-- Import useState here
+import { Card, Form, Input, Button, Row, Col, message, Upload } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import { useLanguage } from "../../contexts/LanguageContext";
+import "../../styles/MLOwner/MLRequest.css";
+import { submitMLRequest } from "../../services/MLOService";
 
 const MLRequest = () => {
   const { language } = useLanguage();
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false); // Now useState is defined
 
+  // Helper function to safely get the file object
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    // Check if it's an event object with fileList
+    if (e && e.fileList) {
+      return e.fileList;
+    }
+    // If it's just the file list directly
+    return e;
+  };
+
+
+  const handleSubmit = async (values) => {
+    setLoading(true); // Set loading at the very start
+    try {
+      const formData = new FormData();
+
+      const username = localStorage.getItem("USERNAME") || "Unknown User";
+      const userId = localStorage.getItem("USER_ID") || "";
+
+      // Append all form fields (ensure values are not undefined/null if possible)
+      formData.append( "subject", `Mining License Request - ${username}` );
+      formData.append("assigned_to", userId);
+      formData.append("author", userId);
+      formData.append("exploration_nb", values.exploration_nb || ""); // Add fallback for safety
+      formData.append("land_name", values.land_name);
+      formData.append("land_owner_name", values.land_owner_name);
+      formData.append("village_name", values.village_name);
+      formData.append("grama_niladari", values.grama_niladari);
+      formData.append( "divisional_secretary_division", values.divisional_secretary_division );
+      formData.append("administrative_district", values.district);
+      formData.append("google_location", values.land_google);
+
+      // Append files safely checking they exist
+      if (values.detailed_mine_plan && values.detailed_mine_plan.length > 0 && values.detailed_mine_plan[0].originFileObj) {
+        formData.append( "detailed_mine_plan", values.detailed_mine_plan[0].originFileObj );
+      }
+      if (values.payment_receipt && values.payment_receipt.length > 0 && values.payment_receipt[0].originFileObj) {
+        formData.append( "payment_receipt", values.payment_receipt[0].originFileObj );
+      }
+      if (values.Deed_plan && values.Deed_plan.length > 0 && values.Deed_plan[0].originFileObj) {
+        formData.append("Deed_plan", values.Deed_plan[0].originFileObj);
+      }
+
+      // Call the service with FormData
+      const result = await submitMLRequest(formData);
+
+      if (result) { // Assuming result is truthy on success
+        message.success("Mining Licenses Request successfully submitted!");
+        form.resetFields();
+      } else {
+         // Handle cases where the API might return a non-error response but indicate failure
+         message.error("Submission failed. Please check the details and try again.");
+      }
+
+    } catch (error) {
+      console.error("Mining Licenses Request Error:", error);
+       // Provide more specific error feedback if possible
+      const errorMessage = error?.response?.data?.message || error.message || "Mining Licenses Request Error. Please try again.";
+      message.error(errorMessage);
+    } finally {
+      setLoading(false); // Ensure loading is always set to false afterwards
+    }
+  };
+
+  // --- Translations (Keep as is) ---
   const translations = {
     en: {
       title: "Industrial Mining License Application",
@@ -38,7 +111,10 @@ const MLRequest = () => {
       articlesOfAssociation: "Articles of Association (attach)",
       annualReports: "Last three years Annual Reports (attach)",
       landName: "Name of Land (attach copy of Deed and Survey Plan)",
-      landOwner: "Land owners' name (if not owned by applicant, attach lease Agreement or an affidavit)",
+      land_google: "Land Google Location",
+      landFile: "Attach copy of Deed and Survey Plan",
+      landOwner:
+        "Land owners' name (if not owned by applicant, attach lease Agreement or an affidavit)",
       villageName: "Name of village",
       gramaNiladhari: "Grama Niladhari Division",
       divisionalSecretary: "Divisional Secretary's Division",
@@ -47,10 +123,11 @@ const MLRequest = () => {
       bondNature: "Nature of amount of bound (if any)",
       minerals: "Names of Mineral/Minerals to be mined",
       licenseFee: "Licence fee receipt (attach)",
-      declaration: "I, the undersigned, do hereby certify that the statements contained in this application are true and correct to the best of my knowledge and undertake to comply with the provisions the Mines & Minerals Act, No. 33 of 1992, and the Regulation made thereunder.",
+      declaration:
+        "I, the undersigned, do hereby certify that the statements contained in this application are true and correct to the best of my knowledge and undertake to comply with the provisions the Mines & Minerals Act, No. 33 of 1992, and the Regulation made thereunder.",
       date: "Date",
       signature: "Signature",
-      mineManager: "Mine Manager"
+      mineManager: "Mine Manager",
     },
     si: {
       title: "කාර්මික ගල්පර්වත අයදුම්පත",
@@ -84,7 +161,8 @@ const MLRequest = () => {
       articlesOfAssociation: "සමාගම් ආඥා පත්‍ර (ඇමුණුම)",
       annualReports: "පසුගිය අවුරුදු තුනේ වාර්ෂික වාර්තා (ඇමුණුම)",
       landName: "ඉඩමේ නම (බලය පත සහ සර්වේ යෝජනා ක්‍රමයේ පිටපත් ඇමුණුම)",
-      landOwner: "ඉඩමේ හිමිකරුගේ නම (අයදුම්කරුට අයත් නොවේ නම්, බදු ගිවිසුම හෝ සාක්ෂි පත්‍රය ඇමුණුම)",
+      landOwner:
+        "ඉඩමේ හිමිකරුගේ නම (අයදුම්කරුට අයත් නොවේ නම්, බදු ගිවිසුම හෝ සාක්ෂි පත්‍රය ඇමුණුම)",
       villageName: "ගමේ නම",
       gramaNiladhari: "ග්‍රාම නිලධාරී වසම",
       divisionalSecretary: "අංශක සංග්‍රහක වසම",
@@ -93,10 +171,11 @@ const MLRequest = () => {
       bondNature: "බන්ධනයේ ස්වභාවය සහ ප්‍රමාණය (ඇත්නම්)",
       minerals: "පතිත කිරීමට අදහස් කරන ලෝහ/ඛනිජ නම්",
       licenseFee: "බලපත්‍ර ගාස්තු රිසිට්පත (ඇමුණුම)",
-      declaration: "මම, පහත අත්සන් කිරීමෙන්, මෙම අයදුම්පතේ අඩංගු ප්‍රකාශ සත්‍ය හා නිවැරදි බව සහතික කරමි. තවද 1992 අංක 33 දරන ගල්පර්වත හා ඛනිජ පනතේ විධිවිධාන සහ ඒ යටතේ තනන ලද නියමාවලි අනුකූලව කටයුතු කිරීමට බැඳී සිටිමි.",
+      declaration:
+        "මම, පහත අත්සන් කිරීමෙන්, මෙම අයදුම්පතේ අඩංගු ප්‍රකාශ සත්‍ය හා නිවැරදි බව සහතික කරමි. තවද 1992 අංක 33 දරන ගල්පර්වත හා ඛනිජ පනතේ විධිවිධාන සහ ඒ යටතේ තනන ලද නියමාවලි අනුකූලව කටයුතු කිරීමට බැඳී සිටිමි.",
       date: "දිනය",
       signature: "අත්සන",
-      mineManager: "ගල්පර්වත කළමනාකරු"
+      mineManager: "ගල්පර්වත කළමනාකරු",
     },
     ta: {
       title: "தொழிற்சாலை சுரங்க உரிமம் விண்ணப்பம்",
@@ -129,8 +208,10 @@ const MLRequest = () => {
       capitalization: "மூலதனமயமாக்கல்",
       articlesOfAssociation: "நிறுவன விதிமுறைகள் (இணைப்பு)",
       annualReports: "கடந்த மூன்று ஆண்டுகளின் வருடாந்திர அறிக்கைகள் (இணைப்பு)",
-      landName: "நிலத்தின் பெயர் (உரிமைப் பத்திரம் மற்றும் அளவீட்டுத் திட்டத்தின் நகல் இணைப்பு)",
-      landOwner: "நில உரிமையாளர் பெயர் (விண்ணப்பதாரருக்கு சொந்தமில்லை என்றால், குத்தகை ஒப்பந்தம் அல்லது உறுதிமொழி பத்திரம் இணைப்பு)",
+      landName:
+        "நிலத்தின் பெயர் (உரிமைப் பத்திரம் மற்றும் அளவீட்டுத் திட்டத்தின் நகல் இணைப்பு)",
+      landOwner:
+        "நில உரிமையாளர் பெயர் (விண்ணப்பதாரருக்கு சொந்தமில்லை என்றால், குத்தகை ஒப்பந்தம் அல்லது உறுதிமொழி பத்திரம் இணைப்பு)",
       villageName: "கிராமத்தின் பெயர்",
       gramaNiladhari: "கிராம நிலாதாரி பிரிவு",
       divisionalSecretary: "பிரிவு செயலாளர் பிரிவு",
@@ -139,179 +220,163 @@ const MLRequest = () => {
       bondNature: "பிணையத்தின் தன்மை மற்றும் தொகை (ஏதேனும் இருந்தால்)",
       minerals: "சுரங்கம் செய்ய வேண்டிய கனிமங்களின் பெயர்கள்",
       licenseFee: "உரிமை கட்டண ரசீது (இணைப்பு)",
-      declaration: "நான், கீழே கையொப்பமிட்டவர், இந்த விண்ணப்பத்தில் உள்ள அறிக்கைகள் உண்மை மற்றும் சரியானவை என்பதை உறுதிப்படுத்துகிறேன். மேலும் 1992 இலங்கை சுரங்கம் மற்றும் கனிமங்கள் சட்டம் மற்றும் அதன் கீழ் உருவாக்கப்பட்ட விதிமுறைகளுக்கு இணங்க நடந்து கொள்வேன் என உறுதியளிக்கிறேன்.",
+      declaration:
+        "நான், கீழே கையொப்பமிட்டவர், இந்த விண்ணப்பத்தில் உள்ள அறிக்கைகள் உண்மை மற்றும் சரியானவை என்பதை உறுதிப்படுத்துகிறேன். மேலும் 1992 இலங்கை சுரங்கம் மற்றும் கனிமங்கள் சட்டம் மற்றும் அதன் கீழ் உருவாக்கப்பட்ட விதிமுறைகளுக்கு இணங்க நடந்து கொள்வேன் என உறுதியளிக்கிறேன்.",
       date: "தேதி",
       signature: "கையெழுத்து",
-      mineManager: "சுரங்க மேலாளர்"
-    }
+      mineManager: "சுரங்க மேலாளர்",
+    },
   };
 
-  const currentTranslations = translations[language] || translations['en'];
+  const currentTranslations = translations[language] || translations["en"];
 
   return (
     <Card title={currentTranslations.title} className="mining-license-form">
-      <Form layout="vertical">
+      {/* Add required fields validation */}
+      <Form form={form} layout="vertical" onFinish={handleSubmit}>
         {/* Page 1 */}
         <h3>{currentTranslations.section1}</h3>
-        <Form.Item label={currentTranslations.explorationLicenseNo}>
-          <Input placeholder={language === 'en' ? "Enter exploration license number" : 
-                            language === 'si' ? "ගවේෂණ බලපත්‍ර අංකය ඇතුළත් කරන්න" :
-                            "ஆய்வு உரிமம் எண்ணை உள்ளிடவும்"} />
+        <Form.Item
+          label={currentTranslations.explorationLicenseNo}
+          name="exploration_nb"
+        >
+          <Input
+           // placeholder={ /* Placeholder text */ }
+          />
         </Form.Item>
 
-        <h3>{currentTranslations.section2}</h3>
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item label={currentTranslations.applicantName}>
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label={currentTranslations.nicNo}>
-              <Input />
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Form.Item label={currentTranslations.address}>
-          <Input.TextArea rows={2} />
-        </Form.Item>
-
-        <Row gutter={16}>
-          <Col span={8}>
-            <Form.Item label={currentTranslations.nationality}>
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col span={16}>
-            <Form.Item label={currentTranslations.employment}>
-              <Input />
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <h4>{currentTranslations.inSriLanka}</h4>
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item label={currentTranslations.businessPlace}>
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label={currentTranslations.residence}>
-              <Input />
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <h3>{currentTranslations.section3}</h3>
-        <Form.Item label={currentTranslations.companyName}>
-          <Input />
-        </Form.Item>
-
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item label={currentTranslations.incorporationCountry}>
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label={currentTranslations.headOffice}>
-              <Input />
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Form.Item label={currentTranslations.companyAddress}>
-          <Input.TextArea rows={2} />
-        </Form.Item>
-
-        <h4>{currentTranslations.legalFinancial}</h4>
-        <Form.Item label={currentTranslations.capitalization}>
-          <Input />
-        </Form.Item>
-        <Form.Item label={currentTranslations.articlesOfAssociation}>
-          <Input type="file" />
-        </Form.Item>
-        <Form.Item label={currentTranslations.annualReports}>
-          <Input type="file" />
-        </Form.Item>
+        {/* Commented sections */}
 
         {/* Page 2 */}
         <h3>{currentTranslations.section6}</h3>
-        <Form.Item label={currentTranslations.landName}>
+        <Form.Item
+          label={currentTranslations.landName}
+          name="land_name"
+          rules={[{ required: true, message: 'Please input the land name!' }]}
+         >
           <Input />
         </Form.Item>
 
-        <Form.Item label={currentTranslations.landOwner}>
+        <Form.Item
+          label={currentTranslations.landFile}
+          name="Deed_plan"
+          valuePropName="fileList"
+          getValueFromEvent={normFile} // Use helper function
+          rules={[{ required: true, message: 'Please upload the Deed/Survey Plan!' }]}
+        >
+          <Upload
+            beforeUpload={() => false}
+            maxCount={1}
+            accept=".pdf,.doc,.docx,.jpg,.png,.jpeg"
+          >
+            <Button icon={<UploadOutlined />}>Select File</Button>
+          </Upload>
+        </Form.Item>
+
+        <Form.Item
+          label={currentTranslations.land_google}
+          name="land_google"
+           rules={[
+                { required: true, message: 'Please input the Google Maps link!' },
+                { type: 'url', warningOnly: true, message: 'Please enter a valid URL (e.g., https://maps...)' },
+            ]}
+        >
+          <Input
+            placeholder="e.g., https://maps.app.goo.gl/..."
+          />
+        </Form.Item>
+
+        <Form.Item
+            label={currentTranslations.landOwner}
+            name="land_owner_name"
+            rules={[{ required: true, message: 'Please input the land owner name!' }]}
+        >
           <Input />
         </Form.Item>
 
         <Row gutter={16}>
-          <Col span={8}>
-            <Form.Item label={currentTranslations.villageName}>
+          <Col xs={24} sm={8}>
+            <Form.Item
+              label={currentTranslations.villageName}
+              name="village_name"
+              rules={[{ required: true, message: 'Please input the village name!' }]}
+            >
               <Input />
             </Form.Item>
           </Col>
-          <Col span={8}>
-            <Form.Item label={currentTranslations.gramaNiladhari}>
+          <Col xs={24} sm={8}>
+            <Form.Item
+              label={currentTranslations.gramaNiladhari}
+              name="grama_niladari"
+              rules={[{ required: true, message: 'Please input the Grama Niladhari Division!' }]}
+            >
               <Input />
             </Form.Item>
           </Col>
-          <Col span={8}>
-            <Form.Item label={currentTranslations.divisionalSecretary}>
+          <Col xs={24} sm={8}>
+            <Form.Item
+              label={currentTranslations.divisionalSecretary}
+              name="divisional_secretary_division"
+              rules={[{ required: true, message: 'Please input the Divisional Secretary Division!' }]}
+            >
               <Input />
             </Form.Item>
           </Col>
         </Row>
 
-        <Form.Item label={currentTranslations.district}>
+        <Form.Item
+            label={currentTranslations.district}
+            name="district"
+            rules={[{ required: true, message: 'Please input the Administrative District!' }]}
+        >
           <Input />
         </Form.Item>
 
-        <Form.Item label={currentTranslations.restorationPlan}>
-          <Input type="file" />
+        <Form.Item
+          label={currentTranslations.restorationPlan}
+          name="detailed_mine_plan"
+          valuePropName="fileList"
+          getValueFromEvent={normFile} // Use helper function
+           rules={[{ required: true, message: 'Please upload the Detailed Mine Plan!' }]}
+        >
+          <Upload
+            beforeUpload={() => false}
+            maxCount={1}
+            accept=".pdf,.doc,.docx,.jpg,.png,.jpeg"
+          >
+            <Button icon={<UploadOutlined />}>Select File</Button>
+          </Upload>
         </Form.Item>
 
-        <Form.Item label={currentTranslations.bondNature}>
-          <Input />
+        {/* Commented sections */}
+
+        <Form.Item
+          label={currentTranslations.licenseFee}
+          name="payment_receipt"
+          valuePropName="fileList"
+          getValueFromEvent={normFile} // Use helper function
+          rules={[{ required: true, message: 'Please upload the payment receipt!' }]}
+        >
+          <Upload
+            beforeUpload={() => false}
+            maxCount={1}
+            accept=".pdf,.doc,.docx,.jpg,.png,.jpeg"
+          >
+            <Button icon={<UploadOutlined />}>Select File</Button>
+          </Upload>
         </Form.Item>
 
-        <Form.Item label={currentTranslations.minerals}>
-          <Input.TextArea rows={2} />
-        </Form.Item>
-
-        <Form.Item label={currentTranslations.licenseFee}>
-          <Input type="file" />
-        </Form.Item>
-
-        <div className="declaration-section">
-          <p>
-            {currentTranslations.declaration}
-          </p>
-          
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item label={currentTranslations.date}>
-                <DatePicker style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item label={currentTranslations.signature}>
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item label={currentTranslations.mineManager}>
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-        </div>
+        {/* Commented sections */}
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" size="large">
-            {currentTranslations.submitText}
+          <Button
+            type="primary"
+            htmlType="submit"
+            size="large"
+            loading={loading}
+            disabled={loading}
+          >
+            {loading ? "Submitting..." : currentTranslations.submitText}
           </Button>
         </Form.Item>
       </Form>

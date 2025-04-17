@@ -146,3 +146,24 @@ export const useFetchMiningData = () => {
   }, []);
   return miningLicenseData;
 };
+
+
+//Users Active data load
+export const fetchUnActiveUsers = async () => {
+  try {
+    const response = await axiosInstance.get('/gsmb-management/unactive-gsmb-officers');
+    console.log("Fetched unactive officers:", response.data.officers);
+    return {
+      success: true,
+      officers: response.data.officers,
+      count: response.data.count
+    };
+  } catch (error) {
+    console.error("Error fetching unactive officers:", error);
+    return {
+      success: false,
+      error: error.response?.data?.error || "Failed to fetch unactive officers"
+    };
+  }
+}; 
+
