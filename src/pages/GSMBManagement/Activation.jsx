@@ -1,98 +1,134 @@
-import { useState } from "react";
-import { Button, Table, Tag, Tabs, Modal } from "antd";
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { useState, useEffect } from "react";
+import { Button, Table, Tag, Tabs, Modal, message } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { fetchUnActiveUsers } from "../../services/management";
 
 const { TabPane } = Tabs;
 const { confirm } = Modal;
 
-const officersData = [
-  { id: 1, name: "John Doe", role: "Police Officer", active: false },
-  { id: 2, name: "Jane Smith", role: "Police Officer", active: true },
-  { id: 3, name: "Robert Johnson", role: "GSMB Officer", active: false },
-  { id: 4, name: "Emily Davis", role: "GSMB Officer", active: true },
-];
-
 const Activation = () => {
-  const [officers, setOfficers] = useState(officersData);
+  const [officers, setOfficers] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("police");
+
+  useEffect(() => {
+    const fetchOfficers = async () => {
+      setLoading(true);
+      try {
+        const response = await fetchUnActiveUsers();
+        if (response.success) {
+          // The API already returns only inactive users (status = 3)
+          setOfficers(response.officers);
+        } else {
+          message.error(response.error);
+        }
+      } catch (error) {
+        message.error("Failed to load officers data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOfficers();
+  }, []);
 
   const toggleActive = (id) => {
     confirm({
-      title: 'Confirm Activation Status Change',
+      title: "Confirm Activation Status Change",
       icon: <ExclamationCircleOutlined />,
-      content: 'Are you sure you want to change this officer\'s activation status?',
-      onOk() {
-        setOfficers(officers.map(officer => 
-          officer.id === id ? { ...officer, active: !officer.active } : officer
-        ));
+      content:
+        "Are you sure you want to change this officer's activation status?",
+      async onOk() {
+        try {
+          // Here you should call your API to update the status
+          // For now, we'll just update the local state
+          setOfficers(
+            officers.map(
+              (officer) =>
+                officer.id === id ? { ...officer, status: 1 } : officer // Assuming 1 is active status
+            )
+          );
+          message.success("Status updated successfully");
+        } catch (error) {
+          message.error("Failed to update status");
+        }
       },
       onCancel() {
-        console.log('Cancelled');
+        console.log("Cancelled");
       },
     });
   };
 
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: 'Role',
-      dataIndex: 'role',
-      key: 'role',
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
     },
     {
-      title: 'Status',
-      key: 'active',
+      title: "Designation",
+      key: "designation",
+      render: (_, record) => record.custom_fields?.Designation || "N/A",
+    },
+    {
+      title: "Status",
+      key: "status",
       render: (_, record) => (
-        <Tag color={record.active ? 'green' : 'red'}>
-          {record.active ? 'Active' : 'Inactive'}
+        <Tag color={record.status === 3 ? "red" : "green"}>
+          {record.status === 3 ? "Inactive" : "Active"}
         </Tag>
       ),
     },
     {
-      title: 'Action',
-      key: 'action',
+      title: "Action",
+      key: "action",
       render: (_, record) => (
-        <Button 
-          type="primary" 
+        <Button
+          type="primary"
           onClick={() => toggleActive(record.id)}
-          style={{ background: record.active ? '#ff4d4f' : '#52c41a' }}
+          style={{ background: record.status === 3 ? "#52c41a" : "#ff4d4f" }}
+          loading={loading}
         >
-          {record.active ? 'Deactivate' : 'Activate'}
+          {record.status === 3 ? "Activate" : "Deactivate"}
         </Button>
       ),
     },
   ];
 
-  const policeOfficers = officers.filter(officer => officer.role === "Police Officer");
-  const gsmbOfficers = officers.filter(officer => officer.role === "GSMB Officer");
+  // Filter officers based on User Type
+  const policeOfficers = officers.filter(
+    (officer) => officer.custom_fields?.["User Type"] === "police"
+  );
+  const gsmbOfficers = officers.filter(
+    (officer) => officer.custom_fields?.["User Type"] === "gsmbOfficer"
+  );
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Officer Activation</h1>
-      
-      <Tabs 
-        activeKey={activeTab} 
-        onChange={setActiveTab}
-        className="mb-4"
-      >
+      <h1 className="text-2xl font-bold mb-4">Inactive Officers</h1>
+
+      <Tabs activeKey={activeTab} onChange={setActiveTab} className="mb-4">
         <TabPane tab="Police Officers" key="police">
-          <Table 
-            columns={columns} 
-            dataSource={policeOfficers} 
+          <Table
+            columns={columns}
+            dataSource={policeOfficers}
             rowKey="id"
             pagination={false}
+            loading={loading}
           />
         </TabPane>
         <TabPane tab="GSMB Officers" key="gsmb">
-          <Table 
-            columns={columns} 
-            dataSource={gsmbOfficers} 
+          <Table
+            columns={columns}
+            dataSource={gsmbOfficers}
             rowKey="id"
             pagination={false}
+            loading={loading}
           />
         </TabPane>
       </Tabs>
