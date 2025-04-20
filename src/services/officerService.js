@@ -1,7 +1,7 @@
 import axios from "axios";
 // import moment from "moment";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL; 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 // Wrap your named functions in an object
 const officerService = {
@@ -206,13 +206,7 @@ const officerService = {
         }
       );
 
-      if (response.data.success && Array.isArray(response.data.data)) {
-        // Assuming the API returns an array of ML owners directly
-        return response.data.data;
-      } else {
-        console.error("Failed to fetch ML owners: Unexpected data format");
-        return [];
-      }
+      return response.data;
     } catch (error) {
       console.error("Failed to fetch ML owners:", error);
       return [];
@@ -317,27 +311,23 @@ const officerService = {
       throw error;
     }
   },
-   
 
   getAllTpls: async () => {
     try {
-      const token = localStorage.getItem("USER_TOKEN"); 
+      const token = localStorage.getItem("USER_TOKEN");
       if (!token) {
         console.error("User token not found in localStorage");
         return [];
       }
 
       // Make a GET request to the backend API
-      const response = await axios.get(
-        `${BASE_URL}/gsmb-officer/get-tpls`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, 
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      
+      const response = await axios.get(`${BASE_URL}/gsmb-officer/get-tpls`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
       console.log("Get All Tpl Full API response:", response);
 
       if (response.data.success && Array.isArray(response.data.data)) {
@@ -354,36 +344,37 @@ const officerService = {
   },
 
   // Add this to your officerService object
-getMiningLicenses: async () => {
-  try {
-    const token = localStorage.getItem("USER_TOKEN");
-    if (!token) {
-      console.error("User token not found in localStorage");
-      return [];
-    }
-
-    const response = await axios.get(
-      `${BASE_URL}/gsmb-officer/get-mining-licenses`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+  getMiningLicenses: async () => {
+    try {
+      const token = localStorage.getItem("USER_TOKEN");
+      if (!token) {
+        console.error("User token not found in localStorage");
+        return [];
       }
-    );
 
-    if (response.data.success && Array.isArray(response.data.data)) {
-      return response.data.data;
-    } else {
-      console.error("Failed to fetch mining licenses: Unexpected data format");
+      const response = await axios.get(
+        `${BASE_URL}/gsmb-officer/get-mining-licenses`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data.success && Array.isArray(response.data.data)) {
+        return response.data.data;
+      } else {
+        console.error(
+          "Failed to fetch mining licenses: Unexpected data format"
+        );
+        return [];
+      }
+    } catch (error) {
+      console.error("Failed to fetch mining licenses:", error);
       return [];
     }
-  } catch (error) {
-    console.error("Failed to fetch mining licenses:", error);
-    return [];
-  }
-},
-
+  },
 };
 
 // Now export the service object as the default

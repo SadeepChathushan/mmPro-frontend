@@ -354,6 +354,38 @@ export const fetchDispatchHistoryData = async (licenseNumber) => {
   }
 };
 
+//ML request Post
+export const submitMLRequest = async (formData) => {
+  const token = localStorage.getItem("USER_TOKEN");
+  
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/mining-owner/ml-request`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error submitting ML request:", error);
+    
+    // Extract and format error message
+    let errorMessage = "Failed to submit request";
+    if (error.response) {
+      errorMessage = error.response.data.error || 
+                   error.response.data.message || 
+                   error.response.statusText;
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    throw new Error(errorMessage);
+  }
+};
 
 /**
 export const fetchTPLPrintHistoryData = async (tpl_id,licenseNumber) => {
