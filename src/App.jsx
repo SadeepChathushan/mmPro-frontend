@@ -14,6 +14,7 @@ import GeneralPublicDashboard from "../src/pages/GeneralPublic/Dashboard";
 import ResetPasswordModal from "../src/components/Auth/ResetPassword";
 import GSMBManagementRoutes from "./routes/GSMBManagementRoutes";
 import RegionalOfficerRoutes from "./routes/RegionalOfficerRoutes";
+import MiningEngineerRoutes from "./routes/MERoutes";
 
 const App = () => {
   const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false);
@@ -49,6 +50,7 @@ const App = () => {
                 "MLOwner",
                 "GSMBManagement",
                 "RegionalOfficer",
+                "miningEngineer"
               ]}
             />
           }
@@ -93,6 +95,15 @@ const App = () => {
             >
               <Route path="*" element={<RegionalOfficerRoutes />} />
             </Route>
+
+            {/* Mining engineer Routes */}
+            <Route
+              path="me/*"
+              element={<PrivateRoute allowedRoles={["miningEngineer"]} />}
+            >
+              <Route path="*" element={<MiningEngineerRoutes />} />
+            </Route>
+            
           </Route>
         </Route>
       </Routes>
