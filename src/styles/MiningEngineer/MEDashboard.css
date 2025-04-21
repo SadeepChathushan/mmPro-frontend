@@ -1,0 +1,189 @@
+/* Layout Styles */
+.mining-dashboard {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+  }
+  
+  /* Header Styles */
+  .app-header {
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    height: 64px;
+    background: #fff !important;
+  }
+  
+  /* Sidebar Styles */
+  .ant-layout-sider {
+    box-shadow: 2px 0 8px 0 rgba(29, 35, 41, 0.05);
+  }
+  
+  .logo {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  }
+  
+  /* Content Styles */
+  .ant-layout-content {
+    padding: 24px;
+    min-height: calc(100vh - 64px);
+  }
+  
+  /* Card Styles */
+  .ant-card {
+    border-radius: 8px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    margin-bottom: 16px;
+  }
+  
+  .ant-card-head {
+    border-bottom: none;
+  }
+  
+  .ant-card-head-title {
+    font-weight: 600;
+  }
+  
+  /* Alert Styles */
+  .alert-item {
+    transition: all 0.3s;
+    margin-bottom: 8px;
+  }
+  
+  .alert-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  }
+  
+  /* Progress Bar Styles */
+  .progress-container {
+    margin-top: 8px;
+  }
+  
+  /* Quick Actions */
+  .quick-action-btn {
+    margin-bottom: 8px;
+    width: 100%;
+    text-align: left;
+  }
+  
+  /* Production Chart Styles */
+  .production-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 8px;
+  }
+  
+  .production-ore {
+    background-color: #1890ff;
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+  }
+  
+  .production-waste {
+    background-color: #faad14;
+    width: 100%;
+    border-radius: 0 0 4px 4px;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 992px) {
+    .ant-layout-content {
+      padding: 12px;
+    }
+    
+    .ant-card {
+      margin-bottom: 12px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .app-header {
+      padding: 0 12px;
+    }
+    
+    .production-bar {
+      margin: 0 4px;
+    }
+  }
+  
+  /* Animation Styles */
+  @keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+  }
+  
+  .new-alert {
+    animation: pulse 2s infinite;
+  }
+  
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+  
+  /* Badge Styles */
+  .ant-badge-count {
+    box-shadow: none;
+  }
+  
+  /* Avatar Styles */
+  .ant-avatar {
+    background-color: #1890ff;
+    color: white;
+  }
+  
+  /* Divider Styles */
+  .ant-divider {
+    margin: 12px 0;
+  }
+  
+  /* Statistic Styles */
+  .ant-statistic-title {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.45);
+  }
+  
+  .ant-statistic-content {
+    font-size: 24px;
+    margin: 8px 0;
+  }
+  
+  /* Menu Styles */
+  .ant-menu-item {
+    margin: 4px 0 !important;
+    border-radius: 4px;
+  }
+  
+  .ant-menu-item-selected {
+    background-color: #e6f7ff !important;
+  }
+  
+  /* Button Styles */
+  .ant-btn-link {
+    padding: 0;
+  }

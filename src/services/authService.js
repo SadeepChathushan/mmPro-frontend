@@ -112,6 +112,9 @@ const authService = {
       case "RegionalOfficer":
         navigate("/regional/dashboard");
         break;
+      case "miningEngineer":
+        navigate("/me/dashboard");
+        break;
       default:
         navigate("/");
         break;
