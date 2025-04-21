@@ -65,14 +65,11 @@ const DispatchLoadPage = () => {
   };
   const [driverContactError, setDriverContactError] = useState("");
   const [lorryNumberError, setLorryNumberError] = useState("");
-  const user_Details = JSON.parse(localStorage.getItem("USER")) || {};
-  const apiKey = localStorage.getItem("API_Key");
-  console.log("User details from localStorage:", user_Details);
-  console.log("API Key from localStorage:", apiKey);
-  const userf_name = user_Details.firstname;
-  const userl_name = user_Details.lastname;
-  const user_name = userf_name + " " + userl_name;
-  console.log("User Name", user_name);   
+  // const user_Details = JSON.parse(localStorage.getItem("USER")) || {};
+  // const userf_name = user_Details.firstname;
+  // const userl_name = user_Details.lastname;
+  // const user_name = userf_name + " " + userl_name;
+  // console.log("User Name", user_name);
 
   const [number, setLNumber] = useState("");
   const { language } = useLanguage();
@@ -83,7 +80,7 @@ const DispatchLoadPage = () => {
   const [isLoyalErrModalVisible, setIsLoyalErrModalVisible] = useState(false);
   const [location, setLocation] = useState([6.9271, 79.8612]); // Default to Colombo coordinates
   const [locationSuggestions, setLocationSuggestions] = useState([]);
-   const [mLId, setmId] = useState("");
+  const [mLId, setmId] = useState("");
   const [formData, setFormData] = useState({
     mining_license_number: "",
     destination: "",
@@ -282,11 +279,11 @@ const DispatchLoadPage = () => {
   return (
     <Layout className="dispatch-load-container">
       <Content style={{ padding: screens.xs ? "16px" : "24px" }}>
-        <Title 
-          level={3} 
+        <Title
+          level={3}
           className="page-title"
           style={{ fontSize: screens.xs ? "1.5rem" : "1.75rem" }}
-          >
+        >
           {language === "en"
             ? "Dispatch Your Load Here"
             : language === "si"
@@ -314,8 +311,7 @@ const DispatchLoadPage = () => {
             </div>
           </Col>
 
-
-        {/* License Number Input */}
+          {/* License Number Input */}
           <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
@@ -334,7 +330,7 @@ const DispatchLoadPage = () => {
             </div>
           </Col>
 
-        {/* Destination Input with Search Options */}
+          {/* Destination Input with Search Options */}
           <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
@@ -345,10 +341,12 @@ const DispatchLoadPage = () => {
                   : "சேருமிடம்:"}
               </span>
               <div style={{ display: "flex", alignItems: "center" }}>
-                <SearchOutlined style={{ 
-                  marginRight: screens.xs ? "4px" : "8px",
-                  fontSize: screens.xs ? "14px" : "16px"
-                 }} />
+                <SearchOutlined
+                  style={{
+                    marginRight: screens.xs ? "4px" : "8px",
+                    fontSize: screens.xs ? "14px" : "16px",
+                  }}
+                />
                 <AutoComplete
                   value={formData.destination}
                   onChange={(value) => {
@@ -374,7 +372,7 @@ const DispatchLoadPage = () => {
             </div>
           </Col>
 
-        {/* Lorry Number Input */}
+          {/* Lorry Number Input */}
           <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
@@ -405,7 +403,7 @@ const DispatchLoadPage = () => {
             </div>
           </Col>
 
-        {/* Driver Contact Input */}
+          {/* Driver Contact Input */}
           <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
@@ -450,7 +448,10 @@ const DispatchLoadPage = () => {
                 <Input
                   value={formData[`Root${routeNum}`]}
                   onChange={(e) =>
-                    setFormData({ ...formData, [`Root${routeNum}`]: e.target.value })
+                    setFormData({
+                      ...formData,
+                      [`Root${routeNum}`]: e.target.value,
+                    })
                   }
                   className={screens.xs ? "mobile-input" : ""}
                 />
@@ -458,8 +459,7 @@ const DispatchLoadPage = () => {
             </Col>
           ))}
 
-
-        {/* Cubes Input with Increment and Decrement Buttons */}
+          {/* Cubes Input with Increment and Decrement Buttons */}
           <Col xs={24} sm={24} md={16} lg={16}>
             <div className="form-field">
               <span className="field-label">
@@ -472,9 +472,9 @@ const DispatchLoadPage = () => {
               <div className="cubes-input-container">
                 <Button
                   onClick={decrementCubes}
-                  style={{ 
+                  style={{
                     marginRight: screens.xs ? "4px" : "8px",
-                    minWidth: screens.xs ? "32px" : "auto"
+                    minWidth: screens.xs ? "32px" : "auto",
                   }}
                   disabled={formData.cubes <= 1}
                 >
@@ -486,10 +486,13 @@ const DispatchLoadPage = () => {
                   className={`cubes-input ${screens.xs ? "mobile-input" : ""}`}
                   style={{ width: screens.xs ? "50px" : "60px" }}
                 />
-                <Button onClick={incrementCubes} style={{
+                <Button
+                  onClick={incrementCubes}
+                  style={{
                     marginLeft: screens.xs ? "4px" : "8px",
-                    minWidth: screens.xs ? "32px" : "auto"
-                }}>
+                    minWidth: screens.xs ? "32px" : "auto",
+                  }}
+                >
                   +
                 </Button>
               </div>
@@ -498,75 +501,75 @@ const DispatchLoadPage = () => {
         </Row>
 
         {/* Submit and Cancel Buttons */}
-{/* Submit and Cancel Buttons */}
-<Row 
-  gutter={screens.xs ? 8 : 16} 
-  justify="center" 
-  align="middle"
-  style={{ 
-    marginTop: screens.xs ? "16px" : "24px",
-    width: '100%'
-  }}
->
-  <Col 
-    xs={24} 
-    sm={12} 
-    md={8} 
-    lg={8}
-    style={{ 
-      padding: screens.xs ? "0 4px" : "0 8px",
-      marginBottom: screens.xs ? "8px" : "0"
-    }}
-  >
-    <Button
-      type="primary"
-      onClick={handleCancel}
-      className="form-action-button cancel-button"
-      size="large"
-      block
-      style={{
-        height: '40px',
-        fontSize: '16px',
-        borderRadius: '4px'
-      }}
-    >
-      {language === "en"
-        ? "Cancel"
-        : language === "si"
-        ? "අවලංගු කරන්න"
-        : "ரத்து செய்"}
-    </Button>
-  </Col>
-  <Col 
-    xs={24} 
-    sm={12} 
-    md={8} 
-    lg={8}
-    style={{ 
-      padding: screens.xs ? "0 4px" : "0 8px",
-      marginBottom: screens.xs ? "8px" : "0"
-    }}
-  >
-    <Button
-      type="primary"
-      onClick={handleSubmit}
-      className="form-action-button submit-button"
-      size="large"
-      block
-      style={{
-        height: '40px',
-        fontSize: '16px',
-        borderRadius: '4px'
-      }}
-    >
-      {language === "en"
-        ? "Submit"
-        : language === "si"
-        ? "සටහන් කරන්න"
-        : "சமர்ப்பிக்கவும்"}
-    </Button>
-  </Col>
-</Row>
+        {/* Submit and Cancel Buttons */}
+        <Row
+          gutter={screens.xs ? 8 : 16}
+          justify="center"
+          align="middle"
+          style={{
+            marginTop: screens.xs ? "16px" : "24px",
+            width: "100%",
+          }}
+        >
+          <Col
+            xs={24}
+            sm={12}
+            md={8}
+            lg={8}
+            style={{
+              padding: screens.xs ? "0 4px" : "0 8px",
+              marginBottom: screens.xs ? "8px" : "0",
+            }}
+          >
+            <Button
+              type="primary"
+              onClick={handleCancel}
+              className="form-action-button cancel-button"
+              size="large"
+              block
+              style={{
+                height: "40px",
+                fontSize: "16px",
+                borderRadius: "4px",
+              }}
+            >
+              {language === "en"
+                ? "Cancel"
+                : language === "si"
+                ? "අවලංගු කරන්න"
+                : "ரத்து செய்"}
+            </Button>
+          </Col>
+          <Col
+            xs={24}
+            sm={12}
+            md={8}
+            lg={8}
+            style={{
+              padding: screens.xs ? "0 4px" : "0 8px",
+              marginBottom: screens.xs ? "8px" : "0",
+            }}
+          >
+            <Button
+              type="primary"
+              onClick={handleSubmit}
+              className="form-action-button submit-button"
+              size="large"
+              block
+              style={{
+                height: "40px",
+                fontSize: "16px",
+                borderRadius: "4px",
+              }}
+            >
+              {language === "en"
+                ? "Submit"
+                : language === "si"
+                ? "සටහන් කරන්න"
+                : "சமர்ப்பிக்கவும்"}
+            </Button>
+          </Col>
+        </Row>
         <div>
           <Modals
             isModalVisible={isModalVisible}
