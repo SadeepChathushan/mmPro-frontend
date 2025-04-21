@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Button, Card, Space, Row, Col, Spin, Empty } from 'antd';
+import { Button, Card, Space, Row, Col, Spin, Empty, Alert } from 'antd';
 import { Link } from 'react-router-dom';
 import { useLanguage } from "../../contexts/LanguageContext";
-import {fetchHomeLicense} from '../../services/MLOService';
+import {fetchHomeLicense, fetchMLRequests} from '../../services/MLOService';
 import "../../styles/MLOwner/MLOwnerHomePage.css";
 
 const MLOwnerHomePage = () => {
@@ -10,6 +10,8 @@ const MLOwnerHomePage = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [mlRequests, setMLRequests] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const translations = {
     en: {
@@ -28,7 +30,15 @@ const MLOwnerHomePage = () => {
       inactive: "Inactive",
       dispatchLoad: "Dispatch Load",
       history: "History",  
-      mlRequest: "Request a Mining License"
+      mlRequest: "Request a Mining License",
+      viewRequestStatus: "View License Request Status",
+      notifications: "License Request Notifications",
+      noPendingRequests: "No pending license requests",
+      requestNumber: "Request #",
+      requestStatus: "Status",
+      requestDate: "Request Date",
+      hideNotifications: "Hide Notifications",
+      showNotifications: "Show License Request Status"
     },
     si: {
       title: " කැණීමේ බලපත්‍ර",
@@ -46,7 +56,15 @@ const MLOwnerHomePage = () => {
       inactive: "අක්‍රීයයි",
       dispatchLoad: "නව ප්‍රවාහන බලපත්‍රයක්", 
       history: "ඉතිහාසය",
-      mlRequest: ""
+      mlRequest: "කැණීමේ බලපත්‍රයක් ඉල්ලන්න",
+      viewRequestStatus: "බලපත්‍ර ඉල්ලීම් තත්ත්වය බලන්න",
+      notifications: "බලපත්‍ර ඉල්ලීම් දැනුම්දීම්",
+      noPendingRequests: "පොරොත්තු බලපත්‍ර ඉල්ලීම් නොමැත",
+      requestNumber: "ඉල්ලීම #",
+      requestStatus: "තත්ත්වය",
+      requestDate: "ඉල්ලීම් දිනය",
+      hideNotifications: "දැනුම්දීම් සඟවන්න",
+      showNotifications: "බලපත්‍ර ඉල්ලීම් තත්ත්වය පෙන්වන්න"
     },
     ta: {
       title: "சுரங்க அனுமதிகள் மேலோட்டம்",
@@ -64,7 +82,15 @@ const MLOwnerHomePage = () => {
       inactive: "செயலற்றது",
       dispatchLoad: "சரக்கு அனுப்பு",
       history: "வரலாறு", 
-      mlRequest: ""
+      mlRequest: "சுரங்க உரிமம் கோரிக்கை",
+      viewRequestStatus: "உரிம கோரிக்கை நிலையைக் காண்க",
+      notifications: "உரிம கோரிக்கை அறிவிப்புகள்",
+      noPendingRequests: "நிலுவையில் உள்ள உரிம கோரிக்கைகள் இல்லை",
+      requestNumber: "கோரிக்கை #",
+      requestStatus: "நிலை",
+      requestDate: "கோரிக்கை தேதி",
+      hideNotifications: "அறிவிப்புகளை மறை",
+      showNotifications: "உரிம கோரிக்கை நிலையைக் காட்டு"
     }
   };
 
@@ -74,60 +100,124 @@ const MLOwnerHomePage = () => {
     const fetchData = async () => {
       try {
         console.log("Fetching home licenses...");
-        const homeLicenses = await fetchHomeLicense(); 
+        const [homeLicenses, mlRequests] = await Promise.all([
+          fetchHomeLicense(),
+          fetchMLRequests()
+        ]);
+        
         console.log("API Response - Home Licenses:", homeLicenses);
+        console.log("API Response - ML Requests:", mlRequests);
   
         if (homeLicenses.length === 0) {
           console.log("No home licenses found");
-          return;
+        } else {
+          const mappedData = homeLicenses.map(license => ({
+            licenseNumber: license["License Number"],
+            owner: localStorage.getItem("USERNAME") || 'Unknown Owner',
+            location: license["Location"],
+            startDate: license["Start Date"],
+            dueDate: license["Due Date"],
+            remainingCubes: license["Remaining Cubes"],
+            status: license["Status"]
+          }));
+  
+          console.log("Mapped Data:", mappedData);
+          setData(mappedData);
+          setFilteredData(mappedData);
         }
   
-        const mappedData = homeLicenses.map(license => ({
-          licenseNumber: license["License Number"],
-          owner:  localStorage.getItem("USERNAME") || 'Unknown Owner',
-          location: license["Location"],
-          startDate: license["Start Date"],
-          dueDate: license["Due Date"],
-          remainingCubes: license["Remaining Cubes"],
-          status: license["Status"]
-        }));
-  
-        console.log("Mapped Data:", mappedData);
-  
-        setData(mappedData);
-        setFilteredData(mappedData);
+        if (mlRequests.length > 0) {
+          setMLRequests(mlRequests);
+        }
       } catch (error) {
-        console.error('Error fetching home licenses:', error);
-        notification.error({
-          message: 'Error',
-          description: 'Failed to fetch home licenses. Please try again later.',
-        });
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
-        console.log("Loading set to false"); // Debug loading state
+        console.log("Loading set to false"); 
       }
     };
   
     fetchData();
   }, []);
   
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
+
+  const getStatusColor = (status) => {
+    switch(status.toLowerCase()) {
+      case 'approved':
+        return 'success';
+      case 'pending':
+        return 'warning';
+      case 'rejected':
+        return 'error';
+      default:
+        return 'info';
+    }
+  };
+
   return (
     <div className="page-container1">
-       <h1 className="title1">{currentTranslations.title}</h1>
-       <p className="subtitle1">{currentTranslations.subtitle}</p>
-       <Row>
-                <Link to="/mlowner/home/viewlicenses">
-                  <Button className="view-licenses-button">
-                    {currentTranslations.viewLicensesButton}
-                  </Button>
-                </Link>
+      <h1 className="title1">{currentTranslations.title}</h1>
+      <p className="subtitle1">{currentTranslations.subtitle}</p>
+      
+      {/* Notification Section */}
+      {mlRequests.length > 0 && (
+        <div className="notifications-section">
+          <Button 
+            type="primary" 
+            onClick={toggleNotifications}
+            className="toggle-notifications-btn"
+          >
+            {showNotifications ? currentTranslations.hideNotifications : currentTranslations.showNotifications}
+          </Button>
+          
+          {showNotifications && (
+            <Card 
+              title={currentTranslations.notifications} 
+              className="notifications-card"
+            >
+              {mlRequests.map(request => (
+                <Alert
+                  key={request.requestId}
+                  message={
+                    <span>
+                      <strong>{currentTranslations.requestNumber}:</strong> {request.requestId} | 
+                      <strong> {currentTranslations.requestStatus}:</strong> {request.status} | 
+                      <strong> {currentTranslations.requestDate}:</strong> {request.requestDate}
+                    </span>
+                  }
+                  type={getStatusColor(request.status)}
+                  showIcon
+                  className="notification-alert"
+                />
+              ))}
+            </Card>
+          )}
+        </div>
+      )}
 
-                <Link to="/mlowner/home/mlrequest">
-                  <Button className="ml-request-button">
-                    {currentTranslations.mlRequest}
-                  </Button>
-                </Link>
-       </Row>
+      <Row className="action-buttons-row">
+        <Link to="/mlowner/home/viewlicenses">
+          <Button className="view-licenses-button">
+            {currentTranslations.viewLicensesButton}
+          </Button>
+        </Link>
+
+        <Link to="/mlowner/home/mlrequest">
+          <Button className="ml-request-button">
+            {currentTranslations.mlRequest}
+          </Button>
+        </Link>
+
+        <Link to="/mlowner/home/requeststatus">
+          <Button className="view-request-status-button">
+            {currentTranslations.viewRequestStatus}
+          </Button>
+        </Link>
+      </Row>
+
       <div className="page-content1">
         {loading ? (
           <div className="loading-container">
