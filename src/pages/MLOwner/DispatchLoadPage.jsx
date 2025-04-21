@@ -95,37 +95,37 @@ const DispatchLoadPage = () => {
   const navigate = useNavigate();
 
   // Fetch location suggestions from Nominatim API, restricted to Sri Lanka
-  const fetchLocationSuggestions = async (value) => {
-    if (!value.trim()) {
-      setLocationSuggestions([]);
-      return;
-    }
+  // const fetchLocationSuggestions = async (value) => {
+  //   if (!value.trim()) {
+  //     setLocationSuggestions([]);
+  //     return;
+  //   }
 
-    try {
-      const response = await axios.get(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          value
-        )}&addressdetails=1&countrycodes=LK&limit=5`
-      );
+  //   try {
+  //     const response = await axios.get(
+  //       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+  //         value
+  //       )}&addressdetails=1&countrycodes=LK&limit=5`
+  //     );
 
-      const validSuggestions = response.data
-        .filter((item) => {
-          const lat = parseFloat(item.lat);
-          const lon = parseFloat(item.lon);
-          return !isNaN(lat) && !isNaN(lon); // Only keep valid lat/lon values
-        })
-        .map((item) => ({
-          value: item.display_name,
-          lat: parseFloat(item.lat),
-          lon: parseFloat(item.lon),
-        }));
+  //     const validSuggestions = response.data
+  //       .filter((item) => {
+  //         const lat = parseFloat(item.lat);
+  //         const lon = parseFloat(item.lon);
+  //         return !isNaN(lat) && !isNaN(lon); // Only keep valid lat/lon values
+  //       })
+  //       .map((item) => ({
+  //         value: item.display_name,
+  //         lat: parseFloat(item.lat),
+  //         lon: parseFloat(item.lon),
+  //       }));
 
-      setLocationSuggestions(validSuggestions);
-    } catch (error) {
-      console.error("Error fetching location suggestions:", error);
-      setLocationSuggestions([]);
-    }
-  };
+  //     setLocationSuggestions(validSuggestions);
+  //   } catch (error) {
+  //     console.error("Error fetching location suggestions:", error);
+  //     setLocationSuggestions([]);
+  //   }
+  // };
 
   // Handle selection of a location suggestion
   const handleLocationSelect = (value, option) => {
@@ -351,7 +351,7 @@ const DispatchLoadPage = () => {
                   value={formData.destination}
                   onChange={(value) => {
                     setFormData({ ...formData, destination: value });
-                    fetchLocationSuggestions(value); // Fetch suggestions on change
+                    // fetchLocationSuggestions(value); // Fetch suggestions on change
                   }}
                   onSelect={handleLocationSelect}
                   style={{ width: "100%" }}
