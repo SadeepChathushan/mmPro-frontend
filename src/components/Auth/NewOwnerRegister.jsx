@@ -31,7 +31,6 @@ const MlOwnerRegister = () => {
     
     setRole(roleParam);
     
-    // You can add role-specific logic here
     if (roleParam !== 'ml_owner') {
       message.warning(
         language === "en"
@@ -55,7 +54,7 @@ const MlOwnerRegister = () => {
             firstname: values.firstname,
             lastname: values.lastname,
             email: values.email,
-            role: role, // Include the role in payload
+            role: role,
             custom_fields: [
               { id: 21, name: "Mobile Number", value: values.phoneNumber },
               { id: 22, name: "Address", value: values.address },
@@ -69,7 +68,7 @@ const MlOwnerRegister = () => {
             login: values.companyName,
             firstname: values.companyName,
             email: values.companyEmail,
-            role: role, // Include the role in payload
+            role: role,
             custom_fields: [
               { id: 21, name: "Mobile Number", value: values.companyPhoneNumber },
               { id: 22, name: "Address", value: values.companyAddress },
@@ -102,7 +101,7 @@ const MlOwnerRegister = () => {
       );
   
       form.resetFields();
-      navigate('/login'); // Redirect to login after successful registration
+      navigate('/login');
     } catch (error) {
       console.error("Error:", error);
       message.error(
@@ -186,7 +185,7 @@ const MlOwnerRegister = () => {
   };
 
   const renderOwnerForm = () => (
-    <Row gutter={[16, 16]}>
+    <Row gutter={[16, 16]} style={{ padding: '0 20px' }}>
       <Col xs={24} sm={24} md={12}>
         <Form.Item
           label={language === "en" ? "First Name" : language === "si" ? "අයිතිකරුගේ මුල් නම" : "உரிமையாளர் முதற்கொண்டு பெயர்"}
@@ -290,7 +289,7 @@ const MlOwnerRegister = () => {
   );
 
   const renderCompanyForm = () => (
-    <Row gutter={[16, 16]}>
+    <Row gutter={[16, 16]} style={{ padding: '0 20px' }}>
       <Col xs={24} sm={24} md={12}>
         <Form.Item
           label={language === "en" ? "Company Name" : language === "si" ? "සමාගමේ නම" : "நிறுவன பெயர்"}
@@ -411,6 +410,7 @@ const MlOwnerRegister = () => {
                   justifyContent: "center",
                   alignItems: "center",
                   gap: "50px",
+                  padding: '20px 0'
                 }}
               >
                 <Button
@@ -476,6 +476,7 @@ const MlOwnerRegister = () => {
                   justifyContent: "center",
                   alignItems: "center",
                   gap: "50px",
+                  padding: '20px 0'
                 }}
               >
                 <Button
@@ -518,17 +519,18 @@ const MlOwnerRegister = () => {
   ];
 
   if (!role) {
-    return null; // or a loading spinner while redirecting
+    return null;
   }
 
   return (
-    <div className="license-form-container">
+    <div className="license-form-container" style={{ padding: '30px 20px' }}>
       <h2
         style={{
           textAlign: "center",
           fontWeight: "bold",
           color: "#1a1a1a",
           fontSize: "32px",
+          marginBottom: '20px'
         }}
       >
         {language === "en"
@@ -559,12 +561,14 @@ const MlOwnerRegister = () => {
           } 
         }}
       >
-        <Tabs 
-          centered 
-          activeKey={activeTab} 
-          onChange={setActiveTab}
-          items={tabItems}
-        />
+        <div style={{ padding: '0 15px' }}>
+          <Tabs 
+            centered 
+            activeKey={activeTab} 
+            onChange={setActiveTab}
+            items={tabItems}
+          />
+        </div>
       </ConfigProvider>
     </div>
   );
