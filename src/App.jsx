@@ -14,6 +14,8 @@ import GeneralPublicDashboard from "../src/pages/GeneralPublic/Dashboard";
 import ResetPasswordModal from "../src/components/Auth/ResetPassword";
 import GSMBManagementRoutes from "./routes/GSMBManagementRoutes";
 import RegionalOfficerRoutes from "./routes/RegionalOfficerRoutes";
+import MlOwnerRegister from "../src/pages/GSMBOfficer/RegNewOwner";
+import NewOwnerRegister from "./components/Auth/NewOwnerRegister";
 
 const App = () => {
   const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false);
@@ -25,6 +27,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/NewOwnerRegister" element={<NewOwnerRegister />} />
         <Route
           path="/reset-password"
           element={
@@ -39,7 +42,13 @@ const App = () => {
         </Route>
         <Route path="*" element={<NotFound />} />
 
-        {/* Protected Routes */}
+        <Route path="/" element={<AppLayout />}>
+          <Route path="/mlregister" element={< MlOwnerRegister />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
+
+
+        {/* Protected Routes */} 
         <Route
           element={
             <PrivateRoute
