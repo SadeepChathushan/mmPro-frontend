@@ -21,78 +21,104 @@ const Dashboard = () => {
   const [tplData, setTplData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [mlData, setMlData] = useState([]);
+  const [complaintData, setComplaintData] = useState([]);
 
   const tabs = [
-    { 
-      key: "MLOWNER", 
-      label: language === "en" ? "ML Owners" : language === "si" ? "ML හිමියන්" : "ML உரிமையாளர்கள்" 
+    {
+      key: "MLOWNER",
+      label:
+        language === "en"
+          ? "ML Owners"
+          : language === "si"
+          ? "ML හිමියන්"
+          : "ML உரிமையாளர்கள்",
     },
-    { 
-      key: "ML", 
-      label: language === "en" ? "Mining License" : language === "si" ? "බලපත්‍ර" : "சுரங்க அனுமதி" 
+    {
+      key: "ML",
+      label:
+        language === "en"
+          ? "Mining License"
+          : language === "si"
+          ? "බලපත්‍ර"
+          : "சுரங்க அனுமதி",
     },
-    { 
-      key: "TPL", 
-      label: language === "en" ? "Transport License" : language === "si" ? "ප්‍රවාහන බලපත්‍ර" : "போக்குவரத்து அனுமதி" 
+    {
+      key: "TPL",
+      label:
+        language === "en"
+          ? "Transport License"
+          : language === "si"
+          ? "ප්‍රවාහන බලපත්‍ර"
+          : "போக்குவரத்து அனுமதி",
     },
-    { 
-      key: "CMPLN", 
-      label: language === "en" ? "Complaints" : language === "si" ? "පැමිණිලි" : "முறையீடுகள்" 
+    {
+      key: "CMPLN",
+      label:
+        language === "en"
+          ? "Complaints"
+          : language === "si"
+          ? "පැමිණිලි"
+          : "முறையீடுகள்",
     },
-    { 
-      key: "MEA", 
-      label: language === "en" ? "ME Approved" : language === "si" ? "පතල් ඉංජිනේරු අනුමත කර ඇත" : "சுரங்கப் பொறியாளர் ஒப்புதல் அளித்துள்ளார்" 
+    {
+      key: "MEA",
+      label:
+        language === "en"
+          ? "ME Approved"
+          : language === "si"
+          ? "පතල් ඉංජිනේරු අනුමත කර ඇත"
+          : "சுரங்கப் பொறியாளர் ஒப்புதல் அளித்துள்ளார்",
     },
   ];
 
   // Fetch ML owners and issues data
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch ML owners count
-        const mlOwners = await officerService.getMlOwners();
-        setMlOwnersCount(mlOwners.length);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       setLoading(true);
 
-        // Fetch issues data (for ML and Complaints)
-        const issuesData = await officerService.getIssuesData();
-        
-        if (Array.isArray(issuesData)) {
-          const transformedData = issuesData.map((issue) => ({
-            id: issue.id,
-            tracker:
-              issue.tracker.name === "Complaints"
-                ? "CMPLN"
-                : issue.tracker.name === "TPL"
-                ? "TPL"
-                : "ML",
-            licenseNumber:
-              issue.custom_fields.find(f => f.name === "License Number")?.value || "N/A",
-            ownerName:
-              issue.custom_fields.find(f => f.name === "Owner Name")?.value || "N/A",
-            mobileNumber:
-              issue.custom_fields.find(f => f.name === "Mobile Number")?.value || "N/A",
-            lorryNumber:
-              issue.custom_fields.find(f => f.name === "Lorry Number")?.value || "N/A",
-            assignee:
-              issue.custom_fields.find(f => f.name === "Assignee")?.value || "N/A",
-            start_date:
-              issue.custom_fields.find(f => f.name === "startDate")?.value ||
-              issue.start_date ||
-              "N/A",
-          }));
-          setTableData(transformedData);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  //       // Fetch ML owners count
+  //       const mlOwners = await officerService.getMlOwners();
+  //       setMlOwnersCount(mlOwners.length);
 
-    fetchData();
-  }, []);
+  //       // Fetch issues data (for ML and Complaints)
+  //       const issuesData = await officerService.getIssuesData();
+
+  //       if (Array.isArray(issuesData)) {
+  //         const transformedData = issuesData.map((issue) => ({
+  //           id: issue.id,
+  //           tracker:
+  //             issue.tracker.name === "Complaints"
+  //               ? "CMPLN"
+  //               : issue.tracker.name === "TPL"
+  //               ? "TPL"
+  //               : "ML",
+  //           licenseNumber:
+  //             issue.custom_fields.find(f => f.name === "License Number")?.value || "N/A",
+  //           ownerName:
+  //             issue.custom_fields.find(f => f.name === "Owner Name")?.value || "N/A",
+  //           mobileNumber:
+  //             issue.custom_fields.find(f => f.name === "Mobile Number")?.value || "N/A",
+  //           lorryNumber:
+  //             issue.custom_fields.find(f => f.name === "Lorry Number")?.value || "N/A",
+  //           assignee:
+  //             issue.custom_fields.find(f => f.name === "Assignee")?.value || "N/A",
+  //           start_date:
+  //             issue.custom_fields.find(f => f.name === "startDate")?.value ||
+  //             issue.start_date ||
+  //             "N/A",
+  //         }));
+  //         setTableData(transformedData);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   // Fetch TPL data separately
   useEffect(() => {
@@ -101,21 +127,21 @@ const Dashboard = () => {
         setLoading(true);
         const tplData = await officerService.getAllTpls();
         console.log("TPL Data from service:", tplData);
-        
+
         // Transform TPL data if needed
-        const formattedTplData = tplData.map(tpl => ({
-          ...tpl,
-          tracker: "TPL" // Explicitly set tracker for TPL items
-        }));
-        
-        setTplData(formattedTplData);
+        // const formattedTplData = tplData.map((tpl) => ({
+        //   ...tpl,
+        //   tracker: "TPL", // Explicitly set tracker for TPL items
+        // }));
+
+        setTplData(tplData);
       } catch (error) {
         console.error("Error fetching TPL data:", error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchTplData();
   }, []);
 
@@ -125,22 +151,46 @@ const Dashboard = () => {
         setLoading(true);
         const mlData = await officerService.getMiningLicenses();
         console.log("ML Data from service:", mlData);
-        
+
         // Transform ML data if needed
-        const formattedMlData = mlData.map(ml => ({
-          ...ml,
-          tracker: "ML" // Explicitly set tracker for ML items
-        }));
-        
-        setMlData(formattedMlData);
+        // const formattedMlData = mlData.map((ml) => ({
+        //   ...ml,
+        //   tracker: "ML", // Explicitly set tracker for ML items
+        // }));
+
+        setMlData(mlData);
       } catch (error) {
         console.error("Error fetching ML data:", error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchMlData();
+  }, []);
+
+  useEffect(() => {
+    const fetchComplaintData = async () => {
+      try {
+        setLoading(true);
+        const complaintData = await officerService.getAllComplaints();
+        console.log("Complaint Data from service:", complaintData);
+
+        // Transform Complaint data if needed
+        // const formattedComplaintData = complaintData.map((complaint) => ({
+        //   ...complaint,
+        //   tracker: "Complaint", // Explicitly set tracker for Complaint items
+        // }));
+
+        setComplaintData(complaintData);
+      } catch (error) {
+        console.error("Error fetching complaint data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchComplaintData();
   }, []);
 
   // Update filtered data when tab or data changes
@@ -151,67 +201,97 @@ const Dashboard = () => {
       setFilteredData(tplData);
     } else if (activeTab === "ML") {
       setFilteredData(mlData);
+    } else if (activeTab === "CMPLN") {
+      setFilteredData(complaintData);
     } else {
-      const filtered = tableData.filter(item => item.tracker === activeTab);
+      const filtered = tableData.filter((item) => item.tracker === activeTab);
       setFilteredData(filtered);
     }
-  }, [activeTab, tableData, tplData, mlData]);
+  }, [activeTab, tableData, tplData, mlData, complaintData]);
 
   // Handle search
-  const handleSearch = (value) => {
-    setSearchText(value);
-    
-    if (activeTab === "TPL") {
-      const filtered = tplData.filter(item =>
-        (item.mining_license_number?.toLowerCase().includes(value.toLowerCase())) ||
-        (item.lorry_number?.toLowerCase().includes(value.toLowerCase())) ||
-        (item.driver_contact?.toLowerCase().includes(value.toLowerCase()))
-      );
-      setFilteredData(filtered);
-          } else if (activeTab === "ML") {
-      const filtered = mlData.filter(item =>
-        (item.subject?.toLowerCase().includes(value.toLowerCase())) ||
-        (item.author?.toLowerCase().includes(value.toLowerCase())) ||
-        (item.mobile_number?.toLowerCase().includes(value.toLowerCase()))
-      );
-      setFilteredData(filtered);
-    } else {
-      const filtered = tableData
-        .filter(item => item.tracker === activeTab)
-        .filter(item =>
-          item.licenseNumber.toLowerCase().includes(value.toLowerCase()) ||
-          item.ownerName.toLowerCase().includes(value.toLowerCase())
-        );
-      setFilteredData(filtered);
-    }
-  };
+  // const handleSearch = (value) => {
+  //   setSearchText(value);
+
+  //   if (activeTab === "TPL") {
+  //     const filtered = tplData.filter(
+  //       (item) =>
+  //         item.mining_license_number
+  //           ?.toLowerCase()
+  //           .includes(value.toLowerCase()) ||
+  //         item.lorry_number?.toLowerCase().includes(value.toLowerCase()) ||
+  //         item.driver_contact?.toLowerCase().includes(value.toLowerCase())
+  //     );
+  //     setFilteredData(filtered);
+  //   } else if (activeTab === "ML") {
+  //     const filtered = mlData.filter(
+  //       (item) =>
+  //         item.subject?.toLowerCase().includes(value.toLowerCase()) ||
+  //         item.author?.toLowerCase().includes(value.toLowerCase()) ||
+  //         item.mobile_number?.toLowerCase().includes(value.toLowerCase())
+  //     );
+  //     setFilteredData(filtered);
+  //   } else {
+  //     const filtered = tableData
+  //       .filter((item) => item.tracker === activeTab)
+  //       .filter(
+  //         (item) =>
+  //           item.licenseNumber.toLowerCase().includes(value.toLowerCase()) ||
+  //           item.ownerName.toLowerCase().includes(value.toLowerCase())
+  //       );
+  //     setFilteredData(filtered);
+  //   }
+  // };
 
   // Stats boxes data
   const statsBoxes = [
-    { 
-      title: language === "en" ? "ML Owners" : language === "si" ? "ML හිමියන්" : "ML உரிமையாளர்கள்", 
-      count: mlOwnersCount, 
-      color: "#FF8C00" 
+    {
+      title:
+        language === "en"
+          ? "ML Owners"
+          : language === "si"
+          ? "ML හිමියන්"
+          : "ML உரிமையாளர்கள்",
+      count: mlOwnersCount,
+      color: "#FF8C00",
     },
-    { 
-      title: language === "en" ? "Mining Licenses" : language === "si" ? "පතල් බලපත්‍ර" : "சுரங்க உரிமங்கள்", 
+    {
+      title:
+        language === "en"
+          ? "Mining Licenses"
+          : language === "si"
+          ? "පතල් බලපත්‍ර"
+          : "சுரங்க உரிமங்கள்",
       count: mlData.length,
-      color: "#1890ff" 
+      color: "#1890ff",
     },
-    { 
-      title: language === "en" ? "Transport Licenses" : language === "si" ? "ප්‍රවාහන බලපත්‍ර" : "போக்குவரத்து உரிமங்கள்", 
-      count: tplData.length, 
-      color: "#408220" 
+    {
+      title:
+        language === "en"
+          ? "Transport Licenses"
+          : language === "si"
+          ? "ප්‍රවාහන බලපත්‍ර"
+          : "போக்குவரத்து உரிமங்கள்",
+      count: tplData.length,
+      color: "#408220",
     },
-    { 
-      title: language === "en" ? "Complaints" : language === "si" ? "පැමිණිලි" : "முறையீடுகள்", 
-      count: tableData.filter(item => item.tracker === "CMPLN").length, 
-      color: "#950C33" 
-    }
+    {
+      title:
+        language === "en"
+          ? "Complaints"
+          : language === "si"
+          ? "පැමිණිලි"
+          : "முறையீடுகள்",
+      count: tableData.filter((item) => item.tracker === "CMPLN").length,
+      color: "#950C33",
+    },
   ];
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#f0f2f5", padding: "16px" }}>
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: "#f0f2f5", padding: "16px" }}
+    >
       {/* Stats Section */}
       <Row gutter={[16, 16]} justify="space-around">
         {statsBoxes.map((box, index) => (
@@ -228,7 +308,13 @@ const Dashboard = () => {
       <Row gutter={[16, 16]} align="middle" style={{ marginTop: "16px" }}>
         <Col xs={24} sm={16}>
           <Input
-            placeholder={language === "en" ? "Search" : language === "si" ? "සොයන්න" : "சேர்"}
+            placeholder={
+              language === "en"
+                ? "Search"
+                : language === "si"
+                ? "සොයන්න"
+                : "சேர்"
+            }
             prefix={<SearchOutlined />}
             style={{
               width: "100%",
@@ -244,7 +330,10 @@ const Dashboard = () => {
         <Col xs={24} sm={8} style={{ textAlign: "right" }}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
             <Link to="/gsmb/register-new-owner">
-              <Button type="primary" style={{ backgroundColor: "#950C33", color: "white" }}>
+              <Button
+                type="primary"
+                style={{ backgroundColor: "#950C33", color: "white" }}
+              >
                 {language === "en"
                   ? "+ Register New Owner"
                   : language === "si"
