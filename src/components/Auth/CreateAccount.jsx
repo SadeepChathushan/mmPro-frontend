@@ -201,13 +201,13 @@ const CreateAccountModal = ({ visible, onCancel }) => {
       role: 'gsmb_officer',
       label: 'GSMB Officer',
       icon: <UserOutlined />,
-      path: '/register/gsmb-officer'
+      path: '/GSMBOfficerRegister'
     },
     {
       role: 'police',
       label: 'Police',
       icon: <SecurityScanOutlined />,
-      path: '/register/police'
+      path: '/PoliceOfficerRegister'
     },
     {
       role: 'ml_owner',
