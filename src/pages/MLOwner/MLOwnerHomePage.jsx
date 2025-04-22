@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { Button, Card, Space, Row, Col, Spin, Empty, Alert } from 'antd';
 import { Link } from 'react-router-dom';
 import { useLanguage } from "../../contexts/LanguageContext";
-import {fetchHomeLicense, fetchMLRequests} from '../../services/MLOService';
+import {fetchHomeLicense} from '../../services/MLOService';
 import "../../styles/MLOwner/MLOwnerHomePage.css";
-
+//fetchMLRequests
 const MLOwnerHomePage = () => {
   const { language } = useLanguage();
   const [data, setData] = useState([]);
