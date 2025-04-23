@@ -192,20 +192,6 @@ const GSMBOfficerRegister = () => {
                 </Col>
               </Row>
 
-              {/* <Form.Item
-                label="Email"
-                name="email"
-                rules={[
-                  { required: true, message: "Please input your email!" },
-                  { type: "email", message: "Please enter a valid email!" },
-                ]}
-              >
-                <Input
-                  prefix={<MailOutlined />}
-                  placeholder="Enter your email"
-                />
-              </Form.Item> */}
-
               <Row gutter={16}>
                 <Col xs={24} md={12}>
                   <Form.Item
