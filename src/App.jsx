@@ -16,7 +16,10 @@ import GSMBManagementRoutes from "./routes/GSMBManagementRoutes";
 import RegionalOfficerRoutes from "./routes/RegionalOfficerRoutes";
 import MlOwnerRegister from "../src/pages/GSMBOfficer/RegNewOwner";
 import NewOwnerRegister from "./components/Auth/NewOwnerRegister";
+import PoliceOfficerRegister from "./components/Auth/PoliceOfficerRegister";
+import GSMBOfficerRegister from "./components/Auth/GSMBOfficerRegister";
 import MiningEngineerRoutes from "./routes/MERoutes";
+
 
 const App = () => {
   const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false);
@@ -29,6 +32,8 @@ const App = () => {
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/NewOwnerRegister" element={<NewOwnerRegister />} />
+        <Route path="/PoliceOfficerRegister" element={<PoliceOfficerRegister />} />
+        <Route path="/GSMBOfficerRegister" element={<GSMBOfficerRegister />} />
         <Route
           path="/reset-password"
           element={
