@@ -3,7 +3,6 @@ import { Card, Form, Input, Button, Row, Col, message, Upload, DatePicker, Selec
 import { UploadOutlined } from "@ant-design/icons";
 import { useLanguage } from "../../contexts/LanguageContext";
 import "../../styles/MLOwner/MLRequest.css";
-import { submitMLRequest } from "../../services/MLOService";
 
 const { Option } = Select;
 
