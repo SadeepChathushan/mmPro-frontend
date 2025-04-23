@@ -8,6 +8,7 @@ import StatsBox from "../../components/GSMBOfficer/StatsBox";
 import TabSection from "../../components/GSMBOfficer/TabSection";
 import LicenseTable from "../../components/GSMBOfficer/LicenseTable";
 import MlOwnersTable from "../../components/GSMBOfficer/MlOwnersTable";
+import RequestMiningTable from "../../components/GSMBOfficer/RequestMiningTable";
 
 const { Text } = Typography;
 
@@ -68,6 +69,15 @@ const Dashboard = () => {
           : language === "si"
           ? "පතල් ඉංජිනේරු අනුමත කර ඇත"
           : "சுரங்கப் பொறியாளர் ஒப்புதல் அளித்துள்ளார்",
+    },
+    {
+      key: "RM",
+      label:
+        language === "en"
+          ? "Request Mining"
+          : language === "si"
+          ? "පතල් කැණීම ඉල්ලීම් කිරීම"
+          : "சுரங்க கோரிக்கை",
     },
   ];
 
@@ -203,6 +213,8 @@ const Dashboard = () => {
       setFilteredData(mlData);
     } else if (activeTab === "CMPLN") {
       setFilteredData(complaintData);
+    } else if (activeTab === "RM") {
+      setFilteredData([]);
     } else {
       const filtered = tableData.filter((item) => item.tracker === activeTab);
       setFilteredData(filtered);
@@ -358,6 +370,8 @@ const Dashboard = () => {
       >
         {activeTab === "MLOWNER" ? (
           <MlOwnersTable data={filteredData} />
+        ) : activeTab === "RM" ? (
+          <RequestMiningTable data={filteredData} />
         ) : (
           <LicenseTable data={filteredData} tracker={activeTab} />
         )}
