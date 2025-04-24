@@ -1,114 +1,485 @@
-import React, { useState } from 'react'; // <-- Import useState here
-import { Card, Form, Input, Button, Row, Col, message, Upload, DatePicker, Select } from "antd";
+import React, { useState, useEffect } from "react"; // <-- Import useState here
+import {
+  Card,
+  Form,
+  Input,
+  Button,
+  Row,
+  Col,
+  message,
+  Upload,
+  DatePicker,
+  Select,
+} from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useLanguage } from "../../contexts/LanguageContext";
 import "../../styles/MLOwner/MLRequest.css";
+import { useParams, useLocation } from "react-router-dom"; //addNewLicense
+import { addNewLicense } from "../../services/officerService";
 
 const { Option } = Select;
 
 const districtData = {
-  'Ampara': ['Ampara', 'Kalmunai', 'Sainthamaruthu', 'Pottuvil', 'Dehiattakandiya', 'Mahaoya', 'Uhana', 'Damana', 'Thirukkovil', 'Navithanveli', 'Alayadiwembu', 'Addalachchenai', 'Akkaraipattu', 'Nintavur', 'Sammanthurai'],
-  'Anuradhapura': ['Anuradhapura', 'Kekirawa', 'Medawachchiya', 'Talawa', 'Mihintale', 'Nochchiyagama', 'Padaviya', 'Kahatagasdigiliya', 'Galnewa', 'Palagala', 'Rambewa', 'Thirappane', 'Ipalogama', 'Horowpothana'],
-  'Badulla': ['Badulla', 'Bandarawela', 'Hali-Ela', 'Welimada', 'Mahiyanganaya', 'Passara', 'Kandaketiya', 'Meegahakivula', 'Rideemaliyadda', 'Haputale', 'Ella', 'Soranathota', 'Uva Paranagama', 'Diyatalawa'],
-  'Batticaloa': ['Batticaloa', 'Kattankudy', 'Eravur', 'Valaichchenai', 'Manmunai North', 'Manmunai West', 'Manmunai South-West', 'Manmunai South', 'Porativu Pattu', 'Koralai Pattu', 'Koralai Pattu North'],
-  'Colombo': ['Colombo', 'Dehiwala', 'Moratuwa', 'Sri Jayawardenepura Kotte', 'Kaduwela', 'Homagama', 'Maharagama', 'Kesbewa', 'Boralesgamuwa', 'Avissawella', 'Seethawaka', 'Padukka', 'Ratmalana', 'Kolonnawa'],
-  'Galle': ['Galle', 'Ambalangoda', 'Hikkaduwa', 'Bentota', 'Karandeniya', 'Elpitiya', 'Baddegama', 'Neluwa', 'Nagoda', 'Bope-Poddala', 'Yakkalamulla', 'Imaduwa', 'Thawalama', 'Akmeemana'],
-  'Gampaha': ['Gampaha', 'Negombo', 'Kelaniya', 'Wattala', 'Ja-Ela', 'Minuwangoda', 'Divulapitiya', 'Mirigama', 'Attanagalla', 'Dompe', 'Biyagama', 'Katana', 'Mahara', 'Veyangoda'],
-  'Hambantota': ['Hambantota', 'Tangalle', 'Ambalantota', 'Tissamaharama', 'Beliatta', 'Lunugamvehera', 'Weeraketiya', 'Angunakolapelessa', 'Okewela', 'Sooriyawewa', 'Katuwana', 'Walasmulla'],
-  'Jaffna': ['Jaffna', 'Nallur', 'Chavakachcheri', 'Point Pedro', 'Karainagar', 'Island North', 'Island South', 'Thenmaradchi', 'Vadamaradchi North', 'Vadamaradchi South-West', 'Vadamaradchi East', 'Delft'],
-  'Kalutara': ['Kalutara', 'Panadura', 'Horana', 'Matugama', 'Beruwala', 'Dodangoda', 'Bulathsinhala', 'Millaniya', 'Madurawala', 'Bandaragama', 'Agalawatta', 'Palindanuwara', 'Ingiriya', 'Walallavita'],
-  'Kandy': ['Kandy', 'Katugastota', 'Peradeniya', 'Gampola', 'Kundasale', 'Akurana', 'Harispattuwa', 'Pathadumbara', 'Udunuwara', 'Yatinuwara', 'Udapalatha', 'Minipe', 'Hatharaliyadda', 'Galagedara', 'Panvila'],
-  'Kegalle': ['Kegalle', 'Mawanella', 'Warakapola', 'Rambukkana', 'Ruwanwella', 'Dehiowita', 'Deraniyagala', 'Galigamuwa', 'Aranayaka', 'Yatiyanthota', 'Bulathkohupitiya'],
-  'Kilinochchi': ['Kilinochchi', 'Kandavalai', 'Karachchi', 'Poonakary', 'Pallai'],
-  'Kurunegala': ['Kurunegala', 'Kuliyapitiya', 'Pannala', 'Polgahawela', 'Narammala', 'Alawwa', 'Bingiriya', 'Wariyapola', 'Ganewatta', 'Giribawa', 'Mawathagama', 'Kobeigane', 'Nikaweratiya', 'Rasnayakapura', 'Ibbagamuwa'],
-  'Mannar': ['Mannar', 'Nanaddan', 'Madhu', 'Musali', 'Manthai West'],
-  'Matale': ['Matale', 'Dambulla', 'Galewela', 'Naula', 'Pallepola', 'Rattota', 'Yatawatta', 'Laggala-Pallegama', 'Wilgamuwa', 'Ukuwela'],
-  'Matara': ['Matara', 'Weligama', 'Dikwella', 'Hakmana', 'Akuressa', 'Kamburupitiya', 'Devinuwara', 'Kotapola', 'Malimbada', 'Thihagoda', 'Pasgoda', 'Athuraliya', 'Mulatiyana', 'Kirinda-Puhulwella'],
-  'Monaragala': ['Monaragala', 'Wellawaya', 'Bibile', 'Buttala', 'Katharagama', 'Madulla', 'Sevanagala', 'Siyambalanduwa', 'Thanamalwila', 'Badalkumbura', 'Medagama'],
-  'Mullaitivu': ['Mullaitivu', 'Oddusuddan', 'Puthukudiyiruppu', 'Thunukkai', 'Manthai East', 'Maritimepattu', 'Welioya'],
-  'Nuwara Eliya': ['Nuwara Eliya', 'Hatton', 'Talawakele', 'Lindula', 'Kotmale', 'Walapane', 'Hanguranketha', 'Ambagamuwa', 'Maskeliya', 'Norton Bridge'],
-  'Polonnaruwa': ['Polonnaruwa', 'Hingurakgoda', 'Medirigiriya', 'Lankapura', 'Thamankaduwa', 'Elahera', 'Dimbulagala', 'Welikanda', 'Kaduruwela'],
-  'Puttalam': ['Puttalam', 'Chilaw', 'Wennappuwa', 'Nattandiya', 'Dankotuwa', 'Arachchikattuwa', 'Mahakumbukkadawala', 'Kalpitiya', 'Vanathavilluwa', 'Karuwalagaswewa', 'Pallama', 'Mundalama', 'Anamaduwa', 'Gomarankadawala'],
-  'Ratnapura': ['Ratnapura', 'Balangoda', 'Embilipitiya', 'Pelmadulla', 'Eheliyagoda', 'Kuruwita', 'Nivithigala', 'Kahawatta', 'Godakawela', 'Ayagama', 'Kalawana', 'Weligepola', 'Opanayaka', 'Elapatha', 'Kolonna'],
-  'Trincomalee': ['Trincomalee', 'Kinniya', 'Kuchchaveli', 'Gomarankadawala', 'Kantalai', 'Morawewa', 'Seruvila', 'Thambalagamuwa', 'Muttur', 'Verugal', 'Padavi Sri Pura'],
-  'Vavuniya': ['Vavuniya', 'Vavuniya North', 'Vengalacheddikulam', 'Cheddikulam', 'Vavuniya South']
+  Ampara: [
+    "Ampara",
+    "Kalmunai",
+    "Sainthamaruthu",
+    "Pottuvil",
+    "Dehiattakandiya",
+    "Mahaoya",
+    "Uhana",
+    "Damana",
+    "Thirukkovil",
+    "Navithanveli",
+    "Alayadiwembu",
+    "Addalachchenai",
+    "Akkaraipattu",
+    "Nintavur",
+    "Sammanthurai",
+  ],
+  Anuradhapura: [
+    "Anuradhapura",
+    "Kekirawa",
+    "Medawachchiya",
+    "Talawa",
+    "Mihintale",
+    "Nochchiyagama",
+    "Padaviya",
+    "Kahatagasdigiliya",
+    "Galnewa",
+    "Palagala",
+    "Rambewa",
+    "Thirappane",
+    "Ipalogama",
+    "Horowpothana",
+  ],
+  Badulla: [
+    "Badulla",
+    "Bandarawela",
+    "Hali-Ela",
+    "Welimada",
+    "Mahiyanganaya",
+    "Passara",
+    "Kandaketiya",
+    "Meegahakivula",
+    "Rideemaliyadda",
+    "Haputale",
+    "Ella",
+    "Soranathota",
+    "Uva Paranagama",
+    "Diyatalawa",
+  ],
+  Batticaloa: [
+    "Batticaloa",
+    "Kattankudy",
+    "Eravur",
+    "Valaichchenai",
+    "Manmunai North",
+    "Manmunai West",
+    "Manmunai South-West",
+    "Manmunai South",
+    "Porativu Pattu",
+    "Koralai Pattu",
+    "Koralai Pattu North",
+  ],
+  Colombo: [
+    "Colombo",
+    "Dehiwala",
+    "Moratuwa",
+    "Sri Jayawardenepura Kotte",
+    "Kaduwela",
+    "Homagama",
+    "Maharagama",
+    "Kesbewa",
+    "Boralesgamuwa",
+    "Avissawella",
+    "Seethawaka",
+    "Padukka",
+    "Ratmalana",
+    "Kolonnawa",
+  ],
+  Galle: [
+    "Galle",
+    "Ambalangoda",
+    "Hikkaduwa",
+    "Bentota",
+    "Karandeniya",
+    "Elpitiya",
+    "Baddegama",
+    "Neluwa",
+    "Nagoda",
+    "Bope-Poddala",
+    "Yakkalamulla",
+    "Imaduwa",
+    "Thawalama",
+    "Akmeemana",
+  ],
+  Gampaha: [
+    "Gampaha",
+    "Negombo",
+    "Kelaniya",
+    "Wattala",
+    "Ja-Ela",
+    "Minuwangoda",
+    "Divulapitiya",
+    "Mirigama",
+    "Attanagalla",
+    "Dompe",
+    "Biyagama",
+    "Katana",
+    "Mahara",
+    "Veyangoda",
+  ],
+  Hambantota: [
+    "Hambantota",
+    "Tangalle",
+    "Ambalantota",
+    "Tissamaharama",
+    "Beliatta",
+    "Lunugamvehera",
+    "Weeraketiya",
+    "Angunakolapelessa",
+    "Okewela",
+    "Sooriyawewa",
+    "Katuwana",
+    "Walasmulla",
+  ],
+  Jaffna: [
+    "Jaffna",
+    "Nallur",
+    "Chavakachcheri",
+    "Point Pedro",
+    "Karainagar",
+    "Island North",
+    "Island South",
+    "Thenmaradchi",
+    "Vadamaradchi North",
+    "Vadamaradchi South-West",
+    "Vadamaradchi East",
+    "Delft",
+  ],
+  Kalutara: [
+    "Kalutara",
+    "Panadura",
+    "Horana",
+    "Matugama",
+    "Beruwala",
+    "Dodangoda",
+    "Bulathsinhala",
+    "Millaniya",
+    "Madurawala",
+    "Bandaragama",
+    "Agalawatta",
+    "Palindanuwara",
+    "Ingiriya",
+    "Walallavita",
+  ],
+  Kandy: [
+    "Kandy",
+    "Katugastota",
+    "Peradeniya",
+    "Gampola",
+    "Kundasale",
+    "Akurana",
+    "Harispattuwa",
+    "Pathadumbara",
+    "Udunuwara",
+    "Yatinuwara",
+    "Udapalatha",
+    "Minipe",
+    "Hatharaliyadda",
+    "Galagedara",
+    "Panvila",
+  ],
+  Kegalle: [
+    "Kegalle",
+    "Mawanella",
+    "Warakapola",
+    "Rambukkana",
+    "Ruwanwella",
+    "Dehiowita",
+    "Deraniyagala",
+    "Galigamuwa",
+    "Aranayaka",
+    "Yatiyanthota",
+    "Bulathkohupitiya",
+  ],
+  Kilinochchi: [
+    "Kilinochchi",
+    "Kandavalai",
+    "Karachchi",
+    "Poonakary",
+    "Pallai",
+  ],
+  Kurunegala: [
+    "Kurunegala",
+    "Kuliyapitiya",
+    "Pannala",
+    "Polgahawela",
+    "Narammala",
+    "Alawwa",
+    "Bingiriya",
+    "Wariyapola",
+    "Ganewatta",
+    "Giribawa",
+    "Mawathagama",
+    "Kobeigane",
+    "Nikaweratiya",
+    "Rasnayakapura",
+    "Ibbagamuwa",
+  ],
+  Mannar: ["Mannar", "Nanaddan", "Madhu", "Musali", "Manthai West"],
+  Matale: [
+    "Matale",
+    "Dambulla",
+    "Galewela",
+    "Naula",
+    "Pallepola",
+    "Rattota",
+    "Yatawatta",
+    "Laggala-Pallegama",
+    "Wilgamuwa",
+    "Ukuwela",
+  ],
+  Matara: [
+    "Matara",
+    "Weligama",
+    "Dikwella",
+    "Hakmana",
+    "Akuressa",
+    "Kamburupitiya",
+    "Devinuwara",
+    "Kotapola",
+    "Malimbada",
+    "Thihagoda",
+    "Pasgoda",
+    "Athuraliya",
+    "Mulatiyana",
+    "Kirinda-Puhulwella",
+  ],
+  Monaragala: [
+    "Monaragala",
+    "Wellawaya",
+    "Bibile",
+    "Buttala",
+    "Katharagama",
+    "Madulla",
+    "Sevanagala",
+    "Siyambalanduwa",
+    "Thanamalwila",
+    "Badalkumbura",
+    "Medagama",
+  ],
+  Mullaitivu: [
+    "Mullaitivu",
+    "Oddusuddan",
+    "Puthukudiyiruppu",
+    "Thunukkai",
+    "Manthai East",
+    "Maritimepattu",
+    "Welioya",
+  ],
+  "Nuwara Eliya": [
+    "Nuwara Eliya",
+    "Hatton",
+    "Talawakele",
+    "Lindula",
+    "Kotmale",
+    "Walapane",
+    "Hanguranketha",
+    "Ambagamuwa",
+    "Maskeliya",
+    "Norton Bridge",
+  ],
+  Polonnaruwa: [
+    "Polonnaruwa",
+    "Hingurakgoda",
+    "Medirigiriya",
+    "Lankapura",
+    "Thamankaduwa",
+    "Elahera",
+    "Dimbulagala",
+    "Welikanda",
+    "Kaduruwela",
+  ],
+  Puttalam: [
+    "Puttalam",
+    "Chilaw",
+    "Wennappuwa",
+    "Nattandiya",
+    "Dankotuwa",
+    "Arachchikattuwa",
+    "Mahakumbukkadawala",
+    "Kalpitiya",
+    "Vanathavilluwa",
+    "Karuwalagaswewa",
+    "Pallama",
+    "Mundalama",
+    "Anamaduwa",
+    "Gomarankadawala",
+  ],
+  Ratnapura: [
+    "Ratnapura",
+    "Balangoda",
+    "Embilipitiya",
+    "Pelmadulla",
+    "Eheliyagoda",
+    "Kuruwita",
+    "Nivithigala",
+    "Kahawatta",
+    "Godakawela",
+    "Ayagama",
+    "Kalawana",
+    "Weligepola",
+    "Opanayaka",
+    "Elapatha",
+    "Kolonna",
+  ],
+  Trincomalee: [
+    "Trincomalee",
+    "Kinniya",
+    "Kuchchaveli",
+    "Gomarankadawala",
+    "Kantalai",
+    "Morawewa",
+    "Seruvila",
+    "Thambalagamuwa",
+    "Muttur",
+    "Verugal",
+    "Padavi Sri Pura",
+  ],
+  Vavuniya: [
+    "Vavuniya",
+    "Vavuniya North",
+    "Vengalacheddikulam",
+    "Cheddikulam",
+    "Vavuniya South",
+  ],
 };
 
-const MLRequest = () => {
+const AddNewLicense = () => {
+  const { id } = useParams();
+  const location = useLocation();
+  const ownerId = id || location.state?.ownerId;
+  console.log("Final owner ID:", ownerId);
   const { language } = useLanguage();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false); // Now useState is defined
   const [divisions, setDivisions] = useState([]);
+
+  // useEffect(() => {
+  //   console.log("Current owner ID:", id); // Just add this line
+
+  //   const fetchOwnerDetails = async () => {
+  //     try {
+  //       const owner = await officerService.getMlOwnerById(id);
+  //       setOwnerDetails(owner);
+  //     } catch (error) {
+  //       console.error("Error fetching owner details:", error);
+  //       message.error("Failed to load owner details");
+  //     }
+  //   };
+
+  //   if (id) {
+  //     fetchOwnerDetails();
+  //   }
+  // }, [id]);
 
   const handleDistrictChange = (value) => {
     setDivisions(districtData[value] || []);
     form.setFieldsValue({ divisional_secretary_division: undefined }); // Reset division when district changes
   };
 
-  // Helper function to safely get the file object
   const normFile = (e) => {
     if (Array.isArray(e)) {
       return e;
     }
-    // Check if it's an event object with fileList
     if (e && e.fileList) {
       return e.fileList;
     }
-    // If it's just the file list directly
     return e;
   };
 
-
   const handleSubmit = async (values) => {
-    setLoading(true); // Set loading at the very start
+    setLoading(true);
     try {
       const formData = new FormData();
 
-      const username = localStorage.getItem("USERNAME") || "Unknown User";
-      const userId = localStorage.getItem("USER_ID") || "";
+      // const username = localStorage.getItem("USERNAME") || "Unknown User";
+      // const userId = localStorage.getItem("USER_ID") || "";
 
-      // Append all form fields (ensure values are not undefined/null if possible)
-      formData.append( "subject", `Mining License Request - ${username}` );
-      formData.append("assigned_to", userId);
-      formData.append("author", userId);
-      formData.append("exploration_nb", values.exploration_nb || ""); // Add fallback for safety
+      formData.append("subject", `Mining License Request - ${ownerId}`);
+      formData.append("assigned_to", ownerId);
+      formData.append("author", ownerId);
+      formData.append("exploration_nb", values.exploration_nb || "");
       formData.append("land_name", values.land_name);
       formData.append("land_owner_name", values.land_owner_name);
       formData.append("village_name", values.village_name);
       formData.append("grama_niladari", values.grama_niladari);
-      formData.append( "divisional_secretary_division", values.divisional_secretary_division );
+      formData.append(
+        "divisional_secretary_division",
+        values.divisional_secretary_division
+      );
       formData.append("administrative_district", values.district);
       formData.append("google_location", values.land_google);
-      formData.append("start_date", values.start_date ? values.start_date.format('YYYY-MM-DD') : '');
-      formData.append("end_date", values.end_date ? values.end_date.format('YYYY-MM-DD') : '');
-      formData.append("royalty_percentage", values.royalty || '');
+      formData.append(
+        "start_date",
+        values.start_date ? values.start_date.format("YYYY-MM-DD") : ""
+      );
+      formData.append(
+        "end_date",
+        values.end_date ? values.end_date.format("YYYY-MM-DD") : ""
+      );
+      // formData.append("royalty_percentage", values.royalty || "");
 
       // Append files safely checking they exist
-      if (values.detailed_mine_plan && values.detailed_mine_plan.length > 0 && values.detailed_mine_plan[0].originFileObj) {
-        formData.append( "detailed_mine_plan", values.detailed_mine_plan[0].originFileObj );
+      if (
+        values.detailed_mine_plan &&
+        values.detailed_mine_plan.length > 0 &&
+        values.detailed_mine_plan[0].originFileObj
+      ) {
+        formData.append(
+          "detailed_mine_plan",
+          values.detailed_mine_plan[0].originFileObj
+        );
       }
-      if (values.payment_receipt && values.payment_receipt.length > 0 && values.payment_receipt[0].originFileObj) {
-        formData.append( "payment_receipt", values.payment_receipt[0].originFileObj );
+      if (
+        values.payment_receipt &&
+        values.payment_receipt.length > 0 &&
+        values.payment_receipt[0].originFileObj
+      ) {
+        formData.append(
+          "payment_receipt",
+          values.payment_receipt[0].originFileObj
+        );
       }
-      if (values.Deed_plan && values.Deed_plan.length > 0 && values.Deed_plan[0].originFileObj) {
+      if (
+        values.Deed_plan &&
+        values.Deed_plan.length > 0 &&
+        values.Deed_plan[0].originFileObj
+      ) {
         formData.append("Deed_plan", values.Deed_plan[0].originFileObj);
       }
 
       // Call the service with FormData
-      const result = await submitMLRequest(formData);
+      const result = await addNewLicense(formData);
+      console.log("Result from addNewLicense:", result); // Log the result for debugging
 
-      if (result) { // Assuming result is truthy on success
-        message.success("Mining Licenses Request successfully submitted!");
+      if (result) {
+        message.success("Mining Licenses successfully submitted!");
         form.resetFields();
       } else {
-         // Handle cases where the API might return a non-error response but indicate failure
-         message.error("Submission failed. Please check the details and try again.");
+        message.error(
+          "Submission failed. Please check the details and try again."
+        );
       }
-
     } catch (error) {
-      console.error("Mining Licenses Request Error:", error);
-       // Provide more specific error feedback if possible
-      const errorMessage = error?.response?.data?.message || error.message || "Mining Licenses Request Error. Please try again.";
+      console.error("Mining Licenses  Error:", error);
+      // Provide more specific error feedback if possible
+      const errorMessage =
+        error?.response?.data?.message ||
+        error.message ||
+        "Mining Licenses Error. Please try again.";
       message.error(errorMessage);
     } finally {
       setLoading(false); // Ensure loading is always set to false afterwards
@@ -288,7 +659,7 @@ const MLRequest = () => {
           name="exploration_nb"
         >
           <Input
-           // placeholder={ /* Placeholder text */ }
+          // placeholder={ /* Placeholder text */ }
           />
         </Form.Item>
 
@@ -299,8 +670,8 @@ const MLRequest = () => {
         <Form.Item
           label={currentTranslations.landName}
           name="land_name"
-          rules={[{ required: true, message: 'Please input the land name!' }]}
-         >
+          rules={[{ required: true, message: "Please input the land name!" }]}
+        >
           <Input />
         </Form.Item>
 
@@ -309,7 +680,9 @@ const MLRequest = () => {
           name="Deed_plan"
           valuePropName="fileList"
           getValueFromEvent={normFile} // Use helper function
-          rules={[{ required: true, message: 'Please upload the Deed/Survey Plan!' }]}
+          rules={[
+            { required: true, message: "Please upload the Deed/Survey Plan!" },
+          ]}
         >
           <Upload
             beforeUpload={() => false}
@@ -323,20 +696,24 @@ const MLRequest = () => {
         <Form.Item
           label={currentTranslations.land_google}
           name="land_google"
-           rules={[
-                { required: true, message: 'Please input the Google Maps link!' },
-                { type: 'url', warningOnly: true, message: 'Please enter a valid URL (e.g., https://maps...)' },
-            ]}
+          rules={[
+            { required: true, message: "Please input the Google Maps link!" },
+            {
+              type: "url",
+              warningOnly: true,
+              message: "Please enter a valid URL (e.g., https://maps...)",
+            },
+          ]}
         >
-          <Input
-            placeholder="e.g., https://maps.app.goo.gl/..."
-          />
+          <Input placeholder="e.g., https://maps.app.goo.gl/..." />
         </Form.Item>
 
         <Form.Item
-            label={currentTranslations.landOwner}
-            name="land_owner_name"
-            rules={[{ required: true, message: 'Please input the land owner name!' }]}
+          label={currentTranslations.landOwner}
+          name="land_owner_name"
+          rules={[
+            { required: true, message: "Please input the land owner name!" },
+          ]}
         >
           <Input />
         </Form.Item>
@@ -346,7 +723,9 @@ const MLRequest = () => {
             <Form.Item
               label={currentTranslations.villageName}
               name="village_name"
-              rules={[{ required: true, message: 'Please input the village name!' }]}
+              rules={[
+                { required: true, message: "Please input the village name!" },
+              ]}
             >
               <Input />
             </Form.Item>
@@ -355,40 +734,48 @@ const MLRequest = () => {
             <Form.Item
               label={currentTranslations.gramaNiladhari}
               name="grama_niladari"
-              rules={[{ required: true, message: 'Please input the Grama Niladhari Division!' }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Please input the Grama Niladhari Division!",
+                },
+              ]}
             >
               <Input />
             </Form.Item>
           </Col>
           <Col xs={24} sm={8}>
-          <Form.Item
-          label={currentTranslations.divisionalSecretary}
-          name="divisional_secretary_division"
-          rules={[{ required: true, message: 'Please select the division!' }]}
-        >
-          <Select
-            placeholder="Select division"
-            disabled={!divisions.length}
-          >
-            {divisions.map(division => (
-              <Option key={division} value={division}>{division}</Option>
-            ))}
-          </Select>
-        </Form.Item>
+            <Form.Item
+              label={currentTranslations.divisionalSecretary}
+              name="divisional_secretary_division"
+              rules={[
+                { required: true, message: "Please select the division!" },
+              ]}
+            >
+              <Select
+                placeholder="Select division"
+                disabled={!divisions.length}
+              >
+                {divisions.map((division) => (
+                  <Option key={division} value={division}>
+                    {division}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
           </Col>
         </Row>
 
         <Form.Item
           label={currentTranslations.district}
           name="district"
-          rules={[{ required: true, message: 'Please select the district!' }]}
+          rules={[{ required: true, message: "Please select the district!" }]}
         >
-          <Select
-            placeholder="Select district"
-            onChange={handleDistrictChange}
-          >
-            {Object.keys(districtData).map(district => (
-              <Option key={district} value={district}>{district}</Option>
+          <Select placeholder="Select district" onChange={handleDistrictChange}>
+            {Object.keys(districtData).map((district) => (
+              <Option key={district} value={district}>
+                {district}
+              </Option>
             ))}
           </Select>
         </Form.Item>
@@ -398,7 +785,12 @@ const MLRequest = () => {
           name="detailed_mine_plan"
           valuePropName="fileList"
           getValueFromEvent={normFile} // Use helper function
-           rules={[{ required: true, message: 'Please upload the Detailed Mine Plan!' }]}
+          rules={[
+            {
+              required: true,
+              message: "Please upload the Detailed Mine Plan!",
+            },
+          ]}
         >
           <Upload
             beforeUpload={() => false}
@@ -416,7 +808,9 @@ const MLRequest = () => {
           name="payment_receipt"
           valuePropName="fileList"
           getValueFromEvent={normFile} // Use helper function
-          rules={[{ required: true, message: 'Please upload the payment receipt!' }]}
+          rules={[
+            { required: true, message: "Please upload the payment receipt!" },
+          ]}
         >
           <Upload
             beforeUpload={() => false}
@@ -432,35 +826,35 @@ const MLRequest = () => {
             <Form.Item
               label={currentTranslations.startDate}
               name="start_date"
-              rules={[{ required: true, message: 'Please select start date!' }]}
+              rules={[{ required: true, message: "Please select start date!" }]}
             >
-              <DatePicker style={{ width: '100%' }} />
+              <DatePicker style={{ width: "100%" }} />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
             <Form.Item
               label={currentTranslations.endDate}
               name="end_date"
-              rules={[{ required: true, message: 'Please select end date!' }]}
+              rules={[{ required: true, message: "Please select end date!" }]}
             >
-              <DatePicker style={{ width: '100%' }} />
+              <DatePicker style={{ width: "100%" }} />
             </Form.Item>
           </Col>
         </Row>
 
-        <Form.Item
+        {/* <Form.Item
           label={currentTranslations.royalty}
           name="royalty"
           rules={[
-            { required: true, message: 'Please input royalty percentage!' },
-            { 
-              pattern: /^[0-9]+(\.[0-9]{1,2})?$/, 
-              message: 'Please enter a valid percentage (e.g. 5 or 7.5)' 
-            }
+            { required: true, message: "Please input royalty percentage!" },
+            {
+              pattern: /^[0-9]+(\.[0-9]{1,2})?$/,
+              message: "Please enter a valid percentage (e.g. 5 or 7.5)",
+            },
           ]}
         >
           <Input addonAfter="%" />
-        </Form.Item>
+        </Form.Item> */}
 
         {/* Commented sections */}
 
@@ -480,4 +874,4 @@ const MLRequest = () => {
   );
 };
 
-export default MLRequest;
+export default AddNewLicense;
