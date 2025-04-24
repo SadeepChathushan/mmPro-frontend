@@ -75,13 +75,27 @@ export const fetchTopMiningHolders = async () => {
     const miningData = response.data.issues;
 
     // Format the data
-    const formattedData = miningData.map(item => ({
+    // const formattedData = miningData.map(item => ({
+    //   label: item.label,
+    //   value: item.value,
+    //   capacity: item.capacity,
+    // }));
+
+    // return formattedData;
+    // Format the data
+    const formatMiningData = (item) => ({
       label: item.label,
       value: item.value,
       capacity: item.capacity,
-    }));
+    });
 
-    return formattedData;
+    const formattedData = miningData.map(formatMiningData);
+
+    // Limit to the top 5 holders
+    const top5Holders = formattedData.slice(0, 5);
+
+    return top5Holders;
+
 
   } catch (error) {
     console.error("Error fetching Top Mining License Holders data:", error);
