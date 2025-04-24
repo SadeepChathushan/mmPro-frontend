@@ -82,6 +82,7 @@ const MLRequest = () => {
       formData.append("start_date", values.start_date ? values.start_date.format('YYYY-MM-DD') : '');
       formData.append("end_date", values.end_date ? values.end_date.format('YYYY-MM-DD') : '');
       formData.append("royalty_percentage", values.royalty || '');
+      formData.append("capacity", values.capacity);
 
       // Append files safely checking they exist
       if (values.detailed_mine_plan && values.detailed_mine_plan.length > 0 && values.detailed_mine_plan[0].originFileObj) {
@@ -169,6 +170,7 @@ const MLRequest = () => {
       startDate: "Start Date",
       endDate: "End Date",
       royalty: "Royalty Percentage",
+      capacity: "Capacity(cubes)",
     },
     si: {
       title: "කාර්මික ගල්පර්වත අයදුම්පත",
@@ -220,6 +222,7 @@ const MLRequest = () => {
       startDate: "ආරම්භක දිනය",
       endDate: "අවසන් දිනය",
       royalty: "රාජකාරී ප්‍රතිශතය",
+      capacity: "ධාරිතාව",
     },
     ta: {
       title: "தொழிற்சாலை சுரங்க உரிமம் விண்ணப்பம்",
@@ -272,6 +275,7 @@ const MLRequest = () => {
       startDate: "தொடக்க தேதி",
       endDate: "முடிவு தேதி",
       royalty: "ராயல்டி சதவீதம்",
+      capacity: "திறன்",
     },
   };
 
@@ -448,6 +452,8 @@ const MLRequest = () => {
           </Col>
         </Row>
 
+        <Row gutter={16}>
+          <Col xs={24} sm={12}>
         <Form.Item
           label={currentTranslations.royalty}
           name="royalty"
@@ -461,6 +467,24 @@ const MLRequest = () => {
         >
           <Input addonAfter="%" />
         </Form.Item>
+        </Col>
+
+        <Col xs={24} sm={12}>
+        <Form.Item
+          label={currentTranslations.capacity}
+          name="capacity"
+          rules={[
+            { required: true, message: 'Please input capacity!' },
+            {
+              pattern: /^(?!0*(\.0+)?$)\d+(\.\d+)?$/,
+              message: 'Please enter a number greater than 0'
+            }
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        </Col>
+        </Row>
 
         {/* Commented sections */}
 
