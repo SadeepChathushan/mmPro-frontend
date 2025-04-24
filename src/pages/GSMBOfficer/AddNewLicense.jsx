@@ -367,23 +367,6 @@ const AddNewLicense = () => {
   const [loading, setLoading] = useState(false); // Now useState is defined
   const [divisions, setDivisions] = useState([]);
 
-  // useEffect(() => {
-  //   console.log("Current owner ID:", id); // Just add this line
-
-  //   const fetchOwnerDetails = async () => {
-  //     try {
-  //       const owner = await officerService.getMlOwnerById(id);
-  //       setOwnerDetails(owner);
-  //     } catch (error) {
-  //       console.error("Error fetching owner details:", error);
-  //       message.error("Failed to load owner details");
-  //     }
-  //   };
-
-  //   if (id) {
-  //     fetchOwnerDetails();
-  //   }
-  // }, [id]);
 
   const handleDistrictChange = (value) => {
     setDivisions(districtData[value] || []);
@@ -404,27 +387,38 @@ const AddNewLicense = () => {
     setLoading(true);
     try {
       const formData = new FormData();
-
-      // const username = localStorage.getItem("USERNAME") || "Unknown User";
-      // const userId = localStorage.getItem("USER_ID") || "";
-
-      formData.append("subject", `Mining License Request - ${ownerId}`);
-      formData.append("assigned_to", ownerId);
+      formData.append("subject", `Mining License  - ${ownerId}`);
+      formData.append("assignee_id", ownerId);
+      formData.append("status_id", 7);
       formData.append("author", ownerId);
-      formData.append("exploration_nb", values.exploration_nb || "");
+      formData.append("exploration_licence_no", values.exploration_nb || "");
       formData.append("land_name", values.land_name);
       formData.append("land_owner_name", values.land_owner_name);
       formData.append("village_name", values.village_name);
-      formData.append("grama_niladari", values.grama_niladari);
+      formData.append("grama_niladhari_division", values.grama_niladari);
       formData.append(
         "divisional_secretary_division",
         values.divisional_secretary_division
       );
       formData.append("administrative_district", values.district);
       formData.append("google_location", values.land_google);
-      formData.append("start_date", values.start_date ? values.start_date.format('YYYY-MM-DD') : '');
-      formData.append("end_date", values.end_date ? values.end_date.format('YYYY-MM-DD') : '');
-      formData.append("royalty_percentage", values.royalty || '');
+      formData.append(
+        "start_date",
+        values.start_date ? values.start_date.format("YYYY-MM-DD") : ""
+      );
+      formData.append(
+        "end_date",
+        values.end_date ? values.end_date.format("YYYY-MM-DD") : ""
+      );
+
+      formData.append("capacity", values.full_capacity || "");
+      formData.append("used", values.used || "");
+      formData.append("remaining", values.remaining || "");
+      formData.append("month_capacity", values.monthly_capacity || "");
+      formData.append(
+        "mining_license_number",
+        values.mining_license_number || ""
+      );
 
       // Append files safely checking they exist
       if (
@@ -433,7 +427,7 @@ const AddNewLicense = () => {
         values.detailed_mine_plan[0].originFileObj
       ) {
         formData.append(
-          "detailed_mine_plan",
+          "detailed_mine_restoration_plan",
           values.detailed_mine_plan[0].originFileObj
         );
       }
@@ -452,7 +446,10 @@ const AddNewLicense = () => {
         values.Deed_plan.length > 0 &&
         values.Deed_plan[0].originFileObj
       ) {
-        formData.append("Deed_plan", values.Deed_plan[0].originFileObj);
+        formData.append(
+          "deed_and_survey_plan",
+          values.Deed_plan[0].originFileObj
+        );
       }
 
       // Call the service with FormData
@@ -533,8 +530,13 @@ const AddNewLicense = () => {
       mineManager: "Mine Manager",
       startDate: "Start Date",
       endDate: "End Date",
-      royalty: "Royalty Percentage",
+      full: "Royalty Percentage",
       capacity: "Capacity(cubes)",
+      full_capacity: "Full Capacity",
+      monthly_capacity: "Monthly Capacity",
+      used: "Used Capacity",
+      remaining: "Remaining Capacity",
+      mining_license_number: "Mining License Number",
     },
     si: {
       title: "කාර්මික ගල්පර්වත අයදුම්පත",
@@ -818,6 +820,19 @@ const AddNewLicense = () => {
           </Upload>
         </Form.Item>
 
+        <Form.Item
+          label={currentTranslations.mining_license_number}
+          name="mining_license_number"
+          rules={[
+            {
+              required: true,
+              message: "Please input the mining license number!",
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+
         <Row gutter={16}>
           <Col xs={24} sm={12}>
             <Form.Item
@@ -839,19 +854,51 @@ const AddNewLicense = () => {
           </Col>
         </Row>
 
-        <Form.Item
-          label={currentTranslations.royalty}
-          name="royalty"
-          rules={[
-            { required: true, message: "Please input royalty percentage!" },
-            {
-              pattern: /^[0-9]+(\.[0-9]{1,2})?$/,
-              message: "Please enter a valid percentage (e.g. 5 or 7.5)",
-            },
-          ]}
-        >
-          <Input addonAfter="%" />
-        </Form.Item>
+        <Row gutter={16}>
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label={currentTranslations.full_capacity}
+              name="full_capacity"
+              rules={[
+                { required: true, message: "Please input  full capacity!" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label={currentTranslations.monthly_capacity}
+              name="monthly_capacity"
+              rules={[
+                { required: true, message: "Please input monthly capacity !" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label={currentTranslations.used}
+              name="used"
+              rules={[{ required: true, message: "Please input  Used!" }]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label={currentTranslations.remaining}
+              name="remaining"
+              rules={[{ required: true, message: "Please input Remaining !" }]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+        </Row>
 
         {/* Commented sections */}
 
