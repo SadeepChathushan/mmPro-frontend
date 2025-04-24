@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, Card, Space, Row, Col, Spin, Empty, Alert } from 'antd';
+import { Button, Card, Space, Row, Col, Spin, Empty, notification, Modal } from 'antd';
 import { Link } from 'react-router-dom';
 import { useLanguage } from "../../contexts/LanguageContext";
 import {fetchHomeLicense} from '../../services/MLOService';
@@ -10,8 +10,8 @@ const MLOwnerHomePage = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [mlRequests, setMLRequests] = useState([]);
-  const [showNotifications, setShowNotifications] = useState(false);
+  const [requestedLicenses, setRequestedLicenses] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const translations = {
     en: {
@@ -31,14 +31,14 @@ const MLOwnerHomePage = () => {
       dispatchLoad: "Dispatch Load",
       history: "History",  
       mlRequest: "Request a Mining License",
-      viewRequestStatus: "View License Request Status",
-      notifications: "License Request Notifications",
+      requestedLicensesTitle: "Requested Licenses Status",
+      requestedLicensesButton: "View Requested Licenses",
+      statusApprovedByGSMB: "Approved by GSMB Officer",
+      statusAppointmentFixed: "Appointment Date Fixed",
+      statusApprovedByEngineer: "Approved by Mining Engineer",
+      statusReadyForCollection: "Please collect your mining license",
       noPendingRequests: "No pending license requests",
-      requestNumber: "Request #",
-      requestStatus: "Status",
-      requestDate: "Request Date",
-      hideNotifications: "Hide Notifications",
-      showNotifications: "Show License Request Status"
+      close: "Close"
     },
     si: {
       title: " කැණීමේ බලපත්‍ර",
@@ -57,14 +57,14 @@ const MLOwnerHomePage = () => {
       dispatchLoad: "නව ප්‍රවාහන බලපත්‍රයක්", 
       history: "ඉතිහාසය",
       mlRequest: "කැණීමේ බලපත්‍රයක් ඉල්ලන්න",
-      viewRequestStatus: "බලපත්‍ර ඉල්ලීම් තත්ත්වය බලන්න",
-      notifications: "බලපත්‍ර ඉල්ලීම් දැනුම්දීම්",
+      requestedLicensesTitle: "ඉල්ලූ බලපත්‍ර තත්ත්වය",
+      requestedLicensesButton: "ඉල්ලූ බලපත්‍ර බලන්න",
+      statusApprovedByGSMB: "GSMB නිලධාරියා අනුමත කර ඇත",
+      statusAppointmentFixed: "නියමිත දිනය සකසා ඇත",
+      statusApprovedByEngineer: "පතල් ඉංජිනේරු අනුමත කර ඇත",
+      statusReadyForCollection: "කරුණාකර ඔබේ කැණීමේ බලපත්‍රය රැගෙන යන්න",
       noPendingRequests: "පොරොත්තු බලපත්‍ර ඉල්ලීම් නොමැත",
-      requestNumber: "ඉල්ලීම #",
-      requestStatus: "තත්ත්වය",
-      requestDate: "ඉල්ලීම් දිනය",
-      hideNotifications: "දැනුම්දීම් සඟවන්න",
-      showNotifications: "බලපත්‍ර ඉල්ලීම් තත්ත්වය පෙන්වන්න"
+      close: "වසන්න"
     },
     ta: {
       title: "சுரங்க அனுமதிகள் மேலோட்டம்",
@@ -81,80 +81,158 @@ const MLOwnerHomePage = () => {
       active: "செயலில்",
       inactive: "செயலற்றது",
       dispatchLoad: "சரக்கு அனுப்பு",
-      history: "வரலாறு", 
-      mlRequest: "சுரங்க உரிமம் கோரிக்கை",
-      viewRequestStatus: "உரிம கோரிக்கை நிலையைக் காண்க",
-      notifications: "உரிம கோரிக்கை அறிவிப்புகள்",
-      noPendingRequests: "நிலுவையில் உள்ள உரிம கோரிக்கைகள் இல்லை",
-      requestNumber: "கோரிக்கை #",
-      requestStatus: "நிலை",
-      requestDate: "கோரிக்கை தேதி",
-      hideNotifications: "அறிவிப்புகளை மறை",
-      showNotifications: "உரிம கோரிக்கை நிலையைக் காட்டு"
+      history: "வரலாறு",
+      mlRequest: "சுரங்க உரிமம் கோருக",
+      requestedLicensesTitle: "கோரப்பட்ட உரிமைகளின் நிலை",
+      requestedLicensesButton: "கோரப்பட்ட உரிமைகளை காண்க",
+      statusApprovedByGSMB: "GSMB அதிகாரியால் அங்கீகரிக்கப்பட்டது",
+      statusAppointmentFixed: "நியமன தேதி நிர்ணயிக்கப்பட்டது",
+      statusApprovedByEngineer: "சுரங்க பொறியாளரால் அங்கீகரிக்கப்பட்டது",
+      statusReadyForCollection: "உங்கள் சுரங்க உரிமத்தைப் பெறவும்",
+      noPendingRequests: "நிலுவையில் உள்ள உரிமை கோரிக்கைகள் இல்லை",
+      close: "மூடு"
     }
   };
 
   const currentTranslations = translations[language] || translations['en'];
 
+  // Hardcoded requested license data
+  const hardcodedRequestedLicenses = [
+    {
+      id: 1,
+      licenseNumber: 'ML-REQ-2023-001',
+      status: 'approved_by_gsmb',
+      requestDate: '2023-10-15',
+      lastUpdated: '2023-10-20'
+    },
+    {
+      id: 2,
+      licenseNumber: 'ML-REQ-2023-002',
+      status: 'appointment_fixed',
+      requestDate: '2023-10-18',
+      lastUpdated: '2023-10-22',
+      appointmentDate: '2023-11-05'
+    },
+    {
+      id: 3,
+      licenseNumber: 'ML-REQ-2023-003',
+      status: 'approved_by_engineer',
+      requestDate: '2023-10-20',
+      lastUpdated: '2023-10-25'
+    },
+    {
+      id: 4,
+      licenseNumber: 'ML-REQ-2023-004',
+      status: 'ready_for_collection',
+      requestDate: '2023-10-22',
+      lastUpdated: '2023-10-28'
+    }
+  ];
+
   useEffect(() => {
+    // Set the hardcoded requested licenses
+    setRequestedLicenses(hardcodedRequestedLicenses);
+    
+    // Check for status updates to show notifications
+    showStatusNotifications(hardcodedRequestedLicenses);
+
     const fetchData = async () => {
       try {
         console.log("Fetching home licenses...");
-        const [homeLicenses, mlRequests] = await Promise.all([
-          fetchHomeLicense(),
-          fetchMLRequests()
-        ]);
-        
+        const homeLicenses = await fetchHomeLicense(); 
         console.log("API Response - Home Licenses:", homeLicenses);
-        console.log("API Response - ML Requests:", mlRequests);
   
         if (homeLicenses.length === 0) {
           console.log("No home licenses found");
-        } else {
-          const mappedData = homeLicenses.map(license => ({
-            licenseNumber: license["License Number"],
-            owner: localStorage.getItem("USERNAME") || 'Unknown Owner',
-            location: license["Location"],
-            startDate: license["Start Date"],
-            dueDate: license["Due Date"],
-            remainingCubes: license["Remaining Cubes"],
-            status: license["Status"]
-          }));
-  
-          console.log("Mapped Data:", mappedData);
-          setData(mappedData);
-          setFilteredData(mappedData);
+          return;
         }
   
-        if (mlRequests.length > 0) {
-          setMLRequests(mlRequests);
-        }
+        const mappedData = homeLicenses.map(license => ({
+          licenseNumber: license["License Number"],
+          owner:  localStorage.getItem("USERNAME") || 'Unknown Owner',
+          location: license["Location"],
+          startDate: license["Start Date"],
+          dueDate: license["Due Date"],
+          remainingCubes: license["Remaining Cubes"],
+          status: license["Status"]
+        }));
+  
+        console.log("Mapped Data:", mappedData);
+  
+        setData(mappedData);
+        setFilteredData(mappedData);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching home licenses:', error);
+        notification.error({
+          message: 'Error',
+          description: 'Failed to fetch home licenses. Please try again later.',
+        });
       } finally {
         setLoading(false);
-        console.log("Loading set to false"); 
+        console.log("Loading set to false");
       }
     };
   
     fetchData();
   }, []);
-  
-  const toggleNotifications = () => {
-    setShowNotifications(!showNotifications);
+
+  const showStatusNotifications = (licenses) => {
+    licenses.forEach(license => {
+      if (new Date(license.lastUpdated).toDateString() === new Date().toDateString()) {
+        let message = '';
+        let description = '';
+        
+        switch(license.status) {
+          case 'approved_by_gsmb':
+            message = currentTranslations.statusApprovedByGSMB;
+            description = `${license.licenseNumber} - ${currentTranslations.statusApprovedByGSMB}`;
+            break;
+          case 'appointment_fixed':
+            message = currentTranslations.statusAppointmentFixed;
+            description = `${license.licenseNumber} - ${currentTranslations.statusAppointmentFixed}: ${license.appointmentDate}`;
+            break;
+          case 'approved_by_engineer':
+            message = currentTranslations.statusApprovedByEngineer;
+            description = `${license.licenseNumber} - ${currentTranslations.statusApprovedByEngineer}`;
+            break;
+          case 'ready_for_collection':
+            message = currentTranslations.statusReadyForCollection;
+            description = `${license.licenseNumber} - ${currentTranslations.statusReadyForCollection}`;
+            break;
+          default:
+            return;
+        }
+        
+        notification.info({
+          message: message,
+          description: description,
+          duration: 8,
+        });
+      }
+    });
   };
 
-  const getStatusColor = (status) => {
-    switch(status.toLowerCase()) {
-      case 'approved':
-        return 'success';
-      case 'pending':
-        return 'warning';
-      case 'rejected':
-        return 'error';
+  const getStatusTranslation = (status) => {
+    switch(status) {
+      case 'approved_by_gsmb':
+        return currentTranslations.statusApprovedByGSMB;
+      case 'appointment_fixed':
+        return currentTranslations.statusAppointmentFixed;
+      case 'approved_by_engineer':
+        return currentTranslations.statusApprovedByEngineer;
+      case 'ready_for_collection':
+        return currentTranslations.statusReadyForCollection;
       default:
-        return 'info';
+        return status;
     }
+  };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
   };
 
   return (
@@ -162,62 +240,70 @@ const MLOwnerHomePage = () => {
       <h1 className="title1">{currentTranslations.title}</h1>
       <p className="subtitle1">{currentTranslations.subtitle}</p>
       
-      {/* Notification Section */}
-      {mlRequests.length > 0 && (
-        <div className="notifications-section">
+      <Row gutter={[16, 16]} className="action-buttons-row">
+        <Col>
+          <Link to="/mlowner/home/viewlicenses">
+            <Button className="view-licenses-button">
+              {currentTranslations.viewLicensesButton}
+            </Button>
+          </Link>
+        </Col>
+
+        <Col>
+          <Link to="/mlowner/home/mlrequest">
+            <Button className="ml-request-button">
+              {currentTranslations.mlRequest}
+            </Button>
+          </Link>
+        </Col>
+
+        <Col>
           <Button 
-            type="primary" 
-            onClick={toggleNotifications}
-            className="toggle-notifications-btn"
+            className="requested-licenses-button" 
+            onClick={showModal}
           >
-            {showNotifications ? currentTranslations.hideNotifications : currentTranslations.showNotifications}
+            {currentTranslations.requestedLicensesButton}
           </Button>
-          
-          {showNotifications && (
-            <Card 
-              title={currentTranslations.notifications} 
-              className="notifications-card"
-            >
-              {mlRequests.map(request => (
-                <Alert
-                  key={request.requestId}
-                  message={
-                    <span>
-                      <strong>{currentTranslations.requestNumber}:</strong> {request.requestId} | 
-                      <strong> {currentTranslations.requestStatus}:</strong> {request.status} | 
-                      <strong> {currentTranslations.requestDate}:</strong> {request.requestDate}
-                    </span>
-                  }
-                  type={getStatusColor(request.status)}
-                  showIcon
-                  className="notification-alert"
-                />
-              ))}
-            </Card>
-          )}
-        </div>
-      )}
-
-      <Row className="action-buttons-row">
-        <Link to="/mlowner/home/viewlicenses">
-          <Button className="view-licenses-button">
-            {currentTranslations.viewLicensesButton}
-          </Button>
-        </Link>
-
-        <Link to="/mlowner/home/mlrequest">
-          <Button className="ml-request-button">
-            {currentTranslations.mlRequest}
-          </Button>
-        </Link>
-
-        <Link to="/mlowner/home/requeststatus">
-          <Button className="view-request-status-button">
-            {currentTranslations.viewRequestStatus}
-          </Button>
-        </Link>
+        </Col>
       </Row>
-
+      
+      {/* Requested Licenses Modal */}
+      <Modal
+        title={currentTranslations.requestedLicensesTitle}
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="close" onClick={handleCancel}>
+            {currentTranslations.close}
+          </Button>
+        ]}
+        width={800}
+      >
+        {requestedLicenses.length === 0 ? (
+          <p>{currentTranslations.noPendingRequests}</p>
+        ) : (
+          <Row gutter={[16, 16]} className="card-container">
+            {requestedLicenses.map(request => (
+              <Col xs={24} sm={24} md={24} lg={24} key={request.id}>
+                <Card title={request.licenseNumber} className="request-card">
+                  <p><strong>Request Date:</strong> {request.requestDate}</p>
+                  <p><strong>Status:</strong> 
+                    <span className={`status-${request.status.replace(/_/g, '-')}`}>
+                      {getStatusTranslation(request.status)}
+                    </span>
+                  </p>
+                  {request.appointmentDate && (
+                    <p><strong>Appointment Date:</strong> {request.appointmentDate}</p>
+                  )}
+                  <p><small>Last Updated: {request.lastUpdated}</small></p>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        )}
+      </Modal>
+      
+      {/* Active Licenses Section */}
       <div className="page-content1">
         {loading ? (
           <div className="loading-container">
@@ -225,7 +311,6 @@ const MLOwnerHomePage = () => {
           </div>
         ) : (
           <>
-            {/* Show "No Data" if filteredData is empty */}
             {filteredData.length === 0 ? (
               <div className="no-data-container">
                 <Empty

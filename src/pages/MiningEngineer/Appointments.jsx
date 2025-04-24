@@ -1,200 +1,204 @@
 import React, { useState } from 'react';
-import { Card, Row, Col, Button, Table, Tag, Typography, Tabs } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Row, Col, Card, Typography, message } from 'antd';
+import AppointmentsTable from './AppointmentsTable';
+import NewAppointmentButton from './NewAppointmentButton';
+import AppointmentDetailsModal from './AppointmentDetailsModal';
+import ApprovalModal from './ApprovalModal';
 
 const { Title } = Typography;
-const { TabPane } = Tabs;
 
-const Appointments = () => {
-  // Sample appointments data
+const Appointments = ({ activeTab }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isApprovalModalVisible, setIsApprovalModalVisible] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [approvingAppointmentId, setApprovingAppointmentId] = useState(null);
+  
   const [appointments, setAppointments] = useState([
     {
       id: 1,
-      mlOwner: 'ABC Mining Co.',
+      mlOwner: 'Pasindu Lakshan',
       gsmbOfficer: 'John Smith',
-      location: 'Pit 3, Sector B',
+      location: 'Kaduwela',
       cubeCount: 1500,
       status: 'pending',
-      date: '2023-06-15'
+      date: '2023-06-15',
+      licenseDetails: {
+        status: 'Awaiting ME Scheduling',
+        explorationLicenseNo: 'EX-2025-0001',
+        landName: 'Green Hills',
+        landOwner: 'Saman',
+        royalty: 1500
+      },
+      locationDetails: {
+        village: 'Kaduwela',
+        gramaNiladhariDivision: 'GN Division 01',
+        divisionalSecretaryDivision: 'Thimbirigasaya',
+        district: 'Colombo'
+      },
+      capacity: {
+        total: 2000,
+        used: 500,
+        remaining: 1500,
+        monthCapacity: 'Not specified'
+      },
+      timeline: {
+        startDate: '17/04/2025',
+        dueDate: '20/04/2025',
+        status: '2 days late'
+      },
+      contact: {
+        mobile: '771234567'
+      },
+      documents: {
+        restorationPlan: '/sample-docs/restoration-plan.jpg',
+        paymentReceipt: '/sample-docs/payment-receipt.jpg',
+        deedAndSurvey: '/sample-docs/deed-survey.jpg',
+        googleLocation: 'https://maps.google.com/maps?q=6.2633...'
+      }
     },
     {
       id: 2,
-      mlOwner: 'XYZ Minerals',
-      gsmbOfficer: 'Sarah Johnson',
-      location: 'North Field',
-      cubeCount: 2300,
+      mlOwner: 'Another Owner',
+      gsmbOfficer: 'Jane Doe',
+      location: 'Colombo',
+      cubeCount: 2000,
       status: 'approved',
-      date: '2023-06-10'
-    },
-    {
-      id: 3,
-      mlOwner: 'Global Resources',
-      gsmbOfficer: 'Michael Brown',
-      location: 'Southwest Zone',
-      cubeCount: 1800,
-      status: 'rejected',
-      date: '2023-06-05'
-    },
-    {
-      id: 4,
-      mlOwner: 'Mineral Corp',
-      gsmbOfficer: 'Emma Wilson',
-      location: 'Eastern Block',
-      cubeCount: 3200,
-      status: 'pending',
-      date: '2023-06-18'
-    },
-    {
-      id: 5,
-      mlOwner: 'Ore Ltd',
-      gsmbOfficer: 'David Lee',
-      location: 'Central Pit',
-      cubeCount: 2100,
-      status: 'approved',
-      date: '2023-06-12'
+      date: '2023-06-20',
+      licenseDetails: {
+        status: 'Scheduled',
+        explorationLicenseNo: 'EX-2025-0002',
+        landName: 'Blue Hills',
+        landOwner: 'Kamal',
+        royalty: 2000
+      },
+      locationDetails: {
+        village: 'Colombo',
+        gramaNiladhariDivision: 'GN Division 02',
+        divisionalSecretaryDivision: 'Colombo',
+        district: 'Colombo'
+      },
+      capacity: {
+        total: 3000,
+        used: 1000,
+        remaining: 2000,
+        monthCapacity: 'Not specified'
+      },
+      timeline: {
+        startDate: '21/04/2025',
+        dueDate: '25/04/2025',
+        status: 'On time'
+      },
+      contact: {
+        mobile: '771234568'
+      },
+      documents: {
+        restorationPlan: '/sample-docs/restoration-plan.jpg',
+        paymentReceipt: '/sample-docs/payment-receipt.jpg',
+        deedAndSurvey: '/sample-docs/deed-survey.jpg',
+        googleLocation: 'https://maps.google.com/maps?q=6.2633...'
+      }
     }
   ]);
 
-  // Filter appointments by status
-  const pendingAppointments = appointments.filter(app => app.status === 'pending');
-  const approvedAppointments = appointments.filter(app => app.status === 'approved');
-  const rejectedAppointments = appointments.filter(app => app.status === 'rejected');
+  const filteredAppointments = appointments.filter(app => 
+    activeTab === 'pending' ? app.status === 'pending' : app.status === 'approved'
+  );
 
-  // Columns for the appointments table
-  const columns = [
-    {
-      title: 'ML Owner',
-      dataIndex: 'mlOwner',
-      key: 'mlOwner'
-    },
-    {
-      title: 'GSMB Officer',
-      dataIndex: 'gsmbOfficer',
-      key: 'gsmbOfficer'
-    },
-    {
-      title: 'Location',
-      dataIndex: 'location',
-      key: 'location'
-    },
-    {
-      title: 'Cube Count',
-      dataIndex: 'cubeCount',
-      key: 'cubeCount',
-      render: count => `${count} m³`
-    },
-    {
-      title: 'Date',
-      dataIndex: 'date',
-      key: 'date'
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (_, record) => (
-        <Button type="link" onClick={() => viewAppointmentDetails(record.id)}>
-          View Details
-        </Button>
-      )
-    }
-  ];
+  const viewAppointmentDetails = (record) => {
+    setSelectedAppointment(record);
+    setIsModalVisible(true);
+  };
 
-  const viewAppointmentDetails = (id) => {
-    // Navigate to appointment details page
-    console.log('Viewing appointment:', id);
+  const showApprovalModal = (id) => {
+    setApprovingAppointmentId(id);
+    setIsApprovalModalVisible(true);
+  };
+
+  const handleApprovalOk = (id, values) => {
+    setAppointments(appointments.map(app => 
+      app.id === id ? { 
+        ...app, 
+        status: 'completed',
+        capacity: {
+          total: values.totalCapacity,
+          used: 0,
+          remaining: values.totalCapacity,
+          monthCapacity: values.monthlyCapacity
+        },
+        timeline: {
+          startDate: values.startDate.format('DD/MM/YYYY'),
+          dueDate: values.dueDate.format('DD/MM/YYYY'),
+          status: 'Not started'
+        },
+        approvalComments: values.comments
+      } : app
+    ));
+    setIsApprovalModalVisible(false);
+    message.success('Appointment approved successfully');
+  };
+
+  const handleHold = (id) => {
+    message.warning('Appointment put on hold');
+    setAppointments(appointments.map(app => 
+      app.id === id ? { ...app, status: 'hold' } : app
+    ));
+  };
+
+  const handleReject = (id) => {
+    message.success('Appointment rejected');
+    setAppointments(appointments.map(app => 
+      app.id === id ? { ...app, status: 'rejected' } : app
+    ));
+  };
+
+  const handleDateChange = (id, date, dateString) => {
+    setAppointments(appointments.map(app => 
+      app.id === id ? { ...app, date: dateString } : app
+    ));
   };
 
   const createNewAppointment = () => {
-    // Open modal or navigate to create appointment page
-    console.log('Creating new appointment');
-  };
-
-  const handleStatusChange = (id, newStatus) => {
-    setAppointments(appointments.map(app => 
-      app.id === id ? { ...app, status: newStatus } : app
-    ));
+    message.info('New appointment creation clicked');
+    // Add your implementation here
   };
 
   return (
     <div className="appointments-page">
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
         <Col>
-          <Title level={3}>Appointments</Title>
+          <Title level={3}>
+            {activeTab === 'pending' ? 'Pending Scheduling' : 'Scheduled'} Appointments
+          </Title>
         </Col>
         <Col>
-          <Button 
-            type="primary" 
-            icon={<PlusOutlined />}
-            onClick={createNewAppointment}
-          >
-            New Appointment
-          </Button>
+          <NewAppointmentButton onCreate={createNewAppointment} />
         </Col>
       </Row>
 
       <Card>
-        <Tabs defaultActiveKey="pending">
-          <TabPane 
-            tab={`Pending (${pendingAppointments.length})`} 
-            key="pending"
-          >
-            <Table 
-              columns={[
-                ...columns,
-                {
-                  title: 'Status Action',
-                  key: 'statusAction',
-                  render: (_, record) => (
-                    <div>
-                      <Button 
-                        type="link" 
-                        style={{ color: 'green' }}
-                        onClick={() => handleStatusChange(record.id, 'approved')}
-                      >
-                        Approve
-                      </Button>
-                      <Button 
-                        type="link" 
-                        danger
-                        onClick={() => handleStatusChange(record.id, 'rejected')}
-                      >
-                        Reject
-                      </Button>
-                    </div>
-                  )
-                }
-              ]} 
-              dataSource={pendingAppointments} 
-              rowKey="id"
-              pagination={{ pageSize: 5 }}
-            />
-          </TabPane>
-          
-          <TabPane 
-            tab={`Approved (${approvedAppointments.length})`} 
-            key="approved"
-          >
-            <Table 
-              columns={columns} 
-              dataSource={approvedAppointments} 
-              rowKey="id"
-              pagination={{ pageSize: 5 }}
-            />
-          </TabPane>
-          
-          <TabPane 
-            tab={`Rejected (${rejectedAppointments.length})`} 
-            key="rejected"
-          >
-            <Table 
-              columns={columns} 
-              dataSource={rejectedAppointments} 
-              rowKey="id"
-              pagination={{ pageSize: 5 }}
-            />
-          </TabPane>
-        </Tabs>
+        <AppointmentsTable 
+          appointments={filteredAppointments} 
+          activeTab={activeTab}
+          onViewDetails={viewAppointmentDetails}
+          onShowApproval={showApprovalModal}
+          onHold={handleHold}
+          onReject={handleReject}
+          onDateChange={handleDateChange}
+        />
       </Card>
+
+      <AppointmentDetailsModal
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        appointment={selectedAppointment}
+      />
+
+      <ApprovalModal
+        visible={isApprovalModalVisible}
+        onCancel={() => setIsApprovalModalVisible(false)}
+        onOk={handleApprovalOk}
+        appointmentId={approvingAppointmentId}
+      />
     </div>
   );
 };

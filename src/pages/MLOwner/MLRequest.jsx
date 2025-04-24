@@ -1,14 +1,50 @@
 import React, { useState } from 'react'; // <-- Import useState here
-import { Card, Form, Input, Button, Row, Col, message, Upload } from "antd";
+import { Card, Form, Input, Button, Row, Col, message, Upload, Select } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useLanguage } from "../../contexts/LanguageContext";
 import "../../styles/MLOwner/MLRequest.css";
 import { submitMLRequest } from "../../services/MLOService";
 
+const { Option } = Select;
+
+const districtData = {
+  'Ampara': ['Ampara', 'Kalmunai', 'Sainthamaruthu', 'Pottuvil', 'Dehiattakandiya', 'Mahaoya', 'Uhana', 'Damana', 'Thirukkovil', 'Navithanveli', 'Alayadiwembu', 'Addalachchenai', 'Akkaraipattu', 'Nintavur', 'Sammanthurai'],
+  'Anuradhapura': ['Anuradhapura', 'Kekirawa', 'Medawachchiya', 'Talawa', 'Mihintale', 'Nochchiyagama', 'Padaviya', 'Kahatagasdigiliya', 'Galnewa', 'Palagala', 'Rambewa', 'Thirappane', 'Ipalogama', 'Horowpothana'],
+  'Badulla': ['Badulla', 'Bandarawela', 'Hali-Ela', 'Welimada', 'Mahiyanganaya', 'Passara', 'Kandaketiya', 'Meegahakivula', 'Rideemaliyadda', 'Haputale', 'Ella', 'Soranathota', 'Uva Paranagama', 'Diyatalawa'],
+  'Batticaloa': ['Batticaloa', 'Kattankudy', 'Eravur', 'Valaichchenai', 'Manmunai North', 'Manmunai West', 'Manmunai South-West', 'Manmunai South', 'Porativu Pattu', 'Koralai Pattu', 'Koralai Pattu North'],
+  'Colombo': ['Colombo', 'Dehiwala', 'Moratuwa', 'Sri Jayawardenepura Kotte', 'Kaduwela', 'Homagama', 'Maharagama', 'Kesbewa', 'Boralesgamuwa', 'Avissawella', 'Seethawaka', 'Padukka', 'Ratmalana', 'Kolonnawa'],
+  'Galle': ['Galle', 'Ambalangoda', 'Hikkaduwa', 'Bentota', 'Karandeniya', 'Elpitiya', 'Baddegama', 'Neluwa', 'Nagoda', 'Bope-Poddala', 'Yakkalamulla', 'Imaduwa', 'Thawalama', 'Akmeemana'],
+  'Gampaha': ['Gampaha', 'Negombo', 'Kelaniya', 'Wattala', 'Ja-Ela', 'Minuwangoda', 'Divulapitiya', 'Mirigama', 'Attanagalla', 'Dompe', 'Biyagama', 'Katana', 'Mahara', 'Veyangoda'],
+  'Hambantota': ['Hambantota', 'Tangalle', 'Ambalantota', 'Tissamaharama', 'Beliatta', 'Lunugamvehera', 'Weeraketiya', 'Angunakolapelessa', 'Okewela', 'Sooriyawewa', 'Katuwana', 'Walasmulla'],
+  'Jaffna': ['Jaffna', 'Nallur', 'Chavakachcheri', 'Point Pedro', 'Karainagar', 'Island North', 'Island South', 'Thenmaradchi', 'Vadamaradchi North', 'Vadamaradchi South-West', 'Vadamaradchi East', 'Delft'],
+  'Kalutara': ['Kalutara', 'Panadura', 'Horana', 'Matugama', 'Beruwala', 'Dodangoda', 'Bulathsinhala', 'Millaniya', 'Madurawala', 'Bandaragama', 'Agalawatta', 'Palindanuwara', 'Ingiriya', 'Walallavita'],
+  'Kandy': ['Kandy', 'Katugastota', 'Peradeniya', 'Gampola', 'Kundasale', 'Akurana', 'Harispattuwa', 'Pathadumbara', 'Udunuwara', 'Yatinuwara', 'Udapalatha', 'Minipe', 'Hatharaliyadda', 'Galagedara', 'Panvila'],
+  'Kegalle': ['Kegalle', 'Mawanella', 'Warakapola', 'Rambukkana', 'Ruwanwella', 'Dehiowita', 'Deraniyagala', 'Galigamuwa', 'Aranayaka', 'Yatiyanthota', 'Bulathkohupitiya'],
+  'Kilinochchi': ['Kilinochchi', 'Kandavalai', 'Karachchi', 'Poonakary', 'Pallai'],
+  'Kurunegala': ['Kurunegala', 'Kuliyapitiya', 'Pannala', 'Polgahawela', 'Narammala', 'Alawwa', 'Bingiriya', 'Wariyapola', 'Ganewatta', 'Giribawa', 'Mawathagama', 'Kobeigane', 'Nikaweratiya', 'Rasnayakapura', 'Ibbagamuwa'],
+  'Mannar': ['Mannar', 'Nanaddan', 'Madhu', 'Musali', 'Manthai West'],
+  'Matale': ['Matale', 'Dambulla', 'Galewela', 'Naula', 'Pallepola', 'Rattota', 'Yatawatta', 'Laggala-Pallegama', 'Wilgamuwa', 'Ukuwela'],
+  'Matara': ['Matara', 'Weligama', 'Dikwella', 'Hakmana', 'Akuressa', 'Kamburupitiya', 'Devinuwara', 'Kotapola', 'Malimbada', 'Thihagoda', 'Pasgoda', 'Athuraliya', 'Mulatiyana', 'Kirinda-Puhulwella'],
+  'Monaragala': ['Monaragala', 'Wellawaya', 'Bibile', 'Buttala', 'Katharagama', 'Madulla', 'Sevanagala', 'Siyambalanduwa', 'Thanamalwila', 'Badalkumbura', 'Medagama'],
+  'Mullaitivu': ['Mullaitivu', 'Oddusuddan', 'Puthukudiyiruppu', 'Thunukkai', 'Manthai East', 'Maritimepattu', 'Welioya'],
+  'Nuwara Eliya': ['Nuwara Eliya', 'Hatton', 'Talawakele', 'Lindula', 'Kotmale', 'Walapane', 'Hanguranketha', 'Ambagamuwa', 'Maskeliya', 'Norton Bridge'],
+  'Polonnaruwa': ['Polonnaruwa', 'Hingurakgoda', 'Medirigiriya', 'Lankapura', 'Thamankaduwa', 'Elahera', 'Dimbulagala', 'Welikanda', 'Kaduruwela'],
+  'Puttalam': ['Puttalam', 'Chilaw', 'Wennappuwa', 'Nattandiya', 'Dankotuwa', 'Arachchikattuwa', 'Mahakumbukkadawala', 'Kalpitiya', 'Vanathavilluwa', 'Karuwalagaswewa', 'Pallama', 'Mundalama', 'Anamaduwa', 'Gomarankadawala'],
+  'Ratnapura': ['Ratnapura', 'Balangoda', 'Embilipitiya', 'Pelmadulla', 'Eheliyagoda', 'Kuruwita', 'Nivithigala', 'Kahawatta', 'Godakawela', 'Ayagama', 'Kalawana', 'Weligepola', 'Opanayaka', 'Elapatha', 'Kolonna'],
+  'Trincomalee': ['Trincomalee', 'Kinniya', 'Kuchchaveli', 'Gomarankadawala', 'Kantalai', 'Morawewa', 'Seruvila', 'Thambalagamuwa', 'Muttur', 'Verugal', 'Padavi Sri Pura'],
+  'Vavuniya': ['Vavuniya', 'Vavuniya North', 'Vengalacheddikulam', 'Cheddikulam', 'Vavuniya South']
+};
+
 const MLRequest = () => {
   const { language } = useLanguage();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false); // Now useState is defined
+  const [divisions, setDivisions] = useState([]);
+
+  const handleDistrictChange = (value) => {
+    setDivisions(districtData[value] || []);
+    form.setFieldsValue({ divisional_secretary_division: undefined }); // Reset division when district changes
+  };
 
   // Helper function to safely get the file object
   const normFile = (e) => {
@@ -315,21 +351,36 @@ const MLRequest = () => {
           </Col>
           <Col xs={24} sm={8}>
             <Form.Item
-              label={currentTranslations.divisionalSecretary}
-              name="divisional_secretary_division"
-              rules={[{ required: true, message: 'Please input the Divisional Secretary Division!' }]}
+            label={currentTranslations.divisionalSecretary}
+            name="divisional_secretary_division"
+            rules={[{ required: true, message: 'Please select the division!' }]}
+          >
+            <Select
+              placeholder="Select division"
+              disabled={!divisions.length}
             >
-              <Input />
+              {divisions.map(division => (
+                <Option key={division} value={division}>{division}</Option>
+              ))}
+            </Select>
             </Form.Item>
           </Col>
+
         </Row>
 
         <Form.Item
-            label={currentTranslations.district}
-            name="district"
-            rules={[{ required: true, message: 'Please input the Administrative District!' }]}
+          label={currentTranslations.district}
+          name="district"
+          rules={[{ required: true, message: 'Please select the district!' }]}
         >
-          <Input />
+          <Select
+            placeholder="Select district"
+            onChange={handleDistrictChange}
+          >
+            {Object.keys(districtData).map(district => (
+              <Option key={district} value={district}>{district}</Option>
+            ))}
+          </Select>
         </Form.Item>
 
         <Form.Item
