@@ -422,15 +422,9 @@ const AddNewLicense = () => {
       );
       formData.append("administrative_district", values.district);
       formData.append("google_location", values.land_google);
-      formData.append(
-        "start_date",
-        values.start_date ? values.start_date.format("YYYY-MM-DD") : ""
-      );
-      formData.append(
-        "end_date",
-        values.end_date ? values.end_date.format("YYYY-MM-DD") : ""
-      );
-      // formData.append("royalty_percentage", values.royalty || "");
+      formData.append("start_date", values.start_date ? values.start_date.format('YYYY-MM-DD') : '');
+      formData.append("end_date", values.end_date ? values.end_date.format('YYYY-MM-DD') : '');
+      formData.append("royalty_percentage", values.royalty || '');
 
       // Append files safely checking they exist
       if (
@@ -540,6 +534,7 @@ const AddNewLicense = () => {
       startDate: "Start Date",
       endDate: "End Date",
       royalty: "Royalty Percentage",
+      capacity: "Capacity(cubes)",
     },
     si: {
       title: "කාර්මික ගල්පර්වත අයදුම්පත",
@@ -591,6 +586,7 @@ const AddNewLicense = () => {
       startDate: "ආරම්භක දිනය",
       endDate: "අවසන් දිනය",
       royalty: "රාජකාරී ප්‍රතිශතය",
+      capacity: "ධාරිතාව",
     },
     ta: {
       title: "தொழிற்சாலை சுரங்க உரிமம் விண்ணப்பம்",
@@ -643,6 +639,7 @@ const AddNewLicense = () => {
       startDate: "தொடக்க தேதி",
       endDate: "முடிவு தேதி",
       royalty: "ராயல்டி சதவீதம்",
+      capacity: "திறன்",
     },
   };
 
@@ -842,7 +839,7 @@ const AddNewLicense = () => {
           </Col>
         </Row>
 
-        {/* <Form.Item
+        <Form.Item
           label={currentTranslations.royalty}
           name="royalty"
           rules={[
@@ -854,7 +851,7 @@ const AddNewLicense = () => {
           ]}
         >
           <Input addonAfter="%" />
-        </Form.Item> */}
+        </Form.Item>
 
         {/* Commented sections */}
 

@@ -247,3 +247,50 @@
   align-items: center;
   width: 100%;
 }
+
+/* Requested Licenses Section */
+.requested-licenses-section {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.request-card {
+  margin-bottom: 15px;
+}
+.requested-licenses-button {
+  background: linear-gradient(to right, #ffcc70, #ffc370); /* light orange to red */
+  color: white;
+  border: none;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: background 0.3s ease;
+}
+
+.requested-licenses-button:hover {
+  background: linear-gradient(to right, #ffb347, #ffc370); /* darker on hover */
+  font-style: white;
+}
+
+/* Status Styles */
+.status-approved-by-gsmb {
+  color: #1890ff;
+  font-weight: bold;
+}
+
+.status-appointment-fixed {
+  color: #722ed1;
+  font-weight: bold;
+}
+
+.status-approved-by-engineer {
+  color: #13c2c2;
+  font-weight: bold;
+}
+
+.status-ready-for-collection {
+  color: #52c41a;
+  font-weight: bold;
+}

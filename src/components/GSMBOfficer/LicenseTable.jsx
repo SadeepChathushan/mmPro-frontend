@@ -9,8 +9,13 @@ import {
   Input,
   Row,
   Col,
+  Select,
+  Space,
 } from "antd";
 import { Link, useNavigate } from "react-router-dom";
+import { SearchOutlined } from "@ant-design/icons";
+
+const { Option } = Select;
 
 const LicenseTable = ({ data, tracker, loading }) => {
   const navigate = useNavigate();
@@ -18,10 +23,20 @@ const LicenseTable = ({ data, tracker, loading }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentRecord, setCurrentRecord] = useState(null);
   const [form] = Form.useForm();
+  const [searchText, setSearchText] = useState("");
+  const [statusFilter, setStatusFilter] = useState(null);
 
   const [editableFields] = useState({
     mobile_number: true,
   });
+
+  const statusOptions = [
+    { value: "pending", label: "Pending" },
+    { value: "physical_document", label: "Physical Document" },
+    { value: "awaiting_scheduling", label: "Awaiting ME Scheduling" },
+    { value: "me_approved", label: "ME Approved" },
+    { value: "valid", label: "Valid" },
+  ];
 
   const handleViewClick = async (e, record) => {
     e.preventDefault();
@@ -134,6 +149,22 @@ const LicenseTable = ({ data, tracker, loading }) => {
     }
   };
 
+  const filteredData = data.filter((item) => {
+    const matchesSearch =
+      !searchText ||
+      Object.values(item).some(
+        (val) =>
+          val &&
+          val.toString().toLowerCase().includes(searchText.toLowerCase())
+      );
+      
+    const matchesStatus =
+      !statusFilter ||
+      item.status === statusFilter;
+      
+    return matchesSearch && matchesStatus;
+  });
+
   const renderAction = (record) => (
     <div style={{ display: "flex", gap: "8px" }}>
       <Button
@@ -174,6 +205,21 @@ const LicenseTable = ({ data, tracker, loading }) => {
         render: (_, record) => (
           <span className="text-nowrap">
             {record.start_date} - {record.due_date}
+          </span>
+        ),
+      },
+      {
+        title: "Status",
+        dataIndex: "status",
+        width: 150,
+        render: (status) => (
+          <span style={{
+            color: status === 'valid' ? 'green' : 
+                  status === 'me_approved' ? 'blue' : 
+                  status === 'pending' ? 'orange' : '#333',
+            fontWeight: 500
+          }}>
+            {status ? status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '-'}
           </span>
         ),
       },
@@ -314,8 +360,41 @@ const LicenseTable = ({ data, tracker, loading }) => {
 
   return (
     <>
+          {tracker === "ML" && (
+        <div style={{ marginBottom: 16 }}>
+          <Row gutter={16} align="middle">
+            <Col>
+              <Select
+                placeholder="Filter by status"
+                value={statusFilter}
+                onChange={setStatusFilter}
+                style={{ width: 200 }}
+                allowClear
+              >
+                {statusOptions.map((option) => (
+                  <Option key={option.value} value={option.value}>
+                    {option.label}
+                  </Option>
+                ))}
+              </Select>
+            </Col>
+            <Col>
+              <Button
+                type="default"
+                onClick={() => {
+                  setSearchText("");
+                  setStatusFilter(null);
+                }}
+              >
+                Reset Filters
+              </Button>
+            </Col>
+          </Row>
+        </div>
+      )}
+
       <Table
-        dataSource={data}
+        dataSource={filteredData}
         columns={columns[tracker]}
         rowKey="id"
         pagination={{

@@ -22,12 +22,15 @@ import {
   BellOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
-  WarningOutlined
+  WarningOutlined,
+  ScheduleOutlined,
+  SafetyCertificateOutlined
 } from '@ant-design/icons';
 import '../../styles/MiningEngineer/MEDashboard.css';
 import AppointmentsPage from '../MiningEngineer/Appointments.jsx';
 
 const { Header, Sider, Content } = Layout;
+const { SubMenu } = Menu;
 
 const MEDashboard = () => {
   // State for dashboard data
@@ -82,6 +85,8 @@ const MEDashboard = () => {
 
   // Active tab state
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeAppointmentTab, setActiveAppointmentTab] = useState('pending');
+  const [activeLicenseTab, setActiveLicenseTab] = useState('approved');
   const [collapsed, setCollapsed] = useState(false);
 
   // Handle alert resolution
@@ -123,13 +128,46 @@ const MEDashboard = () => {
   // Menu items
   const menuItems = [
     { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
-    { key: 'appointments', icon: <BarChartOutlined />, label: 'Appointments' },
-    { key: 'equipment', icon: <ToolOutlined />, label: 'Equipment' },
+    { 
+      key: 'appointments', 
+      icon: <ScheduleOutlined />, 
+      label: 'Appointments',
+      children: [
+        { key: 'pending-scheduling', label: 'Pending Scheduling' },
+        { key: 'scheduled', label: 'Scheduled' }
+      ]
+    },
+    { 
+      key: 'mining-licenses', 
+      icon: <SafetyCertificateOutlined />, 
+      label: 'Mining Licenses',
+      children: [
+        { key: 'approved-licenses', label: 'Approved' },
+        { key: 'rejected-licenses', label: 'Rejected' }
+      ]
+    },
     { key: 'safety', icon: <SafetyOutlined />, label: 'Safety' },
     { key: 'personnel', icon: <TeamOutlined />, label: 'Personnel' },
     { key: 'reports', icon: <FileTextOutlined />, label: 'Reports' },
     { key: 'settings', icon: <SettingOutlined />, label: 'Settings' },
   ];
+
+  const renderMenuItems = (items) => {
+    return items.map(item => {
+      if (item.children) {
+        return (
+          <SubMenu key={item.key} icon={item.icon} title={item.label}>
+            {renderMenuItems(item.children)}
+          </SubMenu>
+        );
+      }
+      return (
+        <Menu.Item key={item.key} icon={item.icon}>
+          {item.label}
+        </Menu.Item>
+      );
+    });
+  };
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -147,14 +185,25 @@ const MEDashboard = () => {
         <Menu
           theme="light"
           defaultSelectedKeys={['dashboard']}
+          defaultOpenKeys={['appointments', 'mining-licenses']}
           mode="inline"
-          items={menuItems}
-          onSelect={({ key }) => setActiveTab(key)}
-        />
+          onSelect={({ key }) => {
+            if (key === 'pending-scheduling' || key === 'scheduled') {
+              setActiveTab('appointments');
+              setActiveAppointmentTab(key === 'pending-scheduling' ? 'pending' : 'approved');
+            } else if (key === 'approved-licenses' || key === 'rejected-licenses') {
+              setActiveTab('mining-licenses');
+              setActiveLicenseTab(key === 'approved-licenses' ? 'approved' : 'rejected');
+            } else {
+              setActiveTab(key);
+            }
+          }}
+        >
+          {renderMenuItems(menuItems)}
+        </Menu>
       </Sider>
 
       <Layout>
-
         {/* Main Content */}
         <Content style={{ margin: '16px' }}>
           {activeTab === 'dashboard' && (
@@ -324,13 +373,24 @@ const MEDashboard = () => {
             </>
           )}
 
-          {activeTab !== 'dashboard' && activeTab!== 'appointments' &&  (
+          {activeTab !== 'dashboard' && activeTab !== 'appointments' && activeTab !== 'mining-licenses' && (
             <Card>
               <h3>{menuItems.find(item => item.key === activeTab)?.label} View</h3>
               <p>This section would contain detailed {activeTab} information and management tools.</p>
             </Card>
           )}
-          {activeTab === 'appointments' && <AppointmentsPage />}
+          
+          {activeTab === 'appointments' && (
+            <AppointmentsPage activeTab={activeAppointmentTab} />
+          )}
+
+          {activeTab === 'mining-licenses' && (
+            <Card>
+              <h3>Mining Licenses - {activeLicenseTab === 'approved' ? 'Approved' : 'Rejected'}</h3>
+              <p>This section would contain a list of {activeLicenseTab} mining licenses with details.</p>
+              {/* You would add your table or list component for mining licenses here */}
+            </Card>
+          )}
         </Content>
       </Layout>
     </Layout>
