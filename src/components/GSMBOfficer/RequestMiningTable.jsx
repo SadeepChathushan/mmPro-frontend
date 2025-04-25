@@ -352,14 +352,13 @@ const RequestMiningTable = () => {
                         onClick={handleAppointmentSubmit} 
                         loading={appointmentLoading}
                         style={{
-                          background: "#a30000",
                           background: "linear-gradient(181deg, rgba(163,0,0,1) 0%, rgba(199,87,87,1) 50%, rgb(188, 0, 0) 100%)",
                           border: "none",
                           color: "white",
                           fontWeight: 500,
                           boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                           transition: "all 0.3s ease",
-                          width: "200px" // Optional: Set a fixed width
+                          width: "200px" 
                         }}
 
                         onMouseLeave={(e) => {
