@@ -110,7 +110,7 @@ const Navbar = () => {
         zIndex: 100,
         padding: "0 24px",
         height: "80px",
-        minWidth: "1024px" // Set a minimum width to prevent collapsing
+        minWidth: "1024px"
       }} 
       id="h-header"
     >

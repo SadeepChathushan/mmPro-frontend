@@ -9,12 +9,14 @@ import {
     Row,
     Col,
     Spin,
-    Typography, // Import Typography for links
+    Typography,
+    DatePicker,
+    TimePicker
 } from "antd";
-// Import the function directly
-import { getMlRequest } from "../../services/officerService"; // Adjust path if needed
+import { getMlRequest } from "../../services/officerService";
 
-const { Link } = Typography; // Destructure Link for easier use
+const { Link } = Typography;
+const { TextArea } = Input;
 
 const RequestMiningTable = () => {
     // --- State Variables ---
@@ -24,12 +26,14 @@ const RequestMiningTable = () => {
     const [currentRecord, setCurrentRecord] = useState(null);
     const [updateLoading, setUpdateLoading] = useState(false);
     const [form] = Form.useForm();
+    
+    // New states for appointment scheduling
+    const [isAppointmentModalVisible, setIsAppointmentModalVisible] = useState(false);
+    const [appointmentForm] = Form.useForm();
+    const [appointmentLoading, setAppointmentLoading] = useState(false);
 
-    // Define which fields are editable in the modal - based on backend data
     const [editableFields] = useState({
-        mobile_number: true, // Example: Allow editing mobile number
-        // Add other keys from the Python ml_data if they should be editable
-        // e.g., land_name: true,
+        mobile_number: true,
     });
 
     // --- Data Fetching Effect ---
@@ -37,14 +41,9 @@ const RequestMiningTable = () => {
         const fetchMlRequestData = async () => {
             setLoading(true);
             try {
-                // Assuming getMlRequest calls the backend endpoint and returns the data
-                // It might return { data: [...] } or just [...]
                 const response = await getMlRequest();
                 console.log("ML Request Data from service:", response);
-
-                // Adjust based on actual response structure from your service call
                 const fetchedData = response?.data || response;
-
                 setMlRequestData(Array.isArray(fetchedData) ? fetchedData : []);
             } catch (error) {
                 console.error("Error fetching ML request data:", error);
@@ -61,8 +60,49 @@ const RequestMiningTable = () => {
     // --- Event Handlers ---
     const handleViewClick = (record) => {
         setCurrentRecord(record);
-        form.setFieldsValue(record); // Populate form with the selected record's data
+        form.setFieldsValue(record);
         setIsModalVisible(true);
+    };
+
+    const handleScheduleAppointment = (record) => {
+        setCurrentRecord(record);
+        appointmentForm.resetFields();
+        setIsAppointmentModalVisible(true);
+    };
+
+    const handleAppointmentSubmit = async () => {
+        try {
+            const values = await appointmentForm.validateFields();
+            setAppointmentLoading(true);
+            message.loading({ content: "Scheduling appointment...", key: "appointmentStatus", duration: 0 });
+
+            // Mock API call - replace with actual implementation
+            console.log("Appointment details:", {
+                requestId: currentRecord.id,
+                ...values,
+                date: values.date.format('YYYY-MM-DD'),
+                time: values.time.format('HH:mm')
+            });
+
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+
+            message.success({ 
+                content: "Appointment scheduled successfully!", 
+                key: "appointmentStatus", 
+                duration: 3 
+            });
+
+            setIsAppointmentModalVisible(false);
+        } catch (error) {
+            console.error("Appointment scheduling error:", error);
+            message.error({
+                content: `Failed to schedule appointment: ${error.message || 'Please try again.'}`,
+                key: "appointmentStatus",
+                duration: 5,
+            });
+        } finally {
+            setAppointmentLoading(false);
+        }
     };
 
     const handleUpdate = async () => {
@@ -88,16 +128,10 @@ const RequestMiningTable = () => {
             }
 
             console.log("Update Payload:", payload);
-            // --- TODO: Implement actual update API call here ---
-            // This requires a backend endpoint that accepts PUT/PATCH requests
-            // Example: await updateMlRequestService(currentRecord.id, payload);
-
-            // Mock update success for demonstration
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             message.success({ content: "Details updated successfully!", key: "updateStatus", duration: 3 });
 
-            // Update local state optimistically
             setMlRequestData((prevData) =>
                 prevData.map((item) =>
                     item.id === currentRecord.id ? { ...item, ...payload } : item
@@ -119,14 +153,24 @@ const RequestMiningTable = () => {
 
     // --- Render Functions ---
     const renderAction = (_, record) => (
-        <Button
-            type="primary"
-            size="small"
-            icon={<span>👁️</span>}
-            onClick={() => handleViewClick(record)} // Pass record directly
-        >
-            View
-        </Button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+            <Button
+                type="primary"
+                size="small"
+                icon={<span>👁️</span>}
+                onClick={() => handleViewClick(record)}
+            >
+                View
+            </Button>
+            <Button
+                type="default"
+                size="small"
+                icon={<span>🗓️</span>}
+                onClick={() => handleScheduleAppointment(record)}
+            >
+                Schedule
+            </Button>
+        </div>
     );
 
     const columns = [
@@ -137,23 +181,20 @@ const RequestMiningTable = () => {
         { title: "District", dataIndex: "administrative_district", key: "administrative_district", width: 150, render: (text) => text || "-"},
         { title: "Date Created", dataIndex: "created_on", key: "created_on", width: 120, render: (text) => text ? text.split('T')[0] : '-' },
         { title: "Status", dataIndex: "status", key: "status", width: 100 },
-        { title: "Action", key: "action", width: 100, fixed: "right", render: renderAction },
+        { title: "Action", key: "action", width: 150, fixed: "right", render: renderAction },
     ];
 
-    // Fields to explicitly exclude from the modal form
     const excludedFields = [
-        "assigned_to_details", // Exclude the complex object
-        // Add any other fields from ml_data that should NEVER be shown in the modal
+        "assigned_to_details",
     ];
 
-    // Define the desired *order* for fields in the modal. Use keys from the Python `ml_data`.
     const fieldOrder = [
         "id",
         "subject",
         "status",
-        "assigned_to", // Name string is fine
+        "assigned_to",
         "created_on",
-        "mobile_number", // Editable
+        "mobile_number",
         "land_name",
         "land_owner_name",
         "village_name",
@@ -162,20 +203,17 @@ const RequestMiningTable = () => {
         "administrative_district",
         "google_location",
         "exploration_licence_no",
-        "detailed_mine_restoration_plan", // Attachment URL
-        "deed_and_survey_plan",            // Attachment URL
-        "payment_receipt",                 // Attachment URL
-        // Add other fields from ml_data in desired order
+        "detailed_mine_restoration_plan",
+        "deed_and_survey_plan",
+        "payment_receipt",
     ];
 
-    // List of fields known to contain URLs (from backend code)
     const urlFields = [
         "detailed_mine_restoration_plan",
         "deed_and_survey_plan",
         "payment_receipt",
-        "google_location", // This might also be a URL
+        "google_location",
     ];
-
 
     const renderModalContent = () => {
         if (!currentRecord) return <Spin tip="Loading details..." />;
@@ -183,7 +221,7 @@ const RequestMiningTable = () => {
         const recordEntries = Object.entries(currentRecord);
 
         const filteredAndSortedEntries = recordEntries
-            .filter(([key, value]) => !excludedFields.includes(key) && value !== null && value !== undefined) // Exclude specified fields and null/undefined
+            .filter(([key, value]) => !excludedFields.includes(key) && value !== null && value !== undefined)
             .sort(([a], [b]) => {
                 const indexA = fieldOrder.indexOf(a);
                 const indexB = fieldOrder.indexOf(b);
@@ -196,33 +234,26 @@ const RequestMiningTable = () => {
         return (
             <Form form={form} layout="horizontal" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }} labelAlign="left">
                 {filteredAndSortedEntries.map(([key, value]) => {
-                    // Skip rendering complex objects that might have slipped through exclusion
                     if (typeof value === 'object' && value !== null) {
                         console.warn(`Skipping rendering object field in modal: ${key}`);
                         return null;
                     }
 
                     const isEditable = !!editableFields[key];
-                    // Check if the field is specifically marked as a URL field AND has a string value
                     const isUrl = urlFields.includes(key) && typeof value === 'string' && value.trim().startsWith('http');
-                    // Format date string if it's the created_on field
                     const displayValue = key === 'created_on' && typeof value === 'string'
-                        ? value.split('T')[0] // Show only date part
-                        : String(value ?? ""); // Convert to string, handling null/undefined
+                        ? value.split('T')[0]
+                        : String(value ?? "");
 
-                    // Generate a readable label
                     const label = key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
                     return (
                         <Form.Item label={<span style={{ fontWeight: 500 }}>{label}</span>} name={key} key={key} style={{ marginBottom: 12 }}>
                             {isUrl ? (
-                                // Render as a clickable link if it's a URL
                                 <Link href={value} target="_blank" rel="noopener noreferrer" ellipsis>
-                                    {value} {/* Or show a generic "View File" text */}
-                                    {/* View File */}
+                                    {value}
                                 </Link>
                             ) : (
-                                // Otherwise, render as Input (editable or readOnly)
                                 <Input
                                     readOnly={!isEditable}
                                     style={{
@@ -230,7 +261,6 @@ const RequestMiningTable = () => {
                                         color: isEditable ? "inherit" : "rgba(0, 0, 0, 0.85)",
                                         cursor: isEditable ? 'auto' : 'default',
                                     }}
-                                    // Form item controls the value via 'name' prop, no need for value={displayValue}
                                 />
                             )}
                         </Form.Item>
@@ -254,6 +284,8 @@ const RequestMiningTable = () => {
                 size="middle"
                 loading={loading}
             />
+            
+            {/* Details Modal */}
             <Modal
                 title={
                     <div style={{ fontSize: "18px", fontWeight: "600", color: "#1677ff", padding: "16px 24px", borderBottom: "1px solid #f0f0f0", margin: "-16px -24px 0" }}>
@@ -284,6 +316,114 @@ const RequestMiningTable = () => {
                 style={{ top: "5vh", borderRadius: "8px", overflow: "hidden" }}
             >
                 {renderModalContent()}
+            </Modal>
+
+            {/* Appointment Scheduling Modal */}
+            <Modal
+               title={
+                <div
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: "600",
+                    color: "#404040",
+                    backgroundColor: "#ece4e4",
+                    padding: "16px 24px",
+                    marginTop: "5px",
+                    marginLeft: "5px",
+                    marginRight: "5px",
+                    borderBottom: "2px solid #810202", 
+                    margin: "-16px -24px 0",
+                    textAlign: "center",
+
+                  }}
+                >
+                  {`Schedule Appointment - ${currentRecord?.subject || currentRecord?.id || "N/A"}`}
+                </div>
+              }
+              
+                open={isAppointmentModalVisible}
+                onCancel={() => setIsAppointmentModalVisible(false)}
+                footer={
+                    <Row justify="center" style={{ padding: "10px 0" }}>
+                    <Col>
+                      <Button 
+                        key="submit" 
+                        type="primary"
+                        onClick={handleAppointmentSubmit} 
+                        loading={appointmentLoading}
+                        style={{
+                          background: "#a30000",
+                          background: "linear-gradient(181deg, rgba(163,0,0,1) 0%, rgba(199,87,87,1) 50%, rgb(188, 0, 0) 100%)",
+                          border: "none",
+                          color: "white",
+                          fontWeight: 500,
+                          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                          transition: "all 0.3s ease",
+                          width: "200px" // Optional: Set a fixed width
+                        }}
+
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "inear-gradient(181deg, rgba(163,0,0,1) 0%, rgba(199,87,87,1) 50%, rgb(188, 0, 0) 100%),150,83,1) 100%)";
+                          e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+                        }}
+                      >
+                        Schedule Appointment
+                      </Button>
+                    </Col>
+                  </Row>
+                }
+                width={600}
+                styles={{
+                    header: { padding: 0, margin: 0, borderBottom: 'none', borderRadius: '8px 8px 0 0', overflow: 'hidden' },
+                    body: { padding: "24px", maxHeight: "70vh", overflowY: "auto" },
+                    footer: { padding: "10px 24px", borderTop: "1px solid #f0f0f0", margin: 0 },
+                    mask: { backgroundColor: "rgba(0, 0, 0, 0.45)" },
+                    content: { padding: 0, borderRadius: '8px' },
+                }}
+                destroyOnClose
+                maskClosable={!appointmentLoading}
+                keyboard={!appointmentLoading}
+            >
+                <Form
+                    form={appointmentForm}
+                    layout="vertical"
+                    style={{ marginTop: 16 }}
+                >
+                    <Form.Item
+                        label="Appointment Date"
+                        name="date"
+                        rules={[{ required: true, message: 'Please select a date' }]}
+                    >
+                        <DatePicker style={{ width: '100%' }} />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Appointment Time"
+                        name="time"
+                        rules={[{ required: true, message: 'Please select a time' }]}
+                    >
+                        <TimePicker 
+                            style={{ width: '100%' }} 
+                            format="HH:mm" 
+                            minuteStep={15} 
+                        />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Location"
+                        name="location"
+                        rules={[{ required: true, message: 'Please enter the location' }]}
+                    >
+                        <Input placeholder="Enter meeting location" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Purpose/Notes"
+                        name="notes"
+                    >
+                        <TextArea rows={4} placeholder="Enter any additional notes or purpose of the meeting" />
+                    </Form.Item>
+                </Form>
             </Modal>
         </>
     );
