@@ -443,5 +443,40 @@ export const addNewLicense = async (formData) => {
     throw error;
   }
 };
-// Now export the service object as the default
+
+export const getMlRequest = async () => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return [];
+    }
+
+    const response = await axios.get(
+      `${BASE_URL}/gsmb-officer/get-mining-license-requests`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.data.success && Array.isArray(response.data.data)) {
+      console.log("Get Mining License Requests API response:", response.data);
+      return response.data.data;
+      
+    } else {
+      console.error(
+        "Failed to fetch mining request licenses : Unexpected data format"
+      );
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch mining request licenses:", error);
+    return [];
+  }
+};
+
+
 export default officerService;
