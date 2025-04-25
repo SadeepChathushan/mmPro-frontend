@@ -16,7 +16,7 @@ const GSMBRoutes = () => (
     <Route path="register-new-owner" element={<RegNewowner />} />
     <Route path="license/:licenseId" element={<ViewLicense />} />
     <Route path="dashboard/TPLHistory" element={<TPLHistory />} />
-    <Route path="add-new-license/:userId" element={<AddNewLicense />} />
+    <Route path="add-new-license/:id" element={<AddNewLicense />} />
 
   </Routes>
 );

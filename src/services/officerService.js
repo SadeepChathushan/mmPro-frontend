@@ -68,39 +68,36 @@ const officerService = {
     }
   },
 
-  addNewLicense: async (payload) => {
-    try {
-      // const token = localStorage.getItem("USER_TOKEN");  // Use token for Authorization header
-      const token = localStorage.getItem("USER_TOKEN");
-      if (!token) {
-        console.error("User token not found in localStorage");
-        return null; // Return null if the token is missing
-      }
-      console.log("This is payload in officer", payload);
-      console.log("Authorization Token:", token);
-      console.log("Payload being sent:", JSON.stringify(payload, null, 2));
-      const response = await axios.post(
-        `${BASE_URL}/gsmb-officer/add-license`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.status === 201 && response.data.success) {
-        return response.data; // Return the newly created license data
-      } else {
-        console.error("Failed to add new license:", response.data);
-        return null;
-      }
-    } catch (error) {
-      console.error("Error adding new license:", error);
-      return null;
-    }
-  },
+  // addNewLicense: async (formData) => {
+  //   try {
+  //     // const token = localStorage.getItem("USER_TOKEN");  // Use token for Authorization header
+  //     const token = localStorage.getItem("USER_TOKEN");
+  //     if (!token) {
+  //       console.error("User token not found in localStorage");
+  //       return null; 
+  //     }
+  //     const response = await axios.post(
+  //       `${BASE_URL}/gsmb-officer/upload-mining-license`,
+  //       formData,
+  //       {
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data',
+  //           'Authorization': `Bearer ${token}`
+  //         }
+  //       }
+  //     );
+    
+  //     if (response.status === 201 && response.data.success) {
+  //       return response.data; // Return the newly created license data
+  //     } else {
+  //       console.error("Failed to add new license:", response.data);
+  //       return null;
+  //     }
+  //   } catch (error) {
+  //     console.error("Error adding new license:", error);
+  //     return null;
+  //   }
+  // },
 
   // New Function: Fetch a single license by ID
   getLicenseById: async (licenseId) => {
@@ -407,5 +404,79 @@ const officerService = {
   },
 };
 
-// Now export the service object as the default
+export const addNewLicense = async (formData) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`
+      }
+    };
+
+    // Log the full URL
+    const apiUrl = `${BASE_URL}/gsmb-officer/upload-mining-license`;
+    console.log("API URL:", apiUrl);
+
+    // Log the formData
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ": " + pair[1]);
+    }
+
+    const response = await axios.post(apiUrl, formData, config);
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Request failed");
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("API Error Details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
+    throw error;
+  }
+};
+
+export const getMlRequest = async () => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return [];
+    }
+
+    const response = await axios.get(
+      `${BASE_URL}/gsmb-officer/get-mining-license-requests`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.data.success && Array.isArray(response.data.data)) {
+      console.log("Get Mining License Requests API response:", response.data);
+      return response.data.data;
+      
+    } else {
+      console.error(
+        "Failed to fetch mining request licenses : Unexpected data format"
+      );
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch mining request licenses:", error);
+    return [];
+  }
+};
+
+
 export default officerService;
