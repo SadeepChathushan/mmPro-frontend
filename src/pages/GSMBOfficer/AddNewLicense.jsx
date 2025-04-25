@@ -361,7 +361,6 @@ const AddNewLicense = () => {
   const { id } = useParams();
   const location = useLocation();
   const ownerId = id || location.state?.ownerId;
-  console.log("Final owner ID:", ownerId);
   const { language } = useLanguage();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false); // Now useState is defined
