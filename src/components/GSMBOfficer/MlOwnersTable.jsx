@@ -126,7 +126,12 @@ const MlOwnersTable = () => {
       key: "action",
       render: (_, record) => (
         <div style={{ display: "flex", gap: "8px" }}>
-          <Link to={`/gsmb/add-new-license/${record.id}`}>
+          <Link
+            to={{
+              pathname: `/gsmb/add-new-license/${record.id}`,
+              state: { ownerId: record.id }, // Pass as state as well
+            }}
+          >
             <Button
               type="default"
               style={{ backgroundColor: "white", borderColor: "#d9d9d9" }}
