@@ -28,7 +28,7 @@ const ViewLicenseDetails = () => {
 
       if (trackerName === "ML") {
         customFields = [
-          { id: 8, name: "License Number", value: values.licenseNumber },
+          { id: 101, name: "Mining License Number", value: values.licenseNumber },
           { id: 2, name: "Owner Name", value: values.ownerName },
           { id: 3, name: "Mobile Number", value: values.mobile },
           { id: 5, name: "Capacity", value: values.capacity },
@@ -116,7 +116,7 @@ const ViewLicenseDetails = () => {
         } else if (trackerName === "TPL") {
           transformedData = {
             ...transformedData,
-            licenseNumber: issue.custom_fields.find((field) => field.name === "License Number")?.value || "",
+            licenseNumber: issue.custom_fields.find((field) => field.name === "Mining License Number")?.value || "",
             ownerName: issue.custom_fields.find((field) => field.name === "Owner Name")?.value || "",
             location: issue.custom_fields.find((field) => field.name === "Location")?.value || "",
             capacity: issue.custom_fields.find((field) => field.name === "Capacity")?.value || "",

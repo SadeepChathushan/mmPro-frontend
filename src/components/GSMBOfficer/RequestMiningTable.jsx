@@ -9,6 +9,7 @@ import {
   Row,
   Col,
   Spin,
+  Select,
   Typography,
   DatePicker,
   TimePicker,
@@ -19,6 +20,7 @@ import { notification } from "antd";
 
 const { Link } = Typography;
 const { TextArea } = Input;
+const { Option } = Select;
 
 const RequestMiningTable = () => {
   // --- State Variables ---
@@ -28,6 +30,25 @@ const RequestMiningTable = () => {
   const [currentRecord, setCurrentRecord] = useState(null);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [form] = Form.useForm();
+  const [statusFilter, setStatusFilter] = useState(null);
+  const [searchText, setSearchText] = useState("");
+
+  const statusOptions = [
+    { value: "Pending", label: "Pending" },
+    { value: "Physical document", label: "Physical Document" },
+    { value: "awaiting_scheduling", label: "Awaiting ME Scheduling" },
+    { value: "ME Approved", label: "ME Approved" },
+    { value: "Valid", label: "Valid" },
+    { value: "Rejected", label: "Rejected" },
+  ];
+
+  const filteredData = mlRequestData.filter((item) => {    
+    const matchesStatus =
+      !statusFilter ||
+      item.status === statusFilter;
+      
+    return matchesStatus;
+  });
 
   // New states for appointment scheduling
   const [isAppointmentModalVisible, setIsAppointmentModalVisible] =
@@ -348,8 +369,39 @@ const RequestMiningTable = () => {
   // --- Component Return ---
   return (
     <>
+    <div style={{ marginBottom: 16 }}>
+          <Row gutter={16} align="middle">
+            <Col>
+              <Select
+                placeholder="Filter by status"
+                value={statusFilter}
+                onChange={setStatusFilter}
+                style={{ width: 200 }}
+                allowClear
+              >
+                {statusOptions.map((option) => (
+                  <Option key={option.value} value={option.value}>
+                    {option.label}
+                  </Option>
+                ))}
+              </Select>
+            </Col>
+            
+            <Col>
+              <Button
+                type="default"
+                onClick={() => {
+                  setSearchText("");
+                  setStatusFilter(null);
+                }}
+              >
+                Reset Filters
+              </Button>
+            </Col>
+          </Row>
+        </div>
       <Table
-        dataSource={mlRequestData}
+        dataSource={filteredData}
         columns={columns}
         rowKey="id"
         pagination={{
