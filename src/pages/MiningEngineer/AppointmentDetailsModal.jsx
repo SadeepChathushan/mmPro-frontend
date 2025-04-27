@@ -1,109 +1,137 @@
 import React from 'react';
-import { Table, Space, Button, Popover, DatePicker } from 'antd';
-import { CalendarOutlined } from '@ant-design/icons';
-import StatusActions from './StatusActions';
-import moment from 'moment';
+import { Modal, Descriptions, Tabs, Divider, Space, Tag, Button } from 'antd';
+import { FilePdfOutlined, FileImageOutlined, EnvironmentOutlined } from '@ant-design/icons';
 
-const AppointmentsTable = ({ 
-  appointments, 
-  activeTab, 
-  onViewDetails, 
-  onShowApproval,
-  onHold,
-  onReject,
-  onDateChange
+const { TabPane } = Tabs;
+
+const AppointmentDetailsModal = ({ 
+  visible, 
+  onCancel, 
+  appointment 
 }) => {
-  const columns = [
-    {
-      title: 'ML Owner',
-      dataIndex: 'mlOwner',
-      key: 'mlOwner'
-    },
-    {
-      title: 'GSMB Officer',
-      dataIndex: 'gsmbOfficer',
-      key: 'gsmbOfficer'
-    },
-    {
-      title: 'Location',
-      dataIndex: 'location',
-      key: 'location'
-    },
-    {
-      title: 'Cube Count',
-      dataIndex: 'cubeCount',
-      key: 'cubeCount',
-      render: count => `${count} m³`
-    },
-    {
-      title: 'Date',
-      dataIndex: 'date',
-      key: 'date'
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (_, record) => (
-        <Button type="link" onClick={() => onViewDetails(record)}>
-          View Details
-        </Button>
-      )
-    }
-  ];
-
-  if (activeTab === 'pending') {
-    columns.splice(columns.length - 1, 0, {
-      title: 'Set Date',
-      key: 'setDate',
-      render: (_, record) => (
-        <Popover 
-          content={(
-            <Space>
-              <DatePicker 
-                defaultValue={record.date ? moment(record.date, 'YYYY-MM-DD') : null}
-                onChange={(date, dateString) => onDateChange(record.id, date, dateString)}
-                style={{ marginRight: 8 }}
-              />
-              <Button 
-                type="primary" 
-                onClick={() => onShowApproval(record.id)}
-              >
-                Confirm
-              </Button>
-            </Space>
-          )} 
-          title="Select Appointment Date"
-          trigger="click"
-        >
-          <Button icon={<CalendarOutlined />}>Set Date</Button>
-        </Popover>
-      )
-    });
-  }
-
-  if (activeTab === 'approved') {
-    columns.splice(columns.length - 1, 0, {
-      title: 'Actions',
-      key: 'statusActions',
-      render: (_, record) => (
-        <StatusActions 
-          record={record} 
-          onApprove={onShowApproval}
-          onHold={onHold}
-          onReject={onReject}
-        />
-      )
-    });
-  }
+  if (!appointment) return null;
 
   return (
-    <Table 
-      columns={columns} 
-      dataSource={appointments} 
-      rowKey="id"
-      pagination={{ pageSize: 5 }}
-    />
+    <Modal
+      title="Appointment Details"
+      visible={visible}
+      onCancel={onCancel}
+      footer={[
+        <Button key="close" onClick={onCancel}>
+          Close
+        </Button>
+      ]}
+      width={800}
+    >
+      <Tabs defaultActiveKey="1">
+        <TabPane tab="Basic Information" key="1">
+          <Descriptions bordered column={1}>
+            <Descriptions.Item label="ML Owner">{appointment.mlOwner}</Descriptions.Item>
+            <Descriptions.Item label="GSMB Officer">{appointment.gsmbOfficer}</Descriptions.Item>
+            <Descriptions.Item label="Location">{appointment.location}</Descriptions.Item>
+            <Descriptions.Item label="Cube Count">{appointment.cubeCount} m³</Descriptions.Item>
+            <Descriptions.Item label="Appointment Date">{appointment.date}</Descriptions.Item>
+            <Descriptions.Item label="Status">
+              <Tag color={appointment.status === 'pending' ? 'orange' : 'green'}>
+                {appointment.status.toUpperCase()}
+              </Tag>
+            </Descriptions.Item>
+          </Descriptions>
+        </TabPane>
+
+        <TabPane tab="License Details" key="2">
+          <Descriptions bordered column={1}>
+            <Descriptions.Item label="License Status">{appointment.licenseDetails.status}</Descriptions.Item>
+            <Descriptions.Item label="Exploration License No.">
+              {appointment.licenseDetails.explorationLicenseNo}
+            </Descriptions.Item>
+            <Descriptions.Item label="Land Name">{appointment.licenseDetails.landName}</Descriptions.Item>
+            <Descriptions.Item label="Land Owner">{appointment.licenseDetails.landOwner}</Descriptions.Item>
+            <Descriptions.Item label="Royalty">{appointment.licenseDetails.royalty}</Descriptions.Item>
+          </Descriptions>
+        </TabPane>
+
+        <TabPane tab="Location Details" key="3">
+          <Descriptions bordered column={1}>
+            <Descriptions.Item label="Village">{appointment.locationDetails.village}</Descriptions.Item>
+            <Descriptions.Item label="Grama Niladhari Division">
+              {appointment.locationDetails.gramaNiladhariDivision}
+            </Descriptions.Item>
+            <Descriptions.Item label="Divisional Secretary Division">
+              {appointment.locationDetails.divisionalSecretaryDivision}
+            </Descriptions.Item>
+            <Descriptions.Item label="District">{appointment.locationDetails.district}</Descriptions.Item>
+          </Descriptions>
+          <Divider />
+          <Button 
+            type="primary" 
+            icon={<EnvironmentOutlined />} 
+            href={appointment.documents.googleLocation}
+            target="_blank"
+          >
+            View on Google Maps
+          </Button>
+        </TabPane>
+
+        <TabPane tab="Capacity & Timeline" key="4">
+          <Descriptions bordered column={1}>
+            <Descriptions.Item label="Total Capacity">{appointment.capacity.total} m³</Descriptions.Item>
+            <Descriptions.Item label="Used Capacity">{appointment.capacity.used} m³</Descriptions.Item>
+            <Descriptions.Item label="Remaining Capacity">
+              {appointment.capacity.remaining} m³
+            </Descriptions.Item>
+            <Descriptions.Item label="Monthly Capacity">
+              {appointment.capacity.monthCapacity}
+            </Descriptions.Item>
+          </Descriptions>
+          <Divider />
+          <Descriptions bordered column={1}>
+            <Descriptions.Item label="Start Date">{appointment.timeline.startDate}</Descriptions.Item>
+            <Descriptions.Item label="Due Date">{appointment.timeline.dueDate}</Descriptions.Item>
+            <Descriptions.Item label="Status">
+              <Tag color={appointment.timeline.status.includes('late') ? 'red' : 'green'}>
+                {appointment.timeline.status}
+              </Tag>
+            </Descriptions.Item>
+          </Descriptions>
+        </TabPane>
+
+        <TabPane tab="Documents" key="5">
+          <Space direction="vertical" style={{ width: '100%' }}>
+            <Button 
+              icon={<FilePdfOutlined />} 
+              href={appointment.documents.restorationPlan}
+              target="_blank"
+            >
+              Restoration Plan
+            </Button>
+            <Button 
+              icon={<FilePdfOutlined />} 
+              href={appointment.documents.paymentReceipt}
+              target="_blank"
+            >
+              Payment Receipt
+            </Button>
+            <Button 
+              icon={<FileImageOutlined />} 
+              href={appointment.documents.deedAndSurvey}
+              target="_blank"
+            >
+              Deed & Survey Plans
+            </Button>
+          </Space>
+        </TabPane>
+
+        {appointment.approvalComments && (
+          <TabPane tab="Approval Comments" key="6">
+            <div style={{ padding: '16px', background: '#f0f0f0', borderRadius: '4px' }}>
+              {appointment.approvalComments}
+            </div>
+          </TabPane>
+        )}
+      </Tabs>
+    </Modal>
   );
 };
 
-export default AppointmentsTable;
+export default AppointmentDetailsModal;
