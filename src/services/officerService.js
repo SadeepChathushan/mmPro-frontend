@@ -289,7 +289,7 @@ const officerService = {
           }, {});
 
           return {
-            licenseNumber: customFields["License Number"] || "",
+            licenseNumber: customFields["Mining License Number"] || "",
             owner: customFields["Owner Name"] || "",
             location: customFields["Location"] || "",
             Destination: customFields["Destination"] || "",

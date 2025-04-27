@@ -24,19 +24,19 @@ const LicenseTable = ({ data, tracker, loading }) => {
   const [currentRecord, setCurrentRecord] = useState(null);
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
-  const [statusFilter, setStatusFilter] = useState(null);
+  // const [statusFilter, setStatusFilter] = useState(null);
 
   const [editableFields] = useState({
     mobile_number: true,
   });
 
-  const statusOptions = [
-    { value: "pending", label: "Pending" },
-    { value: "physical_document", label: "Physical Document" },
-    { value: "awaiting_scheduling", label: "Awaiting ME Scheduling" },
-    { value: "me_approved", label: "ME Approved" },
-    { value: "valid", label: "Valid" },
-  ];
+  // const statusOptions = [
+  //   { value: "pending", label: "Pending" },
+  //   { value: "physical_document", label: "Physical Document" },
+  //   { value: "awaiting_scheduling", label: "Awaiting ME Scheduling" },
+  //   { value: "me_approved", label: "ME Approved" },
+  //   { value: "valid", label: "Valid" },
+  // ];
 
   const handleViewClick = async (e, record) => {
     e.preventDefault();
@@ -149,21 +149,21 @@ const LicenseTable = ({ data, tracker, loading }) => {
     }
   };
 
-  const filteredData = data.filter((item) => {
-    const matchesSearch =
-      !searchText ||
-      Object.values(item).some(
-        (val) =>
-          val &&
-          val.toString().toLowerCase().includes(searchText.toLowerCase())
-      );
+  // const filteredData = data.filter((item) => {
+  //   const matchesSearch =
+  //     !searchText ||
+  //     Object.values(item).some(
+  //       (val) =>
+  //         val &&
+  //         val.toString().toLowerCase().includes(searchText.toLowerCase())
+  //     );
       
-    const matchesStatus =
-      !statusFilter ||
-      item.status === statusFilter;
+  //   const matchesStatus =
+  //     !statusFilter ||
+  //     item.status === statusFilter;
       
-    return matchesSearch && matchesStatus;
-  });
+  //   return matchesSearch && matchesStatus;
+  // });
 
   const renderAction = (record) => (
     <div style={{ display: "flex", gap: "8px" }}>
@@ -233,7 +233,7 @@ const LicenseTable = ({ data, tracker, loading }) => {
     TPL: [
       { title: "License No.", dataIndex: "mining_license_number", width: 120 },
       { title: "Mining Owner", dataIndex: "author", ellipsis: true },
-      { title: "Driver Name", dataIndex: "lorry_driver_name", width: 150 },
+      // { title: "Driver Name", dataIndex: "lorry_driver_name", width: 150 },
       { title: "Lorry No.", dataIndex: "lorry_number", width: 120 },
       { title: "Driver Contact", dataIndex: "driver_contact", width: 140 },
       { title: "Cubes", dataIndex: "cubes", width: 80 },
@@ -360,7 +360,7 @@ const LicenseTable = ({ data, tracker, loading }) => {
 
   return (
     <>
-          {tracker === "ML" && (
+          {/* {tracker === "ML" && (
         <div style={{ marginBottom: 16 }}>
           <Row gutter={16} align="middle">
             <Col>
@@ -391,10 +391,10 @@ const LicenseTable = ({ data, tracker, loading }) => {
             </Col>
           </Row>
         </div>
-      )}
+      )} */}
 
       <Table
-        dataSource={filteredData}
+        dataSource={data}
         columns={columns[tracker]}
         rowKey="id"
         pagination={{
