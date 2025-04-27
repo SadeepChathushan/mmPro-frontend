@@ -167,3 +167,18 @@ export const fetchUnActiveUsers = async () => {
   }
 }; 
 
+export const activateOfficer = async (id, updateData) => {
+  try {
+    const response = await axiosInstance.put(`/gsmb-management/active-gsmb-officers/${id}`, updateData);
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Error activating officer:", error);
+    return {
+      success: false,
+      error: error.response?.data?.error || "Failed to update officer status"
+    };
+  }
+};
