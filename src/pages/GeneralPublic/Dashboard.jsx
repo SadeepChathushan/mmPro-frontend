@@ -186,7 +186,6 @@ const Dashboard = () => {
 
     try {
       const formData = new FormData();
-      formData.append('vehicleNumber', input);
       formData.append('description', complaintData.description);
       formData.append('location', complaintData.location);
       if (complaintData.evidence) {
@@ -267,7 +266,7 @@ const Dashboard = () => {
                  "புகாரை சமர்ப்பிக்கவும்"}
               </h3>
               
-              <div className="form-group">
+              {/* <div className="form-group">
                 <label>
                   {language === "en" ? "Vehicle Number" :
                    language === "si" ? "වාහන අංකය" :
@@ -279,7 +278,7 @@ const Dashboard = () => {
                   readOnly 
                   className="read-only-input"
                 />
-              </div>
+              </div> */}
 
               <div className="form-group">
                 <label>
@@ -355,7 +354,7 @@ const Dashboard = () => {
           </div>
         )}
         
-        <button
+        {/* <button
           className="complaint-button"
           onMouseOver={(e) => (e.target.style.backgroundColor = "#005a5a")}
           onMouseOut={(e) => (e.target.style.backgroundColor = "#008080")}
@@ -366,7 +365,7 @@ const Dashboard = () => {
             : language === "si"
             ? "පැමිණිල්ලක් ඉදිරිපත් කරන්න"
             : "புகாரை சமர்ப்பிக்கவும்"}
-        </button>
+        </button> */}
         </div>
       </main>
 
