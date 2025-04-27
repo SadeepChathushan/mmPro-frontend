@@ -38,7 +38,8 @@ const MLOwnerHomePage = () => {
       statusApprovedByEngineer: "Approved by Mining Engineer",
       statusReadyForCollection: "Please collect your mining license",
       noPendingRequests: "No pending license requests",
-      close: "Close"
+      close: "Close",
+      royalty: "Royalty"
     },
     si: {
       title: " කැණීමේ බලපත්‍ර",
@@ -154,7 +155,8 @@ const MLOwnerHomePage = () => {
           startDate: license["Start Date"],
           dueDate: license["Due Date"],
           remainingCubes: license["Remaining Cubes"],
-          status: license["Status"]
+          status: license["Status"],
+          royalty: license["Royalty"],
         }));
   
         console.log("Mapped Data:", mappedData);
@@ -328,6 +330,7 @@ const MLOwnerHomePage = () => {
                       <p><strong>{currentTranslations.startDate}:</strong> {record.startDate}</p>
                       <p><strong>{currentTranslations.dueDate}:</strong> {record.dueDate}</p>
                       <p><strong>{currentTranslations.remainingCubes}:</strong> {record.remainingCubes} cubes</p>
+                      <p><strong>{currentTranslations.royalty}:</strong> RS. {record.royalty} </p>
                       <p>
                         <strong>{currentTranslations.status}:</strong>
                         <span className={new Date() <= new Date(record.dueDate) ? "valid-status" : "expired-status"}>
