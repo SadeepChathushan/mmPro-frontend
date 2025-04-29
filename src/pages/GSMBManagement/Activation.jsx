@@ -84,7 +84,9 @@ const Activation = () => {
                   : officer
               )
             );
-            message.success(`Officer ${actionText}d successfully`);
+            message.success(`Officer ${actionText}d successfully`, 1.5, () => {
+              window.location.reload();
+            });
             console.log(`Successfully ${actionText}d officer ID:`, id);
           } else {
             // Handle API error response
