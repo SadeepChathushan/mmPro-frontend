@@ -123,7 +123,7 @@ export const checkVehicleNumber = async (lorryNumber) => {
       expires: response.data.license_details.ValidUntil,
       start: response.data.license_details["License Start Date"],
       capacity: response.data.license_details.Cubes,
-      dueDate: response.data.license_details["License End Date"],
+      dueDate: response.data.license_details["due_date"],
       loadNumber: response.data.license_details.LicenseNumber,
       destination: response.data.license_details.Destination,
       owner: response.data.license_details.owner,

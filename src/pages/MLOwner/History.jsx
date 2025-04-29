@@ -141,7 +141,7 @@ const History = () => {
         ? "Max Clicks Reached"
         : language === "si"
         ? "උපරිම ක්ලික් ගණන අවසන්"
-        : "அதிகபட்ச கிளிக்குகள்"
+        : "அதிகபட்ச கிளிக்குகளை எட்டியது"
       : language === "en"
       ? "Print Receipt"
       : language === "si"
@@ -159,7 +159,7 @@ const History = () => {
       lorryDriverContact: {
         en: "Driver Contact",
         si: "රියදුරුගේ දුරකථනය",
-        ta: "ஓட்டுநர் தொடர்பு",
+        ta: "சாரதி தொடர்பு",
       },
       lorryNumber: {
         en: "Lorry Number",
@@ -179,7 +179,7 @@ const History = () => {
       startDate: {
         en: "Create Date",
         si: "යවන ලද දිනය",
-        ta: "அனுப்பப்பட்ட தேதி",
+        ta: "அனுப்பப்பட்ட திகதி",
       },
       status: {
         en: "Status",
@@ -216,7 +216,7 @@ const History = () => {
                 ? "Start Date"
                 : language === "si"
                 ? "ආරම්භක දිනය"
-                : "தொடக்க தேதி"
+                : "தொடக்க திகதி"
             }
             className="history-datepicker"
           />
@@ -231,7 +231,7 @@ const History = () => {
                 ? "End Date"
                 : language === "si"
                 ? "අවසන් දිනය"
-                : "முடிவு தேதி"
+                : "முடிவு திகதி"
             }
             className="history-datepicker"
           />
@@ -336,7 +336,7 @@ const History = () => {
             ? "Back to Home"
             : language === "si"
             ? "ආපසු"
-            : "வீட்டிற்குத் திரும்பு"}
+            : "முகப்பிற்கு திரும்பு"}
         </Button>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, Progress, Col, Typography, Spin } from "antd";
 import { fetchTopMiningHolders } from "../../services/management"; // Import the API function
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const { Title } = Typography;
 
@@ -8,6 +9,8 @@ const TopMiningLicenseHolders = ({ getDynamicColor }) => {
   const [topMiningHolders, setTopMiningHolders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { language } = useLanguage();
+  
 
   useEffect(() => {
     const getMiningData = async () => {
@@ -81,7 +84,11 @@ const TopMiningLicenseHolders = ({ getDynamicColor }) => {
         }}
       >
         <Title level={5} style={{ color: "#fff", marginBottom: "20px" }}>
-          Top Mining License Holders (by Capacity)
+        {language === "en" 
+  ? "Top Mining License Holders (by Capacity)" 
+  : language === "si" 
+  ? "" 
+  : "உயர் சுரங்க உரிமம் வைத்திருப்பவர்கள் (கொள்ளளவு மூலம்)"}
         </Title>
         {topMiningHolders.length === 0 ? (
           <p style={{ color: "#fff" }}>No data available</p>

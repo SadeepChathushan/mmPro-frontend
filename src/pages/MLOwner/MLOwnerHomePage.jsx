@@ -50,6 +50,7 @@ const MLOwnerHomePage = () => {
       statusReadyForCollection: "Please collect your mining license",
       noPendingRequests: "No pending license requests",
       close: "Close",
+      royaltyAmount: "Royalty Amount",
     },
     si: {
       title: " කැණීමේ බලපත්‍ර",
@@ -79,15 +80,14 @@ const MLOwnerHomePage = () => {
       close: "වසන්න",
     },
     ta: {
-      title: "சுரங்க அனுமதிகள் மேலோட்டம்",
-      subtitle:
-        "சுரங்க அனுமதி உரிமையாளராக, நீங்கள் தற்போதைய செயல்படும் அனுமதிகளை இங்கு காணலாம்.",
-      searchPlaceholder: "லائسன்ஸ் எண் தேடல்",
-      viewLicensesButton: "லையசன்ஸ் பார்வை",
+      title: "சுரங்க அனுமதிகள் கண்ணோட்டம்",
+      subtitle: "சுரங்க அனுமதி உரிமையாளராக, நீங்கள் தற்போதைய செயல்படும் அனுமதிகளை இங்கு காணலாம்.",
+      searchPlaceholder: "உரிமம எண் தேடல்",
+      viewLicensesButton: "அனைத்து உரிமங்களையும் பார்க்க",
       noDataMessage: "தரவு இல்லை",
       owner: "உரிமையாளர்",
       location: "இடம்",
-      startDate: "தொடக்க தேதி",
+      startDate: "தொடக்க திகதி",
       dueDate: "காலக்கெடு",
       remainingCubes: "மீதமுள்ள கன சதுரங்கள்",
       status: "நிலை",
@@ -96,10 +96,10 @@ const MLOwnerHomePage = () => {
       dispatchLoad: "சரக்கு அனுப்பு",
       history: "வரலாறு",
       mlRequest: "சுரங்க உரிமம் கோருக",
-      requestedLicensesTitle: "கோரப்பட்ட உரிமைகளின் நிலை",
-      requestedLicensesButton: "கோரப்பட்ட உரிமைகளை காண்க",
+      requestedLicensesTitle: "கோரப்பட்ட உரிமங்களின் நிலை",
+      requestedLicensesButton: "கோரப்பட்ட உரிமங்களை காண்க",
       statusApprovedByGSMB: "GSMB அதிகாரியால் அங்கீகரிக்கப்பட்டது",
-      statusAppointmentFixed: "நியமன தேதி நிர்ணயிக்கப்பட்டது",
+      statusAppointmentFixed: "நியமன திகதி நிர்ணயிக்கப்பட்டது",
       statusApprovedByEngineer: "சுரங்க பொறியாளரால் அங்கீகரிக்கப்பட்டது",
       statusReadyForCollection: "உங்கள் சுரங்க உரிமத்தைப் பெறவும்",
       noPendingRequests: "நிலுவையில் உள்ள உரிமை கோரிக்கைகள் இல்லை",
@@ -169,6 +169,7 @@ const MLOwnerHomePage = () => {
           dueDate: license["Due Date"],
           remainingCubes: license["Remaining Cubes"],
           status: license["Status"],
+          royalty: license["Royalty"],
         }));
 
         console.log("Mapped Data:", mappedData);
@@ -368,8 +369,12 @@ const MLOwnerHomePage = () => {
                         {record.dueDate}
                       </p>
                       <p>
-                        <strong>{currentTranslations.remainingCubes}:</strong>{" "}
+                        <strong>{currentTranslations.remainingCubes}:</strong>{" "} 
                         {record.remainingCubes} cubes
+                      </p>
+                      <p>
+                        <strong>{currentTranslations.royaltyAmount}:</strong>{" "}
+                        {record.royalty}
                       </p>
                       <p>
                         <strong>{currentTranslations.status}:</strong>
