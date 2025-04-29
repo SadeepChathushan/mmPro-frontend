@@ -515,5 +515,41 @@ export const physicalMeeting = async (payload) => {
   }
 };
 
+export const physicalMeetingStatus = async (payload) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    };
+
+    console.log("Sending payload:", payload);
+
+    const response = await axios.post(
+      `${BASE_URL}/gsmb-officer/approve-physical-document`,
+      payload,
+      config
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Request failed");
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("API Error Details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
+    throw error;
+  }
+};
 
 export default officerService;

@@ -73,7 +73,7 @@
   right: 12px;
 }
 
-.meeting-status-modal .ant-modal-close-x {
+.ant-modal-close-x {
   width: 32px;
   height: 32px;
   line-height: 32px;
@@ -83,7 +83,7 @@
   transition: all 0.3s;
 }
 
-.meeting-status-modal .ant-modal-close-x:hover {
+.ant-modal-close-x:hover {
   background-color: #ff4d4f;
   color: white;
   transform: rotate(90deg);

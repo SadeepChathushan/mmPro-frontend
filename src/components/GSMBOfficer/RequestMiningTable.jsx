@@ -15,9 +15,10 @@ import {
 } from "antd";
 import { getMlRequest, physicalMeeting } from "../../services/officerService";
 import { notification } from "antd";
-import ScheduleAppointmentModal from '../GSMBOfficer/ML Req/ScheduleAppointmentModal';
-import PhysicalMeetingModal from '../GSMBOfficer/ML Req/PhysicalMeetingModal';
-import ValidateModal from '../GSMBOfficer/ML Req/ValidateModal';
+import ScheduleAppointmentModal from "../GSMBOfficer/ML Req/ScheduleAppointmentModal";
+import PhysicalMeetingModal from "../GSMBOfficer/ML Req/PhysicalMeetingModal";
+import ValidateModal from "../GSMBOfficer/ML Req/ValidateModal";
+import ConfirmationModal from "../GSMBOfficer/ML Req/ConfirmationModal";
 
 const { Link } = Typography;
 const { TextArea } = Input;
@@ -34,6 +35,24 @@ const RequestMiningTable = () => {
   const [statusFilter, setStatusFilter] = useState(null);
   const [searchText, setSearchText] = useState("");
 
+  // States for modals
+  const [isAppointmentModalVisible, setIsAppointmentModalVisible] =
+    useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [isPhysicalMeetingModalVisible, setIsPhysicalMeetingModalVisible] =
+    useState(false);
+  const [isValidateModalVisible, setIsValidateModalVisible] = useState(false);
+
+  // Forms
+  const [appointmentForm] = Form.useForm();
+  const [physicalMeetingForm] = Form.useForm();
+  const [validateForm] = Form.useForm();
+
+  // Loading states
+  const [appointmentLoading, setAppointmentLoading] = useState(false);
+  const [physicalMeetingLoading, setPhysicalMeetingLoading] = useState(false);
+  const [validateLoading, setValidateLoading] = useState(false);
+
   const statusOptions = [
     { value: "Pending", label: "Pending" },
     { value: "Physical document", label: "Physical Document" },
@@ -42,27 +61,6 @@ const RequestMiningTable = () => {
     { value: "Valid", label: "Valid" },
     { value: "Rejected", label: "Rejected" },
   ];
-
-  const filteredData = mlRequestData.filter((item) => {    
-    const matchesStatus =
-      !statusFilter ||
-      item.status === statusFilter;
-      
-    return matchesStatus;
-  });
-
-  // States for appointment scheduling
-const [isAppointmentModalVisible, setIsAppointmentModalVisible] = useState(false);
-const [appointmentForm] = Form.useForm();
-const [appointmentLoading, setAppointmentLoading] = useState(false);
-  // States for physical meeting Schedule
-const [isPhysicalMeetingModalVisible, setIsPhysicalMeetingModalVisible] = useState(false);
-const [physicalMeetingForm] = Form.useForm();
-const [physicalMeetingLoading, setPhysicalMeetingLoading] = useState(false);
-// States for validation
-const [isValidateModalVisible, setIsValidateModalVisible] = useState(false);
-const [validateForm] = Form.useForm();
-const [validateLoading, setValidateLoading] = useState(false);
 
   const [editableFields] = useState({
     mobile_number: true,
@@ -104,7 +102,33 @@ const [validateLoading, setValidateLoading] = useState(false);
 
   const handleUpdatePhysicalMeetingStatus = (record) => {
     setCurrentRecord(record);
+    setShowConfirmationModal(true);
+  };
+
+  const handleProceedToApprove = () => {
+    setShowConfirmationModal(false);
     setIsPhysicalMeetingModalVisible(true);
+  };
+
+  const handleQuickReject = async () => {
+    try {
+      setPhysicalMeetingLoading(true);
+
+      // Call your API to reject
+      // await rejectPhysicalMeeting(currentRecord.id);
+      console.log("Quick rejecting:", currentRecord.id);
+
+      message.success("Physical meeting rejected");
+      setShowConfirmationModal(false);
+
+      // Refresh data
+      // await fetchMlRequestData();
+    } catch (error) {
+      console.error("Quick rejection error:", error);
+      message.error("Failed to reject physical meeting");
+    } finally {
+      setPhysicalMeetingLoading(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -126,7 +150,7 @@ const [validateLoading, setValidateLoading] = useState(false);
         message: "Success",
         description: "Appointment scheduled successfully!",
         duration: 2, // Show for 2 seconds
-        onClose: () => window.location.reload()
+        onClose: () => window.location.reload(),
       });
 
       setIsAppointmentModalVisible(false);
@@ -154,7 +178,7 @@ const [validateLoading, setValidateLoading] = useState(false);
         key: "updateStatus",
         duration: 0,
       });
-  
+
       const payload = {};
       let hasChanges = false;
       Object.keys(editableFields).forEach((key) => {
@@ -163,7 +187,7 @@ const [validateLoading, setValidateLoading] = useState(false);
           hasChanges = true;
         }
       });
-  
+
       if (!hasChanges) {
         message.info({
           content: "No changes detected.",
@@ -174,24 +198,24 @@ const [validateLoading, setValidateLoading] = useState(false);
         setUpdateLoading(false);
         return;
       }
-  
+
       console.log("Update Payload:", payload);
       // Here you would typically call your API to update the record
       // For example: await updateMlRequest(currentRecord.id, payload);
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-  
+
       message.success({
         content: "Details updated successfully!",
         key: "updateStatus",
         duration: 3,
       });
-  
+
       setMlRequestData((prevData) =>
         prevData.map((item) =>
           item.id === currentRecord.id ? { ...item, ...payload } : item
         )
       );
-  
+
       setIsModalVisible(false);
     } catch (error) {
       console.error("Update error:", error);
@@ -207,19 +231,179 @@ const [validateLoading, setValidateLoading] = useState(false);
     }
   };
 
-  // --- Render Functions ---
+  const handleValidateLicense = (record) => {
+    setCurrentRecord(record);
+    validateForm.resetFields();
+    setIsValidateModalVisible(true);
+  };
+
+  const handleApprovePhysicalMeeting = async (values) => {
+    try {
+      setPhysicalMeetingLoading(true);
+
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append("id", currentRecord.id);
+      formData.append("receipt", values.receipt[0].originFileObj);
+      formData.append("comments", values.comments);
+      formData.append("status", "approved");
+
+      // Call your API here
+      // Example: await updatePhysicalMeetingStatus(formData);
+      console.log("Approval payload:", {
+        id: currentRecord.id,
+        receipt: values.receipt[0].originFileObj.name,
+        comments: values.comments,
+      });
+
+      message.success("Physical meeting approved successfully");
+      setIsPhysicalMeetingModalVisible(false);
+
+      // Refresh the table data
+      // await fetchMlRequestData();
+    } catch (error) {
+      console.error("Approval error:", error);
+      message.error(
+        error.response?.data?.message || "Failed to approve physical meeting"
+      );
+    } finally {
+      setPhysicalMeetingLoading(false);
+    }
+  };
+
+  const handleRejectPhysicalMeeting = async (values) => {
+    try {
+      setPhysicalMeetingLoading(true);
+
+      const formData = new FormData();
+      formData.append("id", currentRecord.id);
+      if (values.receipt && values.receipt[0]) {
+        formData.append("receipt", values.receipt[0].originFileObj);
+      }
+      formData.append("comments", values.comments);
+      formData.append("status", "rejected");
+
+      // Call your API here
+      // Example: await updatePhysicalMeetingStatus(formData);
+      console.log("Rejection payload:", {
+        id: currentRecord.id,
+        receipt: values.receipt?.[0]?.originFileObj?.name,
+        comments: values.comments,
+      });
+
+      message.success("Physical meeting rejected");
+      setIsPhysicalMeetingModalVisible(false);
+
+      // Refresh the table data
+      // await fetchMlRequestData();
+    } catch (error) {
+      console.error("Rejection error:", error);
+      message.error(
+        error.response?.data?.message || "Failed to reject physical meeting"
+      );
+    } finally {
+      setPhysicalMeetingLoading(false);
+    }
+  };
+
+  const handleValidateLicenseSubmit = async (values) => {
+    try {
+      setValidateLoading(true);
+
+      // Prepare payload for validation
+      const payload = {
+        id: currentRecord.id,
+        comments: values.comments,
+        status: "valid", // or whatever status indicates validation
+      };
+
+      // Call your API here
+      // Example: await validateLicense(payload);
+      console.log("Validation payload:", payload);
+
+      message.success("License validated successfully");
+      setIsValidateModalVisible(false);
+
+      // Refresh the table data
+      // await fetchMlRequestData();
+    } catch (error) {
+      console.error("Validation error:", error);
+      message.error(
+        error.response?.data?.message || "Failed to validate license"
+      );
+    } finally {
+      setValidateLoading(false);
+    }
+  };
+
+  const handleRejectLicense = async (values) => {
+    try {
+      setValidateLoading(true);
+
+      const payload = {
+        id: currentRecord.id,
+        comments: values.comments,
+        status: "rejected",
+      };
+
+      // Call your API here
+      // Example: await rejectLicense(payload);
+      console.log("Rejection payload:", payload);
+
+      message.success("License rejected");
+      setIsValidateModalVisible(false);
+
+      // Refresh the table data
+      // await fetchMlRequestData();
+    } catch (error) {
+      console.error("Rejection error:", error);
+      message.error(
+        error.response?.data?.message || "Failed to reject license"
+      );
+    } finally {
+      setValidateLoading(false);
+    }
+  };
+
+  const renderStatus = (status) => {
+    if (!status) {
+      return <Tag color="default">Unknown</Tag>;
+    }
+
+    const lowerStatus = status.toLowerCase();
+    const statusColors = {
+      pending: "orange",
+      rejected: "red",
+      "physical document": "blue",
+      valid: "green",
+      "me approved": "green",
+      "awaiting me scheduling": "yellow",
+      "me appointment scheduled": "yellow",
+      hold: "yellow",
+    };
+
+    const color = statusColors[lowerStatus] || "default";
+
+    return (
+      <Tag color={color} style={{ textTransform: "capitalize" }}>
+        {status}
+      </Tag>
+    );
+  };
+
   const renderAction = (_, record) => {
     const restrictedStatuses = [
       "Awaiting ME Scheduling",
       "ME Appointment Scheduled",
       "Hold",
-      "Rejected"
+      "Rejected",
     ];
-    
+
     const isRestrictedStatus = restrictedStatuses.includes(record.status);
     const isMEApproved = record.status === "ME Approved";
-    const isPhysicalDocument = record.status?.toLowerCase() === "physical document";
-    
+    const isPhysicalDocument =
+      record.status?.toLowerCase() === "physical document";
+
     return (
       <div style={{ display: "flex", gap: "8px" }}>
         <Button
@@ -230,29 +414,34 @@ const [validateLoading, setValidateLoading] = useState(false);
         >
           View
         </Button>
-        
+
         {isMEApproved ? (
           <Button
             type="primary"
             size="small"
             icon={<span>✅</span>}
             onClick={() => handleValidateLicense(record)}
-            style={{ backgroundColor: '#ffffff', borderColor: '#52c41a', color:'#52c41a'}}
+            style={{
+              backgroundColor: "#ffffff",
+              borderColor: "#52c41a",
+              color: "#52c41a",
+            }}
           >
             Validate the license
           </Button>
-        ) : !isRestrictedStatus && (
-          isPhysicalDocument ? (
+        ) : (
+          !isRestrictedStatus &&
+          (isPhysicalDocument ? (
             <Button
               type="default"
               size="small"
               icon={<span>📝</span>}
               onClick={() => handleUpdatePhysicalMeetingStatus(record)}
-              style={{ backgroundColor: '#f0f0f0', borderColor: '#d9d9d9' }}
+              style={{ backgroundColor: "#f0f0f0", borderColor: "#d9d9d9" }}
             >
               Physical Meeting Status
             </Button>
-          ) : (          
+          ) : (
             <Button
               type="default"
               size="small"
@@ -261,164 +450,12 @@ const [validateLoading, setValidateLoading] = useState(false);
             >
               Schedule
             </Button>
-          )
+          ))
         )}
       </div>
     );
   };
 
-  const handleValidateLicense = (record) => {
-    setCurrentRecord(record);
-    validateForm.resetFields();
-    setIsValidateModalVisible(true);
-  };
-
-  const handleApprovePhysicalMeeting = async (values) => {
-    try {
-      setPhysicalMeetingLoading(true);
-      
-      // Create FormData for file upload
-      const formData = new FormData();
-      formData.append('id', currentRecord.id);
-      formData.append('receipt', values.receipt[0].originFileObj);
-      formData.append('comments', values.comments);
-      formData.append('status', 'approved');
-  
-      // Call your API here
-      // Example: await updatePhysicalMeetingStatus(formData);
-      console.log('Approval payload:', {
-        id: currentRecord.id,
-        receipt: values.receipt[0].originFileObj.name,
-        comments: values.comments,
-      });
-  
-      message.success('Physical meeting approved successfully');
-      setIsPhysicalMeetingModalVisible(false);
-      
-      // Refresh the table data
-      // await fetchMlRequestData();
-    } catch (error) {
-      console.error('Approval error:', error);
-      message.error(error.response?.data?.message || 'Failed to approve physical meeting');
-    } finally {
-      setPhysicalMeetingLoading(false);
-    }
-  };
-  
-  const handleRejectPhysicalMeeting = async (values) => {
-    try {
-      setPhysicalMeetingLoading(true);
-      
-      const formData = new FormData();
-      formData.append('id', currentRecord.id);
-      if (values.receipt && values.receipt[0]) {
-        formData.append('receipt', values.receipt[0].originFileObj);
-      }
-      formData.append('comments', values.comments);
-      formData.append('status', 'rejected');
-  
-      // Call your API here
-      // Example: await updatePhysicalMeetingStatus(formData);
-      console.log('Rejection payload:', {
-        id: currentRecord.id,
-        receipt: values.receipt?.[0]?.originFileObj?.name,
-        comments: values.comments,
-      });
-  
-      message.success('Physical meeting rejected');
-      setIsPhysicalMeetingModalVisible(false);
-      
-      // Refresh the table data
-      // await fetchMlRequestData();
-    } catch (error) {
-      console.error('Rejection error:', error);
-      message.error(error.response?.data?.message || 'Failed to reject physical meeting');
-    } finally {
-      setPhysicalMeetingLoading(false);
-    }
-  };
-
-  const handleValidateLicenseSubmit = async (values) => {
-    try {
-      setValidateLoading(true);
-      
-      // Prepare payload for validation
-      const payload = {
-        id: currentRecord.id,
-        comments: values.comments,
-        status: 'valid' // or whatever status indicates validation
-      };
-  
-      // Call your API here
-      // Example: await validateLicense(payload);
-      console.log('Validation payload:', payload);
-  
-      message.success('License validated successfully');
-      setIsValidateModalVisible(false);
-      
-      // Refresh the table data
-      // await fetchMlRequestData();
-    } catch (error) {
-      console.error('Validation error:', error);
-      message.error(error.response?.data?.message || 'Failed to validate license');
-    } finally {
-      setValidateLoading(false);
-    }
-  };
-  
-  const handleRejectLicense = async (values) => {
-    try {
-      setValidateLoading(true);
-      
-      const payload = {
-        id: currentRecord.id,
-        comments: values.comments,
-        status: 'rejected'
-      };
-  
-      // Call your API here
-      // Example: await rejectLicense(payload);
-      console.log('Rejection payload:', payload);
-  
-      message.success('License rejected');
-      setIsValidateModalVisible(false);
-      
-      // Refresh the table data
-      // await fetchMlRequestData();
-    } catch (error) {
-      console.error('Rejection error:', error);
-      message.error(error.response?.data?.message || 'Failed to reject license');
-    } finally {
-      setValidateLoading(false);
-    }
-  };
-
-  const renderStatus = (status) => {
-    if (!status) {
-      return <Tag color="default">Unknown</Tag>;
-    }
-  
-    const lowerStatus = status.toLowerCase();
-    const statusColors = {
-      'pending': 'orange',
-      'rejected': 'red',
-      'physical document': 'blue',
-      'valid': 'green',
-      'me approved': 'green',
-      'awaiting me scheduling': 'yellow',
-      'me appointment scheduled': 'yellow',
-      'hold': 'yellow',
-    };
-  
-    const color = statusColors[lowerStatus] || 'default';
-  
-    return (
-      <Tag color={color} style={{ textTransform: 'capitalize' }}>
-        {status}
-      </Tag>
-    );
-  };
-  
   const columns = [
     { title: "ID", dataIndex: "id", key: "id", width: 80, fixed: "left" },
     {
@@ -455,12 +492,12 @@ const [validateLoading, setValidateLoading] = useState(false);
       width: 120,
       render: (text) => (text ? text.split("T")[0] : "-"),
     },
-    { 
-      title: "Status", 
-      dataIndex: "status", 
-      key: "status", 
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
       width: 100,
-      render: renderStatus 
+      render: renderStatus,
     },
     {
       title: "Action",
@@ -499,7 +536,6 @@ const [validateLoading, setValidateLoading] = useState(false);
     "payment_receipt",
     "google_location",
   ];
-
 
   const renderModalContent = () => {
     if (!currentRecord) return <Spin tip="Loading details..." />;
@@ -582,41 +618,44 @@ const [validateLoading, setValidateLoading] = useState(false);
   };
 
   // --- Component Return ---
- return (
+  return (
     <>
-    <div style={{ marginBottom: 16 }}>
-          <Row gutter={16} align="middle">
-            <Col>
-              <Select
-                placeholder="Filter by status"
-                value={statusFilter}
-                onChange={setStatusFilter}
-                style={{ width: 200 }}
-                allowClear
-              >
-                {statusOptions.map((option) => (
-                  <Option key={option.value} value={option.value}>
-                    {option.label}
-                  </Option>
-                ))}
-              </Select>
-            </Col>
-            
-            <Col>
-              <Button
-                type="default"
-                onClick={() => {
-                  setSearchText("");
-                  setStatusFilter(null);
-                }}
-              >
-                Reset Filters
-              </Button>
-            </Col>
-          </Row>
-        </div>
+      <div style={{ marginBottom: 16 }}>
+        <Row gutter={16} align="middle">
+          <Col>
+            <Select
+              placeholder="Filter by status"
+              value={statusFilter}
+              onChange={setStatusFilter}
+              style={{ width: 200 }}
+              allowClear
+            >
+              {statusOptions.map((option) => (
+                <Option key={option.value} value={option.value}>
+                  {option.label}
+                </Option>
+              ))}
+            </Select>
+          </Col>
+
+          <Col>
+            <Button
+              type="default"
+              onClick={() => {
+                setSearchText("");
+                setStatusFilter(null);
+              }}
+            >
+              Reset Filters
+            </Button>
+          </Col>
+        </Row>
+      </div>
+
       <Table
-        dataSource={mlRequestData.filter(item => item.status?.toLowerCase() !== "valid")}
+        dataSource={mlRequestData.filter(
+          (item) => item.status?.toLowerCase() !== "valid"
+        )}
         columns={columns}
         rowKey="id"
         pagination={{
@@ -633,7 +672,7 @@ const [validateLoading, setValidateLoading] = useState(false);
         loading={loading}
       />
 
-      {/* Details Modal */}
+      {/* All your modals */}
       <Modal
         title={
           <div
@@ -683,41 +722,46 @@ const [validateLoading, setValidateLoading] = useState(false);
         {renderModalContent()}
       </Modal>
 
-      {/* Appointment Scheduling Modal */}
-        <ScheduleAppointmentModal
-         visible={isAppointmentModalVisible}
-         onCancel={() => setIsAppointmentModalVisible(false)}
-         onSubmit={handleSubmit}
-         loading={appointmentLoading}
-         form={appointmentForm}
-        />
+      <ScheduleAppointmentModal
+        visible={isAppointmentModalVisible}
+        onCancel={() => setIsAppointmentModalVisible(false)}
+        onSubmit={handleSubmit}
+        loading={appointmentLoading}
+        form={appointmentForm}
+      />
 
-      {/* physical meting update Modal */}
+      <ConfirmationModal
+        visible={showConfirmationModal}
+        onCancel={() => setShowConfirmationModal(false)}
+        onApprove={handleProceedToApprove}
+        onReject={handleQuickReject}
+        loading={physicalMeetingLoading}
+      />
+
       <PhysicalMeetingModal
-      visible={isPhysicalMeetingModalVisible}
-      onCancel={() => {
-        setIsPhysicalMeetingModalVisible(false);
-        physicalMeetingForm.resetFields();
-      }}
-      onApprove={handleApprovePhysicalMeeting}
-      onReject={handleRejectPhysicalMeeting}
-      loading={physicalMeetingLoading}
-      form={physicalMeetingForm}
-    />
-
-    {/* Add this with your other modals */}
-<ValidateModal
-  visible={isValidateModalVisible}
-  onCancel={() => {
-    setIsValidateModalVisible(false);
-    validateForm.resetFields();
-  }}
-  onValidate={handleValidateLicenseSubmit}
-  onReject={handleRejectLicense}
-  loading={validateLoading}
-  form={validateForm}
-/>
-    
+        visible={isPhysicalMeetingModalVisible}
+        onCancel={() => {
+          setIsPhysicalMeetingModalVisible(false);
+          physicalMeetingForm.resetFields();
+        }}
+        onApprove={handleApprovePhysicalMeeting}
+        onReject={handleRejectPhysicalMeeting}
+        loading={physicalMeetingLoading}
+        form={physicalMeetingForm}
+        recordId={currentRecord?.id} // Pass the ID here
+      />
+      
+      <ValidateModal
+        visible={isValidateModalVisible}
+        onCancel={() => {
+          setIsValidateModalVisible(false);
+          validateForm.resetFields();
+        }}
+        onValidate={handleValidateLicenseSubmit}
+        onReject={handleRejectLicense}
+        loading={validateLoading}
+        form={validateForm}
+      />
     </>
   );
 };
