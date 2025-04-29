@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   Button,
@@ -11,11 +11,28 @@ import {
   Col,
   Select,
   Space,
+  Typography,
+  Tooltip,
+  Progress
 } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import { SearchOutlined } from "@ant-design/icons";
+import { 
+  SearchOutlined, 
+  FileWordOutlined, 
+  FilePdfOutlined, 
+  FileExcelOutlined, 
+  FileImageOutlined,
+  FileZipOutlined,
+  FileUnknownOutlined,
+  EyeOutlined,
+  DownloadOutlined,
+  ExclamationCircleOutlined
+} from "@ant-design/icons";
+import officerService from "../../services/officerService";
+import dayjs from "dayjs";
 
 const { Option } = Select;
+const { Text } = Typography;
 
 const LicenseTable = ({ data, tracker, loading }) => {
   const navigate = useNavigate();
@@ -24,154 +41,81 @@ const LicenseTable = ({ data, tracker, loading }) => {
   const [currentRecord, setCurrentRecord] = useState(null);
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
-  // const [statusFilter, setStatusFilter] = useState(null);
+  const [isAppointmentModalVisible, setIsAppointmentModalVisible] = useState(false);
+  const [selectedOwner, setSelectedOwner] = useState(null);
+  const [relatedTpls, setRelatedTpls] = useState([]);
 
   const [editableFields] = useState({
     mobile_number: true,
   });
 
-  // const statusOptions = [
-  //   { value: "pending", label: "Pending" },
-  //   { value: "physical_document", label: "Physical Document" },
-  //   { value: "awaiting_scheduling", label: "Awaiting ME Scheduling" },
-  //   { value: "me_approved", label: "ME Approved" },
-  //   { value: "valid", label: "Valid" },
-  // ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let response;
+        switch (tracker) {
+          case "ML":
+            response = await officerService.getMiningLicenses();
+            break;
+          case "TPL":
+            response = await officerService.getAllTpls();
+            break;
+          case "CMPLN":
+            response = await officerService.getAllComplaints();
+            break;
+          default:
+            response = [];
+        }
+      } 
+      catch (error) {
+        // console.error("Error fetching data:", error);
+        // message.error("Failed to fetch data");
+      }
+    };
+
+    fetchData();
+  }, [tracker]);
 
   const handleViewClick = async (e, record) => {
     e.preventDefault();
     setFetchingId(record.id);
     setCurrentRecord(record);
-
-    try {
-      message.loading({ content: "Fetching details...", key: "fetchDetails" });
-
-      const response = await fetch(
-        `http://gsmb.aasait.lk/issues/${record.id}`,
-        {
-          headers: {
-            Accept: "application/json",
-          },
-        }
-      );
-
-      if (!response.ok)
-        throw new Error(`HTTP error! Status: ${response.status}`);
-
-      const freshData = await response.json();
-      setCurrentRecord(freshData);
-      form.setFieldsValue(freshData);
-      setIsModalVisible(true);
-
-      message.success({
-        content: "Details loaded!",
-        key: "fetchDetails",
-        duration: 2,
-      });
-    } catch (error) {
-      console.error("Fetch error:", error);
-      form.setFieldsValue(record);
-      setIsModalVisible(true);
-      message.error({
-        key: "fetchDetails",
-        duration: 3,
-      });
-    } finally {
-      setFetchingId(null);
-    }
+    setIsModalVisible(true);
+    form.setFieldsValue(record);
   };
 
-  const handleUpdate = async () => {
-    try {
-      const values = await form.validateFields();
-
-      message.loading({
-        content: "Updating details...",
-        key: "updateStatus",
-        duration: 0,
-      });
-
-      // Create the payload with only editable fields
-      const payload = {};
-      Object.keys(editableFields).forEach((key) => {
-        if (values[key] !== undefined) {
-          payload[key] = values[key];
-        }
-      });
-
-      const response = await fetch(`/api/issues/${currentRecord.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-
-        // Handle 422 validation errors specifically
-        if (response.status === 422 && errorData.errors) {
-          const errorMessages = Object.entries(errorData.errors)
-            .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
-            .join("; ");
-
-          throw new Error(`Validation failed: ${errorMessages}`);
-        }
-
-        throw new Error(
-          errorData.message || `Server responded with status ${response.status}`
-        );
-      }
-
-      const updatedData = await response.json();
-
-      setCurrentRecord(updatedData);
-      form.setFieldsValue(updatedData);
-
-      message.success({
-        content: "Details updated successfully!",
-        key: "updateStatus",
-        duration: 3,
-      });
-
-      setIsModalVisible(false);
-    } catch (error) {
-      console.error("Update error:", error);
-      message.error({
-        content: error.message.startsWith("Validation failed")
-          ? error.message
-          : "Failed to update. Please try again.",
-        key: "updateStatus",
-        duration: 5,
-      });
-    }
+  const handleDownload = (url, filename) => {
+    // Create a temporary anchor element
+    const link = document.createElement("a");
+    link.href = url;
+    
+    // Extract filename from URL or use a default
+    const downloadName = filename || url.split("/").pop() || "document";
+    link.download = downloadName;
+    
+    // Trigger the download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    message.success(`Downloading ${downloadName}`);
   };
-
-  // const filteredData = data.filter((item) => {
-  //   const matchesSearch =
-  //     !searchText ||
-  //     Object.values(item).some(
-  //       (val) =>
-  //         val &&
-  //         val.toString().toLowerCase().includes(searchText.toLowerCase())
-  //     );
-      
-  //   const matchesStatus =
-  //     !statusFilter ||
-  //     item.status === statusFilter;
-      
-  //   return matchesSearch && matchesStatus;
-  // });
 
   const renderAction = (record) => (
     <div style={{ display: "flex", gap: "8px" }}>
-      <Button
+      {/* <Button
         type="primary"
         size="small"
         loading={fetchingId === record.id}
-        icon={fetchingId !== record.id && <span>👁️</span>}
+        icon={fetchingId !== record.id && <EyeOutlined />}
+        onClick={(e) => handleViewClick(e, record)}
+      >
+        View
+      </Button> */}
+      <Button
+        type="primary"
+        size="small"
+        icon={<span>👁️</span>}
         onClick={(e) => handleViewClick(e, record)}
       >
         View
@@ -193,7 +137,7 @@ const LicenseTable = ({ data, tracker, loading }) => {
     ML: [
       { title: "ID", dataIndex: "id", width: 80, fixed: "left" },
       { title: "Owner", dataIndex: "assigned_to", ellipsis: true },
-      { title: "License No.", dataIndex: "mining_license_number", width: 120 },
+      { title: "License No.", dataIndex: "license_number", width: 120 },
       { title: "Mobile", dataIndex: "mobile_number", width: 120 },
       { title: "Capacity", dataIndex: "capacity", width: 100 },
       { title: "Used", dataIndex: "used", width: 80 },
@@ -233,7 +177,6 @@ const LicenseTable = ({ data, tracker, loading }) => {
     TPL: [
       { title: "License No.", dataIndex: "mining_license_number", width: 120 },
       { title: "Mining Owner", dataIndex: "author", ellipsis: true },
-      // { title: "Driver Name", dataIndex: "lorry_driver_name", width: 150 },
       { title: "Lorry No.", dataIndex: "lorry_number", width: 120 },
       { title: "Driver Contact", dataIndex: "driver_contact", width: 140 },
       { title: "Cubes", dataIndex: "cubes", width: 80 },
@@ -272,128 +215,376 @@ const LicenseTable = ({ data, tracker, loading }) => {
     ],
   };
 
-  const excludedFields = [
-    "tracker",
-    "payment_receipt",
-    "professional",
-    "assigned_to",
-    "author",
-    "applicant_or_company_name",
-    "detailed_mine_restoration_plan",
-    "economic_viability_report",
-    "license_fee_receipt",
-    "licensed_boundary_survey",
-  ];
+  // Custom field labels mapping
+  const fieldLabels = {
+    mobile_number: "Contact Number",
+    subject: "License Number",
+    author: "License Owner",
+    due_date: "Expiry Date",
+    status: "License Status",
+    deed_survey_plan: "Deed And Survey Plan",
+    detailed_mine_restoration_plan: "Detailed Mine Restoration Plan",
+    economic_viability_report: "Economic Viability Report",
+    payment_receipt: "Payment Receipt",
+    exploration_licence_no: "Exploration Licence No",
+    applicant_or_company_name: "Applicant/Company Name",
+    land_name: "Land Name",
+    land_owner_name: "Land Owner's Name",
+    village_name: "Village Name",
+    grama_niladhari_division: "Grama Niladhari Division",
+    divisional_secretary_division: "Divisional Secretary Division",
+    administrative_district: "Administrative District",
+    license_number: "Mining License Number",
+    license_fee_receipt: "License Fee Receipt",
+    professional: "Professional",
+    lorry_number: "Lorry Number",
+    driver_contact: "Driver Contact",
+    cubes: "Cubes",
+    mining_license_number: "Mining License Number",
+    destination: "Destination"
+  };
 
-  const fieldOrder = [
-    "id",
-    "subject",
-    "mining_license_number",
-    "assigned_to",
-    "author",
-    "mobile_number",
-    "driver_contact",
-    "lorry_number",
-    "lorry_driver_name",
-    "capacity",
-    "used",
-    "remaining",
-    "royalty",
-    "start_date",
-    // "due_date",
-    // "startDate",
-    "destination",
-  ];
+  const getFileIcon = (key, fileType) => {
+    if (!fileType) return <FileUnknownOutlined />;
+    
+    switch (fileType.toLowerCase()) {
+      case "pdf":
+        return <FilePdfOutlined style={{ color: "#ff4d4f" }} />;
+      case "doc":
+      case "docx":
+        return <FileWordOutlined style={{ color: "#1890ff" }} />;
+      case "xls":
+      case "xlsx":
+        return <FileExcelOutlined style={{ color: "#52c41a" }} />;
+      case "jpg":
+      case "jpeg":
+      case "png":
+        return <FileImageOutlined style={{ color: "#722ed1" }} />;
+      case "zip":
+      case "rar":
+        return <FileZipOutlined style={{ color: "#faad14" }} />;
+      default:
+        return <FileUnknownOutlined />;
+    }
+  };
+
+  const renderFileField = (fieldName, displayName, fileUrl) => {
+    if (!fileUrl) return null;
+    
+    const fileName = fileUrl?.split('/').pop() || 'No file';
+    const fileType = fileName.split('.').pop();
+    
+    return (
+      <Form.Item
+        label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{displayName}</span>}
+        name={fieldName}
+        style={{ marginBottom: "18px" }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div 
+            style={{ 
+              display: 'flex',
+              alignItems: 'center',
+              padding: '8px 16px',
+              border: '1px solid #d9d9d9',
+              borderRadius: '4px',
+              backgroundColor: '#f5f5f5',
+              flexGrow: 1
+            }}
+          >
+            {getFileIcon(fieldName, fileType)}
+            <Text
+              style={{ 
+                marginLeft: '8px',
+                color: '#1890ff',
+                fontWeight: 500
+              }}
+              ellipsis={{ tooltip: fileUrl }}
+            >
+              {fileName}
+            </Text>
+          </div>
+          <Button
+            type="primary"
+            icon={<DownloadOutlined />}
+            onClick={() => handleDownload(fileUrl, `${displayName.replace(/\s+/g, '_')}_${currentRecord.id}`)}
+          >
+            Download
+          </Button>
+        </div>
+      </Form.Item>
+    );
+  };
 
   const renderModalContent = () => {
     if (!currentRecord) return null;
 
-    const orderedEntries = Object.entries(currentRecord)
-      .filter(([key]) => !excludedFields.includes(key))
-      .sort(([a], [b]) => {
-        const indexA = fieldOrder.indexOf(a);
-        const indexB = fieldOrder.indexOf(b);
-        if (indexA === -1 && indexB === -1) return a.localeCompare(b);
-        if (indexA === -1) return 1;
-        if (indexB === -1) return -1;
-        return indexA - indexB;
-      });
-
-    return (
-      <Form
-        form={form}
-        layout="horizontal"
-        initialValues={currentRecord}
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 18 }}
-        labelAlign="left"
-        style={{ fontSize: "16px" }}
-      >
-        {orderedEntries.map(([key]) => (
+    // Get ML fields to render
+    const renderMLFields = () => {
+      return (
+        <Form
+          form={form}
+          layout="horizontal"
+          initialValues={currentRecord}
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 18 }}
+          labelAlign="left"
+          style={{ fontSize: "16px" }}
+        >
+          {/* Basic Information */}
           <Form.Item
-            label={
-              <span style={{ fontWeight: 500, fontSize: "16px" }}>
-                {key
-                  .replace(/_/g, " ")
-                  .replace(/\b\w/g, (c) => c.toUpperCase())}
-              </span>
-            }
-            name={key}
-            key={key}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>License ID</span>}
+            name="id"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Mining License Number</span>}
+            name="license_number"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Valid From</span>}
+            name="start_date"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Valid To</span>}
+            name="due_date"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Exploration Licence No</span>}
+            name="exploration_licence_no"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Land Name</span>}
+            name="land_name"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Land Owner Name</span>}
+            name="land_owner_name"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Village Name</span>}
+            name="village_name"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Grama Niladhari Division</span>}
+            name="grama_niladhari_division"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Divisional Secretary Division</span>}
+            name="divisional_secretary_division"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Administrative District</span>}
+            name="administrative_district"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Mobile Number</span>}
+            name="mobile_number"
             style={{ marginBottom: "18px" }}
           >
             <Input
-              disabled={!editableFields[key]} // Only enable fields marked as editable
+              disabled={!editableFields.mobile_number}
               style={{
-                fontSize: "16px",
-                height: "40px",
-                backgroundColor: editableFields[key] ? "#fff" : "#f9f9f9",
-                border: "1px solid #d9d9d9",
-                borderRadius: "4px",
-                color: "#333",
+                backgroundColor: editableFields.mobile_number ? "#fff" : "#f9f9f9",
               }}
             />
           </Form.Item>
-        ))}
-      </Form>
-    );
+
+          {/* Capacity Information */}
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Capacity</span>}
+            name="capacity"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Used</span>}
+            name="used"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Remaining</span>}
+            name="remaining"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Royalty</span>}
+            name="royalty"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Mining License Number</span>}
+            name="license_number"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          {/* Document files with download options */}
+          {renderFileField("economic_viability_report", "Economic Viability Report", currentRecord.economic_viability_report)}
+          {renderFileField("license_fee_receipt", "License Fee Receipt", currentRecord.license_fee_receipt)}
+          {renderFileField("detailed_mine_restoration_plan", "Mine Restoration Plan", currentRecord.detailed_mine_restoration_plan)}
+          {renderFileField("professional", "Professional", currentRecord.professional)}
+          {renderFileField("deed_survey_plan", "Deed and Survey Plan", currentRecord.deed_survey_plan)}
+          {renderFileField("payment_receipt", "Payment Receipt", currentRecord.payment_receipt)}
+        </Form>
+      );
+    };
+
+    // Get TPL fields to render
+    const renderTPLFields = () => {
+      return (
+        <Form
+          form={form}
+          layout="horizontal"
+          initialValues={currentRecord}
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 18 }}
+          labelAlign="left"
+          style={{ fontSize: "16px" }}
+        >
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>ID</span>}
+            name="id"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Status</span>}
+            name="status"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Owner</span>}
+            name="author"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          {/* <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Start Date</span>}
+            name="start_date"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Due Date</span>}
+            name="due_date"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item> */}
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Lorry Number</span>}
+            name="lorry_number"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Driver Contact</span>}
+            name="driver_contact"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Cubes</span>}
+            name="cubes"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Mining License Number</span>}
+            name="mining_license_number"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+          
+          <Form.Item
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Destination</span>}
+            name="destination"
+            style={{ marginBottom: "18px" }}
+          >
+            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
+          </Form.Item>
+        </Form>
+      );
+    };
+
+    return tracker === "ML" ? renderMLFields() : renderTPLFields();
   };
 
   return (
     <>
-          {/* {tracker === "ML" && (
-        <div style={{ marginBottom: 16 }}>
-          <Row gutter={16} align="middle">
-            <Col>
-              <Select
-                placeholder="Filter by status"
-                value={statusFilter}
-                onChange={setStatusFilter}
-                style={{ width: 200 }}
-                allowClear
-              >
-                {statusOptions.map((option) => (
-                  <Option key={option.value} value={option.value}>
-                    {option.label}
-                  </Option>
-                ))}
-              </Select>
-            </Col>
-            <Col>
-              <Button
-                type="default"
-                onClick={() => {
-                  setSearchText("");
-                  setStatusFilter(null);
-                }}
-              >
-                Reset Filters
-              </Button>
-            </Col>
-          </Row>
-        </div>
-      )} */}
-
       <Table
         dataSource={data}
         columns={columns[tracker]}
@@ -412,58 +603,15 @@ const LicenseTable = ({ data, tracker, loading }) => {
       />
 
       <Modal
-        title={
-          <div
-            style={{
-              fontSize: "20px",
-              fontWeight: "600",
-              color: "#8B0000", // Dark red color
-              padding: "16px 24px",
-              borderBottom: "1px solid #000", // Black border bottom
-              background: "#FFF5F5", // Very light red background
-              borderRadius: "2px 2px 0 0",
-              margin: 0,
-            }}
-          >
-            {`License Details - ${currentRecord?.id || ""}`}
-          </div>
-        }
+        title={`${tracker === "ML" ? "Mining License" : tracker === "TPL" ? "Transport License" : "License"} Details - ${currentRecord?.id || ""}`}
         open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
-        footer={
-          <Row justify="center">
-            <Col>
-              <Button
-                key="update"
-                type="primary"
-                onClick={handleUpdate}
-                style={{
-                  padding: "8px 24px",
-                  height: "auto",
-                  fontSize: "16px",
-                  fontWeight: "500",
-                }}
-              >
-                Update
-              </Button>
-            </Col>
-          </Row>
-        }
+        footer={[
+          <Button key="close" onClick={() => setIsModalVisible(false)}>
+            Close
+          </Button>
+        ]}
         width="70%"
-        bodyStyle={{
-          padding: "24px",
-          maxHeight: "70vh",
-          overflowY: "auto",
-        }}
-        style={{
-          top: "20px",
-          borderRadius: "8px",
-          overflow: "hidden",
-          padding: 0,
-        }}
-        maskStyle={{
-          backgroundColor: "rgba(0, 0, 0, 0.45)",
-        }}
       >
         {renderModalContent()}
       </Modal>

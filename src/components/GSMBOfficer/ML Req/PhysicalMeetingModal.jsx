@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Modal, Form, Input, Upload, Button, message } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Modal, Form, Input, Upload, Button, message, Space } from 'antd';
+import { UploadOutlined ,CloseOutlined} from '@ant-design/icons';
+import '../../../styles/GSMBofficer/PhysicalMeetingModal.css';
 
 const PhysicalMeetingModal = ({
   visible,
@@ -10,7 +11,7 @@ const PhysicalMeetingModal = ({
   loading,
   form,
 }) => {
-  const [actionType, setActionType] = useState(null); // 'approve' or 'reject'
+  const [actionType, setActionType] = useState(null);
 
   const beforeUpload = (file) => {
     const isPDF = file.type === 'application/pdf';
@@ -22,91 +23,80 @@ const PhysicalMeetingModal = ({
 
   const handleAction = (type) => {
     setActionType(type);
-
     form.validateFields()
       .then((values) => {
-        if (type === 'approve') {
-          onApprove(values);
-        } else {
-          onReject(values);
-        }
+        type === 'approve' ? onApprove(values) : onReject(values);
       })
-      .catch((error) => {
-        console.error('Validation failed:', error);
-      });
+      .catch(console.error);
   };
 
-  const normFile = (e) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
+  const normFile = (e) => Array.isArray(e) ? e : e?.fileList;
 
   return (
     <Modal
       title="Update Physical Meeting Status"
       open={visible}
       onCancel={onCancel}
-      footer={[
-        <Button key="cancel" onClick={onCancel} disabled={loading}>
-          Cancel
-        </Button>,
-        <Button
-          key="reject"
-          type="default"
-          danger
-          onClick={() => handleAction('reject')}
-          disabled={loading}
-          style={{ marginRight: 8 }}
-        >
-          Reject
-        </Button>,
-        <Button
-          key="approve"
-          type="primary"
-          onClick={() => handleAction('approve')}
-          disabled={loading}
-        >
-          Approve
-        </Button>,
-      ]}
+      footer={null}
+      centered
+      className="meeting-status-modal"
+      closeIcon={<CloseOutlined style={{ fontSize: '14px' }} />}
     >
       <Form form={form} layout="vertical">
         <Form.Item
           name="comments"
-          label="Comments (Approval or Rejection Notes)"
-          rules={[
-            {
-              required: true,
-              message: 'Please provide your comments',
-            },
-          ]}
+          label="Comments"
+          rules={[{ required: true, message: 'Please provide your comments' }]}
         >
-          <Input.TextArea rows={4} />
+          <Input.TextArea 
+            rows={4} 
+            placeholder="Enter approval or rejection notes..."
+            className="comments-textarea"
+          />
         </Form.Item>
 
         <Form.Item
           name="receipt"
-          label="Upload Receipt (PDF only)"
+          label="Upload Receipt"
           valuePropName="fileList"
           getValueFromEvent={normFile}
-          rules={[
-            {
-              required: true,
-              message: 'Please upload the receipt (PDF only)',
-            },
-          ]}
+          rules={[{ required: true, message: 'Please upload the receipt (PDF only)' }]}
+          extra="Only PDF files are accepted"
         >
           <Upload
             beforeUpload={beforeUpload}
             accept=".pdf"
             maxCount={1}
-            listType="text"
+            className="receipt-upload"
           >
-            <Button icon={<UploadOutlined />}>Click to Upload</Button>
+            <div className="upload-container">
+              <UploadOutlined />
+              <div className="upload-instructions">Click or drag file to upload</div>
+              <div className="upload-format">PDF format only</div>
+            </div>
           </Upload>
         </Form.Item>
+
+        <div className="modal-footer-actions">
+          <Space>
+            <Button
+              danger
+              onClick={() => handleAction('reject')}
+              disabled={loading}
+              className="action-button"
+            >
+              Reject
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => handleAction('approve')}
+              disabled={loading}
+              className="action-button"
+            >
+              Approve
+            </Button>
+          </Space>
+        </div>
       </Form>
     </Modal>
   );

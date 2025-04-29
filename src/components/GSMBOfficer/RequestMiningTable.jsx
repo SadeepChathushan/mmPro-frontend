@@ -18,6 +18,7 @@ import { notification } from "antd";
 import ScheduleAppointmentModal from '../GSMBOfficer/ML Req/ScheduleAppointmentModal';
 import PhysicalMeetingModal from '../GSMBOfficer/ML Req/PhysicalMeetingModal';
 import ValidateModal from '../GSMBOfficer/ML Req/ValidateModal';
+import ConfirmationModal from '../GSMBOfficer/ML Req/ConfirmationModal';
 
 const { Link } = Typography;
 const { TextArea } = Input;
@@ -34,6 +35,22 @@ const RequestMiningTable = () => {
   const [statusFilter, setStatusFilter] = useState(null);
   const [searchText, setSearchText] = useState("");
 
+  // States for modals
+  const [isAppointmentModalVisible, setIsAppointmentModalVisible] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [isPhysicalMeetingModalVisible, setIsPhysicalMeetingModalVisible] = useState(false);
+  const [isValidateModalVisible, setIsValidateModalVisible] = useState(false);
+  
+  // Forms
+  const [appointmentForm] = Form.useForm();
+  const [physicalMeetingForm] = Form.useForm();
+  const [validateForm] = Form.useForm();
+  
+  // Loading states
+  const [appointmentLoading, setAppointmentLoading] = useState(false);
+  const [physicalMeetingLoading, setPhysicalMeetingLoading] = useState(false);
+  const [validateLoading, setValidateLoading] = useState(false);
+
   const statusOptions = [
     { value: "Pending", label: "Pending" },
     { value: "Physical document", label: "Physical Document" },
@@ -42,27 +59,6 @@ const RequestMiningTable = () => {
     { value: "Valid", label: "Valid" },
     { value: "Rejected", label: "Rejected" },
   ];
-
-  const filteredData = mlRequestData.filter((item) => {    
-    const matchesStatus =
-      !statusFilter ||
-      item.status === statusFilter;
-      
-    return matchesStatus;
-  });
-
-  // States for appointment scheduling
-const [isAppointmentModalVisible, setIsAppointmentModalVisible] = useState(false);
-const [appointmentForm] = Form.useForm();
-const [appointmentLoading, setAppointmentLoading] = useState(false);
-  // States for physical meeting Schedule
-const [isPhysicalMeetingModalVisible, setIsPhysicalMeetingModalVisible] = useState(false);
-const [physicalMeetingForm] = Form.useForm();
-const [physicalMeetingLoading, setPhysicalMeetingLoading] = useState(false);
-// States for validation
-const [isValidateModalVisible, setIsValidateModalVisible] = useState(false);
-const [validateForm] = Form.useForm();
-const [validateLoading, setValidateLoading] = useState(false);
 
   const [editableFields] = useState({
     mobile_number: true,
@@ -104,6 +100,32 @@ const [validateLoading, setValidateLoading] = useState(false);
 
   const handleUpdatePhysicalMeetingStatus = (record) => {
     setCurrentRecord(record);
+    setShowConfirmationModal(true);
+  };
+
+  const handleQuickReject = async () => {
+    try {
+      setPhysicalMeetingLoading(true);
+      
+      // Call your API to reject
+      // await rejectPhysicalMeeting(currentRecord.id);
+      console.log('Quick rejecting:', currentRecord.id);
+      
+      message.success('Physical meeting rejected');
+      setShowConfirmationModal(false);
+      
+      // Refresh data
+      // await fetchMlRequestData();
+    } catch (error) {
+      console.error('Quick rejection error:', error);
+      message.error('Failed to reject physical meeting');
+    } finally {
+      setPhysicalMeetingLoading(false);
+    }
+  };
+
+  const handleProceedToApprove = () => {
+    setShowConfirmationModal(false);
     setIsPhysicalMeetingModalVisible(true);
   };
 
@@ -205,66 +227,6 @@ const [validateLoading, setValidateLoading] = useState(false);
     } finally {
       setUpdateLoading(false);
     }
-  };
-
-  // --- Render Functions ---
-  const renderAction = (_, record) => {
-    const restrictedStatuses = [
-      "Awaiting ME Scheduling",
-      "ME Appointment Scheduled",
-      "Hold",
-      "Rejected"
-    ];
-    
-    const isRestrictedStatus = restrictedStatuses.includes(record.status);
-    const isMEApproved = record.status === "ME Approved";
-    const isPhysicalDocument = record.status?.toLowerCase() === "physical document";
-    
-    return (
-      <div style={{ display: "flex", gap: "8px" }}>
-        <Button
-          type="primary"
-          size="small"
-          icon={<span>👁️</span>}
-          onClick={() => handleViewClick(record)}
-        >
-          View
-        </Button>
-        
-        {isMEApproved ? (
-          <Button
-            type="primary"
-            size="small"
-            icon={<span>✅</span>}
-            onClick={() => handleValidateLicense(record)}
-            style={{ backgroundColor: '#ffffff', borderColor: '#52c41a', color:'#52c41a'}}
-          >
-            Validate the license
-          </Button>
-        ) : !isRestrictedStatus && (
-          isPhysicalDocument ? (
-            <Button
-              type="default"
-              size="small"
-              icon={<span>📝</span>}
-              onClick={() => handleUpdatePhysicalMeetingStatus(record)}
-              style={{ backgroundColor: '#f0f0f0', borderColor: '#d9d9d9' }}
-            >
-              Physical Meeting Status
-            </Button>
-          ) : (          
-            <Button
-              type="default"
-              size="small"
-              icon={<span>🗓️</span>}
-              onClick={() => handleScheduleAppointment(record)}
-            >
-              Schedule
-            </Button>
-          )
-        )}
-      </div>
-    );
   };
 
   const handleValidateLicense = (record) => {
@@ -418,7 +380,66 @@ const [validateLoading, setValidateLoading] = useState(false);
       </Tag>
     );
   };
-  
+
+  const renderAction = (_, record) => {
+    const restrictedStatuses = [
+      "Awaiting ME Scheduling",
+      "ME Appointment Scheduled",
+      "Hold",
+      "Rejected"
+    ];
+    
+    const isRestrictedStatus = restrictedStatuses.includes(record.status);
+    const isMEApproved = record.status === "ME Approved";
+    const isPhysicalDocument = record.status?.toLowerCase() === "physical document";
+    
+    return (
+      <div style={{ display: "flex", gap: "8px" }}>
+        <Button
+          type="primary"
+          size="small"
+          icon={<span>👁️</span>}
+          onClick={() => handleViewClick(record)}
+        >
+          View
+        </Button>
+        
+        {isMEApproved ? (
+          <Button
+            type="primary"
+            size="small"
+            icon={<span>✅</span>}
+            onClick={() => handleValidateLicense(record)}
+            style={{ backgroundColor: '#ffffff', borderColor: '#52c41a', color:'#52c41a'}}
+          >
+            Validate the license
+          </Button>
+        ) : !isRestrictedStatus && (
+          isPhysicalDocument ? (
+            <Button
+              type="default"
+              size="small"
+              icon={<span>📝</span>}
+              onClick={() => handleUpdatePhysicalMeetingStatus(record)}
+              style={{ backgroundColor: '#f0f0f0', borderColor: '#d9d9d9' }}
+            >
+              Physical Meeting Status
+            </Button>
+          ) : (          
+            <Button
+              type="default"
+              size="small"
+              icon={<span>🗓️</span>}
+              onClick={() => handleScheduleAppointment(record)}
+            >
+              Schedule
+            </Button>
+          )
+        )}
+      </div>
+    );
+  };
+
   const columns = [
     { title: "ID", dataIndex: "id", key: "id", width: 80, fixed: "left" },
     {
@@ -499,7 +520,6 @@ const [validateLoading, setValidateLoading] = useState(false);
     "payment_receipt",
     "google_location",
   ];
-
 
   const renderModalContent = () => {
     if (!currentRecord) return <Spin tip="Loading details..." />;
@@ -582,39 +602,40 @@ const [validateLoading, setValidateLoading] = useState(false);
   };
 
   // --- Component Return ---
- return (
+  return (
     <>
-    <div style={{ marginBottom: 16 }}>
-          <Row gutter={16} align="middle">
-            <Col>
-              <Select
-                placeholder="Filter by status"
-                value={statusFilter}
-                onChange={setStatusFilter}
-                style={{ width: 200 }}
-                allowClear
-              >
-                {statusOptions.map((option) => (
-                  <Option key={option.value} value={option.value}>
-                    {option.label}
-                  </Option>
-                ))}
-              </Select>
-            </Col>
-            
-            <Col>
-              <Button
-                type="default"
-                onClick={() => {
-                  setSearchText("");
-                  setStatusFilter(null);
-                }}
-              >
-                Reset Filters
-              </Button>
-            </Col>
-          </Row>
-        </div>
+      <div style={{ marginBottom: 16 }}>
+        <Row gutter={16} align="middle">
+          <Col>
+            <Select
+              placeholder="Filter by status"
+              value={statusFilter}
+              onChange={setStatusFilter}
+              style={{ width: 200 }}
+              allowClear
+            >
+              {statusOptions.map((option) => (
+                <Option key={option.value} value={option.value}>
+                  {option.label}
+                </Option>
+              ))}
+            </Select>
+          </Col>
+          
+          <Col>
+            <Button
+              type="default"
+              onClick={() => {
+                setSearchText("");
+                setStatusFilter(null);
+              }}
+            >
+              Reset Filters
+            </Button>
+          </Col>
+        </Row>
+      </div>
+
       <Table
         dataSource={mlRequestData.filter(item => item.status?.toLowerCase() !== "valid")}
         columns={columns}
@@ -633,7 +654,7 @@ const [validateLoading, setValidateLoading] = useState(false);
         loading={loading}
       />
 
-      {/* Details Modal */}
+      {/* All your modals */}
       <Modal
         title={
           <div
@@ -683,41 +704,45 @@ const [validateLoading, setValidateLoading] = useState(false);
         {renderModalContent()}
       </Modal>
 
-      {/* Appointment Scheduling Modal */}
-        <ScheduleAppointmentModal
-         visible={isAppointmentModalVisible}
-         onCancel={() => setIsAppointmentModalVisible(false)}
-         onSubmit={handleSubmit}
-         loading={appointmentLoading}
-         form={appointmentForm}
-        />
+      <ScheduleAppointmentModal
+        visible={isAppointmentModalVisible}
+        onCancel={() => setIsAppointmentModalVisible(false)}
+        onSubmit={handleSubmit}
+        loading={appointmentLoading}
+        form={appointmentForm}
+      />
 
-      {/* physical meting update Modal */}
+      <ConfirmationModal
+        visible={showConfirmationModal}
+        onCancel={() => setShowConfirmationModal(false)}
+        onApprove={handleProceedToApprove}
+        onReject={handleQuickReject}
+        loading={physicalMeetingLoading}
+      />
+
       <PhysicalMeetingModal
-      visible={isPhysicalMeetingModalVisible}
-      onCancel={() => {
-        setIsPhysicalMeetingModalVisible(false);
-        physicalMeetingForm.resetFields();
-      }}
-      onApprove={handleApprovePhysicalMeeting}
-      onReject={handleRejectPhysicalMeeting}
-      loading={physicalMeetingLoading}
-      form={physicalMeetingForm}
-    />
+        visible={isPhysicalMeetingModalVisible}
+        onCancel={() => {
+          setIsPhysicalMeetingModalVisible(false);
+          physicalMeetingForm.resetFields();
+        }}
+        onApprove={handleApprovePhysicalMeeting}
+        onReject={handleRejectPhysicalMeeting}
+        loading={physicalMeetingLoading}
+        form={physicalMeetingForm}
+      />
 
-    {/* Add this with your other modals */}
-<ValidateModal
-  visible={isValidateModalVisible}
-  onCancel={() => {
-    setIsValidateModalVisible(false);
-    validateForm.resetFields();
-  }}
-  onValidate={handleValidateLicenseSubmit}
-  onReject={handleRejectLicense}
-  loading={validateLoading}
-  form={validateForm}
-/>
-    
+      <ValidateModal
+        visible={isValidateModalVisible}
+        onCancel={() => {
+          setIsValidateModalVisible(false);
+          validateForm.resetFields();
+        }}
+        onValidate={handleValidateLicenseSubmit}
+        onReject={handleRejectLicense}
+        loading={validateLoading}
+        form={validateForm}
+      />
     </>
   );
 };
