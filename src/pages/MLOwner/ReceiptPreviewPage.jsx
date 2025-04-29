@@ -293,56 +293,108 @@ const ReceiptPage = () => {
                  Receipt
               </Typography.Text>
             </div>
+            <p>
+              <strong>
+                {language === "en"
+                  ? "Lorry Number:"
+                  : language == "si"
+                  ? "ලොරි අංකය:"
+                  : "லாரி எண்:"}
+              </strong>{" "}
+              {formData.lorryNumber}
+            </p>
+            <p>
+              <strong>
+                {language === "en"
+                  ? "ML Number:"
+                  : language == "si"
+                  ? "ML අංකය:"
+                  : "ML எண்:"}
+              </strong>{" "}
+              {receiptData.mlNumber}
+            </p>
+            <p>
+              <strong>
+                {language === "en"
+                  ? "ML Owner:"
+                  : language == "si"
+                  ? "ML හිමිකරු:"
+                  : "ML உரிமையாளர்:"}
+              </strong>{" "}
+              {receiptData.mlOwner}
+            </p>
+            {/* <p><strong>{language === "en" ? "ML Contact:" : language == 'si' ? "ML සම්බන්ධතා:" : "ML தொடர்பு:"}</strong> {receiptData.mlContact}</p> */}
+            <p>
+              <strong>
+                {language === "en"
+                  ? "Start Location:"
+                  : language == "si"
+                  ? "ආරම්භක ස්ථානය:"
+                  : "தொடக்க இடம்:"}
+              </strong>{" "}
+              {receiptData.startLocation}
+            </p>
+            <p>
+              <strong>
+                {language === "en"
+                  ? "Mineral Type:"
+                  : language == "si"
+                  ? "ඛනිජ වර්ගය:"
+                  : "கனிம வகை:"}
+              </strong>{" "}
+              {receiptData.mineralType}
+            </p>
+            <p>
+              <strong>
+                {language === "en"
+                  ? "Driver Contact:"
+                  : language == "si"
+                  ? "රියදුරු සම්බන්ධතා:"
+                  : "சாரதி தொடர்பு:"}
+              </strong>{" "}
+              {receiptData.lorryContact}
+            </p>
+            <p>
+              <strong>
+                {language === "en"
+                  ? "Load (Cube):"
+                  : language == "si"
+                  ? "පැටවීම (Cube):"
+                  : "சுமை (Cube):"}
+              </strong>{" "}
+              {receiptData.loadCube}
+            </p>
+            <p>
+              <strong>
+                {language === "en"
+                  ? "Destination:"
+                  : language == "si"
+                  ? "ගමනාන්තය:"
+                  : "சேருமிடம்:"}
+              </strong>{" "}
+              {receiptData.destination}
+            </p>
 
-            {/* Receipt Details Section */}
-            <Row gutter={[16, 16]}> {/* Added gutter for spacing */}
-                 <Col xs={24} sm={12}>
-                    <p><strong>{language === "en" ? "Lorry Number:" : language === "si" ? "ලොරි අංකය:" : "லாரி எண்:"}</strong></p>
-                    <p>{receiptData.lorryNumber}</p>
-                 </Col>
-                 <Col xs={24} sm={12}>
-                    <p><strong>{language === "en" ? "ML Number:" : language === "si" ? "ML අංකය:" : "ML எண்:"}</strong></p>
-                    <p>{receiptData.mlNumber}</p>
-                 </Col>
-                 <Col xs={24} sm={12}>
-                    <p><strong>{language === "en" ? "ML Owner:" : language === "si" ? "ML හිමිකරු:" : "ML உரிமையாளர்:"}</strong></p>
-                    <p>{receiptData.mlOwner}</p>
-                 </Col>
-                 <Col xs={24} sm={12}>
-                    <p><strong>{language === "en" ? "ML Contact:" : language === "si" ? "ML සම්බන්ධතා:" : "ML தொடர்பு:"}</strong></p> {/* Uncommented */}
-                    <p>{receiptData.mlContact}</p>
-                 </Col>
-                 <Col xs={24} sm={12}>
-                    <p><strong>{language === "en" ? "Start Location:" : language === "si" ? "ආරම්භක ස්ථානය:" : "தொடக்க இடம்:"}</strong></p>
-                    <p>{receiptData.startLocation}</p>
-                 </Col>
-                 <Col xs={24} sm={12}>
-                    <p><strong>{language === "en" ? "Mineral Type:" : language === "si" ? "ඛනිජ වර්ගය:" : "கனிம வகை:"}</strong></p>
-                    <p>{receiptData.mineralType}</p>
-                 </Col>
-                 <Col xs={24} sm={12}>
-                    <p><strong>{language === "en" ? "Driver Contact:" : language === "si" ? "රියදුරු සම්බන්ධතා:" : "ஓட்டுனர் தொடர்பு:"}</strong></p>
-                    <p>{receiptData.lorryContact}</p>
-                 </Col>
-                 <Col xs={24} sm={12}>
-                    <p><strong>{language === "en" ? "Load (Cube):" : language === "si" ? "පැටවීම (කියුබ්):" : "சுமை (கியூப்):"}</strong></p> {/* Adjusted SI/TA translation */}
-                    <p>{receiptData.loadCube}</p>
-                 </Col>
-                 <Col xs={24} sm={12}>
-                    <p><strong>{language === "en" ? "Destination:" : language === "si" ? "ගමනාන්තය:" : "சேருமிடம்:"}</strong></p>
-                    <p>{receiptData.destination}</p>
-                 </Col>
-                 {/*
-                 <Col xs={24} sm={12}>
-                    <p><strong>{language === "en" ? "Validity:" : language === "si" ? "වලංගුභාවය:" : "செல்லுபடியாகும்:"}</strong></p>
-                    <p>{receiptData.validity}</p>
-                 </Col>
-                 */}
-                 <Col xs={24} sm={12}>
-                    <p><strong>{language === "en" ? "Printed Date:" : language === "si" ? "මුද්‍රිත දිනය:" : "அச்சிடப்பட்ட தேதி:"}</strong></p>
-                    <p>{receiptData.printedDate}</p>
-                 </Col>
-            </Row>
+            {/* <p>
+              <strong>
+                {language === "en"
+                  ? "Validity:"
+                  : language == "si"
+                  ? "වලංගුභාවය:"
+                  : "செல்லுபடியாகும்:"}
+              </strong>{" "}
+              {receiptData.validity}
+            </p> */}
+            <p>
+              <strong>
+                {language === "en"
+                  ? "Printed Date:"
+                  : language == "si"
+                  ? "මුද්‍රිත දිනය:"
+                  : "அச்சிடப்பட்ட திகதி:"}
+              </strong>{" "}
+              {receiptData.printedDate}
+            </p>
           </Col>
         </Row>
 
@@ -370,10 +422,11 @@ const ReceiptPage = () => {
               size="large" // Larger button
             >
               {language === "en"
-                ? "Print / Save Receipt" // Clarified action
-                : language === "si"
-                ? "රිසිට්පත මුද්‍රණය / සුරකින්න" // Corrected SI translation
-                : "ரசீதை அச்சிடுக / சேமிக்க"}
+                ? "Print Receipt"
+                : language == "si"
+                ? "මුද්‍රණ ලදුපත"
+                : "ரசீதை அச்சிடுக"}
+
             </Button>
           </Col>
         </Row>
