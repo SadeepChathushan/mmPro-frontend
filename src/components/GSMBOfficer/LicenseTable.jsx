@@ -103,11 +103,19 @@ const LicenseTable = ({ data, tracker, loading }) => {
 
   const renderAction = (record) => (
     <div style={{ display: "flex", gap: "8px" }}>
-      <Button
+      {/* <Button
         type="primary"
         size="small"
         loading={fetchingId === record.id}
         icon={fetchingId !== record.id && <EyeOutlined />}
+        onClick={(e) => handleViewClick(e, record)}
+      >
+        View
+      </Button> */}
+      <Button
+        type="primary"
+        size="small"
+        icon={<span>👁️</span>}
         onClick={(e) => handleViewClick(e, record)}
       >
         View
@@ -129,7 +137,7 @@ const LicenseTable = ({ data, tracker, loading }) => {
     ML: [
       { title: "ID", dataIndex: "id", width: 80, fixed: "left" },
       { title: "Owner", dataIndex: "assigned_to", ellipsis: true },
-      { title: "License No.", dataIndex: "mining_license_number", width: 120 },
+      { title: "License No.", dataIndex: "license_number", width: 120 },
       { title: "Mobile", dataIndex: "mobile_number", width: 120 },
       { title: "Capacity", dataIndex: "capacity", width: 100 },
       { title: "Used", dataIndex: "used", width: 80 },
