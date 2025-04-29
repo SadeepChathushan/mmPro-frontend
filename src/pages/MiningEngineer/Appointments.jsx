@@ -4,6 +4,7 @@ import AppointmentsTable from './AppointmentsTable';
 import ApprovalModal from './ApprovalModal';
 import { useLanguage } from "../../contexts/LanguageContext";
 import AppointmentDetailsModal from './AppointmentDetailsModal';
+import RejectedApprovedLisenceTable from './RejectedApprovedLisenceTable';
 
 const { Title } = Typography;
 
@@ -15,48 +16,6 @@ const Appointments = ({ activeTab }) => {
   const { language } = useLanguage();
   
   const [appointments, setAppointments] = useState([
-    {
-      id: 1,
-      mlOwner: 'Pasindu Lakshan',
-      gsmbOfficer: 'John Smith',
-      location: 'Kaduwela',
-      cubeCount: 1500,
-      status: 'pending',
-      date: '2023-06-15',
-      licenseDetails: {
-        status: 'Awaiting ME Scheduling',
-        explorationLicenseNo: 'EX-2025-0001',
-        landName: 'Green Hills',
-        landOwner: 'Saman',
-        royalty: 1500
-      },
-      locationDetails: {
-        village: 'Kaduwela',
-        gramaNiladhariDivision: 'GN Division 01',
-        divisionalSecretaryDivision: 'Thimbirigasaya',
-        district: 'Colombo'
-      },
-      capacity: {
-        total: 2000,
-        used: 500,
-        remaining: 1500,
-        monthCapacity: 'Not specified'
-      },
-      timeline: {
-        startDate: '17/04/2025',
-        dueDate: '20/04/2025',
-        status: '2 days late'
-      },
-      contact: {
-        mobile: '771234567'
-      },
-      documents: {
-        restorationPlan: '/sample-docs/restoration-plan.jpg',
-        paymentReceipt: '/sample-docs/payment-receipt.jpg',
-        deedAndSurvey: '/sample-docs/deed-survey.jpg',
-        googleLocation: 'https://maps.google.com/maps?q=6.2633...'
-      }
-    },
     {
       id: 2,
       mlOwner: 'Another Owner',
