@@ -1,0 +1,90 @@
+/* PhysicalMeetingModal.css */
+
+.meeting-status-modal {
+    max-width: 700px !important;
+  }
+  
+  .meeting-status-modal .ant-modal-body {
+    padding: 24px 32px;
+  }
+  
+  .comments-textarea {
+    border-radius: 4px;
+  }
+  
+  .comments-textarea::placeholder {
+    color: #bfbfbf;
+  }
+  
+  .receipt-upload .ant-upload {
+    width: 100%;
+  }
+  
+  .upload-container {
+    width: 100%;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px dashed #d9d9d9;
+    border-radius: 4px;
+    background-color: #fafafa;
+    transition: border-color 0.3s;
+  }
+  
+  .upload-container:hover {
+    border-color: #1890ff;
+  }
+  
+  .upload-instructions {
+    margin-top: 8px;
+    font-size: 14px;
+  }
+  
+  .upload-format {
+    font-size: 12px;
+    color: #999;
+    margin-top: 4px;
+  }
+  
+  .modal-footer-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  
+  .action-button {
+    min-width: 100px;
+  }
+
+  .meeting-status-modal .ant-modal-title {
+    background: linear-gradient(90deg, #fff1f1, #ffe5e5);
+    color: rgb(80, 0, 0);
+    padding: 8px 0;
+    border-radius: 4px 4px 0 0;
+    text-align: center;
+  }
+
+  /* Close Button Styling */
+.meeting-status-modal .ant-modal-close {
+  top: 12px;
+  right: 12px;
+}
+
+.ant-modal-close-x {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 50%;
+  background-color: #ff8686;
+  color: #fcfcfc;
+  transition: all 0.3s;
+}
+
+.ant-modal-close-x:hover {
+  background-color: #ff4d4f;
+  color: white;
+  transform: rotate(90deg);
+}

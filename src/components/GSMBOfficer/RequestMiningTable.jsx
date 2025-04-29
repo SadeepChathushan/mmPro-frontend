@@ -11,12 +11,14 @@ import {
   Spin,
   Select,
   Typography,
-  DatePicker,
-  TimePicker,
+  Tag,
 } from "antd";
 import { getMlRequest, physicalMeeting } from "../../services/officerService";
-//import { physicalMeeting } from '../../services/officerService';
 import { notification } from "antd";
+import ScheduleAppointmentModal from '../GSMBOfficer/ML Req/ScheduleAppointmentModal';
+import PhysicalMeetingModal from '../GSMBOfficer/ML Req/PhysicalMeetingModal';
+import ValidateModal from '../GSMBOfficer/ML Req/ValidateModal';
+import ConfirmationModal from '../GSMBOfficer/ML Req/ConfirmationModal';
 
 const { Link } = Typography;
 const { TextArea } = Input;
@@ -33,6 +35,22 @@ const RequestMiningTable = () => {
   const [statusFilter, setStatusFilter] = useState(null);
   const [searchText, setSearchText] = useState("");
 
+  // States for modals
+  const [isAppointmentModalVisible, setIsAppointmentModalVisible] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [isPhysicalMeetingModalVisible, setIsPhysicalMeetingModalVisible] = useState(false);
+  const [isValidateModalVisible, setIsValidateModalVisible] = useState(false);
+  
+  // Forms
+  const [appointmentForm] = Form.useForm();
+  const [physicalMeetingForm] = Form.useForm();
+  const [validateForm] = Form.useForm();
+  
+  // Loading states
+  const [appointmentLoading, setAppointmentLoading] = useState(false);
+  const [physicalMeetingLoading, setPhysicalMeetingLoading] = useState(false);
+  const [validateLoading, setValidateLoading] = useState(false);
+
   const statusOptions = [
     { value: "Pending", label: "Pending" },
     { value: "Physical document", label: "Physical Document" },
@@ -41,20 +59,6 @@ const RequestMiningTable = () => {
     { value: "Valid", label: "Valid" },
     { value: "Rejected", label: "Rejected" },
   ];
-
-  const filteredData = mlRequestData.filter((item) => {    
-    const matchesStatus =
-      !statusFilter ||
-      item.status === statusFilter;
-      
-    return matchesStatus;
-  });
-
-  // New states for appointment scheduling
-  const [isAppointmentModalVisible, setIsAppointmentModalVisible] =
-    useState(false);
-  const [appointmentForm] = Form.useForm();
-  const [appointmentLoading, setAppointmentLoading] = useState(false);
 
   const [editableFields] = useState({
     mobile_number: true,
@@ -94,12 +98,44 @@ const RequestMiningTable = () => {
     setIsAppointmentModalVisible(true);
   };
 
+  const handleUpdatePhysicalMeetingStatus = (record) => {
+    setCurrentRecord(record);
+    setShowConfirmationModal(true);
+  };
+
+  const handleQuickReject = async () => {
+    try {
+      setPhysicalMeetingLoading(true);
+      
+      // Call your API to reject
+      // await rejectPhysicalMeeting(currentRecord.id);
+      console.log('Quick rejecting:', currentRecord.id);
+      
+      message.success('Physical meeting rejected');
+      setShowConfirmationModal(false);
+      
+      // Refresh data
+      // await fetchMlRequestData();
+    } catch (error) {
+      console.error('Quick rejection error:', error);
+      message.error('Failed to reject physical meeting');
+    } finally {
+      setPhysicalMeetingLoading(false);
+    }
+  };
+
+  const handleProceedToApprove = () => {
+    setShowConfirmationModal(false);
+    setIsPhysicalMeetingModalVisible(true);
+  };
+
   const handleSubmit = async () => {
     try {
       setAppointmentLoading(true);
       const values = await appointmentForm.validateFields();
 
       const payload = {
+        mining_request_id: currentRecord?.id || "",
         assigned_to_id: currentRecord?.assigned_to_details?.id || "",
         physical_meeting_location: values.location,
         start_date: values.date.format("YYYY-MM-DD"),
@@ -111,6 +147,8 @@ const RequestMiningTable = () => {
       notification.success({
         message: "Success",
         description: "Appointment scheduled successfully!",
+        duration: 2, // Show for 2 seconds
+        onClose: () => window.location.reload()
       });
 
       setIsAppointmentModalVisible(false);
@@ -138,7 +176,7 @@ const RequestMiningTable = () => {
         key: "updateStatus",
         duration: 0,
       });
-
+  
       const payload = {};
       let hasChanges = false;
       Object.keys(editableFields).forEach((key) => {
@@ -147,7 +185,7 @@ const RequestMiningTable = () => {
           hasChanges = true;
         }
       });
-
+  
       if (!hasChanges) {
         message.info({
           content: "No changes detected.",
@@ -158,22 +196,24 @@ const RequestMiningTable = () => {
         setUpdateLoading(false);
         return;
       }
-
+  
       console.log("Update Payload:", payload);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
+      // Here you would typically call your API to update the record
+      // For example: await updateMlRequest(currentRecord.id, payload);
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+  
       message.success({
         content: "Details updated successfully!",
         key: "updateStatus",
         duration: 3,
       });
-
+  
       setMlRequestData((prevData) =>
         prevData.map((item) =>
           item.id === currentRecord.id ? { ...item, ...payload } : item
         )
       );
-
+  
       setIsModalVisible(false);
     } catch (error) {
       console.error("Update error:", error);
@@ -189,27 +229,216 @@ const RequestMiningTable = () => {
     }
   };
 
-  // --- Render Functions ---
-  const renderAction = (_, record) => (
-    <div style={{ display: "flex", gap: "8px" }}>
-      <Button
-        type="primary"
-        size="small"
-        icon={<span>👁️</span>}
-        onClick={() => handleViewClick(record)}
-      >
-        View
-      </Button>
-      <Button
-        type="default"
-        size="small"
-        icon={<span>🗓️</span>}
-        onClick={() => handleScheduleAppointment(record)}
-      >
-        Schedule
-      </Button>
-    </div>
-  );
+  const handleValidateLicense = (record) => {
+    setCurrentRecord(record);
+    validateForm.resetFields();
+    setIsValidateModalVisible(true);
+  };
+
+  const handleApprovePhysicalMeeting = async (values) => {
+    try {
+      setPhysicalMeetingLoading(true);
+      
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('id', currentRecord.id);
+      formData.append('receipt', values.receipt[0].originFileObj);
+      formData.append('comments', values.comments);
+      formData.append('status', 'approved');
+  
+      // Call your API here
+      // Example: await updatePhysicalMeetingStatus(formData);
+      console.log('Approval payload:', {
+        id: currentRecord.id,
+        receipt: values.receipt[0].originFileObj.name,
+        comments: values.comments,
+      });
+  
+      message.success('Physical meeting approved successfully');
+      setIsPhysicalMeetingModalVisible(false);
+      
+      // Refresh the table data
+      // await fetchMlRequestData();
+    } catch (error) {
+      console.error('Approval error:', error);
+      message.error(error.response?.data?.message || 'Failed to approve physical meeting');
+    } finally {
+      setPhysicalMeetingLoading(false);
+    }
+  };
+  
+  const handleRejectPhysicalMeeting = async (values) => {
+    try {
+      setPhysicalMeetingLoading(true);
+      
+      const formData = new FormData();
+      formData.append('id', currentRecord.id);
+      if (values.receipt && values.receipt[0]) {
+        formData.append('receipt', values.receipt[0].originFileObj);
+      }
+      formData.append('comments', values.comments);
+      formData.append('status', 'rejected');
+  
+      // Call your API here
+      // Example: await updatePhysicalMeetingStatus(formData);
+      console.log('Rejection payload:', {
+        id: currentRecord.id,
+        receipt: values.receipt?.[0]?.originFileObj?.name,
+        comments: values.comments,
+      });
+  
+      message.success('Physical meeting rejected');
+      setIsPhysicalMeetingModalVisible(false);
+      
+      // Refresh the table data
+      // await fetchMlRequestData();
+    } catch (error) {
+      console.error('Rejection error:', error);
+      message.error(error.response?.data?.message || 'Failed to reject physical meeting');
+    } finally {
+      setPhysicalMeetingLoading(false);
+    }
+  };
+
+  const handleValidateLicenseSubmit = async (values) => {
+    try {
+      setValidateLoading(true);
+      
+      // Prepare payload for validation
+      const payload = {
+        id: currentRecord.id,
+        comments: values.comments,
+        status: 'valid' // or whatever status indicates validation
+      };
+  
+      // Call your API here
+      // Example: await validateLicense(payload);
+      console.log('Validation payload:', payload);
+  
+      message.success('License validated successfully');
+      setIsValidateModalVisible(false);
+      
+      // Refresh the table data
+      // await fetchMlRequestData();
+    } catch (error) {
+      console.error('Validation error:', error);
+      message.error(error.response?.data?.message || 'Failed to validate license');
+    } finally {
+      setValidateLoading(false);
+    }
+  };
+  
+  const handleRejectLicense = async (values) => {
+    try {
+      setValidateLoading(true);
+      
+      const payload = {
+        id: currentRecord.id,
+        comments: values.comments,
+        status: 'rejected'
+      };
+  
+      // Call your API here
+      // Example: await rejectLicense(payload);
+      console.log('Rejection payload:', payload);
+  
+      message.success('License rejected');
+      setIsValidateModalVisible(false);
+      
+      // Refresh the table data
+      // await fetchMlRequestData();
+    } catch (error) {
+      console.error('Rejection error:', error);
+      message.error(error.response?.data?.message || 'Failed to reject license');
+    } finally {
+      setValidateLoading(false);
+    }
+  };
+
+  const renderStatus = (status) => {
+    if (!status) {
+      return <Tag color="default">Unknown</Tag>;
+    }
+  
+    const lowerStatus = status.toLowerCase();
+    const statusColors = {
+      'pending': 'orange',
+      'rejected': 'red',
+      'physical document': 'blue',
+      'valid': 'green',
+      'me approved': 'green',
+      'awaiting me scheduling': 'yellow',
+      'me appointment scheduled': 'yellow',
+      'hold': 'yellow',
+    };
+  
+    const color = statusColors[lowerStatus] || 'default';
+  
+    return (
+      <Tag color={color} style={{ textTransform: 'capitalize' }}>
+        {status}
+      </Tag>
+    );
+  };
+
+  const renderAction = (_, record) => {
+    const restrictedStatuses = [
+      "Awaiting ME Scheduling",
+      "ME Appointment Scheduled",
+      "Hold",
+      "Rejected"
+    ];
+    
+    const isRestrictedStatus = restrictedStatuses.includes(record.status);
+    const isMEApproved = record.status === "ME Approved";
+    const isPhysicalDocument = record.status?.toLowerCase() === "physical document";
+    
+    return (
+      <div style={{ display: "flex", gap: "8px" }}>
+        <Button
+          type="primary"
+          size="small"
+          icon={<span>👁️</span>}
+          onClick={() => handleViewClick(record)}
+        >
+          View
+        </Button>
+        
+        {isMEApproved ? (
+          <Button
+            type="primary"
+            size="small"
+            icon={<span>✅</span>}
+            onClick={() => handleValidateLicense(record)}
+            style={{ backgroundColor: '#ffffff', borderColor: '#52c41a', color:'#52c41a'}}
+          >
+            Validate the license
+          </Button>
+        ) : !isRestrictedStatus && (
+          isPhysicalDocument ? (
+            <Button
+              type="default"
+              size="small"
+              icon={<span>📝</span>}
+              onClick={() => handleUpdatePhysicalMeetingStatus(record)}
+              style={{ backgroundColor: '#f0f0f0', borderColor: '#d9d9d9' }}
+            >
+              Physical Meeting Status
+            </Button>
+          ) : (          
+            <Button
+              type="default"
+              size="small"
+              icon={<span>🗓️</span>}
+              onClick={() => handleScheduleAppointment(record)}
+            >
+              Schedule
+            </Button>
+          )
+        )}
+      </div>
+    );
+  };
 
   const columns = [
     { title: "ID", dataIndex: "id", key: "id", width: 80, fixed: "left" },
@@ -247,7 +476,13 @@ const RequestMiningTable = () => {
       width: 120,
       render: (text) => (text ? text.split("T")[0] : "-"),
     },
-    { title: "Status", dataIndex: "status", key: "status", width: 100 },
+    { 
+      title: "Status", 
+      dataIndex: "status", 
+      key: "status", 
+      width: 100,
+      render: renderStatus 
+    },
     {
       title: "Action",
       key: "action",
@@ -369,39 +604,40 @@ const RequestMiningTable = () => {
   // --- Component Return ---
   return (
     <>
-    <div style={{ marginBottom: 16 }}>
-          <Row gutter={16} align="middle">
-            <Col>
-              <Select
-                placeholder="Filter by status"
-                value={statusFilter}
-                onChange={setStatusFilter}
-                style={{ width: 200 }}
-                allowClear
-              >
-                {statusOptions.map((option) => (
-                  <Option key={option.value} value={option.value}>
-                    {option.label}
-                  </Option>
-                ))}
-              </Select>
-            </Col>
-            
-            <Col>
-              <Button
-                type="default"
-                onClick={() => {
-                  setSearchText("");
-                  setStatusFilter(null);
-                }}
-              >
-                Reset Filters
-              </Button>
-            </Col>
-          </Row>
-        </div>
+      <div style={{ marginBottom: 16 }}>
+        <Row gutter={16} align="middle">
+          <Col>
+            <Select
+              placeholder="Filter by status"
+              value={statusFilter}
+              onChange={setStatusFilter}
+              style={{ width: 200 }}
+              allowClear
+            >
+              {statusOptions.map((option) => (
+                <Option key={option.value} value={option.value}>
+                  {option.label}
+                </Option>
+              ))}
+            </Select>
+          </Col>
+          
+          <Col>
+            <Button
+              type="default"
+              onClick={() => {
+                setSearchText("");
+                setStatusFilter(null);
+              }}
+            >
+              Reset Filters
+            </Button>
+          </Col>
+        </Row>
+      </div>
+
       <Table
-        dataSource={filteredData}
+        dataSource={mlRequestData.filter(item => item.status?.toLowerCase() !== "valid")}
         columns={columns}
         rowKey="id"
         pagination={{
@@ -418,7 +654,7 @@ const RequestMiningTable = () => {
         loading={loading}
       />
 
-      {/* Details Modal */}
+      {/* All your modals */}
       <Modal
         title={
           <div
@@ -461,137 +697,52 @@ const RequestMiningTable = () => {
           </Row>
         }
         width="60%"
-        styles={{
-          header: {
-            padding: 0,
-            margin: 0,
-            borderBottom: "none",
-            borderRadius: "8px 8px 0 0",
-            overflow: "hidden",
-          },
-          body: { padding: "24px", maxHeight: "70vh", overflowY: "auto" },
-          footer: {
-            padding: "10px 24px",
-            borderTop: "1px solid #f0f0f0",
-            margin: 0,
-          },
-          mask: { backgroundColor: "rgba(0, 0, 0, 0.45)" },
-          content: { padding: 0, borderRadius: "8px" },
-        }}
         destroyOnClose
         maskClosable={!updateLoading}
         keyboard={!updateLoading}
-        style={{ top: "5vh", borderRadius: "8px", overflow: "hidden" }}
       >
         {renderModalContent()}
       </Modal>
 
-      {/* Appointment Scheduling Modal */}
-      <Modal
-        title={
-          <div
-            style={{
-              fontSize: "18px",
-              fontWeight: "600",
-              color: "#404040",
-              backgroundColor: "#ece4e4",
-              padding: "16px 24px",
-              marginTop: "5px",
-              marginLeft: "5px",
-              marginRight: "5px",
-              borderBottom: "2px solid #810202",
-              margin: "-16px -24px 0",
-              textAlign: "center",
-            }}
-          >
-            {`Schedule Appointment - ${
-              currentRecord?.subject || currentRecord?.id || "N/A"
-            }`}
-          </div>
-        }
-        open={isAppointmentModalVisible}
+      <ScheduleAppointmentModal
+        visible={isAppointmentModalVisible}
         onCancel={() => setIsAppointmentModalVisible(false)}
-        footer={
-          <Row justify="center" style={{ padding: "10px 0" }}>
-            <Col>
-              <Button
-                key="submit"
-                type="primary"
-                onClick={handleSubmit}
-                loading={loading}
-                style={{
-                  background: "#a30000",
-                  background:
-                    "linear-gradient(181deg, rgba(163,0,0,1) 0%, rgba(199,87,87,1) 50%, rgb(188, 0, 0) 100%)",
-                  border: "none",
-                  color: "white",
-                  fontWeight: 500,
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                  transition: "all 0.3s ease",
-                  width: "200px", // Optional: Set a fixed width
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background =
-                    "inear-gradient(181deg, rgba(163,0,0,1) 0%, rgba(199,87,87,1) 50%, rgb(188, 0, 0) 100%),150,83,1) 100%)";
-                  e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
-                }}
-              >
-                Schedule Appointment
-              </Button>
-            </Col>
-          </Row>
-        }
-        width={600}
-        styles={{
-          header: {
-            padding: 0,
-            margin: 0,
-            borderBottom: "none",
-            borderRadius: "8px 8px 0 0",
-            overflow: "hidden",
-          },
-          body: { padding: "24px", maxHeight: "70vh", overflowY: "auto" },
-          footer: {
-            padding: "10px 24px",
-            borderTop: "1px solid #f0f0f0",
-            margin: 0,
-          },
-          mask: { backgroundColor: "rgba(0, 0, 0, 0.45)" },
-          content: { padding: 0, borderRadius: "8px" },
+        onSubmit={handleSubmit}
+        loading={appointmentLoading}
+        form={appointmentForm}
+      />
+
+      <ConfirmationModal
+        visible={showConfirmationModal}
+        onCancel={() => setShowConfirmationModal(false)}
+        onApprove={handleProceedToApprove}
+        onReject={handleQuickReject}
+        loading={physicalMeetingLoading}
+      />
+
+      <PhysicalMeetingModal
+        visible={isPhysicalMeetingModalVisible}
+        onCancel={() => {
+          setIsPhysicalMeetingModalVisible(false);
+          physicalMeetingForm.resetFields();
         }}
-        destroyOnClose
-        maskClosable={!appointmentLoading}
-        keyboard={!appointmentLoading}
-      >
-        <Form
-          form={appointmentForm}
-          layout="vertical"
-          style={{ marginTop: 16 }}
-        >
-          <Form.Item
-            label="Appointment Date"
-            name="date"
-            rules={[{ required: true, message: "Please select a date" }]}
-          >
-            <DatePicker style={{ width: "100%" }} />
-          </Form.Item>
+        onApprove={handleApprovePhysicalMeeting}
+        onReject={handleRejectPhysicalMeeting}
+        loading={physicalMeetingLoading}
+        form={physicalMeetingForm}
+      />
 
-          <Form.Item
-            label="Location"
-            name="location"
-            rules={[{ required: true, message: "Please enter the location" }]}
-          >
-            <Input placeholder="Enter meeting location" />
-          </Form.Item>
-
-          <Form.Item label="Purpose/Notes" name="notes">
-            <TextArea
-              rows={4}
-              placeholder="Enter any additional notes or purpose of the meeting"
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
+      <ValidateModal
+        visible={isValidateModalVisible}
+        onCancel={() => {
+          setIsValidateModalVisible(false);
+          validateForm.resetFields();
+        }}
+        onValidate={handleValidateLicenseSubmit}
+        onReject={handleRejectLicense}
+        loading={validateLoading}
+        form={validateForm}
+      />
     </>
   );
 };

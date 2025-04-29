@@ -127,7 +127,7 @@ const MLRequest = () => {
       section8: "Bond Information",
       section9: "Minerals to be Mined",
       section10: "License Fee",
-      submitText: "Add License",
+      submitText: "Request License",
       // Form labels
       explorationLicenseNo: "Exploration Licence No: (where applicable)",
       applicantName: "Name of Applicant / Authorized Agent",
@@ -214,13 +214,13 @@ const MLRequest = () => {
       mineManager: "ගල්පර්වත කළමනාකරු",
     },
     ta: {
-      title: "தொழிற்சாலை சுரங்க உரிமம் விண்ணப்பம்",
+      title: "தொழில்துறை சுரங்க உரிம விண்ணப்பம்",
       section1: "ஆய்வு உரிமம் விவரங்கள்",
       section2: "தனிப்பட்ட விண்ணப்பதாரர் தகவல்",
       section3: "நிறுவன தகவல்",
       section4: "தொழில்நுட்ப/தொழில்முறை தரவு",
       section5: "சுரங்க செயல்பாடு விவரங்கள்",
-      section6: "உரிமைப் பகுதி விவரங்கள்",
+      section6: "உரிமப் பகுதி விவரங்கள்",
       section7: "சுரங்க மீட்புத் திட்டம்",
       section8: "பிணை தகவல்",
       section9: "சுரங்கம் செய்ய வேண்டிய கனிமங்கள்",
@@ -242,20 +242,20 @@ const MLRequest = () => {
       companyAddress: "இலங்கையில் - பதிவு செய்யப்பட்ட நிறுவனம் / முகவர் முகவரி",
       legalFinancial: "சட்ட / நிதி தரவு:",
       capitalization: "மூலதனமயமாக்கல்",
-      articlesOfAssociation: "நிறுவன விதிமுறைகள் (இணைப்பு)",
-      annualReports: "கடந்த மூன்று ஆண்டுகளின் வருடாந்திர அறிக்கைகள் (இணைப்பு)",
+      articlesOfAssociation: "நிறுவன விதிமுறைகள் (இணைக்கவும்)",
+      annualReports: "கடந்த மூன்று ஆண்டுகளின் வருடாந்திர அறிக்கைகள் (இணைக்கவும்)",
       landName:
-        "நிலத்தின் பெயர் (உரிமைப் பத்திரம் மற்றும் அளவீட்டுத் திட்டத்தின் நகல் இணைப்பு)",
+        "நிலத்தின் பெயர் (உரிமைப் பத்திரம் மற்றும் அளவீட்டுத் திட்டத்தின் நகல் இணைக்கவும்)",
       landOwner:
-        "நில உரிமையாளர் பெயர் (விண்ணப்பதாரருக்கு சொந்தமில்லை என்றால், குத்தகை ஒப்பந்தம் அல்லது உறுதிமொழி பத்திரம் இணைப்பு)",
+        "நில உரிமையாளர் பெயர் (விண்ணப்பதாரருக்கு சொந்தமில்லை என்றால், குத்தகை ஒப்பந்தம் அல்லது உறுதிமொழி பத்திரம் இணைக்கவும்)",
       villageName: "கிராமத்தின் பெயர்",
       gramaNiladhari: "கிராம நிலாதாரி பிரிவு",
       divisionalSecretary: "பிரிவு செயலாளர் பிரிவு",
       district: "நிர்வாக மாவட்டம்",
-      restorationPlan: "விரிவான சுரங்க மீட்புத் திட்டம் (இணைப்பு)",
+      restorationPlan: "விரிவான சுரங்க மீட்புத் திட்டம் (இணைக்கவும்)",
       bondNature: "பிணையத்தின் தன்மை மற்றும் தொகை (ஏதேனும் இருந்தால்)",
       minerals: "சுரங்கம் செய்ய வேண்டிய கனிமங்களின் பெயர்கள்",
-      licenseFee: "உரிமை கட்டண ரசீது (இணைப்பு)",
+      licenseFee: "உரிமை கட்டண ரசீது (இணைக்கவும்)",
       declaration:
         "நான், கீழே கையொப்பமிட்டவர், இந்த விண்ணப்பத்தில் உள்ள அறிக்கைகள் உண்மை மற்றும் சரியானவை என்பதை உறுதிப்படுத்துகிறேன். மேலும் 1992 இலங்கை சுரங்கம் மற்றும் கனிமங்கள் சட்டம் மற்றும் அதன் கீழ் உருவாக்கப்பட்ட விதிமுறைகளுக்கு இணங்க நடந்து கொள்வேன் என உறுதியளிக்கிறேன்.",
       date: "தேதி",
@@ -350,23 +350,6 @@ const MLRequest = () => {
             </Form.Item>
           </Col>
           <Col xs={24} sm={8}>
-            <Form.Item
-            label={currentTranslations.divisionalSecretary}
-            name="divisional_secretary_division"
-            rules={[{ required: true, message: 'Please select the division!' }]}
-          >
-            <Select
-              placeholder="Select division"
-              disabled={!divisions.length}
-            >
-              {divisions.map(division => (
-                <Option key={division} value={division}>{division}</Option>
-              ))}
-            </Select>
-            </Form.Item>
-          </Col>
-
-        </Row>
 
         <Form.Item
           label={currentTranslations.district}
@@ -381,7 +364,26 @@ const MLRequest = () => {
               <Option key={district} value={district}>{district}</Option>
             ))}
           </Select>
+        </Form.Item>           
+          </Col>
+
+        </Row>
+
+        <Form.Item
+            label={currentTranslations.divisionalSecretary}
+            name="divisional_secretary_division"
+            rules={[{ required: true, message: 'Please select the division!' }]}
+          >
+            <Select
+              placeholder="Select division"
+              disabled={!divisions.length}
+            >
+              {divisions.map(division => (
+                <Option key={division} value={division}>{division}</Option>
+              ))}
+            </Select>
         </Form.Item>
+
 
         <Form.Item
           label={currentTranslations.restorationPlan}
@@ -401,7 +403,7 @@ const MLRequest = () => {
 
         {/* Commented sections */}
 
-        <Form.Item
+        {/* <Form.Item
           label={currentTranslations.licenseFee}
           name="payment_receipt"
           valuePropName="fileList"
@@ -415,7 +417,7 @@ const MLRequest = () => {
           >
             <Button icon={<UploadOutlined />}>Select File</Button>
           </Upload>
-        </Form.Item>
+        </Form.Item> */}
 
         {/* Commented sections */}
 
