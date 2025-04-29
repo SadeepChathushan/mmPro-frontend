@@ -113,6 +113,7 @@ const [validateLoading, setValidateLoading] = useState(false);
       const values = await appointmentForm.validateFields();
 
       const payload = {
+        mining_request_id: currentRecord?.id || "",
         assigned_to_id: currentRecord?.assigned_to_details?.id || "",
         physical_meeting_location: values.location,
         start_date: values.date.format("YYYY-MM-DD"),
@@ -124,6 +125,8 @@ const [validateLoading, setValidateLoading] = useState(false);
       notification.success({
         message: "Success",
         description: "Appointment scheduled successfully!",
+        duration: 2, // Show for 2 seconds
+        onClose: () => window.location.reload()
       });
 
       setIsAppointmentModalVisible(false);
