@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button, Table, Tag, Tabs, Modal, message } from "antd";
-import {
-  ExclamationCircleOutlined,
-  EyeOutlined,
-  DownloadOutlined,
-} from "@ant-design/icons";
-// Make sure both services are imported
+import { ExclamationCircleOutlined, EyeOutlined, DownloadOutlined } from "@ant-design/icons";
 import { fetchUnActiveUsers, activateOfficer } from "../../services/management";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const { TabPane } = Tabs;
 const { confirm } = Modal;
@@ -16,6 +12,8 @@ const Activation = () => {
   const [loading, setLoading] = useState(false); // Loading for initial fetch
   const [activating, setActivating] = useState(null); // Loading state for specific row activation
   const [activeTab, setActiveTab] = useState("police");
+  const { language } = useLanguage();
+
 
   useEffect(() => {
     const fetchOfficers = async () => {
@@ -240,6 +238,128 @@ const Activation = () => {
     },
   ];
 
+  const columnme = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "National ID",
+      key: "national_id",
+      render: (_, record) => record.custom_fields?.["National Identity Card"] || "N/A",
+    },
+    {
+      title: "NIC Front Image",
+      key: "nic_front",
+      render: (_, record) => {
+        const imageUrl = record.custom_fields?.["NIC front image"];
+        return imageUrl ? (
+          <Button
+            type="link"
+            icon={<DownloadOutlined />}
+            onClick={() => handleDownload(imageUrl, "NIC_Front")}
+          >
+            Download
+          </Button>
+        ) : "N/A";
+      },
+    },
+    {
+      title: "NIC Back Image",
+      key: "nic_back",
+      render: (_, record) => {
+        const imageUrl = record.custom_fields?.["NIC back image"];
+        return imageUrl ? (
+          <Button
+            type="link"
+            icon={<DownloadOutlined />}
+            onClick={() => handleDownload(imageUrl, "NIC_Back")}
+          >
+            Download
+          </Button>
+        ) : "N/A";
+      },
+    },
+    {
+      title: "Work ID",
+      key: "work_id",
+      render: (_, record) => {
+        const workIdUrl = record.custom_fields?.["work ID"];
+        return workIdUrl ? (
+          <Button
+            type="link"
+            icon={<DownloadOutlined />}
+            onClick={() => handleDownload(workIdUrl, "Work_ID")}
+          >
+            Download
+          </Button>
+        ) : "N/A";
+      },
+    },
+    {
+      title: "Status",
+      key: "status",
+      render: (_, record) => (
+        <Tag color={record.status === 3 ? "red" : "green"}>
+          {record.status === 3 ? "Inactive" : "Active"}
+        </Tag>
+      ),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Button
+          type="primary"
+          onClick={() => toggleActive(record.id)}
+          style={{
+            background: record.status === 3 ? "#52c41a" : "#ff4d4f",
+            borderColor: record.status === 3 ? "#52c41a" : "#ff4d4f"
+          }}
+          loading={loading}
+        >
+          {record.status === 3 ? "Activate" : "Deactivate"}
+        </Button>
+      ),
+    },
+  ];
+  const columnmo = [
+    {
+      title: "First Name",
+      dataIndex: "fname",
+      key: "fname",
+    },
+    {
+      title: "Last Name",
+      dataIndex: "lname",
+      key: "lname",
+    },
+
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "NIC Number",
+      key: "national_id",
+      render: (_, record) => record.custom_fields?.["National Identity Card"] || "N/A",
+    },
+    {
+      title: "Mobile Number",
+      key: "mobile_number",
+      render: (_, record) => record.custom_fields?.["Mobile Number"] || "N/A",
+    }
+  ];
+
+
+
   // Filter officers based on User Type
   const policeOfficers = officers.filter(
     (officer) => officer.custom_fields?.["User Type"] === "police"
@@ -247,10 +367,20 @@ const Activation = () => {
   const gsmbOfficers = officers.filter(
     (officer) => officer.custom_fields?.["User Type"] === "gsmbOfficer"
   );
+  const miningEngineer = officers.filter(
+    (officer) => officer.custom_fields?.["User Type"] === "miningengineer"
+  );
+  const mlowner = officers.filter(
+    (officer) => officer.custom_fields?.["User Type"] === "mlowner"
+  );
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Officer Activation</h1>
+      <h1 className="text-2xl font-bold mb-4">{language === "en"
+        ? "Officer Activation"
+        : language === "si"
+          ? ""
+          : "அதிகாரி செயல்படுத்தல்"}</h1>
 
       <Tabs
         activeKey={activeTab}
@@ -259,7 +389,11 @@ const Activation = () => {
         items={[
           {
             key: "police",
-            label: "Police Officers",
+            label: language === "en"
+              ? "Police Officers"
+              : language === "si"
+                ? ""
+                : "போலீஸ் அதிகாரிகள்",
             children: (
               <Table
                 columns={columns}
@@ -273,7 +407,11 @@ const Activation = () => {
           },
           {
             key: "gsmb",
-            label: "GSMB Officers",
+            label: language === "en"
+              ? "GSMB Officers"
+              : language === "si"
+                ? ""
+                : "GSMB அதிகாரிகள்",
             children: (
               <Table
                 columns={columns}
@@ -285,6 +423,45 @@ const Activation = () => {
               />
             ),
           },
+          {
+            key: "mengineer",
+            label: language === "en"
+              ? "Mining Engineer"
+              : language === "si"
+                ? ""
+                : "சுரங்கப் பொறியாளர்",
+            children: (
+              <Table
+                columns={columnme}
+                dataSource={miningEngineer}
+                rowKey="id"
+                loading={loading}
+                pagination={{ pageSize: 10 }}
+                scroll={{ x: true }}
+              />
+            ),
+          },
+          {
+            key: "mlowner",
+            label: language === "en"
+              ? "ML Owner"
+              : language === "si"
+                ? ""
+                : " சுரங்க உரிம உரிமையாளர்",
+            children: (
+              <Table
+                columns={columnmo}
+                dataSource={mlowner}
+                rowKey="id"
+                loading={loading}
+                pagination={{ pageSize: 10 }}
+                scroll={{ x: true }}
+              />
+            ),
+          },
+
+
+
         ]}
       />
     </div>
