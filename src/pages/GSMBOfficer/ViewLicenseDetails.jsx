@@ -28,7 +28,7 @@ const ViewLicenseDetails = () => {
 
       if (trackerName === "ML") {
         customFields = [
-          { id: 8, name: "License Number", value: values.licenseNumber },
+          { id: 101, name: "Mining License Number", value: values.licenseNumber },
           { id: 2, name: "Owner Name", value: values.ownerName },
           { id: 3, name: "Mobile Number", value: values.mobile },
           { id: 5, name: "Capacity", value: values.capacity },
@@ -38,6 +38,9 @@ const ViewLicenseDetails = () => {
           { id: 37, name: "NIC", value: values.nic },
           { id: 84, name: "Used", value: values.used },
           { id: 85, name: "Remaining", value: values.remaining },
+          { id: 90, name: "Deed and Survey Plan", value: values.landFile },
+          { id: 72, name: "Detailed Mine Restoration Plan", value: values.restorationPlan },
+          { id: 80, name: "Payment Receipt", value: values.licenseFee },
         ];
       } else if (trackerName === "TPL") {
         customFields = [
@@ -106,11 +109,14 @@ const ViewLicenseDetails = () => {
             nic: issue.custom_fields.find((field) => field.name === "NIC")?.value || "",
             used: issue.custom_fields.find((field) => field.name === "Used")?.value || "",
             remaining: issue.custom_fields.find((field) => field.name === "Remaining")?.value || "",
+            landFile: issue.custom_fields.find((field) => field.name === "Deed and Survey Plan")?.value || "",
+            restorationPlan: issue.custom_fields.find((field) => field.name === "Detailed Mine Restoration Plan")?.value || "",
+            licenseFee: issue.custom_fields.find((field) => field.name === "Payment Receipt")?.value || "",
           };
         } else if (trackerName === "TPL") {
           transformedData = {
             ...transformedData,
-            licenseNumber: issue.custom_fields.find((field) => field.name === "License Number")?.value || "",
+            licenseNumber: issue.custom_fields.find((field) => field.name === "Mining License Number")?.value || "",
             ownerName: issue.custom_fields.find((field) => field.name === "Owner Name")?.value || "",
             location: issue.custom_fields.find((field) => field.name === "Location")?.value || "",
             capacity: issue.custom_fields.find((field) => field.name === "Capacity")?.value || "",
@@ -248,6 +254,21 @@ const ViewLicenseDetails = () => {
                 </Col>
                 <Col xs={24} sm={12}>
                 <Form.Item label={language === "en" ? "Remaining" : language === "si" ? "ඉතිරි ප්‍රමාණය" : "மீதமுள்ள கியூப்ஸ்"} name="remaining">
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={12}>
+                <Form.Item label={language === "en" ? "Deed and Survey Plan" : language === "si" ? "ඉතිරි ප්‍රමාණය" : "மீதமுள்ள கியூப்ஸ்"} name="remaining">
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={12}>
+                <Form.Item label={language === "en" ? "Detailed Mine Restoration Plan" : language === "si" ? "ඉතිරි ප්‍රමාණය" : "மீதமுள்ள கியூப்ஸ்"} name="remaining">
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={12}>
+                <Form.Item label={language === "en" ? "Payment Receipt" : language === "si" ? "ඉතිරි ප්‍රමාණය" : "மீதமுள்ள கியூப்ஸ்"} name="remaining">
                     <Input />
                   </Form.Item>
                 </Col>

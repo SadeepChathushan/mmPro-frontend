@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { Row, Col, Card, Typography, message } from 'antd';
 import AppointmentsTable from './AppointmentsTable';
 import NewAppointmentButton from './NewAppointmentButton';
-import AppointmentDetailsModal from './AppointmentDetailsModal';
 import ApprovalModal from './ApprovalModal';
 import { useLanguage } from "../../contexts/LanguageContext";
-
+import AppointmentDetailsModal from './AppointmentDetailsModal';
 
 const { Title } = Typography;
 
@@ -162,7 +161,6 @@ const Appointments = ({ activeTab }) => {
 
   const createNewAppointment = () => {
     message.info('New appointment creation clicked');
-    // Add your implementation here
   };
 
   return (
@@ -206,10 +204,10 @@ const Appointments = ({ activeTab }) => {
       </Card>
 
       <AppointmentDetailsModal
-        visible={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
-        appointment={selectedAppointment}
-      />
+  visible={isModalVisible}
+  onCancel={() => setIsModalVisible(false)}
+  appointment={selectedAppointment}
+/>
 
       <ApprovalModal
         visible={isApprovalModalVisible}

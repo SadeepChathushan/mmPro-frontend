@@ -61,15 +61,15 @@ const Dashboard = () => {
           ? "පැමිණිලි"
           : "முறையீடுகள்",
     },
-    {
-      key: "MEA",
-      label:
-        language === "en"
-          ? "ME Approved"
-          : language === "si"
-          ? "පතල් ඉංජිනේරු අනුමත කර ඇත"
-          : "சுரங்கப் பொறியாளர் ஒப்புதல் அளித்துள்ளார்",
-    },
+    // {
+    //   key: "MEA",
+    //   label:
+    //     language === "en"
+    //       ? "ME Approved"
+    //       : language === "si"
+    //       ? "පතල් ඉංජිනේරු අනුමත කර ඇත"
+    //       : "சுரங்கப் பொறியாளர் ஒப்புதல் அளித்துள்ளார்",
+    // },
     {
       key: "RM",
       label:
@@ -342,7 +342,7 @@ const Dashboard = () => {
         <Col xs={24} sm={8} style={{ textAlign: "right" }}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
             <Link to="/gsmb/register-new-owner">
-              <Button
+              {/* <Button
                 type="primary"
                 style={{ backgroundColor: "#950C33", color: "white" }}
               >
@@ -351,7 +351,7 @@ const Dashboard = () => {
                   : language === "si"
                   ? "+ අයිතිකරු ලියාපදිංචි කරන්න"
                   : "+ புதிய உரிமையாளரை பதிவு செய்"}
-              </Button>
+              </Button> */}
             </Link>
           </div>
         </Col>

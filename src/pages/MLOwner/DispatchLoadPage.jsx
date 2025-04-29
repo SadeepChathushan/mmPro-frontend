@@ -37,15 +37,22 @@ const DispatchLoadPage = () => {
   const screens = useBreakpoint();
   const uRLlocation = useLocation();
   const [l_number, setl_number] = useState("");
+  const [divisionalSecretary, setDivisionalSecretary] = useState("");
 
   useEffect(() => {
+    // Get licenseNumber from URL path
     const pathSegments = uRLlocation.pathname.split("/");
     const licenseNumber = pathSegments.slice(-3).join("/");
     setl_number(licenseNumber);
 
-    // Log l_number and related data
+    // Get divisionalSecretary from state passed via Link
+    const divisionalSecretaryFromState =
+      uRLlocation.state?.divisionalSecretary || "";
+    setDivisionalSecretary(divisionalSecretaryFromState);
+
+    // Log the license number and divisional secretary
     console.log("License Number (l_number):", licenseNumber);
-    console.log("Form Data:", formData);
+    console.log("Divisional Secretary:", divisionalSecretaryFromState);
   }, [uRLlocation]);
 
   const resetFormdata = () => {
@@ -57,7 +64,7 @@ const DispatchLoadPage = () => {
       lorryNumber: "",
       driverContact: "",
       dueDate: "",
-      Root1: "",
+      Root1: divisionalSecretary,
       Root2: "",
       Root3: "",
       cubes: 1,
@@ -205,7 +212,7 @@ const DispatchLoadPage = () => {
           destination: formData.destination,
           lorry_number: formData.lorryNumber,
           driver_contact: formData.driverContact,
-          route_01: formData.Root1,
+          route_01: divisionalSecretary,
           route_02: formData.Root2,
           route_03: formData.Root3,
           cubes: formData.cubes,

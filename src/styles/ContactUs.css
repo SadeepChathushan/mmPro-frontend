@@ -1,0 +1,144 @@
+.contact-container {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    z-index: 2;
+    position: relative;
+  }
+  
+  .contact-info {
+    flex: 1;
+    padding: 2rem;
+    color: white;
+  }
+  
+  .contact-form-section {
+    background-color: rgba(255, 255, 255, 0.15); /* semi-transparent white */
+    backdrop-filter: blur(10px);                /* blur effect behind the transparency */
+    border-radius: 12px;
+    padding: 2rem;
+    color: #fff;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  
+  .contact-details {
+    margin-top: 2rem;
+  }
+  
+  .contact-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .contact-icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    color: #ff6363;
+  }
+  
+  .contact-item h3 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 1.2rem;
+  }
+  
+  .contact-item p {
+    margin: 0.2rem 0 0;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .social-links {
+    margin-top: 3rem;
+  }
+  
+  .social-links h3 {
+    color: #ffffff;
+    margin-bottom: 1rem;
+  }
+  
+  .social-icons {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .social-icons a {
+    color: white;
+    font-size: 1.5rem;
+    transition: color 0.3s;
+  }
+  
+  .social-icons a:hover {
+    color: #ff6363;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .contact-container {
+      flex-direction: column;
+    }
+    
+    .contact-info, .contact-form-section {
+      padding: 1.5rem;
+    }
+  }
+
+  /* Input fields */
+.contact-form-section .ant-input {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+    transition: all 0.3s ease;
+  }
+  
+  /* Textarea */
+  .contact-form-section .ant-input-textarea-show-count .ant-input {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+  }
+  
+  /* Placeholder text */
+  .contact-form-section .ant-input::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+  
+  /* Focus states */
+  .contact-form-section .ant-input:focus,
+  .contact-form-section .ant-input-focused,
+  .contact-form-section .ant-input-affix-wrapper-focused {
+    background-color: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2) !important;
+  }
+  
+  /* Hover states */
+  .contact-form-section .ant-input:hover,
+  .contact-form-section .ant-input-affix-wrapper:hover {
+    border-color: rgba(255, 255, 255, 0.4) !important;
+  }
+  
+  /* Form labels */
+  .contact-form-section .ant-form-item-label > label {
+    color: white !important;
+  }
+  
+  /* Error messages */
+  .contact-form-section .ant-form-item-explain-error {
+    color: #ffa39e !important;
+  }
+  
+  /* Submit button */
+  .contact-form-section .ant-btn-primary {
+    background-color: rgba(255, 99, 99, 0.8) !important;
+    border: none !important;
+    transition: all 0.3s !important;
+  }
+  
+  .contact-form-section .ant-btn-primary:hover {
+    background-color: rgb(240, 240, 240) !important;
+    color:#a30000 !important;
+  }
+
