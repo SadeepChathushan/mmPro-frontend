@@ -66,6 +66,7 @@ const PhysicalMeetingModal = ({
           action === "approve" ? "approved" : "rejected"
         } successfully!`,
         duration: 2,
+         onClose: () => window.location.reload(),
       });
 
       onCancel(); // Close the modal
