@@ -109,6 +109,11 @@ const RequestMiningTable = () => {
     setShowConfirmationModal(true);
   };
 
+  const handleProceedToApprove = () => {
+    setShowConfirmationModal(false);
+    setIsPhysicalMeetingModalVisible(true);
+  };
+
   const handleQuickReject = async () => {
     try {
       setPhysicalMeetingLoading(true);
@@ -128,11 +133,6 @@ const RequestMiningTable = () => {
     } finally {
       setPhysicalMeetingLoading(false);
     }
-  };
-
-  const handleProceedToApprove = () => {
-    setShowConfirmationModal(false);
-    setIsPhysicalMeetingModalVisible(true);
   };
 
   const handleSubmit = async () => {
@@ -777,8 +777,9 @@ const RequestMiningTable = () => {
         onReject={handleRejectPhysicalMeeting}
         loading={physicalMeetingLoading}
         form={physicalMeetingForm}
+        recordId={currentRecord?.id} // Pass the ID here
       />
-
+      
       <ValidateModal
         visible={isValidateModalVisible}
         onCancel={() => {

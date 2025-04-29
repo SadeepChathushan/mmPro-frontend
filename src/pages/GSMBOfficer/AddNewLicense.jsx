@@ -417,6 +417,7 @@ const AddNewLicense = () => {
         "mining_license_number",
         values.mining_license_number || ""
       );
+      formData.append("royalty", "5000");
 
       // Append files safely checking they exist
       if (
