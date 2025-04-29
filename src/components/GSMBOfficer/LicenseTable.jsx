@@ -193,7 +193,7 @@ const LicenseTable = ({ data, tracker, loading }) => {
     ML: [
       { title: "ID", dataIndex: "id", width: 80, fixed: "left" },
       { title: "Owner", dataIndex: "assigned_to", ellipsis: true },
-      { title: "License No.", dataIndex: "subject", width: 120 },
+      { title: "License No.", dataIndex: "mining_license_number", width: 120 },
       { title: "Mobile", dataIndex: "mobile_number", width: 120 },
       { title: "Capacity", dataIndex: "capacity", width: 100 },
       { title: "Used", dataIndex: "used", width: 80 },
@@ -249,6 +249,7 @@ const LicenseTable = ({ data, tracker, loading }) => {
       { title: "ID", dataIndex: "id", width: 80, fixed: "left" },
       { title: "Mobile", dataIndex: "mobile_number", width: 120 },
       { title: "Lorry No.", dataIndex: "lorry_number", width: 120 },
+      { title: "Role", dataIndex: "role", width: 120 },
       { title: "Complaint Date", dataIndex: "complaint_date", width: 150 },
       {
         title: "Resolved",
@@ -299,8 +300,8 @@ const LicenseTable = ({ data, tracker, loading }) => {
     "remaining",
     "royalty",
     "start_date",
-    "due_date",
-    "startDate",
+    // "due_date",
+    // "startDate",
     "destination",
   ];
 

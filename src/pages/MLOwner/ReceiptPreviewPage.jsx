@@ -64,6 +64,9 @@ const ReceiptPage = () => {
   const mllocationData = mldata?.custom_fields?.find(
     (field) => field.name === "Grama Niladhari Division"
   );
+  const mlnumber = mldata?.custom_fields?.find(
+    (field) => field.name === "Mining License Number"
+  );
 
   const currentDate = new Date();
   const printedDate = currentDate.toISOString().split("T")[0];
@@ -88,7 +91,7 @@ const ReceiptPage = () => {
 
   const receiptData = {
     lorryNumber: safeFormData.lorryNumber,
-    mlNumber: mldata?.subject || "N/A", // ML Number from fetched data
+    mlNumber: mlnumber?.value || "N/A", // ML Number from fetched data
     mlOwner: mldata?.assigned_to?.name || "N/A", // ML Owner from fetched data
     mlContact: mlcontactData?.value || "N/A", // ML Contact from fetched data
     startLocation: mllocationData?.value || "N/A", // Start location from fetched data

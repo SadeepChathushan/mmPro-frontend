@@ -50,6 +50,7 @@ const MLOwnerHomePage = () => {
       statusReadyForCollection: "Please collect your mining license",
       noPendingRequests: "No pending license requests",
       close: "Close",
+      royaltyAmount: "Royalty Amount",
     },
     si: {
       title: " කැණීමේ බලපත්‍ර",
@@ -169,6 +170,7 @@ const MLOwnerHomePage = () => {
           dueDate: license["Due Date"],
           remainingCubes: license["Remaining Cubes"],
           status: license["Status"],
+          royalty: license["Royalty"],
         }));
 
         console.log("Mapped Data:", mappedData);
@@ -368,8 +370,12 @@ const MLOwnerHomePage = () => {
                         {record.dueDate}
                       </p>
                       <p>
-                        <strong>{currentTranslations.remainingCubes}:</strong>{" "}
+                        <strong>{currentTranslations.remainingCubes}:</strong>{" "} 
                         {record.remainingCubes} cubes
+                      </p>
+                      <p>
+                        <strong>{currentTranslations.royaltyAmount}:</strong>{" "}
+                        {record.royalty}
                       </p>
                       <p>
                         <strong>{currentTranslations.status}:</strong>
