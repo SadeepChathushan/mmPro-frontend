@@ -13,7 +13,11 @@ import {
   Typography,
   Tag,
 } from "antd";
-import { getMlRequest, physicalMeeting } from "../../services/officerService";
+import {
+  approveMiningLicense,
+  getMlRequest,
+  physicalMeeting,
+} from "../../services/officerService";
 import { notification } from "antd";
 import ScheduleAppointmentModal from "../GSMBOfficer/ML Req/ScheduleAppointmentModal";
 import PhysicalMeetingModal from "../GSMBOfficer/ML Req/PhysicalMeetingModal";
@@ -306,26 +310,51 @@ const RequestMiningTable = () => {
     }
   };
 
+  // const handleValidateLicenseSubmit = async (values) => {
+  //   try {
+  //     setValidateLoading(true);
+
+  //     // Prepare payload for validation
+  //     const payload = {
+  //       id: currentRecord.id,
+  //       comments: values.comments,
+  //       status: 'valid' // or whatever status indicates validation
+  //     };
+
+  //     // Call your API here
+  //     // Example: await validateLicense(payload);
+  //     console.log('Validation payload:', payload);
+
+  //     message.success('License validated successfully');
+  //     setIsValidateModalVisible(false);
+
+  //     // Refresh the table data
+  //     // await fetchMlRequestData();
+  //   } catch (error) {
+  //     console.error('Validation error:', error);
+  //     message.error(error.response?.data?.message || 'Failed to validate license');
+  //   } finally {
+  //     setValidateLoading(false);
+  //   }
+  // };
+
   const handleValidateLicenseSubmit = async (values) => {
     try {
       setValidateLoading(true);
 
-      // Prepare payload for validation
-      const payload = {
-        id: currentRecord.id,
-        comments: values.comments,
-        status: "valid", // or whatever status indicates validation
-      };
+      if (!currentRecord?.id) {
+        throw new Error("No record ID found for validation");
+      }
 
-      // Call your API here
-      // Example: await validateLicense(payload);
-      console.log("Validation payload:", payload);
+      // Call the Axios service
+      await approveMiningLicense(currentRecord.id);
 
       message.success("License validated successfully");
       setIsValidateModalVisible(false);
 
       // Refresh the table data
-      // await fetchMlRequestData();
+      const response = await getMlRequest();
+      setMlRequestData(response?.data || response);
     } catch (error) {
       console.error("Validation error:", error);
       message.error(
