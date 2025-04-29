@@ -16,29 +16,17 @@ import {
 } from '@ant-design/icons';
 
 const AppointmentsTable = ({ 
-  
   activeTab, 
   onViewDetails, 
-
   onShowApproval,
   onHold,
   onReject,
   onDateChange
 }) => {
-
   const { language } = useLanguage();
-
-  const columns = [
-    {
-      title: language === "en"
-        ? "ML Owner"
-        : language === "si"
-          ? ""
-          : "ML உரிமையாளர்",
-      dataIndex: 'mlOwner',
-
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const fetchAppointments = async () => {
       setLoading(true);
@@ -57,41 +45,17 @@ const AppointmentsTable = ({
 
   const columns = [
     {
-      title: 'ML Owner',
+      title: language === "en" ? "ML Owner" : language === "si" ? "" : "ML உரிமையாளர்",
       dataIndex: 'assigned_to',
-
       key: 'mlOwner'
     },
     {
-      title: language === "en"
-  ? "GSMB Officer"
-  : language === "si"
-  ? ""
-  : "GSMB அதிகாரி",
+      title: language === "en" ? "GSMB Officer" : language === "si" ? "" : "GSMB அதிகாரி",
       dataIndex: 'gsmbOfficer',
       key: 'gsmbOfficer'
     },
     {
-
-      title: language === "en"
-  ? "Location"
-  : language === "si"
-  ? ""
-  : "இடம்",
-      dataIndex: 'location',
-      key: 'location'
-    },
-    {
-      title: language === "en"
-      ? "Cube Count"
-      : language === "si"
-      ? ""
-      : "கனசதுரங்களின் எண்ணிக்கை",
-      dataIndex: 'cubeCount',
-      key: 'cubeCount',
-      render: count => `${count} m³`
-
-      title: 'Location',
+      title: language === "en" ? "Location" : language === "si" ? "" : "இடம்",
       dataIndex: 'Google_location',
       key: 'location',
       render: (location) => (
@@ -109,48 +73,27 @@ const AppointmentsTable = ({
             rel="noopener noreferrer"
             style={{ color: '#389e0d' }}
           >
-            View on Map
+            {language === "en" ? "View on Map" : language === "si" ? "" : "வரைபடத்தில் காண்பி"}
           </a>
         </Space>
       )
-
     },
- 
     {
-      title: language === "en"
-      ? "Date"
-      : language === "si"
-      ? ""
-      : "திகதி",
+      title: language === "en" ? "Cube Count" : language === "si" ? "" : "கனசதுரங்களின் எண்ணிக்கை",
+      dataIndex: 'cubeCount',
+      key: 'cubeCount',
+      render: count => `${count} m³`
+    },
+    {
+      title: language === "en" ? "Date" : language === "si" ? "" : "திகதி",
       dataIndex: 'date',
       key: 'date'
-    },
-    {
-      title: language === "en"
-  ? "Action"
-  : language === "si"
-  ? " "
-  : "நடவடிக்கை",
-      key: 'action',
-      render: (_, record) => (
-        <Button type="link" onClick={() => onViewDetails(record)}>
-          {language === "en" 
-  ? "View Details" 
-  : language === "si" 
-  ? "" 
-  : "விவரங்களை பார்வையிட"}
-        </Button>
-      )
     }
   ];
 
   if (activeTab === 'pending') {
-    columns.splice(columns.length - 1, 0, {
-      title: language === "en"
-  ? "Set Date"
-  : language === "si"
-  ? ""
-  : "திகதி அமைக்கவும்",
+    columns.push({
+      title: language === "en" ? "Set Date" : language === "si" ? "" : "திகதி அமைக்கவும்",
       key: 'setDate',
       render: (_, record) => (
         <Popover
@@ -165,40 +108,24 @@ const AppointmentsTable = ({
                 type="primary"
                 onClick={() => onShowApproval(record.id)}
               >
-               {language === "en" 
-  ? "Confirm" 
-  : language === "si" 
-  ? "" 
-  : "உறுதிப்படுத்தவும்"}
+                {language === "en" ? "Confirm" : language === "si" ? "" : "உறுதிப்படுத்தவும்"}
               </Button>
             </Space>
           )}
-          title={
-            language === "en"
-              ? "Select Appointment Date"
-              : language === "si"
-              ? ""
-              : "சந்திப்பு திகதியை தேர்வு செய்யவும்"
-          }
+          title={language === "en" ? "Select Appointment Date" : language === "si" ? "" : "சந்திப்பு திகதியை தேர்வு செய்யவும்"}
           trigger="click"
         >
-          <Button icon={<CalendarOutlined />}>{language === "en" 
-  ? "Set Date" 
-  : language === "si" 
-  ? "" 
-  : "திகதியை அமைக்கவும்"}</Button>
+          <Button icon={<CalendarOutlined />}>
+            {language === "en" ? "Set Date" : language === "si" ? "" : "திகதியை அமைக்கவும்"}
+          </Button>
         </Popover>
       )
     });
   }
 
   if (activeTab === 'approved') {
-    columns.splice(columns.length - 1, 0, {
-      title: language === "en"
-  ? "Action"
-  : language === "si"
-  ? " "
-  : "நடவடிக்கை",
+    columns.push({
+      title: language === "en" ? "Action" : language === "si" ? " " : "நடவடிக்கை",
       key: 'statusActions',
       render: (_, record) => (
         <StatusActions
@@ -211,11 +138,23 @@ const AppointmentsTable = ({
     });
   }
 
+  // Add the View Details column last
+  columns.push({
+    title: language === "en" ? "Action" : language === "si" ? " " : "நடவடிக்கை",
+    key: 'action',
+    render: (_, record) => (
+      <Button type="link" onClick={() => onViewDetails(record)}>
+        {language === "en" ? "View Details" : language === "si" ? "" : "விவரங்களை பார்வையிட"}
+      </Button>
+    )
+  });
+
   return (
     <Table
       columns={columns}
       dataSource={appointments}
       rowKey="id"
+      loading={loading}
       pagination={{ pageSize: 5 }}
     />
   );
