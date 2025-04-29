@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { Card, Typography, Col, Spin } from 'antd';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { fetchMonthlyCubesCounts } from '../../services/management'; 
+import { useLanguage } from "../../contexts/LanguageContext";
+
 
 const { Title } = Typography;
 
@@ -10,6 +12,7 @@ export const MonthlyChart = ({ lineData: initialLineData }) => {
   const [lineData, setLineData] = useState(initialLineData);
   const [loading, setLoading] = useState(!initialLineData);
   const [error, setError] = useState(null);
+  const { language } = useLanguage();
 
   useEffect(() => {
     if (initialLineData) return;
@@ -63,7 +66,11 @@ export const MonthlyChart = ({ lineData: initialLineData }) => {
   return (
     <Col xs={24} md={16}>
       <Card bordered={false} style={{ backgroundColor: 'rgba(254, 118, 118, 0.1)', borderRadius: '8px', padding: '20px' }}>
-        <Title level={5} style={{ color: '#fff', textAlign: 'center' }}>Monthly Sand Cubes Count</Title>
+        <Title level={5} style={{ color: '#fff', textAlign: 'center' }}>{language === "en" 
+  ? "Monthly Sand Cubes Count" 
+  : language === "si" 
+  ? "" 
+  : "மாதாந்திர மணல் கனசதுர எண்ணிக்கை"}</Title>
         <ResponsiveContainer width="100%" height={350}>
           <LineChart data={lineData}>
             <XAxis dataKey="month" stroke="#ffffff" tick={{ fill: '#ffffff', fontSize: 14 }} tickLine={false} />

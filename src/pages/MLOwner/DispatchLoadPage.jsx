@@ -300,7 +300,7 @@ const DispatchLoadPage = () => {
                   ? "DATE & TIME:"
                   : language === "si"
                   ? "දිනය සහ වේලාව:"
-                  : "தேதி & நேரம்:"}
+                  : "திகதி & நேரம்:"}
               </span>
               <Input
                 value={currentDateTime}
@@ -411,7 +411,7 @@ const DispatchLoadPage = () => {
                   ? "DRIVER CONTACT:"
                   : language === "si"
                   ? "රියදුරු සම්බන්ධතා:"
-                  : "இயக்குநர் தொடர்பு:"}
+                  : "சாரதி தொடர்பு:"}
               </span>
               <Input
                 value={formData.driverContact}
@@ -467,7 +467,7 @@ const DispatchLoadPage = () => {
                   ? "CUBES:"
                   : language === "si"
                   ? "කියුබ් ගණන:"
-                  : "க்யூப்ஸ்:"}
+                  : "கனசதுரங்கள்:"}
               </span>
               <div className="cubes-input-container">
                 <Button

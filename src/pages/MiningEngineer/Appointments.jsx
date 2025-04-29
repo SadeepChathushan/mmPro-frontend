@@ -4,6 +4,8 @@ import AppointmentsTable from './AppointmentsTable';
 import NewAppointmentButton from './NewAppointmentButton';
 import AppointmentDetailsModal from './AppointmentDetailsModal';
 import ApprovalModal from './ApprovalModal';
+import { useLanguage } from "../../contexts/LanguageContext";
+
 
 const { Title } = Typography;
 
@@ -12,6 +14,7 @@ const Appointments = ({ activeTab }) => {
   const [isApprovalModalVisible, setIsApprovalModalVisible] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [approvingAppointmentId, setApprovingAppointmentId] = useState(null);
+  const { language } = useLanguage()
   
   const [appointments, setAppointments] = useState([
     {
@@ -167,7 +170,22 @@ const Appointments = ({ activeTab }) => {
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
         <Col>
           <Title level={3}>
-            {activeTab === 'pending' ? 'Pending Scheduling' : 'Scheduled'} Appointments
+          {activeTab === 'pending'
+        ? language === "en"
+          ? "Pending Scheduling"
+          : language === "si"
+          ? ""
+          : "நிலுவையிலுள்ள திட்டமிடல்"
+        : language === "en"
+        ? "Scheduled"
+        : language === "si"
+        ? ""
+        : "திட்டமிடப்பட்ட"}{" "}
+      {language === "en"
+        ? "Appointments"
+        : language === "si"
+        ? ""
+        : "சந்திப்புகள்"}
           </Title>
         </Col>
         <Col>

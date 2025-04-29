@@ -144,7 +144,7 @@ const NewLicenseRegistration = () => {
     <Row gutter={[16, 16]}>
       <Col xs={24} sm={24} md={12}>
         <Form.Item
-          label={language === "en" ? "First Name" : language === "si" ? "අයිතිකරුගේ මුල් නම" : "உரிமையாளர் முதற்கொண்டு பெயர்"}
+          label={language === "en" ? "First Name" : language === "si" ? "අයිතිකරුගේ මුල් නම" : "உரிமையாளர் முதற்பெயர்"}
           name="firstname"
           rules={[
             {
@@ -154,7 +154,7 @@ const NewLicenseRegistration = () => {
                   ? "Please input the first name!"
                   : language === "si"
                   ? "අයිතිකරුගේ මුල් නම ඇතුළත් කරන්න!"
-                  : "உரிமையாளர் முதற்கொண்டு பெயரை உள்ளிடவும்!",
+                  : "உரிமையாளர் முதற்ரை உள்ளிடவும்!",
             },
           ]}
         >
