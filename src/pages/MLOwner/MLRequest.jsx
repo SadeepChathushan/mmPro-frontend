@@ -127,7 +127,7 @@ const MLRequest = () => {
       section8: "Bond Information",
       section9: "Minerals to be Mined",
       section10: "License Fee",
-      submitText: "Add License",
+      submitText: "Request License",
       // Form labels
       explorationLicenseNo: "Exploration Licence No: (where applicable)",
       applicantName: "Name of Applicant / Authorized Agent",
@@ -350,23 +350,6 @@ const MLRequest = () => {
             </Form.Item>
           </Col>
           <Col xs={24} sm={8}>
-            <Form.Item
-            label={currentTranslations.divisionalSecretary}
-            name="divisional_secretary_division"
-            rules={[{ required: true, message: 'Please select the division!' }]}
-          >
-            <Select
-              placeholder="Select division"
-              disabled={!divisions.length}
-            >
-              {divisions.map(division => (
-                <Option key={division} value={division}>{division}</Option>
-              ))}
-            </Select>
-            </Form.Item>
-          </Col>
-
-        </Row>
 
         <Form.Item
           label={currentTranslations.district}
@@ -381,7 +364,26 @@ const MLRequest = () => {
               <Option key={district} value={district}>{district}</Option>
             ))}
           </Select>
+        </Form.Item>           
+          </Col>
+
+        </Row>
+
+        <Form.Item
+            label={currentTranslations.divisionalSecretary}
+            name="divisional_secretary_division"
+            rules={[{ required: true, message: 'Please select the division!' }]}
+          >
+            <Select
+              placeholder="Select division"
+              disabled={!divisions.length}
+            >
+              {divisions.map(division => (
+                <Option key={division} value={division}>{division}</Option>
+              ))}
+            </Select>
         </Form.Item>
+
 
         <Form.Item
           label={currentTranslations.restorationPlan}
@@ -401,7 +403,7 @@ const MLRequest = () => {
 
         {/* Commented sections */}
 
-        <Form.Item
+        {/* <Form.Item
           label={currentTranslations.licenseFee}
           name="payment_receipt"
           valuePropName="fileList"
@@ -415,7 +417,7 @@ const MLRequest = () => {
           >
             <Button icon={<UploadOutlined />}>Select File</Button>
           </Upload>
-        </Form.Item>
+        </Form.Item> */}
 
         {/* Commented sections */}
 
