@@ -308,7 +308,7 @@ const TPLReceiptPage = () => {
                   ? "Driver Contact:"
                   : language === "si"
                   ? "රියදුරු සම්බන්ධතා:"
-                  : "ஓட்டுனர் தொடர்பு:"}
+                  : "சாரதி தொடர்பு:"}
               </strong>{" "}
               {receiptData.lorryContact}
             </p>
@@ -338,7 +338,7 @@ const TPLReceiptPage = () => {
                   ? "Printed Date:"
                   : language === "si"
                   ? "මුද්‍රිත දිනය:"
-                  : "அச்சிடப்பட்ட தேதி:"}
+                  : "அச்சிடப்பட்ட திகதி:"}
               </strong>{" "}
               {receiptData.printedDate}
             </p>
@@ -370,7 +370,7 @@ const TPLReceiptPage = () => {
                 ? "Print Receipt"
                 : language === "si"
                 ? "මුද්‍රණ ලදුපත"
-                : "அச்சு ரசீது"}
+                : "ரசீதை அச்சிடுக"}
             </Button>
           </Col>
         </Row>

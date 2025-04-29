@@ -325,7 +325,7 @@ const Dashboard = () => {
                 ? "Search"
                 : language === "si"
                 ? "සොයන්න"
-                : "சேர்"
+                : "தேடு"
             }
             prefix={<SearchOutlined />}
             style={{
