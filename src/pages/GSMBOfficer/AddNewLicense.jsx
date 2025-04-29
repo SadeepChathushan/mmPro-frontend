@@ -366,7 +366,6 @@ const AddNewLicense = () => {
   const [loading, setLoading] = useState(false); // Now useState is defined
   const [divisions, setDivisions] = useState([]);
 
-
   const handleDistrictChange = (value) => {
     setDivisions(districtData[value] || []);
     form.setFieldsValue({ divisional_secretary_division: undefined }); // Reset division when district changes
@@ -406,7 +405,7 @@ const AddNewLicense = () => {
         values.start_date ? values.start_date.format("YYYY-MM-DD") : ""
       );
       formData.append(
-        "end_date",
+        "due_date",
         values.end_date ? values.end_date.format("YYYY-MM-DD") : ""
       );
 
@@ -528,7 +527,7 @@ const AddNewLicense = () => {
       signature: "Signature",
       mineManager: "Mine Manager",
       startDate: "Start Date",
-      endDate: "End Date",
+      endDate: "Due Date",
       full: "Royalty Percentage",
       capacity: "Capacity(cubes)",
       full_capacity: "Full Capacity",
