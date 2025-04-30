@@ -151,7 +151,7 @@ const LicenseTable = ({ data, tracker, loading }) => {
       { title: language === "en" ? "Used" : language === "si" ? "" : "பயன்படுத்தப்பட்டது", dataIndex: "used", width: 80 },
       { title: language === "en" ? "Remaining" : language === "si" ? "" : "மீதமுள்ளது", dataIndex: "remaining", width: 100 },
       { title: language === "en" ? "Royalty" : language === "si" ? "" : "உரிமத் தொகை", dataIndex: "royalty", width: 100 },
-        
+
       {
         title: language === "en" ? "Valid Period" : language === "si" ? "" : "செல்லுபடியாகும் காலம்",
         width: 200,
@@ -179,7 +179,6 @@ const LicenseTable = ({ data, tracker, loading }) => {
       {
         title: language === "en" ? "Action" : language === "si" ? "" : "நடவடிக்கை",
         width: 100,
-        fixed: "right",
         render: (_, record) => renderAction(record),
       },
     ],
@@ -196,11 +195,12 @@ const LicenseTable = ({ data, tracker, loading }) => {
       {
         title: language === "en" ? "Action" : language === "si" ? "" : "நடவடிக்கை",
         width: 100,
-        fixed: "right",
+        // fixed: "right",
         render: (_, record) => renderAction(record),
       },
     ],
     CMPLN: [
+
 
       { title: language === "en" ? "ID" : language === "si" ? "" : "அடையாள எண்", dataIndex: "id", width: 80, fixed: "left" },
       { title: language === "en" ? "Mobile" : language === "si" ? "" : "தொலைபேசி", dataIndex: "mobile_number", width: 120 },
@@ -211,19 +211,19 @@ const LicenseTable = ({ data, tracker, loading }) => {
       {
         title: language === "en" ? "Resolved" : language === "si" ? "" : "தீர்க்கப்பட்டது",
         width: 100,
-        fixed: "right",
+        // fixed: "right",
         render: (_, record) => renderComplaintAction(record),
       },
     ],
     MEA: [
-      { title: "ID", dataIndex: "id", width: 80, fixed: "left" },
+      { title: "ID", dataIndex: "id", width: 80 },
       { title: "Owner", dataIndex: "author", ellipsis: true },
       { title: "License No.", dataIndex: "subject", width: 120 },
       { title: "Mobile", dataIndex: "mobile_number", width: 120 },
       {
         title: "Action",
         width: 100,
-        fixed: "right",
+        // fixed: "right",
         render: (_, record) => renderAction(record),
       },
     ],
@@ -608,8 +608,8 @@ const LicenseTable = ({ data, tracker, loading }) => {
           showSizeChanger: true,
           pageSizeOptions: ["10", "25", "50", "100"],
         }}
-        scroll={{ x: 1500 }}
-        sticky
+        // scroll={{ x: 1500 }}
+        // sticky
         bordered
         size="middle"
         className="license-table"
