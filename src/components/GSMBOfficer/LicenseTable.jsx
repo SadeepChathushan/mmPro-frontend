@@ -35,13 +35,13 @@ import dayjs from "dayjs";
 const { Option } = Select;
 const { Text } = Typography;
 
-const LicenseTable = ({ data, tracker, loading }) => {
+const LicenseTable = ({ data, tracker, loading, searchText }) => {
   const navigate = useNavigate();
   const [fetchingId, setFetchingId] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentRecord, setCurrentRecord] = useState(null);
   const [form] = Form.useForm();
-  const [searchText, setSearchText] = useState("");
+  // const [searchText, setSearchText] = useState("");
   // const [statusFilter, setStatusFilter] = useState(null);
   const { language } = useLanguage();
   const [isAppointmentModalVisible, setIsAppointmentModalVisible] = useState(false);
@@ -613,11 +613,50 @@ const LicenseTable = ({ data, tracker, loading }) => {
 
     return tracker === "ML" ? renderMLFields() : renderTPLFields();
   };
+  // const data = data.filter((item) => {
+  //   const search = searchText.toLowerCase();
+  //   return (
+  //     item.id?.toString().toLowerCase().includes(search) ||
+  //     item.subject?.toLowerCase().includes(search) ||
+  //     item.assigned_to?.toLowerCase().includes(search) ||
+  //     item.mobile_number?.toLowerCase().includes(search) ||
+  //     item.administrative_district?.toLowerCase().includes(search) ||
+  //     item.status?.toLowerCase().includes(search)
+  //   );
+  // });
 
   return (
     <>
       <Table
-        dataSource={data}
+        dataSource={data
+          .filter((item) => {
+            const search = searchText.toLowerCase();
+            return (
+              item.id?.toString().toLowerCase().includes(search) ||
+              item.subject?.toLowerCase().includes(search) ||
+              item.assigned_to?.toLowerCase().includes(search) ||
+              item.mobile_number?.toLowerCase().includes(search) ||
+              item.administrative_district?.toLowerCase().includes(search) ||
+              item.status?.toLowerCase().includes(search) ||
+              item.royalty?.toLowerCase().includes(search) ||
+              item.capacity?.toLowerCase().includes(search) ||
+              item.used?.toLowerCase().includes(search) ||
+              item.remaining?.toLowerCase().includes(search) ||
+              item.mining_license_number?.toLowerCase().includes(search) ||
+              item.author?.toLowerCase().includes(search) ||
+              item.lorry_number?.toLowerCase().includes(search) ||
+              item.driver_contact?.toLowerCase().includes(search) ||
+              item.cubes?.toLowerCase().includes(search) ||
+              item.destination?.toLowerCase().includes(search) ||
+              item.complaint_date?.toLowerCase().includes(search) 
+
+
+
+
+
+            );
+          })
+        }
         columns={columns[tracker]}
         rowKey="id"
         pagination={{

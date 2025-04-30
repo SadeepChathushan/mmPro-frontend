@@ -16,7 +16,7 @@ import officerService from "../../services/officerService"; // Import officerSer
 import dayjs from "dayjs";
 import { useLanguage } from "../../contexts/LanguageContext";
 
-const MlOwnersTable = () => {
+const MlOwnersTable = ({searchText}) => {
   const [ownersData, setOwnersData] = useState([]);
   const [loading, setLoading] = useState(true);
   // const [language, setLanguage] = useState("en"); // default to "en"
@@ -228,7 +228,20 @@ const MlOwnersTable = () => {
       }}
     >
       <Table
-        dataSource={ownersData}
+        dataSource={ownersData
+          .filter((item) => {
+            if (!searchText) return true;
+            const search = searchText.toLowerCase();
+            return (
+              item.id?.toString().toLowerCase().includes(search) ||
+              item.ownerName?.toLowerCase().includes(search) ||
+              item.email?.toLowerCase().includes(search) ||
+              item.NIC?.toLowerCase().includes(search) ||
+              item.phoneNumber?.toLowerCase().includes(search)            );
+          }
+          
+        )
+        }
         columns={columns}
         loading={loading}
         //expandable={{ expandedRowRender }}

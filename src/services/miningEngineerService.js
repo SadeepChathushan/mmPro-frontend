@@ -66,35 +66,35 @@ export const getMeScheduledList = async () => {
     }
 };
 
-export const scheduleAppointment = async (appointmentId, date) => {
-    try {
-      const token = localStorage.getItem("USER_TOKEN");
-      if (!token) {
-        console.error("User token not found in localStorage");
-        return { success: false, message: "Authentication required" };
-      }
+// export const scheduleAppointment = async (appointmentId, date) => {
+//     try {
+//       const token = localStorage.getItem("USER_TOKEN");
+//       if (!token) {
+//         console.error("User token not found in localStorage");
+//         return { success: false, message: "Authentication required" };
+//       }
 
-      const response = await axios.post(
-        `${BASE_URL}/mining-engineer/schedule-appointment`,
-        { appointmentId, date },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+//       const response = await axios.post(
+//         `${BASE_URL}/mining-engineer/schedule-appointment`,
+//         { appointmentId, date },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//             "Content-Type": "application/json",
+//           },
+//         }
+//       );
   
-      if (response.data.success) {
-        return { success: true, data: response.data.data };
-      } else {
-        return { success: false, message: response.data.message || "Failed to schedule appointment" };
-      }
-    } catch (error) {
-      console.error("Failed to schedule appointment:", error);
-      return { success: false, message: error.response?.data?.message || "An error occurred" };
-    }
-};
+//       if (response.data.success) {
+//         return { success: true, data: response.data.data };
+//       } else {
+//         return { success: false, message: response.data.message || "Failed to schedule appointment" };
+//       }
+//     } catch (error) {
+//       console.error("Failed to schedule appointment:", error);
+//       return { success: false, message: error.response?.data?.message || "An error occurred" };
+//     }
+// };
 
 export const updateAppointmentStatus = async (appointmentId, status) => {
     try {
@@ -153,4 +153,39 @@ export const getAppointmentDetails = async (appointmentId) => {
       console.error("Failed to get appointment details:", error);
       return { success: false, message: error.response?.data?.message || "An error occurred" };
     }
+};
+
+//This is the function to schedule the appointment date for the mining engineer
+//It takes the date as a parameter and sends it to the backend API to schedule the appointment
+export const scheduleMiningEngineerAppointmentDate = async (mining_number, date) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return { success: false, message: "Authentication required" };
+    }
+
+    const response = await axios.post(
+      `${BASE_URL}/mining-engineer/create-ml-appointment`,
+      { 
+        start_date: date,
+        mining_license_number: mining_number // Map mining_number to mining_license_number for the API
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.data.success) {
+      return { success: true, data: response.data.data };
+    } else {
+      return { success: false, message: response.data.message || "Failed to schedule appointment" };
+    }
+  } catch (error) {
+    console.error("Failed to schedule appointment:", error);
+    return { success: false, message: error.response?.data?.message || "An error occurred" };
+  }
 };
