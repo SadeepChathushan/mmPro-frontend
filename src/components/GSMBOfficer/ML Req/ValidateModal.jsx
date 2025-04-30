@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Form, Input, Button, message } from "antd";
+import { useLanguage } from "../../../contexts/LanguageContext";
 
 const { TextArea } = Input;
 
@@ -12,6 +13,8 @@ const ValidateModal = ({
   form,
 }) => {
   const [actionType, setActionType] = useState(null); // 'validate' or 'reject'
+  const { language } = useLanguage();
+  
 
   const handleSubmit = () => {
     form
@@ -30,7 +33,13 @@ const ValidateModal = ({
 
   return (
     <Modal
-      title="License Validation"
+      title={
+        language === "en"
+          ? "License Validation"
+          : language === "si"
+          ? ""
+          : "உரிமம் சரிபார்ப்பு"
+      }
       visible={visible}
       onCancel={onCancel}
       footer={[
@@ -41,7 +50,11 @@ const ValidateModal = ({
           disabled={loading}
           style={{ marginRight: 8 }}
         >
-          Reject
+          {language === "en"
+    ? "Reject"
+    : language === "si"
+    ? ""
+    : "நிராகரிக்க"}
         </Button>,
         <Button
           key="validate"
@@ -49,7 +62,14 @@ const ValidateModal = ({
           onClick={() => setActionType("validate")}
           disabled={loading}
         >
-          Validate
+          {
+  language === "en"
+    ? "Validate"
+    : language === "si"
+    ? ""
+    : "சரிபார்க்க"
+}
+
         </Button>,
       ]}
     >
@@ -82,10 +102,15 @@ const ValidateModal = ({
         )}
 
         {!actionType && (
-          <div style={{ textAlign: "center", padding: "20px 0" }}>
-            <p>
-              Please select whether you want to validate or reject this license.
-            </p>
+
+          <div style={{ textAlign: 'center', padding: '20px 0' }}>
+            <p>{language === "en"
+    ? "Please select whether you want to validate or reject this license."
+    : language === "si"
+    ? "."
+    : "இந்த உரிமத்தை சரிபார்க்க அல்லது நிராகரிக்க விரும்புகிறீர்களா என்பதைத் தேர்ந்தெடுக்கவும்."}
+</p>
+
           </div>
         )}
       </Form>
