@@ -12,6 +12,8 @@ import {
 import { UploadOutlined, CloseOutlined } from "@ant-design/icons";
 import "../../../styles/GSMBofficer/PhysicalMeetingModal.css";
 import { physicalMeetingStatus } from "../../../services/officerService";
+import { useLanguage } from "../../../contexts/LanguageContext";
+
 const PhysicalMeetingModal = ({
   visible,
   onCancel,
@@ -21,6 +23,10 @@ const PhysicalMeetingModal = ({
   form,
   recordId,
 }) => {
+
+  const { language } = useLanguage();
+  const [actionType, setActionType] = useState(null); // 'approve' or 'reject'
+
   const [submitLoading, setSubmitLoading] = useState(false);
 
   useEffect(() => {
@@ -29,6 +35,7 @@ const PhysicalMeetingModal = ({
       // You can use the recordId here for any initialization
     }
   }, [visible, recordId]);
+
 
   const beforeUpload = (file) => {
     const isPDF = file.type === "application/pdf";
@@ -89,19 +96,81 @@ const PhysicalMeetingModal = ({
 
   return (
     <Modal
-      title="Update Physical Meeting Status"
+      title={
+        language === "en"
+          ? "Update Physical Meeting Status"
+          : language === "si"
+          ? ""
+          : "நிகழ்நிலை சந்திப்பு நிலையை புதுப்பிக்கவும்"
+      }
+      
       open={visible}
       onCancel={onCancel}
-      footer={null}
-      centered
-      className="meeting-status-modal"
-      closeIcon={<CloseOutlined style={{ fontSize: "14px" }} />}
+
+      footer={[
+        <Button key="cancel" onClick={onCancel} disabled={loading}>
+          {language === "en"
+    ? "Cancel"
+    : language === "si"
+    ? ""
+    : "ரத்து செய்க"}
+        </Button>,
+        <Button
+          key="reject"
+          type="default"
+          danger
+          onClick={() => handleAction('reject')}
+          disabled={loading}
+          style={{ marginRight: 8 }}
+        >
+          {language === "en"
+    ? "Reject"
+    : language === "si"
+    ? ""
+    : "நிராகரிக்க"}
+        </Button>,
+        <Button
+          key="approve"
+          type="primary"
+          onClick={() => handleAction('approve')}
+          disabled={loading}
+        >
+           {language === "en"
+    ? "Approve"
+    : language === "si"
+    ? ""
+    : "அனுமதிக்க"}
+        </Button>,
+      ]}
+
+//       footer={null}
+//       centered
+//       className="meeting-status-modal"
+//       closeIcon={<CloseOutlined style={{ fontSize: "14px" }} />}
+
     >
       <Form form={form} layout="vertical">
         <Form.Item
           name="comments"
-          label="Comments"
-          rules={[{ required: true, message: "Please provide your comments" }]}
+
+          label={
+            language === "en"
+              ? "Comments (Approval or Rejection Notes)"
+              : language === "si"
+              ? ""
+              : "கருத்துகள் (அனுமதி அல்லது நிராகரிப்பு குறிப்புகள்)"
+          }
+          rules={[
+            {
+              required: true,
+              message: language === "en"
+              ? "Please provide your comments"
+              : language === "si"
+              ? ""
+              : "தயவுசெய்து உங்கள் கருத்துகளை வழங்கவும்",
+            },
+          ]}
+
         >
           <Input.TextArea
             rows={4}
@@ -112,11 +181,26 @@ const PhysicalMeetingModal = ({
 
         <Form.Item
           name="receipt"
-          label="Upload Receipt"
+
+          label={
+            language === "en"
+              ? "Upload Receipt (PDF only)"
+              : language === "si"
+              ? ""
+              : " ரசீதை பதிவேற்றவும் (PDF மட்டும்)"
+          }
           valuePropName="fileList"
           getValueFromEvent={normFile}
           rules={[
-            { required: true, message: "Please upload the receipt (PDF only)" },
+            {
+              required: true,
+              message:language === "en"
+              ? "Please upload the receipt (PDF only)"
+              : language === "si"
+              ? ""
+              : "தயவுசெய்து ரசீதை பதிவேற்றவும் (PDF மட்டும்)",
+            },
+
           ]}
           extra="Only PDF files are accepted"
         >
@@ -126,13 +210,23 @@ const PhysicalMeetingModal = ({
             maxCount={1}
             className="receipt-upload"
           >
-            <div className="upload-container">
-              <UploadOutlined />
-              <div className="upload-instructions">
-                Click or drag file to upload
-              </div>
-              <div className="upload-format">PDF format only</div>
-            </div>
+
+            <Button icon={<UploadOutlined />}>{
+  language === "en"
+    ? "Click to Upload"
+    : language === "si"
+    ? ""
+    : "பதிவேற்ற கிளிக் செய்யவும்"
+}</Button>
+
+//             <div className="upload-container">
+//               <UploadOutlined />
+//               <div className="upload-instructions">
+//                 Click or drag file to upload
+//               </div>
+//               <div className="upload-format">PDF format only</div>
+//             </div>
+
           </Upload>
         </Form.Item>
 

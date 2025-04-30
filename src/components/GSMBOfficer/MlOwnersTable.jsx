@@ -14,15 +14,18 @@ import {
 import { Link } from "react-router-dom";
 import officerService from "../../services/officerService"; // Import officerService
 import dayjs from "dayjs";
+import { useLanguage } from "../../contexts/LanguageContext";
 
-const MlOwnersTable = () => {
+const MlOwnersTable = ({searchText}) => {
   const [ownersData, setOwnersData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [language, setLanguage] = useState("en"); // default to "en"
+  // const [language, setLanguage] = useState("en"); // default to "en"
   const [isAppointmentModalVisible, setIsAppointmentModalVisible] =
     useState(false);
   const [selectedOwner, setSelectedOwner] = useState(null);
   const [form] = Form.useForm();
+    const { language } = useLanguage();
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,37 +95,41 @@ const MlOwnersTable = () => {
 
   const columns = [
     {
-      title: "ID",
+      title:  language === "en"
+      ? "ID"
+      : language === "si"
+      ? ""
+      : "அடையாள எண்",
       dataIndex: "id",
       key: "id",
     },
     {
-      title: "Owner Name",
+      title: language === "en" ? "Owner Name" : language === "si" ? "" : "உரிமையாளர் பெயர்",
       dataIndex: "ownerName",
       key: "ownerName",
     },
     {
-      title: "Email",
+      title: language === "en" ? "Email" : language === "si" ? "" : "மின்னஞ்சல்",
       dataIndex: "email",
       key: "email",
     },
     {
-      title: "NIC",
+      title: language === "en" ? "NIC" : language === "si" ? "" : "தே.அ.அட்டை",
       dataIndex: "NIC",
       key: "nic",
     },
     {
-      title: "Phone Number",
+      title: language === "en" ? "Phone Number" : language === "si" ? "" : "தொலைபேசி எண்",
       dataIndex: "phoneNumber",
       key: "phone",
     },
     {
-      title: "Total Licenses",
+      title: language === "en" ? "Total Licenses" : language === "si" ? "" : "மொத்த உரிமங்கள்",
       dataIndex: "totalLicenses",
       key: "totalLicenses",
     },
     {
-      title: "Action",
+      title: language === "en" ? "Action" : language === "si" ? "" : "நடவடிக்கை",
       key: "action",
       render: (_, record) => (
         <div style={{ display: "flex", gap: "8px" }}>
@@ -136,9 +143,11 @@ const MlOwnersTable = () => {
               type="default"
               style={{ backgroundColor: "white", borderColor: "#d9d9d9" }}
             >
-              {language === "en"
-                ? "+ Add New License"
-                : "+ නව අවසරපත්‍රයක් එකතු කරන්න"}
+                {language === "en"
+  ? "+ Add New License"
+  : language === "si"
+  ? "+ නව අවසරපත්‍රයක් එකතු කරන්න"
+  : "+ புதிய உரிமத்தைச் சேர்க்கவும்"}
             </Button>
           </Link>
           {/* <Button 
@@ -219,7 +228,20 @@ const MlOwnersTable = () => {
       }}
     >
       <Table
-        dataSource={ownersData}
+        dataSource={ownersData
+          .filter((item) => {
+            if (!searchText) return true;
+            const search = searchText.toLowerCase();
+            return (
+              item.id?.toString().toLowerCase().includes(search) ||
+              item.ownerName?.toLowerCase().includes(search) ||
+              item.email?.toLowerCase().includes(search) ||
+              item.NIC?.toLowerCase().includes(search) ||
+              item.phoneNumber?.toLowerCase().includes(search)            );
+          }
+          
+        )
+        }
         columns={columns}
         loading={loading}
         //expandable={{ expandedRowRender }}

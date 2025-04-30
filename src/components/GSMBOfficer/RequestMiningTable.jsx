@@ -13,19 +13,26 @@ import {
   Typography,
   Tag,
 } from "antd";
-import { getMlRequest, physicalMeeting } from "../../services/officerService";
+import {
+  approveMiningLicense,
+  getMlRequest,
+  physicalMeeting,
+} from "../../services/officerService";
 import { notification } from "antd";
+
 import ScheduleAppointmentModal from "../GSMBOfficer/ML Req/ScheduleAppointmentModal";
 import PhysicalMeetingModal from "../GSMBOfficer/ML Req/PhysicalMeetingModal";
 import ValidateModal from "../GSMBOfficer/ML Req/ValidateModal";
 import ConfirmationModal from "../GSMBOfficer/ML Req/ConfirmationModal";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const { Link } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
 
-const RequestMiningTable = () => {
+const RequestMiningTable = ({searchText}) => {
   // --- State Variables ---
+  const { language } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [mlRequestData, setMlRequestData] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -33,7 +40,7 @@ const RequestMiningTable = () => {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [form] = Form.useForm();
   const [statusFilter, setStatusFilter] = useState(null);
-  const [searchText, setSearchText] = useState("");
+  // const [searchText, setSearchText] = useState("");
 
   // States for modals
   const [isAppointmentModalVisible, setIsAppointmentModalVisible] =
@@ -231,6 +238,83 @@ const RequestMiningTable = () => {
     }
   };
 
+  // --- Render Functions ---
+  const renderAction = (_, record) => {
+    const restrictedStatuses = [
+      "Awaiting ME Scheduling",
+      "ME Appointment Scheduled",
+      "Hold",
+      "Rejected"
+    ];
+    
+    const isRestrictedStatus = restrictedStatuses.includes(record.status);
+    const isMEApproved = record.status === "ME Approved";
+    const isPhysicalDocument = record.status?.toLowerCase() === "physical document";
+    
+    return (
+      <div style={{ display: "flex", gap: "8px" }}>
+        <Button
+          type="primary"
+          size="small"
+          icon={<span>👁️</span>}
+          onClick={() => handleViewClick(record)}
+        >
+          {language === "en"
+    ? "View"
+    : language === "si"
+    ? ""
+    : "பார்க்க"}
+        </Button>
+        
+        {isMEApproved ? (
+          <Button
+            type="primary"
+            size="small"
+            icon={<span>✅</span>}
+            onClick={() => handleValidateLicense(record)}
+            style={{ backgroundColor: '#ffffff', borderColor: '#52c41a', color:'#52c41a'}}
+          >
+              {language === "en"
+    ? "Validate the license"
+    : language === "si"
+    ? ""
+    : "அனுமதி உரிமத்தை சரிபார்க்கவும்"}
+
+          </Button>
+        ) : !isRestrictedStatus && (
+          isPhysicalDocument ? (
+            <Button
+              type="default"
+              size="small"
+              icon={<span>📝</span>}
+              onClick={() => handleUpdatePhysicalMeetingStatus(record)}
+              style={{ backgroundColor: '#f0f0f0', borderColor: '#d9d9d9' }}
+            >
+              {language === "en"
+    ? "Physical Meeting Status"
+    : language === "si"
+    ? ""
+    : "நிகழ்நிலை சந்திப்பு நிலை"}
+            </Button>
+          ) : (          
+            <Button
+              type="default"
+              size="small"
+              icon={<span>🗓️</span>}
+              onClick={() => handleScheduleAppointment(record)}
+            >
+                {language === "en"
+    ? "Schedule"
+    : language === "si"
+    ? ""
+    : "திட்டமிடு"}
+            </Button>
+          )
+        )}
+      </div>
+    );
+  };
+
   const handleValidateLicense = (record) => {
     setCurrentRecord(record);
     validateForm.resetFields();
@@ -306,26 +390,51 @@ const RequestMiningTable = () => {
     }
   };
 
+  // const handleValidateLicenseSubmit = async (values) => {
+  //   try {
+  //     setValidateLoading(true);
+
+  //     // Prepare payload for validation
+  //     const payload = {
+  //       id: currentRecord.id,
+  //       comments: values.comments,
+  //       status: 'valid' // or whatever status indicates validation
+  //     };
+
+  //     // Call your API here
+  //     // Example: await validateLicense(payload);
+  //     console.log('Validation payload:', payload);
+
+  //     message.success('License validated successfully');
+  //     setIsValidateModalVisible(false);
+
+  //     // Refresh the table data
+  //     // await fetchMlRequestData();
+  //   } catch (error) {
+  //     console.error('Validation error:', error);
+  //     message.error(error.response?.data?.message || 'Failed to validate license');
+  //   } finally {
+  //     setValidateLoading(false);
+  //   }
+  // };
+
   const handleValidateLicenseSubmit = async (values) => {
     try {
       setValidateLoading(true);
 
-      // Prepare payload for validation
-      const payload = {
-        id: currentRecord.id,
-        comments: values.comments,
-        status: "valid", // or whatever status indicates validation
-      };
+      if (!currentRecord?.id) {
+        throw new Error("No record ID found for validation");
+      }
 
-      // Call your API here
-      // Example: await validateLicense(payload);
-      console.log("Validation payload:", payload);
+      // Call the Axios service
+      await approveMiningLicense(currentRecord.id);
 
       message.success("License validated successfully");
       setIsValidateModalVisible(false);
 
       // Refresh the table data
-      // await fetchMlRequestData();
+      const response = await getMlRequest();
+      setMlRequestData(response?.data || response);
     } catch (error) {
       console.error("Validation error:", error);
       message.error(
@@ -391,116 +500,158 @@ const RequestMiningTable = () => {
     );
   };
 
-  const renderAction = (_, record) => {
-    const restrictedStatuses = [
-      "Awaiting ME Scheduling",
-      "ME Appointment Scheduled",
-      "Hold",
-      "Rejected",
-    ];
+  // const renderAction = (_, record) => {
+  //   const restrictedStatuses = [
+  //     "Awaiting ME Scheduling",
+  //     "ME Appointment Scheduled",
+  //     "Hold",
+  //     "Rejected",
+  //   ];
 
-    const isRestrictedStatus = restrictedStatuses.includes(record.status);
-    const isMEApproved = record.status === "ME Approved";
-    const isPhysicalDocument =
-      record.status?.toLowerCase() === "physical document";
+  //   const isRestrictedStatus = restrictedStatuses.includes(record.status);
+  //   const isMEApproved = record.status === "ME Approved";
+  //   const isPhysicalDocument =
+  //     record.status?.toLowerCase() === "physical document";
 
-    return (
-      <div style={{ display: "flex", gap: "8px" }}>
-        <Button
-          type="primary"
-          size="small"
-          icon={<span>👁️</span>}
-          onClick={() => handleViewClick(record)}
-        >
-          View
-        </Button>
+  //   return (
+  //     <div style={{ display: "flex", gap: "8px" }}>
+  //       <Button
+  //         type="primary"
+  //         size="small"
+  //         icon={<span>👁️</span>}
+  //         onClick={() => handleViewClick(record)}
+  //       >
+  //         View
+  //       </Button>
 
-        {isMEApproved ? (
-          <Button
-            type="primary"
-            size="small"
-            icon={<span>✅</span>}
-            onClick={() => handleValidateLicense(record)}
-            style={{
-              backgroundColor: "#ffffff",
-              borderColor: "#52c41a",
-              color: "#52c41a",
-            }}
-          >
-            Validate the license
-          </Button>
-        ) : (
-          !isRestrictedStatus &&
-          (isPhysicalDocument ? (
-            <Button
-              type="default"
-              size="small"
-              icon={<span>📝</span>}
-              onClick={() => handleUpdatePhysicalMeetingStatus(record)}
-              style={{ backgroundColor: "#f0f0f0", borderColor: "#d9d9d9" }}
-            >
-              Physical Meeting Status
-            </Button>
-          ) : (
-            <Button
-              type="default"
-              size="small"
-              icon={<span>🗓️</span>}
-              onClick={() => handleScheduleAppointment(record)}
-            >
-              Schedule
-            </Button>
-          ))
-        )}
-      </div>
-    );
-  };
+  //       {isMEApproved ? (
+  //         <Button
+  //           type="primary"
+  //           size="small"
+  //           icon={<span>✅</span>}
+  //           onClick={() => handleValidateLicense(record)}
+  //           style={{
+  //             backgroundColor: "#ffffff",
+  //             borderColor: "#52c41a",
+  //             color: "#52c41a",
+  //           }}
+  //         >
+  //           Validate the license
+  //         </Button>
+  //       ) : (
+  //         !isRestrictedStatus &&
+  //         (isPhysicalDocument ? (
+  //           <Button
+  //             type="default"
+  //             size="small"
+  //             icon={<span>📝</span>}
+  //             onClick={() => handleUpdatePhysicalMeetingStatus(record)}
+  //             style={{ backgroundColor: "#f0f0f0", borderColor: "#d9d9d9" }}
+  //           >
+  //             Physical Meeting Status
+  //           </Button>
+  //         ) : (
+  //           <Button
+  //             type="default"
+  //             size="small"
+  //             icon={<span>🗓️</span>}
+  //             onClick={() => handleScheduleAppointment(record)}
+  //           >
+  //             Schedule
+  //           </Button>
+  //         ))
+  //       )}
+  //     </div>
+  //   );
+  // };
 
   const columns = [
-    { title: "ID", dataIndex: "id", key: "id", width: 80, fixed: "left" },
+    { title:
+      language === "en"
+        ? "ID"
+        : language === "si"
+        ? ""
+        : "அடையாள எண்", dataIndex: "id", key: "id", width: 80, fixed: "left" },
     {
-      title: "Request Subject",
+      title:
+  language === "en"
+    ? "Request Subject"
+    : language === "si"
+    ? " "
+    : "கோரிக்கையின் தலைப்பு",
       dataIndex: "subject",
       key: "subject",
       width: 200,
     },
     {
-      title: "Assigned To",
+      title:
+  language === "en"
+    ? "Assigned To"
+    : language === "si"
+    ? " "
+    : "ஒதுக்கப்பட்டவர்",
       dataIndex: "assigned_to",
       key: "assigned_to",
       width: 150,
       render: (text) => text || "-",
     },
     {
-      title: "Mobile",
+      title:
+  language === "en"
+    ? "Mobile"
+    : language === "si"
+    ? ""
+    : "தொலைபேசி",
       dataIndex: "mobile_number",
       key: "mobile_number",
       width: 150,
       render: (text) => text || "-",
     },
     {
-      title: "District",
+      title:
+  language === "en"
+    ? "District"
+    : language === "si"
+    ? ""
+    : "மாவட்டம்",
       dataIndex: "administrative_district",
       key: "administrative_district",
       width: 150,
       render: (text) => text || "-",
     },
     {
-      title: "Date Created",
+      title:
+  language === "en"
+    ? "Date Created"
+    : language === "si"
+    ? ""
+    : "உருவாக்கப்பட்ட திகதி",
       dataIndex: "created_on",
       key: "created_on",
       width: 120,
       render: (text) => (text ? text.split("T")[0] : "-"),
     },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
+
+    { 
+      title:
+  language === "en"
+    ? "Status"
+    : language === "si"
+    ? ""
+    : "நிலை", 
+      dataIndex: "status", 
+      key: "status", 
+
       width: 100,
       render: renderStatus,
     },
     {
-      title: "Action",
+      title:
+  language === "en"
+    ? "Action"
+    : language === "si"
+    ? ""
+    : "நடவடிக்கை",
       key: "action",
       width: 150,
       fixed: "right",
@@ -555,6 +706,10 @@ const RequestMiningTable = () => {
         if (indexB === -1) return -1;
         return indexA - indexB;
       });
+
+      // const handleSearch = (value) => {
+      //   setSearchText(value.toLowerCase());
+      // };
 
     return (
       <Form
@@ -620,41 +775,68 @@ const RequestMiningTable = () => {
   // --- Component Return ---
   return (
     <>
-      <div style={{ marginBottom: 16 }}>
-        <Row gutter={16} align="middle">
-          <Col>
-            <Select
-              placeholder="Filter by status"
-              value={statusFilter}
-              onChange={setStatusFilter}
-              style={{ width: 200 }}
-              allowClear
-            >
-              {statusOptions.map((option) => (
-                <Option key={option.value} value={option.value}>
-                  {option.label}
-                </Option>
-              ))}
-            </Select>
-          </Col>
 
-          <Col>
-            <Button
-              type="default"
-              onClick={() => {
-                setSearchText("");
-                setStatusFilter(null);
-              }}
-            >
-              Reset Filters
-            </Button>
-          </Col>
-        </Row>
-      </div>
+    <div style={{ marginBottom: 16 }}>
+          <Row gutter={16} align="middle">
+            <Col>
+              <Select
+                placeholder={
+                  language === "en"
+                    ? "Filter by status"
+                    : language === "si"
+                    ? ""
+                    : "நிலையின் அடிப்படையில் வடிகட்டவும்"
+                }
+                value={statusFilter}
+                onChange={setStatusFilter}
+                style={{ width: 200 }}
+                allowClear
+              >
+                {statusOptions.map((option) => (
+                  <Option key={option.value} value={option.value}>
+                    {option.label}
+                  </Option>
+                ))}
+              </Select>
+            </Col>
+            
+            <Col>
+              <Button
+                type="default"
+                onClick={() => {
+                  setSearchText("");
+                  setStatusFilter(null);
+                }}
+              >
+                 {language === "en"
+    ? "Reset Filters"
+    : language === "si"
+    ? ""
+    : "வடிகட்டிகளை மீட்டமைக்கவும்"}
+              </Button>
+            </Col>
+          </Row>
+        </div>
 
       <Table
-        dataSource={mlRequestData.filter(
-          (item) => item.status?.toLowerCase() !== "valid"
+        dataSource={mlRequestData
+          .filter((item) => item.status?.toLowerCase() !== "valid")
+          .filter((item) =>
+            statusFilter ? item.status === statusFilter : true)
+          .filter((item) => {
+            if (!searchText) return true;
+            const search = searchText.toLowerCase();
+            return (
+              item.id?.toString().toLowerCase().includes(search) ||
+              item.subject?.toLowerCase().includes(search) ||
+              item.assigned_to?.toLowerCase().includes(search) ||
+              item.mobile_number?.toLowerCase().includes(search) ||
+              item.administrative_district?.toLowerCase().includes(search) ||
+              item.created_on?.toLowerCase().includes(search) ||
+              item.status?.toLowerCase().includes(search)
+            );
+          }
+          
         )}
         columns={columns}
         rowKey="id"
@@ -701,7 +883,11 @@ const RequestMiningTable = () => {
                 style={{ marginRight: 8 }}
                 disabled={updateLoading}
               >
-                Cancel
+                {language === "en"
+    ? "Cancel"
+    : language === "si"
+    ? " "
+    : "ரத்து செய்க"}
               </Button>
               <Button
                 key="update"
@@ -709,7 +895,11 @@ const RequestMiningTable = () => {
                 onClick={handleUpdate}
                 loading={updateLoading}
               >
-                Update Details
+                {language === "en"
+    ? "Update Details"
+    : language === "si"
+    ? ""
+    : "விவரங்களைப் புதுப்பிக்கவும்"}
               </Button>
             </Col>
           </Row>
