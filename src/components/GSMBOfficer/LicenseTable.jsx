@@ -135,7 +135,7 @@ const LicenseTable = ({ data, tracker, loading }) => {
 
   const columns = {
     ML: [
-      { title: "ID", dataIndex: "id", width: 80, fixed: "left" },
+      { title: "ID", dataIndex: "id", width: 80 },
       { title: "Owner", dataIndex: "assigned_to", ellipsis: true },
       { title: "License No.", dataIndex: "license_number", width: 120 },
       { title: "Mobile", dataIndex: "mobile_number", width: 120 },
@@ -170,7 +170,6 @@ const LicenseTable = ({ data, tracker, loading }) => {
       {
         title: "Action",
         width: 100,
-        fixed: "right",
         render: (_, record) => renderAction(record),
       },
     ],
@@ -184,12 +183,12 @@ const LicenseTable = ({ data, tracker, loading }) => {
       {
         title: "Action",
         width: 100,
-        fixed: "right",
+        // fixed: "right",
         render: (_, record) => renderAction(record),
       },
     ],
     CMPLN: [
-      { title: "ID", dataIndex: "id", width: 80, fixed: "left" },
+      { title: "ID", dataIndex: "id", width: 80 },
       { title: "Mobile", dataIndex: "mobile_number", width: 120 },
       { title: "Lorry No.", dataIndex: "lorry_number", width: 120 },
       { title: "Role", dataIndex: "role", width: 120 },
@@ -197,19 +196,19 @@ const LicenseTable = ({ data, tracker, loading }) => {
       {
         title: "Resolved",
         width: 100,
-        fixed: "right",
+        // fixed: "right",
         render: (_, record) => renderComplaintAction(record),
       },
     ],
     MEA: [
-      { title: "ID", dataIndex: "id", width: 80, fixed: "left" },
+      { title: "ID", dataIndex: "id", width: 80 },
       { title: "Owner", dataIndex: "author", ellipsis: true },
       { title: "License No.", dataIndex: "subject", width: 120 },
       { title: "Mobile", dataIndex: "mobile_number", width: 120 },
       {
         title: "Action",
         width: 100,
-        fixed: "right",
+        // fixed: "right",
         render: (_, record) => renderAction(record),
       },
     ],
@@ -594,8 +593,8 @@ const LicenseTable = ({ data, tracker, loading }) => {
           showSizeChanger: true,
           pageSizeOptions: ["10", "25", "50", "100"],
         }}
-        scroll={{ x: 1500 }}
-        sticky
+        // scroll={{ x: 1500 }}
+        // sticky
         bordered
         size="middle"
         className="license-table"
