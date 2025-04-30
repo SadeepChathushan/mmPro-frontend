@@ -142,6 +142,7 @@ const LicenseTable = ({ data, tracker, loading }) => {
 
   const columns = {
     ML: [
+<<<<<<< HEAD
       { title: "ID", dataIndex: "id", width: 80, fixed: "left" },
       { title: "Owner", dataIndex: "assigned_to", ellipsis: true },
       { title: "License No.", dataIndex: "license_number", width: 120 },
@@ -150,6 +151,18 @@ const LicenseTable = ({ data, tracker, loading }) => {
       { title: "Used", dataIndex: "used", width: 80 },
       { title: "Remaining", dataIndex: "remaining", width: 100 },
       { title: "Royalty", dataIndex: "royalty", width: 100 },
+=======
+
+      { title: language === "en" ? "ID" : language === "si" ? "" : "அடையாள எண்", dataIndex: "id", width: 80, fixed: "left" },
+      { title: language === "en" ? "Owner" : language === "si" ? "" : "உரிமையாளர்", dataIndex: "assigned_to", ellipsis: true },
+      { title: language === "en" ? "License No." : language === "si" ? "" : "உரிம எண்", dataIndex: "subject", width: 120 },
+      { title: language === "en" ? "Mobile" : language === "si" ? "" : "தொலைபேசி", dataIndex: "mobile_number", width: 120 },
+      { title: language === "en" ? "Capacity" : language === "si" ? "" : "கொள்ளளவு", dataIndex: "capacity", width: 100 },
+      { title: language === "en" ? "Used" : language === "si" ? "" : "பயன்படுத்தப்பட்டது", dataIndex: "used", width: 80 },
+      { title: language === "en" ? "Remaining" : language === "si" ? "" : "மீதமுள்ளது", dataIndex: "remaining", width: 100 },
+      { title: language === "en" ? "Royalty" : language === "si" ? "" : "உரிமத் தொகை", dataIndex: "royalty", width: 100 },
+
+>>>>>>> 2c64d2a33a8d37f0082e7adb280cacb6ec3b6463
       {
         title: language === "en" ? "Valid Period" : language === "si" ? "" : "செல்லுபடியாகும் காலம்",
         width: 200,
@@ -198,9 +211,18 @@ const LicenseTable = ({ data, tracker, loading }) => {
       },
     ],
     CMPLN: [
+<<<<<<< HEAD
       { title: "ID", dataIndex: "id", width: 80, fixed: "left" },
       { title: "Mobile", dataIndex: "mobile_number", width: 120 },
       { title: "Lorry No.", dataIndex: "lorry_number", width: 120 },
+=======
+
+
+      { title: language === "en" ? "ID" : language === "si" ? "" : "அடையாள எண்", dataIndex: "id", width: 80, fixed: "left" },
+      { title: language === "en" ? "Mobile" : language === "si" ? "" : "தொலைபேசி", dataIndex: "mobile_number", width: 120 },
+      { title: language === "en" ? "Lorry No." : language === "si" ? "" : "லாரி எண்.", dataIndex: "lorry_number", width: 120 },
+      { title: language === "en" ? "Complaint Date" : language === "si" ? "" : "புகார் திகதி", dataIndex: "complaint_date", width: 150 },
+>>>>>>> 2c64d2a33a8d37f0082e7adb280cacb6ec3b6463
       { title: "Role", dataIndex: "role", width: 120 },
 
       {
