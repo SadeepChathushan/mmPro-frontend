@@ -528,7 +528,7 @@ const AddNewLicense = () => {
       signature: "Signature",
       mineManager: "Mine Manager",
       startDate: "Start Date",
-      endDate: "End Date",
+      endDate: "Due Date",
       full: "Royalty Percentage",
       capacity: "Capacity(cubes)",
       full_capacity: "Full Capacity",

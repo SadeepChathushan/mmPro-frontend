@@ -11,8 +11,9 @@ const Activation = () => {
   const [officers, setOfficers] = useState([]);
   const [loading, setLoading] = useState(false); // Loading for initial fetch
   const [activating, setActivating] = useState(null); // Loading state for specific row activation
-  const [activeTab, setActiveTab] = useState("police");
+  const [activeTab, setActiveTab] = useState();
   const { language } = useLanguage();
+  
 
 
   useEffect(() => {
@@ -25,6 +26,11 @@ const Activation = () => {
         if (response.success) {
           const officersData =
             response.officers?.officers || response.officers || [];
+
+            officersData.forEach((officer, index) => {
+              console.log(`Officer ${index + 1}:`, officer.name, "-", officer.custom_fields?.["User Type"]);
+            });
+
           setOfficers(officersData);
         } else {
           message.error(response.error || "Failed to parse officers data");
@@ -128,8 +134,9 @@ const Activation = () => {
     document.body.removeChild(link);
   };
 
-  const columns = [
+  const columns = {
     // ... (other columns remain the same) ...
+    officer: [
     {
       title: "Name",
       dataIndex: "name",
@@ -238,9 +245,9 @@ const Activation = () => {
         </Button>
       ),
     },
-  ];
+  ],
 
-  const columnme = [
+  miningEngineer: [
     {
       title: "Name",
       dataIndex: "name",
@@ -330,8 +337,8 @@ const Activation = () => {
         </Button>
       ),
     },
-  ];
-  const columnmo = [
+  ],
+  mlOwner: [
     {
       title: "First Name",
       dataIndex: "fname",
@@ -358,22 +365,23 @@ const Activation = () => {
       key: "mobile_number",
       render: (_, record) => record.custom_fields?.["Mobile Number"] || "N/A",
     }
-  ];
+  ],
+};
 
 
 
   // Filter officers based on User Type
   const policeOfficers = officers.filter(
-    (officer) => officer.custom_fields?.["User Type"] === "police"
+    (officer) => officer.custom_fields?.["User Type"]?.toLowerCase() === "police"
   );
   const gsmbOfficers = officers.filter(
-    (officer) => officer.custom_fields?.["User Type"] === "gsmbOfficer"
+    (officer) => officer.custom_fields?.["User Type"]?.toLowerCase() === "gsmbOfficer"
   );
   const miningEngineer = officers.filter(
-    (officer) => officer.custom_fields?.["User Type"] === "miningengineer"
+    (officer) => officer.custom_fields?.["User Type"]?.toLowerCase() === "miningenginer"
   );
   const mlowner = officers.filter(
-    (officer) => officer.custom_fields?.["User Type"] === "mlowner"
+    (officer) => officer.custom_fields?.["User Type"]?.toLowerCase() === "mlowner"
   );
 
   return (
@@ -398,7 +406,7 @@ const Activation = () => {
                 : "போலீஸ் அதிகாரிகள்",
             children: (
               <Table
-                columns={columns}
+                columns={columns.officer}
                 dataSource={policeOfficers}
                 rowKey="id"
                 loading={loading} // General loading for initial data fetch
@@ -408,7 +416,7 @@ const Activation = () => {
             ),
           },
           {
-            key: "gsmb",
+            key: "gsmbOfficer",
             label: language === "en"
               ? "GSMB Officers"
               : language === "si"
@@ -416,7 +424,7 @@ const Activation = () => {
                 : "GSMB அதிகாரிகள்",
             children: (
               <Table
-                columns={columns}
+                columns={columns.officer}
                 dataSource={gsmbOfficers}
                 rowKey="id"
                 loading={loading} // General loading for initial data fetch
@@ -426,7 +434,7 @@ const Activation = () => {
             ),
           },
           {
-            key: "mengineer",
+            key: "miningEnginer",
             label: language === "en"
               ? "Mining Engineer"
               : language === "si"
@@ -434,7 +442,7 @@ const Activation = () => {
                 : "சுரங்கப் பொறியாளர்",
             children: (
               <Table
-                columns={columnme}
+                columns={columns.miningEngineer}
                 dataSource={miningEngineer}
                 rowKey="id"
                 loading={loading}
@@ -452,7 +460,7 @@ const Activation = () => {
                 : " சுரங்க உரிம உரிமையாளர்",
             children: (
               <Table
-                columns={columnmo}
+                columns={columns.mlOwner}
                 dataSource={mlowner}
                 rowKey="id"
                 loading={loading}

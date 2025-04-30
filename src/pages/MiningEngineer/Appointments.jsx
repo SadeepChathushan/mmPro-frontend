@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Row, Col, Card, Typography, message } from 'antd';
+import { Row, Col, Card, Typography, message, Tag } from 'antd';
 import AppointmentsTable from './AppointmentsTable';
-import NewAppointmentButton from './NewAppointmentButton';
 import ApprovalModal from './ApprovalModal';
 import { useLanguage } from "../../contexts/LanguageContext";
 import AppointmentDetailsModal from './AppointmentDetailsModal';
+import RejectedApprovedLisenceTable from './RejectedApprovedLisenceTable';
 
 const { Title } = Typography;
 
@@ -13,51 +13,9 @@ const Appointments = ({ activeTab }) => {
   const [isApprovalModalVisible, setIsApprovalModalVisible] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [approvingAppointmentId, setApprovingAppointmentId] = useState(null);
-  const { language } = useLanguage()
+  const { language } = useLanguage();
   
   const [appointments, setAppointments] = useState([
-    {
-      id: 1,
-      mlOwner: 'Pasindu Lakshan',
-      gsmbOfficer: 'John Smith',
-      location: 'Kaduwela',
-      cubeCount: 1500,
-      status: 'pending',
-      date: '2023-06-15',
-      licenseDetails: {
-        status: 'Awaiting ME Scheduling',
-        explorationLicenseNo: 'EX-2025-0001',
-        landName: 'Green Hills',
-        landOwner: 'Saman',
-        royalty: 1500
-      },
-      locationDetails: {
-        village: 'Kaduwela',
-        gramaNiladhariDivision: 'GN Division 01',
-        divisionalSecretaryDivision: 'Thimbirigasaya',
-        district: 'Colombo'
-      },
-      capacity: {
-        total: 2000,
-        used: 500,
-        remaining: 1500,
-        monthCapacity: 'Not specified'
-      },
-      timeline: {
-        startDate: '17/04/2025',
-        dueDate: '20/04/2025',
-        status: '2 days late'
-      },
-      contact: {
-        mobile: '771234567'
-      },
-      documents: {
-        restorationPlan: '/sample-docs/restoration-plan.jpg',
-        paymentReceipt: '/sample-docs/payment-receipt.jpg',
-        deedAndSurvey: '/sample-docs/deed-survey.jpg',
-        googleLocation: 'https://maps.google.com/maps?q=6.2633...'
-      }
-    },
     {
       id: 2,
       mlOwner: 'Another Owner',
@@ -102,20 +60,51 @@ const Appointments = ({ activeTab }) => {
     }
   ]);
 
-  const filteredAppointments = appointments.filter(app => 
-    activeTab === 'pending' ? app.status === 'pending' : app.status === 'approved'
-  );
+  // Filter appointments based on active tab
+  const filteredAppointments = appointments.filter(app => {
+    if (activeTab === 'pending') {
+      return app.status === 'pending';
+    } else {
+      // Show both scheduled and approved appointments in the Scheduled tab
+      return app.status === 'scheduled' ;
+    }
+  });
 
+  // Handle confirming a scheduled date
+  const handleConfirmScheduleDate = (id, dateString) => {
+    setAppointments(appointments.map(app => 
+      app.id === id ? { 
+        ...app, 
+        date: dateString,
+        status: 'scheduled', // Update status to 'scheduled'
+        licenseDetails: {
+          ...app.licenseDetails,
+          status: 'Scheduled' // Update license status
+        }
+      } : app
+    ));
+    message.success(
+      language === 'en' 
+        ? 'Appointment scheduled successfully' 
+        : language === 'si' 
+          ? '' 
+          : 'சந்திப்பு வெற்றிகரமாக திட்டமிடப்பட்டது'
+    );
+  };
+
+  // View appointment details
   const viewAppointmentDetails = (record) => {
     setSelectedAppointment(record);
     setIsModalVisible(true);
   };
 
+  // Show approval modal
   const showApprovalModal = (id) => {
     setApprovingAppointmentId(id);
     setIsApprovalModalVisible(true);
   };
 
+  // Handle approval
   const handleApprovalOk = (id, values) => {
     setAppointments(appointments.map(app => 
       app.id === id ? { 
@@ -132,62 +121,95 @@ const Appointments = ({ activeTab }) => {
           dueDate: values.dueDate.format('DD/MM/YYYY'),
           status: 'Not started'
         },
-        approvalComments: values.comments
+        approvalComments: values.comments,
+        licenseDetails: {
+          ...app.licenseDetails,
+          status: 'Completed'
+        }
       } : app
     ));
     setIsApprovalModalVisible(false);
-    message.success('Appointment approved successfully');
+    message.success(
+      language === 'en' 
+        ? 'Appointment approved successfully' 
+        : language === 'si' 
+          ? '' 
+          : 'சந்திப்பு அங்கீகரிக்கப்பட்டது'
+    );
   };
-
+  
+  // Put appointment on hold
   const handleHold = (id) => {
-    message.warning('Appointment put on hold');
     setAppointments(appointments.map(app => 
-      app.id === id ? { ...app, status: 'hold' } : app
+      app.id === id ? { 
+        ...app, 
+        status: 'hold',
+        licenseDetails: {
+          ...app.licenseDetails,
+          status: 'On Hold'
+        }
+      } : app
     ));
+    message.warning(
+      language === 'en' 
+        ? 'Appointment put on hold' 
+        : language === 'si' 
+          ? '' 
+          : 'சந்திப்பு பிடித்து வைக்கப்பட்டது'
+    );
   };
-
+  
+  // Reject appointment
   const handleReject = (id) => {
-    message.success('Appointment rejected');
     setAppointments(appointments.map(app => 
-      app.id === id ? { ...app, status: 'rejected' } : app
+      app.id === id ? { 
+        ...app, 
+        status: 'rejected',
+        licenseDetails: {
+          ...app.licenseDetails,
+          status: 'Rejected'
+        }
+      } : app
     ));
+    message.success(
+      language === 'en' 
+        ? 'Appointment rejected' 
+        : language === 'si' 
+          ? '' 
+          : 'சந்திப்பு நிராகரிக்கப்பட்டது'
+    );
   };
 
+  // Handle date change (without confirmation)
   const handleDateChange = (id, date, dateString) => {
     setAppointments(appointments.map(app => 
       app.id === id ? { ...app, date: dateString } : app
     ));
   };
 
-  const createNewAppointment = () => {
-    message.info('New appointment creation clicked');
-  };
 
   return (
     <div className="appointments-page">
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
         <Col>
           <Title level={3}>
-          {activeTab === 'pending'
-        ? language === "en"
-          ? "Pending Scheduling"
-          : language === "si"
-          ? ""
-          : "நிலுவையிலுள்ள திட்டமிடல்"
-        : language === "en"
-        ? "Scheduled"
-        : language === "si"
-        ? ""
-        : "திட்டமிடப்பட்ட"}{" "}
-      {language === "en"
-        ? "Appointments"
-        : language === "si"
-        ? ""
-        : "சந்திப்புகள்"}
+            {activeTab === 'pending'
+              ? language === "en"
+                ? "Pending Scheduling"
+                : language === "si"
+                ? ""
+                : "நிலுவையிலுள்ள திட்டமிடல்"
+              : language === "en"
+              ? "Scheduled"
+              : language === "si"
+              ? ""
+              : "திட்டமிடப்பட்ட"}{" "}
+            {language === "en"
+              ? "Appointments"
+              : language === "si"
+              ? ""
+              : "சந்திப்புகள்"}
           </Title>
-        </Col>
-        <Col>
-          <NewAppointmentButton onCreate={createNewAppointment} />
         </Col>
       </Row>
 
@@ -200,20 +222,24 @@ const Appointments = ({ activeTab }) => {
           onHold={handleHold}
           onReject={handleReject}
           onDateChange={handleDateChange}
+          onConfirmScheduleDate={handleConfirmScheduleDate}
+          language={language}
         />
       </Card>
 
       <AppointmentDetailsModal
-  visible={isModalVisible}
-  onCancel={() => setIsModalVisible(false)}
-  appointment={selectedAppointment}
-/>
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        appointment={selectedAppointment}
+        language={language}
+      />
 
       <ApprovalModal
         visible={isApprovalModalVisible}
         onCancel={() => setIsApprovalModalVisible(false)}
         onOk={handleApprovalOk}
         appointmentId={approvingAppointmentId}
+        language={language}
       />
     </div>
   );

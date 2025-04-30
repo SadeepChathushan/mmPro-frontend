@@ -214,6 +214,12 @@ const CreateAccountModal = ({ visible, onCancel }) => {
       label: 'Mining License Owner',
       icon: <SafetyOutlined />,
       path: '/NewOwnerRegister'
+    },
+    {
+      role: 'mining_engineer',
+      label: 'Mining Engineer',
+      icon: <SafetyOutlined />,
+      path: '/MiningEngineerRegister'
     }
   ];
 
