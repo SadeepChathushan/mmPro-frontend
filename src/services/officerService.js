@@ -74,7 +74,7 @@ const officerService = {
   //     const token = localStorage.getItem("USER_TOKEN");
   //     if (!token) {
   //       console.error("User token not found in localStorage");
-  //       return null; 
+  //       return null;
   //     }
   //     const response = await axios.post(
   //       `${BASE_URL}/gsmb-officer/upload-mining-license`,
@@ -86,7 +86,7 @@ const officerService = {
   //         }
   //       }
   //     );
-    
+
   //     if (response.status === 201 && response.data.success) {
   //       return response.data; // Return the newly created license data
   //     } else {
@@ -390,6 +390,7 @@ const officerService = {
       );
 
       if (response.data.success && Array.isArray(response.data.data)) {
+        console.log("response licesnes", response.data.data);
         return response.data.data;
       } else {
         console.error(
@@ -413,9 +414,9 @@ export const addNewLicense = async (formData) => {
 
     const config = {
       headers: {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${token}`
-      }
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
     };
 
     // Log the full URL
@@ -465,7 +466,6 @@ export const getMlRequest = async () => {
     if (response.data.success && Array.isArray(response.data.data)) {
       console.log("Get Mining License Requests API response:", response.data);
       return response.data.data;
-      
     } else {
       console.error(
         "Failed to fetch mining request licenses : Unexpected data format"
@@ -478,6 +478,46 @@ export const getMlRequest = async () => {
   }
 };
 
+export const approveMiningLicense = async (issueId) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return null;
+    }
+
+    const payload = {
+      issue_id: issueId,
+      new_status_id: "7", // assuming "7" always means "approved"
+    };
+
+    const response = await axios.post(
+      `${BASE_URL}/gsmb-officer/approve-mining-license`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.data.success) {
+      console.log("License approved successfully:", response.data);
+      return response.data;
+    } else {
+      console.error(
+        "Approval failed: Unexpected response format",
+        response.data
+      );
+      return null;
+    }
+  } catch (error) {
+    console.error("Failed to approve mining license:", error);
+    return null;
+  }
+};
+
 export const physicalMeeting = async (payload) => {
   try {
     const token = localStorage.getItem("USER_TOKEN");
@@ -487,9 +527,9 @@ export const physicalMeeting = async (payload) => {
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     };
 
     console.log("Sending payload:", payload);
@@ -515,5 +555,42 @@ export const physicalMeeting = async (payload) => {
   }
 };
 
+
+export const physicalMeetingStatus = async (payload) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`
+      }
+    };
+
+    console.log("Sending payload:", payload);
+
+    const response = await axios.post(
+      `${BASE_URL}/gsmb-officer/approve-physical-document`,
+      payload,
+      config
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Request failed");
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("API Error Details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
+    throw error;
+  }
+};
 
 export default officerService;

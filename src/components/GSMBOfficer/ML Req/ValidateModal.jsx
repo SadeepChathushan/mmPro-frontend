@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Modal, Form, Input, Button, message } from 'antd';
+import React, { useState } from "react";
+import { Modal, Form, Input, Button, message } from "antd";
 import { useLanguage } from "../../../contexts/LanguageContext";
 
 const { TextArea } = Input;
@@ -17,16 +17,17 @@ const ValidateModal = ({
   
 
   const handleSubmit = () => {
-    form.validateFields()
+    form
+      .validateFields()
       .then((values) => {
-        if (actionType === 'validate') {
+        if (actionType === "validate") {
           onValidate(values);
         } else {
           onReject(values);
         }
       })
       .catch((error) => {
-        console.error('Validation failed:', error);
+        console.error("Validation failed:", error);
       });
   };
 
@@ -45,7 +46,7 @@ const ValidateModal = ({
         <Button
           key="reject"
           type="danger"
-          onClick={() => setActionType('reject')}
+          onClick={() => setActionType("reject")}
           disabled={loading}
           style={{ marginRight: 8 }}
         >
@@ -58,7 +59,7 @@ const ValidateModal = ({
         <Button
           key="validate"
           type="primary"
-          onClick={() => setActionType('validate')}
+          onClick={() => setActionType("validate")}
           disabled={loading}
         >
           {
@@ -77,30 +78,31 @@ const ValidateModal = ({
           <>
             <Form.Item
               name="comments"
-              label={`${actionType === 'validate' ? 'Validation' : 'Rejection'} Comments`}
+              label={`${
+                actionType === "validate" ? "Validation" : "Rejection"
+              } Comments`}
               rules={[
                 {
                   required: true,
-                  message: `Please provide ${actionType === 'validate' ? 'validation' : 'rejection'} comments`,
+                  message: `Please provide ${
+                    actionType === "validate" ? "validation" : "rejection"
+                  } comments`,
                 },
               ]}
             >
               <TextArea rows={4} />
             </Form.Item>
 
-            <div style={{ textAlign: 'right', marginTop: 16 }}>
-              <Button
-                type="primary"
-                onClick={handleSubmit}
-                loading={loading}
-              >
-                Confirm {actionType === 'validate' ? 'Validation' : 'Rejection'}
+            <div style={{ textAlign: "right", marginTop: 16 }}>
+              <Button type="primary" onClick={handleSubmit} loading={loading}>
+                Confirm {actionType === "validate" ? "Validation" : "Rejection"}
               </Button>
             </div>
           </>
         )}
 
         {!actionType && (
+
           <div style={{ textAlign: 'center', padding: '20px 0' }}>
             <p>{language === "en"
     ? "Please select whether you want to validate or reject this license."
@@ -108,6 +110,7 @@ const ValidateModal = ({
     ? "."
     : "இந்த உரிமத்தை சரிபார்க்க அல்லது நிராகரிக்க விரும்புகிறீர்களா என்பதைத் தேர்ந்தெடுக்கவும்."}
 </p>
+
           </div>
         )}
       </Form>

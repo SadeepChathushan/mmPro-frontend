@@ -81,54 +81,20 @@ const Dashboard = () => {
     },
   ];
 
-  // Fetch ML owners and issues data
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       setLoading(true);
-
-  //       // Fetch ML owners count
-  //       const mlOwners = await officerService.getMlOwners();
-  //       setMlOwnersCount(mlOwners.length);
-
-  //       // Fetch issues data (for ML and Complaints)
-  //       const issuesData = await officerService.getIssuesData();
-
-  //       if (Array.isArray(issuesData)) {
-  //         const transformedData = issuesData.map((issue) => ({
-  //           id: issue.id,
-  //           tracker:
-  //             issue.tracker.name === "Complaints"
-  //               ? "CMPLN"
-  //               : issue.tracker.name === "TPL"
-  //               ? "TPL"
-  //               : "ML",
-  //           licenseNumber:
-  //             issue.custom_fields.find(f => f.name === "License Number")?.value || "N/A",
-  //           ownerName:
-  //             issue.custom_fields.find(f => f.name === "Owner Name")?.value || "N/A",
-  //           mobileNumber:
-  //             issue.custom_fields.find(f => f.name === "Mobile Number")?.value || "N/A",
-  //           lorryNumber:
-  //             issue.custom_fields.find(f => f.name === "Lorry Number")?.value || "N/A",
-  //           assignee:
-  //             issue.custom_fields.find(f => f.name === "Assignee")?.value || "N/A",
-  //           start_date:
-  //             issue.custom_fields.find(f => f.name === "startDate")?.value ||
-  //             issue.start_date ||
-  //             "N/A",
-  //         }));
-  //         setTableData(transformedData);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    const fetchMlOwners = async () => {
+      try {
+        setLoading(true);
+        const mlOwnersList = await officerService.getMlOwners();
+        setMlOwnersCount(mlOwnersList.length);
+      } catch (error) {
+        console.error("Error fetching ML owners data/count:", error);
+        setMlOwnersCount(0);
+      } finally {
+      }
+    };
+    fetchMlOwners();
+  }, []);
 
   // Fetch TPL data separately
   useEffect(() => {
@@ -136,7 +102,6 @@ const Dashboard = () => {
       try {
         setLoading(true);
         const tplData = await officerService.getAllTpls();
-        console.log("TPL Data from service:", tplData);
 
         // Transform TPL data if needed
         // const formattedTplData = tplData.map((tpl) => ({
@@ -294,7 +259,7 @@ const Dashboard = () => {
           : language === "si"
           ? "පැමිණිලි"
           : "முறையீடுகள்",
-      count: tableData.filter((item) => item.tracker === "CMPLN").length,
+      count: complaintData.length,
       color: "#950C33",
     },
   ];

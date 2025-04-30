@@ -366,7 +366,6 @@ const AddNewLicense = () => {
   const [loading, setLoading] = useState(false); // Now useState is defined
   const [divisions, setDivisions] = useState([]);
 
-
   const handleDistrictChange = (value) => {
     setDivisions(districtData[value] || []);
     form.setFieldsValue({ divisional_secretary_division: undefined }); // Reset division when district changes
@@ -406,7 +405,7 @@ const AddNewLicense = () => {
         values.start_date ? values.start_date.format("YYYY-MM-DD") : ""
       );
       formData.append(
-        "end_date",
+        "due_date",
         values.end_date ? values.end_date.format("YYYY-MM-DD") : ""
       );
 
@@ -418,6 +417,7 @@ const AddNewLicense = () => {
         "mining_license_number",
         values.mining_license_number || ""
       );
+      formData.append("royalty", "5000");
 
       // Append files safely checking they exist
       if (
@@ -528,7 +528,7 @@ const AddNewLicense = () => {
       signature: "Signature",
       mineManager: "Mine Manager",
       startDate: "Start Date",
-      endDate: "End Date",
+      endDate: "Due Date",
       full: "Royalty Percentage",
       capacity: "Capacity(cubes)",
       full_capacity: "Full Capacity",
@@ -743,20 +743,16 @@ const AddNewLicense = () => {
             </Form.Item>
           </Col>
           <Col xs={24} sm={8}>
+
             <Form.Item
-              label={currentTranslations.divisionalSecretary}
-              name="divisional_secretary_division"
-              rules={[
-                { required: true, message: "Please select the division!" },
-              ]}
+              label={currentTranslations.district}
+              name="district"
+              rules={[{ required: true, message: "Please select the district!" }]}
             >
-              <Select
-                placeholder="Select division"
-                disabled={!divisions.length}
-              >
-                {divisions.map((division) => (
-                  <Option key={division} value={division}>
-                    {division}
+              <Select placeholder="Select district" onChange={handleDistrictChange}>
+                {Object.keys(districtData).map((district) => (
+                  <Option key={district} value={district}>
+                    {district}
                   </Option>
                 ))}
               </Select>
@@ -765,14 +761,19 @@ const AddNewLicense = () => {
         </Row>
 
         <Form.Item
-          label={currentTranslations.district}
-          name="district"
-          rules={[{ required: true, message: "Please select the district!" }]}
+          label={currentTranslations.divisionalSecretary}
+          name="divisional_secretary_division"
+          rules={[
+            { required: true, message: "Please select the division!" },
+          ]}
         >
-          <Select placeholder="Select district" onChange={handleDistrictChange}>
-            {Object.keys(districtData).map((district) => (
-              <Option key={district} value={district}>
-                {district}
+          <Select
+            placeholder="Select division"
+            disabled={!divisions.length}
+          >
+            {divisions.map((division) => (
+              <Option key={division} value={division}>
+                {division}
               </Option>
             ))}
           </Select>
@@ -801,7 +802,7 @@ const AddNewLicense = () => {
 
         {/* Commented sections */}
 
-        <Form.Item
+        {/* <Form.Item
           label={currentTranslations.licenseFee}
           name="payment_receipt"
           valuePropName="fileList"
@@ -817,7 +818,7 @@ const AddNewLicense = () => {
           >
             <Button icon={<UploadOutlined />}>Select File</Button>
           </Upload>
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item
           label={currentTranslations.mining_license_number}

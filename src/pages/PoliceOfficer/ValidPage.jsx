@@ -100,14 +100,7 @@ const ValidPage = () => {
             : "License Holder",
           dataIndex: "owner",
         },
-        {
-          label: isSinhala
-            ? "බලපත්‍ර හිමිකරු"
-            : isTamil
-            ? "உரிமம் வைத்திருப்பவர்"
-            : "Mining License Expire Date",
-          dataIndex: "dueDate",
-        },
+        
       ],
     ],
   };
