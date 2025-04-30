@@ -26,122 +26,21 @@ import {
 } from '@ant-design/icons';
 import '../../styles/MiningEngineer/MEDashboard.css';
 import AppointmentsPage from '../MiningEngineer/Appointments.jsx';
+import ApprovedLicensesTable from './ApprovedLisencesTable.jsx';
+import RejectedLicensesTable from './RejectedLisencesTable.jsx';
+import ViewLicenseModal from './ViewDetails.jsx';
 import { useLanguage } from "../../contexts/LanguageContext";
 
 const { Sider, Content } = Layout;
 const { SubMenu } = Menu;
 const { TabPane } = Tabs;
 
-const RejectedApprovedLicenseTable = ({ licenses, onViewDetails, language }) => {
-  const commonColumns = [
-    {
-      title: language === "en" ? "License No" : "அனுமதி எண்",
-      dataIndex: 'licenseNumber',
-      key: 'licenseNo',
-      render: (text, record) => (
-        <Tag color={record.status === 'approved' ? 'green' : 'red'}>
-          {text}
-        </Tag>
-      )
-    },
-    {
-      title: language === "en" ? "ML Owner" : "உரிமையாளர்",
-      dataIndex: 'owner',
-      key: 'owner'
-    },
-    {
-      title: language === "en" ? "Location" : "இடம்",
-      dataIndex: 'location',
-      key: 'location'
-    },
-    {
-      title: language === "en" ? "Date" : "தேதி",
-      dataIndex: 'date',
-      key: 'date'
-    },
-    {
-      title: language === "en" ? "Actions" : "செயல்கள்",
-      key: 'actions',
-      render: (_, record) => (
-        <Space size="middle">
-          <a onClick={() => onViewDetails(record)}>
-            {language === "en" ? "View Details" : "விவரங்களைக் காட்டு"}
-          </a>
-          <a href={record.documents.license} target="_blank" rel="noopener noreferrer">
-            <FilePdfOutlined /> {language === "en" ? "License" : "உரிமம்"}
-          </a>
-        </Space>
-      )
-    }
-  ];
-
-  const approvedColumns = [
-    ...commonColumns,
-    {
-      title: language === "en" ? "Status" : "நிலை",
-      key: 'status',
-      render: () => (
-        <Tag icon={<CheckCircleOutlined />} color="success">
-          {language === "en" ? "Approved" : "அங்கீகரிக்கப்பட்டது"}
-        </Tag>
-      )
-    }
-  ];
-
-  const rejectedColumns = [
-    ...commonColumns,
-    {
-      title: language === "en" ? "Status" : "நிலை",
-      key: 'status',
-      render: () => (
-        <Tag icon={<CloseCircleOutlined />} color="error">
-          {language === "en" ? "Rejected" : "நிராகரிக்கப்பட்டது"}
-        </Tag>
-      )
-    }
-  ];
-
-  return (
-    <Tabs defaultActiveKey="approved">
-      <TabPane
-        tab={
-          <span>
-            <CheckCircleOutlined />
-            {language === "en" ? " Approved" : " அங்கீகரிக்கப்பட்டது"}
-          </span>
-        }
-        key="approved"
-      >
-        <Table
-          columns={approvedColumns}
-          dataSource={licenses.filter(license => license.status === 'approved')}
-          rowKey="id"
-          pagination={{ pageSize: 5 }}
-        />
-      </TabPane>
-      <TabPane
-        tab={
-          <span>
-            <CloseCircleOutlined />
-            {language === "en" ? " Rejected" : " நிராகரிக்கப்பட்டது"}
-          </span>
-        }
-        key="rejected"
-      >
-        <Table
-          columns={rejectedColumns}
-          dataSource={licenses.filter(license => license.status === 'rejected')}
-          rowKey="id"
-          pagination={{ pageSize: 5 }}
-        />
-      </TabPane>
-    </Tabs>
-  );
-};
-
+// Main Dashboard Component
 const MEDashboard = () => {
   const { language } = useLanguage();
   const [activeMines, setActiveMines] = useState(3);
+  const [selectedLicense, setSelectedLicense] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const [equipmentStatus, setEquipmentStatus] = useState({
     operational: 42,
     maintenance: 5,
@@ -167,22 +66,36 @@ const MEDashboard = () => {
       id: 1,
       licenseNumber: 'ML-2023-001',
       owner: 'Pasindu Lakshan',
+      businessName: 'ABC Mining',
       location: 'Kaduwela',
+      type: 'Quarry',
+      appliedDate: '2023-06-10',
       date: '2023-06-15',
       status: 'approved',
+      rejectionReason: '',
       documents: {
-        license: '/sample-docs/license1.pdf'
+        license: '/sample-docs/license1.pdf',
+        applicationForm: '/sample-docs/app1.pdf',
+        idProof: '/sample-docs/id1.pdf',
+        addressProof: '/sample-docs/address1.pdf'
       }
     },
     {
       id: 2,
       licenseNumber: 'ML-2023-002',
       owner: 'Another Owner',
+      businessName: 'XYZ Minerals',
       location: 'Colombo',
+      type: 'Metal',
+      appliedDate: '2023-06-15',
       date: '2023-06-20',
       status: 'rejected',
+      rejectionReason: 'Incomplete documentation',
       documents: {
-        license: '/sample-docs/license2.pdf'
+        license: '/sample-docs/license2.pdf',
+        applicationForm: '/sample-docs/app2.pdf',
+        idProof: '/sample-docs/id2.pdf',
+        addressProof: '/sample-docs/address2.pdf'
       }
     }
   ]);
@@ -191,10 +104,6 @@ const MEDashboard = () => {
   const [activeAppointmentTab, setActiveAppointmentTab] = useState('pending');
   const [activeLicenseTab, setActiveLicenseTab] = useState('approved');
   const [collapsed, setCollapsed] = useState(false);
-
-  const viewLicenseDetails = (license) => {
-    console.log('Viewing license details:', license);
-  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -205,18 +114,6 @@ const MEDashboard = () => {
           maintenance: Math.max(0, prev.maintenance + (Math.random() > 0.5 ? 1 : -1))
         }));
       }
-
-      if (Math.random() > 0.9) {
-        const newAlert = {
-          id: Date.now(),
-          type: ['equipment', 'safety', 'production'][Math.floor(Math.random() * 3)],
-          message: `New ${['equipment', 'safety', 'production'][Math.floor(Math.random() * 3)]} alert detected`,
-          priority: ['high', 'medium', 'low'][Math.floor(Math.random() * 3)],
-          time: 'Just now',
-          resolved: false
-        };
-        setAlerts(prev => [newAlert, ...prev]);
-      }
     }, 5000);
 
     return () => clearInterval(interval);
@@ -224,69 +121,50 @@ const MEDashboard = () => {
 
   const menuItems = [
     {
-      key: 'dashboard', icon: <DashboardOutlined />, label: language === "en"
-        ? "Dashboard"
-        : language === "si"
-          ? ""
-          : "டாஷ்போர்டு"
+      key: 'dashboard', 
+      icon: <DashboardOutlined />, 
+      label: language === "en" ? "Dashboard" : "டாஷ்போர்டு"
     },
     {
       key: 'appointments',
       icon: <ScheduleOutlined />,
-      label: language === "en"
-        ? "Appointments"
-        : language === "si"
-          ? ""
-          : "சந்திப்புகள்",
+      label: language === "en" ? "Appointments" : "சந்திப்புகள்",
       children: [
         {
-          key: 'pending-scheduling', label: language === "en"
-            ? "Pending Scheduling"
-            : language === "si"
-              ? ""
-              : "நிலுவையிலுள்ள திட்டமிடல்"
+          key: 'pending-scheduling', 
+          label: language === "en" ? "Pending Scheduling" : "நிலுவையிலுள்ள திட்டமிடல்"
         },
         {
-          key: 'scheduled', label: language === "en"
-            ? "Scheduled"
-            : language === "si"
-              ? ""
-              : "திட்டமிடப்பட்டது"
+          key: 'scheduled', 
+          label: language === "en" ? "Scheduled" : "திட்டமிடப்பட்டது"
         }
       ]
     },
     {
       key: 'mining-licenses',
       icon: <SafetyCertificateOutlined />,
-      label: language === "en"
-        ? "Mining Licenses"
-        : language === "si"
-          ? ""
-          : "சுரங்க உரிமங்கள்",
+      label: language === "en" ? "Mining Licenses" : "சுரங்க உரிமங்கள்",
       children: [
-        { key: 'approved-licenses', label: language === "en"
-          ? "Approved"
-          : language === "si"
-          ? ""
-          : "அங்கீகரிக்கப்பட்டது" },
-        { key: 'rejected-licenses', label: language === "en"
-          ? "Rejected"
-          : language === "si"
-          ? ""
-          : "நிராகரிக்கப்பட்டது" }
+        { 
+          key: 'approved-licenses', 
+          label: language === "en" ? "Approved" : "அங்கீகரிக்கப்பட்டது" 
+        },
+        { 
+          key: 'rejected-licenses', 
+          label: language === "en" ? "Rejected" : "நிராகரிக்கப்பட்டது" 
+        }
       ]
     },
-    { key: 'reports', icon: <FileTextOutlined />, label: language === "en"
-      ? "Reports"
-      : language === "si"
-      ? ""
-      : "அறிக்கைகள்"
-     },
-    { key: 'settings', icon: <SettingOutlined />, label: language === "en"
-      ? "Settings"
-      : language === "si"
-      ? ""
-      : "அமைப்புகள்" },
+    { 
+      key: 'reports', 
+      icon: <FileTextOutlined />, 
+      label: language === "en" ? "Reports" : "அறிக்கைகள்" 
+    },
+    { 
+      key: 'settings', 
+      icon: <SettingOutlined />, 
+      label: language === "en" ? "Settings" : "அமைப்புகள்" 
+    },
   ];
 
   const renderMenuItems = (items) => {
@@ -306,6 +184,11 @@ const MEDashboard = () => {
     });
   };
 
+  const handleViewDetails = (license) => {
+    setSelectedLicense(license);
+    setModalVisible(true);
+  };
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider
@@ -316,11 +199,7 @@ const MEDashboard = () => {
         theme="light"
       >
         <div className="logo" style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {collapsed ? <ToolOutlined style={{ fontSize: '24px' }} /> : <h2>{language === "en"
-            ? "Mining Operations"
-            : language === "si"
-              ? ""
-              : "சுரங்க செயல்பாடுகள்"}</h2>}
+          {collapsed ? <ToolOutlined style={{ fontSize: '24px' }} /> : <h2>{language === "en" ? "Mining Operations" : "சுரங்க செயல்பாடுகள்"}</h2>}
         </div>
         <Menu
           theme="light"
@@ -442,8 +321,51 @@ const MEDashboard = () => {
                   <Tag color="orange">Waste</Tag>
                 </div>
               </Card>
-
             </>
+          )}
+
+          {activeTab === 'appointments' && (
+            <AppointmentsPage activeTab={activeAppointmentTab} />
+          )}
+
+          {activeTab === 'mining-licenses' && (
+            <Card>
+              <Tabs 
+                activeKey={activeLicenseTab} 
+                onChange={(key) => setActiveLicenseTab(key)}
+              >
+                <TabPane
+                  tab={
+                    <span>
+                      <CheckCircleOutlined />
+                      {language === "en" ? " Approved Licenses" : " அங்கீகரிக்கப்பட்ட உரிமைகள்"}
+                    </span>
+                  }
+                  key="approved"
+                >
+                  <ApprovedLicensesTable 
+                    data={licenses.filter(license => license.status === 'approved')}
+                    onViewDetails={handleViewDetails}
+                    language={language}
+                  />
+                </TabPane>
+                <TabPane
+                  tab={
+                    <span>
+                      <CloseCircleOutlined />
+                      {language === "en" ? " Rejected Licenses" : " நிராகரிக்கப்பட்ட உரிமைகள்"}
+                    </span>
+                  }
+                  key="rejected"
+                >
+                  <RejectedLicensesTable 
+                    data={licenses.filter(license => license.status === 'rejected')}
+                    onViewDetails={handleViewDetails}
+                    language={language}
+                  />
+                </TabPane>
+              </Tabs>
+            </Card>
           )}
 
           {activeTab !== 'dashboard' && activeTab !== 'appointments' && activeTab !== 'mining-licenses' && (
@@ -452,126 +374,16 @@ const MEDashboard = () => {
               <p>This section would contain detailed {activeTab} information and management tools.</p>
             </Card>
           )}
-
-          {activeTab === 'appointments' && (
-            <AppointmentsPage activeTab={activeAppointmentTab} />
-          )}
-
-{activeTab === 'mining-licenses' && (
-  <Card>
-    <Tabs 
-      activeKey={activeLicenseTab} 
-      onChange={(key) => setActiveLicenseTab(key)}
-    >
-      <TabPane
-        tab={
-          <span>
-            <CheckCircleOutlined />
-            {language === "en" ? " Approved Licenses" : " அங்கீகரிக்கப்பட்ட உரிமைகள்"}
-          </span>
-        }
-        key="approved"
-      >
-        <Table
-          columns={[
-            {
-              title: language === "en" ? "License No" : "அனுமதி எண்",
-              dataIndex: 'licenseNumber',
-              key: 'licenseNo',
-              render: (text) => <Tag color="green">{text}</Tag>
-            },
-            {
-              title: language === "en" ? "ML Owner" : "உரிமையாளர்",
-              dataIndex: 'owner',
-              key: 'owner'
-            },
-            {
-              title: language === "en" ? "Location" : "இடம்",
-              dataIndex: 'location',
-              key: 'location'
-            },
-            {
-              title: language === "en" ? "Approved Date" : "அங்கீகரிக்கப்பட்ட தேதி",
-              dataIndex: 'date',
-              key: 'date'
-            },
-            {
-              title: language === "en" ? "Actions" : "செயல்கள்",
-              key: 'actions',
-              render: (_, record) => (
-                <Space size="middle">
-                  <a onClick={() => viewLicenseDetails(record)}>
-                    {language === "en" ? "View Details" : "விவரங்களைக் காட்டு"}
-                  </a>
-                  <a href={record.documents.license} target="_blank" rel="noopener noreferrer">
-                    <FilePdfOutlined /> {language === "en" ? "License" : "உரிமம்"}
-                  </a>
-                </Space>
-              )
-            }
-          ]}
-          dataSource={licenses.filter(license => license.status === 'approved')}
-          rowKey="id"
-          pagination={{ pageSize: 5 }}
-        />
-      </TabPane>
-      <TabPane
-        tab={
-          <span>
-            <CloseCircleOutlined />
-            {language === "en" ? " Rejected Licenses" : " நிராகரிக்கப்பட்ட உரிமைகள்"}
-          </span>
-        }
-        key="rejected"
-      >
-        <Table
-          columns={[
-            {
-              title: language === "en" ? "License No" : "அனுமதி எண்",
-              dataIndex: 'licenseNumber',
-              key: 'licenseNo',
-              render: (text) => <Tag color="red">{text}</Tag>
-            },
-            {
-              title: language === "en" ? "ML Owner" : "உரிமையாளர்",
-              dataIndex: 'owner',
-              key: 'owner'
-            },
-            {
-              title: language === "en" ? "Location" : "இடம்",
-              dataIndex: 'location',
-              key: 'location'
-            },
-            {
-              title: language === "en" ? "Rejected Date" : "நிராகரிக்கப்பட்ட தேதி",
-              dataIndex: 'date',
-              key: 'date'
-            },
-            {
-              title: language === "en" ? "Actions" : "செயல்கள்",
-              key: 'actions',
-              render: (_, record) => (
-                <Space size="middle">
-                  <a onClick={() => viewLicenseDetails(record)}>
-                    {language === "en" ? "View Details" : "விவரங்களைக் காட்டு"}
-                  </a>
-                  <a href={record.documents.license} target="_blank" rel="noopener noreferrer">
-                    <FilePdfOutlined /> {language === "en" ? "License" : "உரிமம்"}
-                  </a>
-                </Space>
-              )
-            }
-          ]}
-          dataSource={licenses.filter(license => license.status === 'rejected')}
-          rowKey="id"
-          pagination={{ pageSize: 5 }}
-        />
-      </TabPane>
-    </Tabs>
-  </Card>
-)}
         </Content>
       </Layout>
+
+      {/* View License Modal - placed at root level */}
+      <ViewLicenseModal 
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        selectedLicense={selectedLicense}
+        language={language}
+      />
     </Layout>
   );
 };
