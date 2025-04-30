@@ -14,6 +14,8 @@ import {
 } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { SearchOutlined } from "@ant-design/icons";
+import { useLanguage } from "../../contexts/LanguageContext";
+
 
 const { Option } = Select;
 
@@ -25,6 +27,7 @@ const LicenseTable = ({ data, tracker, loading }) => {
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState("");
   // const [statusFilter, setStatusFilter] = useState(null);
+  const { language } = useLanguage();
 
   const [editableFields] = useState({
     mobile_number: true,
@@ -174,7 +177,11 @@ const LicenseTable = ({ data, tracker, loading }) => {
         icon={fetchingId !== record.id && <span>👁️</span>}
         onClick={(e) => handleViewClick(e, record)}
       >
-        View
+         {language === "en"
+    ? "View"
+    : language === "si"
+    ? ""
+    : "பார்க்க"}
       </Button>
     </div>
   );
@@ -191,16 +198,16 @@ const LicenseTable = ({ data, tracker, loading }) => {
 
   const columns = {
     ML: [
-      { title: "ID", dataIndex: "id", width: 80, fixed: "left" },
-      { title: "Owner", dataIndex: "assigned_to", ellipsis: true },
-      { title: "License No.", dataIndex: "subject", width: 120 },
-      { title: "Mobile", dataIndex: "mobile_number", width: 120 },
-      { title: "Capacity", dataIndex: "capacity", width: 100 },
-      { title: "Used", dataIndex: "used", width: 80 },
-      { title: "Remaining", dataIndex: "remaining", width: 100 },
-      { title: "Royalty", dataIndex: "royalty", width: 100 },
+      { title: language === "en" ? "ID" : language === "si" ? "" : "அடையாள எண்", dataIndex: "id", width: 80, fixed: "left" },
+      { title: language === "en" ? "Owner" : language === "si" ? "" : "உரிமையாளர்", dataIndex: "assigned_to", ellipsis: true },
+      { title: language === "en" ? "License No." : language === "si" ? "" : "உரிம எண்", dataIndex: "subject", width: 120 },
+      { title: language === "en" ? "Mobile" : language === "si" ? "" : "தொலைபேசி", dataIndex: "mobile_number", width: 120 },
+      { title: language === "en" ? "Capacity" : language === "si" ? "" : "கொள்ளளவு", dataIndex: "capacity", width: 100 },
+      { title: language === "en" ? "Used" : language === "si" ? "" : "பயன்படுத்தப்பட்டது", dataIndex: "used", width: 80 },
+      { title: language === "en" ? "Remaining" : language === "si" ? "" : "மீதமுள்ளது", dataIndex: "remaining", width: 100 },
+      { title: language === "en" ? "Royalty" : language === "si" ? "" : "உரிமத் தொகை", dataIndex: "royalty", width: 100 },
       {
-        title: "Valid Period",
+        title: language === "en" ? "Valid Period" : language === "si" ? "" : "செல்லுபடியாகும் காலம்",
         width: 200,
         render: (_, record) => (
           <span className="text-nowrap">
@@ -209,7 +216,7 @@ const LicenseTable = ({ data, tracker, loading }) => {
         ),
       },
       {
-        title: "Status",
+        title: language === "en" ? "Status" : language === "si" ? "" : "நிலை",
         dataIndex: "status",
         width: 150,
         render: (status) => (
@@ -224,34 +231,34 @@ const LicenseTable = ({ data, tracker, loading }) => {
         ),
       },
       {
-        title: "Action",
+        title: language === "en" ? "Action" : language === "si" ? "" : "நடவடிக்கை",
         width: 100,
         fixed: "right",
         render: (_, record) => renderAction(record),
       },
     ],
     TPL: [
-      { title: "License No.", dataIndex: "mining_license_number", width: 120 },
-      { title: "Mining Owner", dataIndex: "author", ellipsis: true },
+      { title: language === "en" ? "License No." : language === "si" ? "" : "உரிம எண்", dataIndex: "mining_license_number", width: 120 },
+      { title: language === "en" ? "Mining Owner" : language === "si" ? "" : "சுரங்க உரிமையாளர்", dataIndex: "author", ellipsis: true },
       // { title: "Driver Name", dataIndex: "lorry_driver_name", width: 150 },
-      { title: "Lorry No.", dataIndex: "lorry_number", width: 120 },
-      { title: "Driver Contact", dataIndex: "driver_contact", width: 140 },
-      { title: "Cubes", dataIndex: "cubes", width: 80 },
-      { title: "Destination", dataIndex: "destination", ellipsis: true },
+      { title: language === "en" ? "Lorry No." : language === "si" ? "" : "லாரி எண்.", dataIndex: "lorry_number", width: 120 },
+      { title: language === "en" ? "Driver Contact" : language === "si" ? "" : "சாரதி தொடர்பு", dataIndex: "driver_contact", width: 140 },
+      { title: language === "en" ? "Cubes" : language === "si" ? "" : "கனசதுரங்கள்", dataIndex: "cubes", width: 80 },
+      { title: language === "en" ? "Destination" : language === "si" ? "" : "பயண இலக்கு", dataIndex: "destination", ellipsis: true },
       {
-        title: "Action",
+        title: language === "en" ? "Action" : language === "si" ? "" : "நடவடிக்கை",
         width: 100,
         fixed: "right",
         render: (_, record) => renderAction(record),
       },
     ],
     CMPLN: [
-      { title: "ID", dataIndex: "id", width: 80, fixed: "left" },
-      { title: "Mobile", dataIndex: "mobile_number", width: 120 },
-      { title: "Lorry No.", dataIndex: "lorry_number", width: 120 },
-      { title: "Complaint Date", dataIndex: "complaint_date", width: 150 },
+      { title: language === "en" ? "ID" : language === "si" ? "" : "அடையாள எண்", dataIndex: "id", width: 80, fixed: "left" },
+      { title: language === "en" ? "Mobile" : language === "si" ? "" : "தொலைபேசி", dataIndex: "mobile_number", width: 120 },
+      { title: language === "en" ? "Lorry No." : language === "si" ? "" : "லாரி எண்.", dataIndex: "lorry_number", width: 120 },
+      { title: language === "en" ? "Complaint Date" : language === "si" ? "" : "புகார் திகதி", dataIndex: "complaint_date", width: 150 },
       {
-        title: "Resolved",
+        title: language === "en" ? "Resolved" : language === "si" ? "" : "தீர்க்கப்பட்டது",
         width: 100,
         fixed: "right",
         render: (_, record) => renderComplaintAction(record),
@@ -443,7 +450,8 @@ const LicenseTable = ({ data, tracker, loading }) => {
                   fontWeight: "500",
                 }}
               >
-                Update
+                { language === "en" ? "Update" : language === "si" ? "" : "புதுப்பிக்கவும்" }
+
               </Button>
             </Col>
           </Row>

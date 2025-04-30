@@ -18,6 +18,8 @@ import { notification } from "antd";
 import ScheduleAppointmentModal from '../GSMBOfficer/ML Req/ScheduleAppointmentModal';
 import PhysicalMeetingModal from '../GSMBOfficer/ML Req/PhysicalMeetingModal';
 import ValidateModal from '../GSMBOfficer/ML Req/ValidateModal';
+import { useLanguage } from "../../contexts/LanguageContext";
+
 
 const { Link } = Typography;
 const { TextArea } = Input;
@@ -25,6 +27,7 @@ const { Option } = Select;
 
 const RequestMiningTable = () => {
   // --- State Variables ---
+  const { language } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [mlRequestData, setMlRequestData] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -225,7 +228,11 @@ const [validateLoading, setValidateLoading] = useState(false);
           icon={<span>👁️</span>}
           onClick={() => handleViewClick(record)}
         >
-          View
+          {language === "en"
+    ? "View"
+    : language === "si"
+    ? ""
+    : "பார்க்க"}
         </Button>
         
         {isMEApproved ? (
@@ -236,7 +243,12 @@ const [validateLoading, setValidateLoading] = useState(false);
             onClick={() => handleValidateLicense(record)}
             style={{ backgroundColor: '#ffffff', borderColor: '#52c41a', color:'#52c41a'}}
           >
-            Validate the license
+              {language === "en"
+    ? "Validate the license"
+    : language === "si"
+    ? ""
+    : "அனுமதி உரிமத்தை சரிபார்க்கவும்"}
+
           </Button>
         ) : !isRestrictedStatus && (
           isPhysicalDocument ? (
@@ -247,7 +259,11 @@ const [validateLoading, setValidateLoading] = useState(false);
               onClick={() => handleUpdatePhysicalMeetingStatus(record)}
               style={{ backgroundColor: '#f0f0f0', borderColor: '#d9d9d9' }}
             >
-              Physical Meeting Status
+              {language === "en"
+    ? "Physical Meeting Status"
+    : language === "si"
+    ? ""
+    : "நிகழ்நிலை சந்திப்பு நிலை"}
             </Button>
           ) : (          
             <Button
@@ -256,7 +272,11 @@ const [validateLoading, setValidateLoading] = useState(false);
               icon={<span>🗓️</span>}
               onClick={() => handleScheduleAppointment(record)}
             >
-              Schedule
+                {language === "en"
+    ? "Schedule"
+    : language === "si"
+    ? ""
+    : "திட்டமிடு"}
             </Button>
           )
         )}
@@ -417,50 +437,90 @@ const [validateLoading, setValidateLoading] = useState(false);
   };
   
   const columns = [
-    { title: "ID", dataIndex: "id", key: "id", width: 80, fixed: "left" },
+    { title:
+      language === "en"
+        ? "ID"
+        : language === "si"
+        ? ""
+        : "அடையாள எண்", dataIndex: "id", key: "id", width: 80, fixed: "left" },
     {
-      title: "Request Subject",
+      title:
+  language === "en"
+    ? "Request Subject"
+    : language === "si"
+    ? " "
+    : "கோரிக்கையின் தலைப்பு",
       dataIndex: "subject",
       key: "subject",
       width: 200,
     },
     {
-      title: "Assigned To",
+      title:
+  language === "en"
+    ? "Assigned To"
+    : language === "si"
+    ? " "
+    : "ஒதுக்கப்பட்டவர்",
       dataIndex: "assigned_to",
       key: "assigned_to",
       width: 150,
       render: (text) => text || "-",
     },
     {
-      title: "Mobile",
+      title:
+  language === "en"
+    ? "Mobile"
+    : language === "si"
+    ? ""
+    : "தொலைபேசி",
       dataIndex: "mobile_number",
       key: "mobile_number",
       width: 150,
       render: (text) => text || "-",
     },
     {
-      title: "District",
+      title:
+  language === "en"
+    ? "District"
+    : language === "si"
+    ? ""
+    : "மாவட்டம்",
       dataIndex: "administrative_district",
       key: "administrative_district",
       width: 150,
       render: (text) => text || "-",
     },
     {
-      title: "Date Created",
+      title:
+  language === "en"
+    ? "Date Created"
+    : language === "si"
+    ? ""
+    : "உருவாக்கப்பட்ட திகதி",
       dataIndex: "created_on",
       key: "created_on",
       width: 120,
       render: (text) => (text ? text.split("T")[0] : "-"),
     },
     { 
-      title: "Status", 
+      title:
+  language === "en"
+    ? "Status"
+    : language === "si"
+    ? ""
+    : "நிலை", 
       dataIndex: "status", 
       key: "status", 
       width: 100,
       render: renderStatus 
     },
     {
-      title: "Action",
+      title:
+  language === "en"
+    ? "Action"
+    : language === "si"
+    ? ""
+    : "நடவடிக்கை",
       key: "action",
       width: 150,
       fixed: "right",
@@ -585,7 +645,13 @@ const [validateLoading, setValidateLoading] = useState(false);
           <Row gutter={16} align="middle">
             <Col>
               <Select
-                placeholder="Filter by status"
+                placeholder={
+                  language === "en"
+                    ? "Filter by status"
+                    : language === "si"
+                    ? ""
+                    : "நிலையின் அடிப்படையில் வடிகட்டவும்"
+                }
                 value={statusFilter}
                 onChange={setStatusFilter}
                 style={{ width: 200 }}
@@ -607,7 +673,11 @@ const [validateLoading, setValidateLoading] = useState(false);
                   setStatusFilter(null);
                 }}
               >
-                Reset Filters
+                 {language === "en"
+    ? "Reset Filters"
+    : language === "si"
+    ? ""
+    : "வடிகட்டிகளை மீட்டமைக்கவும்"}
               </Button>
             </Col>
           </Row>
@@ -659,7 +729,11 @@ const [validateLoading, setValidateLoading] = useState(false);
                 style={{ marginRight: 8 }}
                 disabled={updateLoading}
               >
-                Cancel
+                {language === "en"
+    ? "Cancel"
+    : language === "si"
+    ? " "
+    : "ரத்து செய்க"}
               </Button>
               <Button
                 key="update"
@@ -667,7 +741,11 @@ const [validateLoading, setValidateLoading] = useState(false);
                 onClick={handleUpdate}
                 loading={updateLoading}
               >
-                Update Details
+                {language === "en"
+    ? "Update Details"
+    : language === "si"
+    ? ""
+    : "விவரங்களைப் புதுப்பிக்கவும்"}
               </Button>
             </Col>
           </Row>
