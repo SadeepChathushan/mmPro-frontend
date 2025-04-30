@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Popover, DatePicker, message, Tag } from 'antd';
-import { CalendarOutlined, EnvironmentOutlined } from '@ant-design/icons';
-import moment from 'moment';
-import StatusActions from './StatusActions';
+import React, { useState, useEffect } from "react";
+import { Table, Space, Button, Popover, DatePicker, message, Tag } from "antd";
+import { CalendarOutlined, EnvironmentOutlined } from "@ant-design/icons";
+import moment from "moment";
+import StatusActions from "./StatusActions";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { getMeAwatingList , scheduleAppointment } from '../../services/miningEngineerService';
+import {
+  getMeAwatingList,
+  scheduleMiningEngineerAppointmentDate,
+} from "../../services/miningEngineerService";
 
 const AppointmentsTable = ({
   activeTab,
@@ -13,7 +16,7 @@ const AppointmentsTable = ({
   onHold,
   onReject,
   onDateChange,
-  onConfirmScheduleDate
+  onConfirmScheduleDate,
 }) => {
   const { language } = useLanguage();
   const [appointments, setAppointments] = useState([]);
@@ -24,9 +27,11 @@ const AppointmentsTable = ({
       setLoading(true);
       try {
         const data = await getMeAwatingList();
-        setAppointments(data.map(item => ({ ...item, tempDateString: null })));
+        setAppointments(
+          data.map((item) => ({ ...item, tempDateString: null }))
+        );
       } catch (error) {
-        console.error('Error fetching appointments:', error);
+        console.error("Error fetching appointments:", error);
       } finally {
         setLoading(false);
       }
@@ -36,81 +41,89 @@ const AppointmentsTable = ({
   }, [activeTab]);
 
   const handleTempDateChange = (id, dateString) => {
-    setAppointments(prev =>
-      prev.map(item =>
+    setAppointments((prev) =>
+      prev.map((item) =>
         item.id === id ? { ...item, tempDateString: dateString } : item
       )
     );
   };
 
-  const handleConfirmDate = async (id, dateString) => {
+  const handleConfirmDate = async (mining_number, dateString) => {
     if (dateString) {
       try {
         // Call the scheduleAppointment API
-        const result = await scheduleAppointment(id, dateString);
-        
+        const result = await scheduleMiningEngineerAppointmentDate(
+          mining_number,
+          dateString
+        );
+
         if (result.success) {
           // Update the local state
-          setAppointments(prev =>
-            prev.map(item =>
-              item.id === id 
-                ? { 
-                    ...item, 
-                    status: "ME Appointment Scheduled", 
+          setAppointments((prev) =>
+            prev.map((item) =>
+              item.id === id
+                ? {
+                    ...item,
+                    status: "ME Appointment Scheduled",
                     date: dateString,
-                    tempDateString: null 
-                  } 
+                    tempDateString: null,
+                  }
                 : item
             )
           );
-          
+
           // Show success message
-          message.success(language === "en" 
-            ? "Date confirmed and appointment scheduled!" 
-            : language === "si" 
-              ? "දිනය තහවුරු කර නියමිත දිනය නියම කරන ලදී!" 
+          message.success(
+            language === "en"
+              ? "Date confirmed and appointment scheduled!"
+              : language === "si"
+              ? "දිනය තහවුරු කර නියමිත දිනය නියම කරන ලදී!"
               : "தேதி உறுதி செய்யப்பட்டு சந்திப்பு திட்டமிடப்பட்டது!"
           );
-          
+
           // Call the onConfirmScheduleDate callback
-          onConfirmScheduleDate(id, dateString);
-          onDateChange && onDateChange(id, null, dateString);
+          onConfirmScheduleDate(mining_number, dateString);
+          onDateChange && onDateChange(mining_number, null, dateString);
         } else {
-          message.error(result.message || (language === "en" 
-            ? "Failed to schedule appointment" 
-            : language === "si" 
-              ? "සාදරයෙන් පිළිගැනීමට අසමත් විය" 
-              : "சந்திப்பை திட்டமிடுவதில் தோல்வி"
-          ));
+          message.error(
+            result.message ||
+              (language === "en"
+                ? "Failed to schedule appointment"
+                : language === "si"
+                ? "සාදරයෙන් පිළිගැනීමට අසමත් විය"
+                : "சந்திப்பை திட்டமிடுவதில் தோல்வி")
+          );
         }
       } catch (error) {
         console.error("Error scheduling appointment:", error);
-        message.error(language === "en" 
-          ? "Error scheduling appointment" 
-          : language === "si" 
-            ? "සාදරයෙන් පිළිගැනීමේ දෝෂයක්" 
+        message.error(
+          language === "en"
+            ? "Error scheduling appointment"
+            : language === "si"
+            ? "සාදරයෙන් පිළිගැනීමේ දෝෂයක්"
             : "சந்திப்பு திட்டமிடுவதில் பிழை"
         );
       }
     } else {
-      message.error(language === "en" 
-        ? "Please select a date first!" 
-        : language === "si" 
-          ? "පළමුව දිනය තෝරන්න!" 
+      message.error(
+        language === "en"
+          ? "Please select a date first!"
+          : language === "si"
+          ? "පළමුව දිනය තෝරන්න!"
           : "முதலில் தேதியைத் தேர்ந்தெடுக்கவும்!"
       );
     }
   };
 
   const disabledPastDate = (current) => {
-    return current && current < moment().startOf('day');
+    return current && current < moment().startOf("day");
   };
 
   // Filter appointments based on activeTab and status
-  const filteredAppointments = appointments.filter(item => {
-    if (activeTab === 'pending') {
+  const filteredAppointments = appointments.filter((item) => {
+    if (activeTab === "pending") {
       return item.status === "Awaiting ME Scheduling";
-    } else if (activeTab === 'approved') {
+    } else if (activeTab === "approved") {
       return item.status === "ME Appointment Scheduled";
     }
     return true; // show all if not these tabs
@@ -118,91 +131,145 @@ const AppointmentsTable = ({
 
   const columns = [
     {
-      title: language === "en" ? "ML Owner" : language === "si" ? "ඇමතුම් හිමිකරු" : "ML உரிமையாளர்",
-      dataIndex: 'assigned_to',
-      key: 'mlOwner'
+      title:
+        language === "en"
+          ? "ML Owner"
+          : language === "si"
+          ? "ඇමතුම් හිමිකරු"
+          : "ML உரிமையாளர்",
+      dataIndex: "assigned_to",
+      key: "mlOwner",
     },
     {
-      title: language === "en" ? "GSMB Officer" : language === "si" ? "ගොඩනැගිලි නිලධාරියා" : "GSMB அதிகாரி",
-      dataIndex: 'gsmbOfficer',
-      key: 'gsmbOfficer'
+      title:
+        language === "en"
+          ? "GSMB Officer"
+          : language === "si"
+          ? "ගොඩනැගිලි නිලධාරියා"
+          : "GSMB அதிகாரி",
+      dataIndex: "gsmbOfficer",
+      key: "gsmbOfficer",
     },
     {
-      title: language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்",
-      dataIndex: 'Google_location',
-      key: 'location',
+      title:
+        language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்",
+      dataIndex: "Google_location",
+      key: "location",
       render: (location) => (
         <Space>
-          <EnvironmentOutlined style={{
-            color: '#52c41a',
-            fontSize: '18px',
-            background: '#f6ffed',
-            padding: '4px',
-            borderRadius: '50%'
-          }} />
+          <EnvironmentOutlined
+            style={{
+              color: "#52c41a",
+              fontSize: "18px",
+              background: "#f6ffed",
+              padding: "4px",
+              borderRadius: "50%",
+            }}
+          />
           <a
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`}
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+              location
+            )}`}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: '#389e0d' }}
+            style={{ color: "#389e0d" }}
           >
-            {language === "en" ? "View on Map" : language === "si" ? "සිතියමේ පෙන්වන්න" : "வரைபடத்தில் காண்க"}
+            {language === "en"
+              ? "View on Map"
+              : language === "si"
+              ? "සිතියමේ පෙන්වන්න"
+              : "வரைபடத்தில் காண்க"}
           </a>
         </Space>
-      )
+      ),
     },
   ];
 
-  if (activeTab === 'pending') {
+  if (activeTab === "pending") {
     columns.push({
-      title: language === "en" ? "Set Date" : language === "si" ? "දිනය සකසන්න" : "திகதி அமைக்கவும்",
-      key: 'setDate',
+      title:
+        language === "en"
+          ? "Set Date"
+          : language === "si"
+          ? "දිනය සකසන්න"
+          : "திகதி அமைக்கவும்",
+      key: "setDate",
       render: (_, record) => (
         <Popover
-          content={(
+          content={
             <Space>
               <DatePicker
                 disabledDate={disabledPastDate}
-                defaultValue={record.date ? moment(record.date, 'YYYY-MM-DD') : null}
-                onChange={(date, dateString) => handleTempDateChange(record.id, dateString)}
+                defaultValue={
+                  record.date ? moment(record.date, "YYYY-MM-DD") : null
+                }
+                onChange={(date, dateString) =>
+                  handleTempDateChange(record.id, dateString)
+                }
                 style={{ marginRight: 8 }}
               />
               <Button
                 type="primary"
-                onClick={() => handleConfirmDate(record.id, record.tempDateString)}
+                onClick={() =>
+                  handleConfirmDate(record.id, record.tempDateString)
+                }
               >
-                {language === "en" ? "Confirm" : language === "si" ? "තහවුරු කරන්න" : "உறுதிப்படுத்தவும்"}
+                {language === "en"
+                  ? "Confirm"
+                  : language === "si"
+                  ? "තහවුරු කරන්න"
+                  : "உறுதிப்படுத்தவும்"}
               </Button>
             </Space>
-          )}
-          title={language === "en" ? "Select Appointment Date" : language === "si" ? "දිනය තෝරන්න" : "சந்திப்பு தேதியைத் தேர்ந்தெடுக்கவும்"}
+          }
+          title={
+            language === "en"
+              ? "Select Appointment Date"
+              : language === "si"
+              ? "දිනය තෝරන්න"
+              : "சந்திப்பு தேதியைத் தேர்ந்தெடுக்கவும்"
+          }
           trigger="click"
         >
           <Button icon={<CalendarOutlined />}>
-            {language === "en" ? "Set Date" : language === "si" ? "දිනය සකසන්න" : "திகதி அமைக்கவும்"}
+            {language === "en"
+              ? "Set Date"
+              : language === "si"
+              ? "දිනය සකසන්න"
+              : "திகதி அமைக்கவும்"}
           </Button>
         </Popover>
-      )
+      ),
     });
   }
 
-  if (activeTab === 'approved') {
+  if (activeTab === "approved") {
     // Add Scheduled Date column before the Actions column
     columns.push({
-      title: language === "en" ? "Scheduled Date" : language === "si" ? "සැලසුම් කළ දිනය" : "திட்டமிடப்பட்ட தேதி",
-      dataIndex: 'date',
-      key: 'scheduledDate',
+      title:
+        language === "en"
+          ? "Scheduled Date"
+          : language === "si"
+          ? "සැලසුම් කළ දිනය"
+          : "திட்டமிடப்பட்ட தேதி",
+      dataIndex: "date",
+      key: "scheduledDate",
       render: (date) => (
-        <Tag color="blue" style={{ padding: '4px 8px', borderRadius: '4px' }}>
-          {moment(date).format('YYYY-MM-DD')}
+        <Tag color="blue" style={{ padding: "4px 8px", borderRadius: "4px" }}>
+          {moment(date).format("YYYY-MM-DD")}
         </Tag>
       ),
-      sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix()
+      sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
     });
 
     columns.push({
-      title: language === "en" ? "Action" : language === "si" ? "ක්‍රියාව" : "நடவடிக்கை",
-      key: 'statusActions',
+      title:
+        language === "en"
+          ? "Action"
+          : language === "si"
+          ? "ක්‍රියාව"
+          : "நடவடிக்கை",
+      key: "statusActions",
       render: (_, record) => (
         <StatusActions
           record={record}
@@ -210,7 +277,7 @@ const AppointmentsTable = ({
           onHold={onHold}
           onReject={onReject}
         />
-      )
+      ),
     });
   }
 
