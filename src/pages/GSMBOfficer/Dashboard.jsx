@@ -186,6 +186,10 @@ const Dashboard = () => {
     }
   }, [activeTab, tableData, tplData, mlData, complaintData]);
 
+  const handleSearch = (value) => {
+    setSearchText(value.toLowerCase());
+  };
+
   // Handle search
   // const handleSearch = (value) => {
   //   setSearchText(value);
@@ -301,7 +305,7 @@ const Dashboard = () => {
               boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
             }}
             value={searchText}
-            onChange={(e) => handleSearch(e.target.value)}
+            onChange={(e) => setSearchText(e.target.value)}
           />
         </Col>
         <Col xs={24} sm={8} style={{ textAlign: "right" }}>
@@ -334,11 +338,11 @@ const Dashboard = () => {
         }}
       >
         {activeTab === "MLOWNER" ? (
-          <MlOwnersTable data={filteredData} />
+          <MlOwnersTable data={filteredData} searchText={searchText} />
         ) : activeTab === "RM" ? (
-          <RequestMiningTable data={filteredData} />
+          <RequestMiningTable data={filteredData} searchText={searchText}/>
         ) : (
-          <LicenseTable data={filteredData} tracker={activeTab} />
+          <LicenseTable data={filteredData} tracker={activeTab} searchText={searchText} />
         )}
       </div>
     </div>
