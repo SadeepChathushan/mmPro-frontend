@@ -4,7 +4,7 @@ import AppointmentsTable from './AppointmentsTable';
 import ApprovalModal from './ApprovalModal';
 import { useLanguage } from "../../contexts/LanguageContext";
 import AppointmentDetailsModal from './AppointmentDetailsModal';
-import RejectedApprovedLisenceTable from './RejectedApprovedLisenceTable';
+import RejectedApprovedLisenceTable from './RejectedLisencesTable';
 
 const { Title } = Typography;
 
