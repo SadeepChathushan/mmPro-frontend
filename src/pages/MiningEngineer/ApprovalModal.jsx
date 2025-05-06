@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Modal, Form, Input, InputNumber, Row, Col, DatePicker, Upload, Button, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
@@ -137,6 +138,16 @@ const ApprovalModal = ({ visible, onCancel, onOk, appointmentId }) => {
       </Form>
     </Modal>
   );
+};
+
+ApprovalModal.propTypes = {
+  visible: PropTypes.bool.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  onOk: PropTypes.func.isRequired,
+  appointmentId: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ]).isRequired
 };
 
 export default ApprovalModal;
