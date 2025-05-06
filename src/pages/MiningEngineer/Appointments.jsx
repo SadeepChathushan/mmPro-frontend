@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Row, Col, Card, Typography, message, Tag } from 'antd';
+import { useState } from 'react';
+import { Row, Col, Card, Typography, message } from 'antd';
+import PropTypes from 'prop-types';
 import AppointmentsTable from './AppointmentsTable';
 import ApprovalModal from './ApprovalModal';
 import { useLanguage } from "../../contexts/LanguageContext";
 import AppointmentDetailsModal from './AppointmentDetailsModal';
-import RejectedApprovedLisenceTable from './RejectedLisencesTable';
 
 const { Title } = Typography;
 
@@ -66,7 +66,7 @@ const Appointments = ({ activeTab }) => {
       return app.status === 'pending';
     } else {
       // Show both scheduled and approved appointments in the Scheduled tab
-      return app.status === 'scheduled' ;
+      return app.status === 'scheduled';
     }
   });
 
@@ -86,9 +86,7 @@ const Appointments = ({ activeTab }) => {
     message.success(
       language === 'en' 
         ? 'Appointment scheduled successfully' 
-        : language === 'si' 
-          ? '' 
-          : 'சந்திப்பு வெற்றிகரமாக திட்டமிடப்பட்டது'
+        : 'சந்திப்பு வெற்றிகரமாக திட்டமிடப்பட்டது'
     );
   };
 
@@ -132,9 +130,7 @@ const Appointments = ({ activeTab }) => {
     message.success(
       language === 'en' 
         ? 'Appointment approved successfully' 
-        : language === 'si' 
-          ? '' 
-          : 'சந்திப்பு அங்கீகரிக்கப்பட்டது'
+        : 'சந்திப்பு அங்கீகரிக்கப்பட்டது'
     );
   };
   
@@ -153,9 +149,7 @@ const Appointments = ({ activeTab }) => {
     message.warning(
       language === 'en' 
         ? 'Appointment put on hold' 
-        : language === 'si' 
-          ? '' 
-          : 'சந்திப்பு பிடித்து வைக்கப்பட்டது'
+        : 'சந்திப்பு பிடித்து வைக்கப்பட்டது'
     );
   };
   
@@ -174,9 +168,7 @@ const Appointments = ({ activeTab }) => {
     message.success(
       language === 'en' 
         ? 'Appointment rejected' 
-        : language === 'si' 
-          ? '' 
-          : 'சந்திப்பு நிராகரிக்கப்பட்டது'
+        : 'சந்திப்பு நிராகரிக்கப்பட்டது'
     );
   };
 
@@ -187,7 +179,6 @@ const Appointments = ({ activeTab }) => {
     ));
   };
 
-
   return (
     <div className="appointments-page">
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
@@ -196,18 +187,12 @@ const Appointments = ({ activeTab }) => {
             {activeTab === 'pending'
               ? language === "en"
                 ? "Pending Scheduling"
-                : language === "si"
-                ? ""
                 : "நிலுவையிலுள்ள திட்டமிடல்"
               : language === "en"
               ? "Scheduled"
-              : language === "si"
-              ? ""
               : "திட்டமிடப்பட்ட"}{" "}
             {language === "en"
               ? "Appointments"
-              : language === "si"
-              ? ""
               : "சந்திப்புகள்"}
           </Title>
         </Col>
@@ -243,6 +228,10 @@ const Appointments = ({ activeTab }) => {
       />
     </div>
   );
+};
+
+Appointments.propTypes = {
+  activeTab: PropTypes.oneOf(['pending', 'scheduled']).isRequired
 };
 
 export default Appointments;
