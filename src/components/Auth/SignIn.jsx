@@ -83,14 +83,30 @@ const SignInPage = () => {
       <div className="content-container">
         <div className="left-section">
           <div style={{ display: "flex", alignItems: "center", gap: "0rem" }}>
+          <img src={logo} alt="Logo" />
             <h1>
               WELCOME <br /> ආයුබෝවන් <br /> வரவேற்கின்றேன்
             </h1>
-            <img src={logo} alt="Logo" />
           </div>
+          
+          <br />
           <p>
             Welcome to mmPro, your trusted partner in revolutionizing mining and
-            mineral production management...
+            mineral production management. Designed for precision, efficiency,
+            and sustainability, mmPro empowers you to monitor operations, gain
+            valuable insights, and drive better decision-making.
+          </p>
+          <p>
+            mmPro වෙත ඔබව සාදරයෙන් පිළිගනිමු. ඔබගේ පතල් කැණීමේ සහ ඛනිජ නිෂ්පාදන
+            කළමනාකරණය ප්‍රතිසංස්කරණය කිරීමේ ආරක්ෂිත සහ විශ්වාසනීය සංග්‍රහය වන
+            mmPro, කාර්යක්ෂමතාව, ක්ෂණික බව සහ තිරසාරතාව සඳහා නිර්මාණය කරන ලදි.
+          </p>
+
+          <p>
+            mmPro இல் உங்களை வரவேற்கின்றோம். உங்களின் உழைக்கும் மற்றும் கனிம
+            உற்பத்தி மேலாண்மையை புரட்சிகரிக்கும் பாதுகாப்பான மற்றும் நம்பகமான
+            துணை நிறுவனமான mmPro, துல்லியம், திறன் மற்றும் நிலைத்தன்மைக்கு
+            வடிவமைக்கப்பட்டுள்ளது.
           </p>
         </div>
 
