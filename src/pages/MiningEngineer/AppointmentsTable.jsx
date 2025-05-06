@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Table, Space, Button, Popover, DatePicker, message, Tag } from "antd";
 import { CalendarOutlined, EnvironmentOutlined } from "@ant-design/icons";
 import moment from "moment";
+import PropTypes from "prop-types";
 import StatusActions from "./StatusActions";
-import { useLanguage } from "../../contexts/LanguageContext";
 import {
   getMeAwatingList,
   scheduleMiningEngineerAppointmentDate,
@@ -11,14 +11,13 @@ import {
 
 const AppointmentsTable = ({
   activeTab,
-  onViewDetails,
   onShowApproval,
   onHold,
   onReject,
   onDateChange,
   onConfirmScheduleDate,
+  language,
 }) => {
-  const { language } = useLanguage();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -61,7 +60,7 @@ const AppointmentsTable = ({
           // Update the local state
           setAppointments((prev) =>
             prev.map((item) =>
-              item.id === id
+              item.mining_number === mining_number
                 ? {
                     ...item,
                     status: "ME Appointment Scheduled",
@@ -211,7 +210,7 @@ const AppointmentsTable = ({
               <Button
                 type="primary"
                 onClick={() =>
-                  handleConfirmDate(record.id, record.tempDateString)
+                  handleConfirmDate(record.mining_number, record.tempDateString)
                 }
               >
                 {language === "en"
@@ -285,11 +284,22 @@ const AppointmentsTable = ({
     <Table
       columns={columns}
       dataSource={filteredAppointments}
-      rowKey="id"
+      rowKey="mining_number"
       loading={loading}
       pagination={{ pageSize: 5 }}
     />
   );
+};
+
+AppointmentsTable.propTypes = {
+  activeTab: PropTypes.oneOf(["pending", "approved"]).isRequired,
+  onViewDetails: PropTypes.func,
+  onShowApproval: PropTypes.func.isRequired,
+  onHold: PropTypes.func.isRequired,
+  onReject: PropTypes.func.isRequired,
+  onDateChange: PropTypes.func,
+  onConfirmScheduleDate: PropTypes.func.isRequired,
+  language: PropTypes.oneOf(["en", "si", "ta"]).isRequired,
 };
 
 export default AppointmentsTable;
