@@ -63,7 +63,7 @@ const RequestMiningTable = ({searchText}) => {
   const statusOptions = [
     { value: "Pending", label: "Pending" },
     { value: "Physical document", label: "Physical Document" },
-    { value: "awaiting_scheduling", label: "Awaiting ME Scheduling" },
+    { value: "Awaiting ME Scheduling", label: "Awaiting ME Scheduling" },
     { value: "ME Approved", label: "ME Approved" },
     { value: "Valid", label: "Valid" },
     { value: "Rejected", label: "Rejected" },
@@ -822,7 +822,7 @@ const RequestMiningTable = ({searchText}) => {
         dataSource={mlRequestData
           .filter((item) => item.status?.toLowerCase() !== "valid")
           .filter((item) =>
-            statusFilter ? item.status === statusFilter : true)
+            statusFilter ? item.status?.toLowerCase() === statusFilter.toLowerCase() : true)
           .filter((item) => {
             if (!searchText) return true;
             const search = searchText.toLowerCase();
