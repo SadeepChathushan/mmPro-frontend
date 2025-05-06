@@ -18,6 +18,7 @@ import MlOwnerRegister from "../src/pages/GSMBOfficer/RegNewOwner";
 import NewOwnerRegister from "./components/Auth/NewOwnerRegister";
 import PoliceOfficerRegister from "./components/Auth/PoliceOfficerRegister";
 import GSMBOfficerRegister from "./components/Auth/GSMBOfficerRegister";
+import MiningEngineerRegister from "./components/Auth/MiningEngineerRegister";
 import MiningEngineerRoutes from "./routes/MERoutes";
 import ContactUs from "./pages/ContactUs";
 
@@ -36,6 +37,7 @@ const App = () => {
         <Route path="/NewOwnerRegister" element={<NewOwnerRegister />} />
         <Route path="/PoliceOfficerRegister" element={<PoliceOfficerRegister />} />
         <Route path="/GSMBOfficerRegister" element={<GSMBOfficerRegister />} />
+        <Route path="/MiningEngineerRegister" element={<MiningEngineerRegister />} />
         <Route
           path="/reset-password"
           element={
