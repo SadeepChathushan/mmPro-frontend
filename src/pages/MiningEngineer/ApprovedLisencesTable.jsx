@@ -1,6 +1,5 @@
-import React from 'react';
 import { Table, Tag, Space } from 'antd';
-import { FilePdfOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
 
 const ApprovedLicensesTable = ({ data, onViewDetails, language }) => {
   const columns = [
@@ -55,6 +54,20 @@ const ApprovedLicensesTable = ({ data, onViewDetails, language }) => {
       pagination={{ pageSize: 5 }}
     />
   );
+};
+
+ApprovedLicensesTable.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      licenseNumber: PropTypes.string.isRequired,
+      owner: PropTypes.string.isRequired,
+      location: PropTypes.string.isRequired,
+      date: PropTypes.string.isRequired,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+    })
+  ).isRequired,
+  onViewDetails: PropTypes.func.isRequired,
+  language: PropTypes.oneOf(['en', 'ta']).isRequired
 };
 
 export default ApprovedLicensesTable;
