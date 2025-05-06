@@ -1,7 +1,10 @@
+
 import React, { useState, useEffect } from "react";
 import { Table, Tag, Space, Spin, Alert } from "antd"; // Added Spin and Alert
 // import { FilePdfOutlined } from "@ant-design/icons"; // This import is unused in the current logic
 import { getMeApproveMiningLicense } from "../../services/miningEngineerService";
+import PropTypes from "prop-types";
+
 
 // Removed the 'data' prop as the component fetches its own data
 const ApprovedLicensesTable = ({ onViewDetails, language }) => {
@@ -56,6 +59,7 @@ const ApprovedLicensesTable = ({ onViewDetails, language }) => {
       return dateString; // Return original string on error
     }
   };
+
 
   const columns = [
     {
@@ -130,6 +134,20 @@ const ApprovedLicensesTable = ({ onViewDetails, language }) => {
       scroll={{ x: 'max-content' }} // Optional: improve horizontal scrolling on small screens
     />
   );
+};
+
+ApprovedLicensesTable.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      licenseNumber: PropTypes.string.isRequired,
+      owner: PropTypes.string.isRequired,
+      location: PropTypes.string.isRequired,
+      date: PropTypes.string.isRequired,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+    })
+  ).isRequired,
+  onViewDetails: PropTypes.func.isRequired,
+  language: PropTypes.oneOf(['en', 'ta']).isRequired
 };
 
 export default ApprovedLicensesTable;
