@@ -173,6 +173,8 @@ const authService = {
         endpoint = `${BASE_URL}/auth/register-police-officer`;
       } else if (role === 'gsmb_officer') {
         endpoint = `${BASE_URL}/auth/register-gsmb-officer`;
+      } else if (role === 'mining_engineer') {
+        endpoint = `${BASE_URL}/auth/register-mining-engineer`;
       } else {
         throw new Error('Invalid role selected');
       }
