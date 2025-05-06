@@ -195,7 +195,6 @@ export const getMeApproveMiningLicense = async () => {
   try {
     const token = localStorage.getItem("USER_TOKEN");
     if (!token) {
-      console.error("User token not found in localStorage");
       return { success: false, message: "Authentication required" };
     }
 
@@ -204,18 +203,30 @@ export const getMeApproveMiningLicense = async () => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
       }
     );
 
-    if (response.data.success) {
-      return { success: true, data: response.data.data };
-    } else {
-      return { success: false, message: response.data.message || "Failed to get details" };
-    }
+    // Handle the array-with-null response structure
+    const licenses = Array.isArray(response.data) ? response.data[0] || [] : [];
+    
+    return { 
+      success: true, 
+      data: licenses.map(license => ({
+        id: license.id,
+        licenseNumber: license.exploration_license_no,
+        owner: license.Land_owner_name || 'N/A',
+        location: `${license.Land_Name}, ${license.administrative_district}`,
+        date: new Date().toLocaleDateString(), // Add actual date if available
+        status: license.status,
+        rawData: license // Keep original data for details view
+      }))
+    };
   } catch (error) {
-    console.error("Failed to get Mining Engineer approve license details:", error);
-    return { success: false, message: error.response?.data?.message || "An error occurred" };
+    console.error("API Error:", error);
+    return { 
+      success: false, 
+      message: error.response?.data?.message || "Failed to fetch licenses" 
+    };
   }
 };
