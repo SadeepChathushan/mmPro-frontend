@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'; // Add this import for prop validation
 import { useState, useEffect } from 'react';
 import {
   Layout,
@@ -31,8 +32,8 @@ const MEDashboard = () => {
   const [selectedLicense, setSelectedLicense] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [approvedLicenses, setApprovedLicenses] = useState(42);
-  const [rejectedLicenses, setRejectedLicenses] = useState(5);
-  const [licenseTrend, setLicenseTrend] = useState('improving');
+  const [rejectedLicenses] = useState(5); // Removed setRejectedLicenses since it's unused
+  const [licenseTrend] = useState('improving'); // Removed setLicenseTrend since it's unused
 
   const [licenses] = useState([
     {
@@ -268,17 +269,24 @@ const MEDashboard = () => {
   );
 };
 
-// Custom tab label component
-const TabLabel = ({ icon, title, count, active, type }) => {
+// Custom tab label component with PropTypes validation
+const TabLabel = ({ icon, title, active, type }) => {
   return (
     <div 
-      className={`modern-tab-label ${active ? 'active' : ''} tab-type-${type}`}
+      className={`me-tab-label ${active ? 'active' : ''} tab-type-${type}`}
       data-tab-key={title.toLowerCase().replace(/\s+/g, '-')}
     >
       <span className="tab-icon">{icon}</span>
       <span className="tab-title">{title}</span>
     </div>
   );
+};
+
+TabLabel.propTypes = {
+  icon: PropTypes.node.isRequired,
+  title: PropTypes.string.isRequired,
+  active: PropTypes.bool.isRequired,
+  type: PropTypes.oneOf(['pending', 'scheduled', 'approved', 'rejected']).isRequired
 };
 
 export default MEDashboard;

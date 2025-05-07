@@ -1,7 +1,7 @@
 /* MEDashboard.css */
 
 .me-content {
-  padding: 24px;
+  padding: 0;
   background-color: transparent;
 }
 
@@ -62,10 +62,9 @@
 }
 
 .me-stat-card__content .ant-statistic-content-suffix {
-  font-size: 12px;
-  color: #8c8c8c;
+  font-size: 18px;
+  color: #7e7e7e;
   font-weight: 400;
-  margin-left: 4px;
 }
 
 .me-stat-card__progress {
@@ -94,42 +93,21 @@
   transition: all 0.3s ease;
 }
 
-.me-main-tabs .ant-tabs-tab:hover {
-  color: #1890ff;
-}
-
-.me-main-tabs .ant-tabs-tab-active {
-  color: #1890ff;
-}
-
-.me-main-tabs .ant-tabs-ink-bar {
+.me-main-tabs {
   height: 3px;
-  background: #1890ff;
+  background: #000000;
 }
 
-.me-main-tabs .ant-tabs-tab-btn {
+.me-main-tabs {
   display: flex;
   align-items: center;
 }
 
-.me-main-tabs .anticon {
+.me-main-tabs  {
   margin-right: 8px;
   font-size: 16px;
 }
 
-/* Sub Tabs Styling */
-.me-sub-tabs .ant-tabs-nav {
-  margin-bottom: 16px;
-}
-
-.me-sub-tabs .ant-tabs-tab {
-  padding: 8px 16px;
-  font-size: 14px;
-}
-
-.me-sub-tabs .ant-tabs-tab + .ant-tabs-tab {
-  margin-left: 8px;
-}
 
 /* License Table Styling */
 .me-licenses-table {
@@ -320,15 +298,61 @@
   color: #ff4d4f;
 }
 
-/* Active tab indicator */
-.modern-tabs .ant-tabs-ink-bar {
-  height: 3px;
-  border-radius: 3px 3px 0 0;
-}
-
 /* Tab content styling */
 .me-tab-content {
   border-radius: 0 0 8px 8px;
   border-top: none;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
 }
+
+/* MEDashboard.css */
+
+/* Modern Tabs Styling - Updated with stronger selectors */
+.me-tabs {
+  background: #fff;
+  border-radius: 8px;
+  padding: 0 16px;
+}
+
+/* Tab indicator (ink bar) styling with !important */
+.me-tabs .ant-tabs-ink-bar {
+  height: 3px !important;
+  background-color: currentColor !important;
+}
+
+/* Active tab text color - this will control the ink bar color */
+.me-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: inherit !important;
+}
+
+/* Pending Tab */
+.tab-type-pending.active {
+  color: #faad14 !important;
+}
+
+/* Scheduled Tab */
+.tab-type-scheduled.active {
+  color: #1890ff !important;
+}
+
+/* Approved Tab */
+.tab-type-approved.active {
+  color: #52c41a !important;
+}
+
+/* Rejected Tab */
+.tab-type-rejected.active {
+  color: #ff4d4f !important;
+}
+
+/* Rest of your existing tab styles... */
+.me-tab-label {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
