@@ -38,8 +38,20 @@ const SignInPage = () => {
   }, [isAnyModalVisible]);
 
   const onFinish = async (values) => {
+    try{
     const role = await authService.login(values);
     authService.redirectToDashboard(role, navigate);
+    message.success("Login successful!");
+  } catch (error) {
+    if (error.response && error.response.data) {
+      // If the error is from the server, show the error message from the backend
+      message.error(error.response.data.message || "Login failed. Please try again.");
+    } else {
+      // For network errors or unexpected issues
+      message.error("An error occurred during login. Please check your Username and Password. Please try again.");
+    }
+
+  }
   };
 
   const handleGoogleLoginSuccess = async (response) => {
@@ -70,6 +82,7 @@ const SignInPage = () => {
   const handleCreateAccountCancel = () => {
     setIsCreateAccountModalVisible(false);
   };
+  
 
   return (
     <div style={{ height: "100vh", position: "relative" }}>
