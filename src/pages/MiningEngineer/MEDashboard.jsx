@@ -4,25 +4,15 @@ import {
   Card,
   Row,
   Col,
-  Tag,
-  Button,
   Progress,
   Statistic,
-  Menu,
-  Table,
-  Tabs,
-  Space
+  Tabs
 } from 'antd';
 import {
-  DashboardOutlined,
-  ToolOutlined,
-  FileTextOutlined,
-  SettingOutlined,
-  CloseCircleOutlined,
   CheckCircleOutlined,
+  CloseCircleOutlined,
   ScheduleOutlined,
-  SafetyCertificateOutlined,
-  FilePdfOutlined
+  SafetyCertificateOutlined
 } from '@ant-design/icons';
 import '../../styles/MiningEngineer/MEDashboard.css';
 import AppointmentsPage from '../MiningEngineer/Appointments.jsx';
@@ -31,8 +21,7 @@ import RejectedLicensesTable from './RejectedLisencesTable.jsx';
 import ViewLicenseModal from './ViewDetails.jsx';
 import { useLanguage } from "../../contexts/LanguageContext";
 
-const { Sider, Content } = Layout;
-const { SubMenu } = Menu;
+const { Content } = Layout;
 const { TabPane } = Tabs;
 
 const MEDashboard = () => {
@@ -44,16 +33,6 @@ const MEDashboard = () => {
   const [approvedLicenses, setApprovedLicenses] = useState(42);
   const [rejectedLicenses, setRejectedLicenses] = useState(5);
   const [licenseTrend, setLicenseTrend] = useState('improving');
-  
-  const [productionData] = useState([
-    { day: 'Mon', ore: 4500, waste: 3200 },
-    { day: 'Tue', ore: 5200, waste: 2800 },
-    { day: 'Wed', ore: 4800, waste: 3100 },
-    { day: 'Thu', ore: 5100, waste: 2900 },
-    { day: 'Fri', ore: 4900, waste: 3300 },
-    { day: 'Sat', ore: 3800, waste: 2500 },
-    { day: 'Sun', ore: 0, waste: 0 }
-  ]);
 
   const [licenses] = useState([
     {
@@ -94,10 +73,7 @@ const MEDashboard = () => {
     }
   ]);
 
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [activeAppointmentTab, setActiveAppointmentTab] = useState('pending');
-  const [activeLicenseTab, setActiveLicenseTab] = useState('approved');
-  const [collapsed, setCollapsed] = useState(false);
+  const [activeTab, setActiveTab] = useState('pending');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -107,83 +83,8 @@ const MEDashboard = () => {
         setApprovedLicenses(prev => Math.max(0, prev + (Math.random() > 0.5 ? 1 : -1)));
       }
     }, 5000);
-
     return () => clearInterval(interval);
   }, []);
-
-  const menuItems = [
-    {
-      key: 'dashboard', 
-      icon: <DashboardOutlined />, 
-      label: language === "en" ? "Dashboard" : "டாஷ்போர்டு"
-    },
-    {
-      key: 'appointments',
-      icon: <ScheduleOutlined />,
-      label: language === "en" ? "Appointments" : "சந்திப்புகள்",
-      children: [
-        {
-          key: 'pending-scheduling', 
-          label: language === "en" ? "Pending Scheduling" : "நிலுவையிலுள்ள திட்டமிடல்"
-        },
-        {
-          key: 'scheduled', 
-          label: language === "en" ? "Scheduled" : "திட்டமிடப்பட்டது"
-        }
-      ]
-    },
-    {
-      key: 'mining-licenses',
-      icon: <SafetyCertificateOutlined />,
-      label: language === "en" ? "Mining Licenses" : "சுரங்க உரிமங்கள்",
-      children: [
-        { 
-          key: 'approved-licenses', 
-          label: language === "en" ? "Approved" : "அங்கீகரிக்கப்பட்டது" 
-        },
-        { 
-          key: 'rejected-licenses', 
-          label: language === "en" ? "Rejected" : "நிராகரிக்கப்பட்டது" 
-        }
-      ]
-    },
-    { 
-      key: 'reports', 
-      icon: <FileTextOutlined />, 
-      label: language === "en" ? "Reports" : "அறிக்கைகள்" 
-    },
-    { 
-      key: 'settings', 
-      icon: <SettingOutlined />, 
-      label: language === "en" ? "Settings" : "அமைப்புகள்" 
-    },
-  ];
-
-  const renderMenuItems = (items) => {
-    return items.map(item => {
-      if (item.children) {
-        return (
-          <SubMenu 
-            key={item.key} 
-            icon={item.icon} 
-            title={item.label}
-            className="me-sidebar__submenu"
-          >
-            {renderMenuItems(item.children)}
-          </SubMenu>
-        );
-      }
-      return (
-        <Menu.Item 
-          key={item.key} 
-          icon={item.icon}
-          className="me-sidebar__menu-item"
-        >
-          {item.label}
-        </Menu.Item>
-      );
-    });
-  };
 
   const handleViewDetails = (licenseId) => {
     setSelectedLicense(licenseId);
@@ -192,229 +93,191 @@ const MEDashboard = () => {
 
   return (
     <Layout className="me-dashboard" style={{ minHeight: '100vh' }}>
-      <Sider
-        className="me-sidebar"
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
-        width={250}
-        theme="light"
-      >
-        <div className="me-sidebar__logo">
-          {collapsed ? (
-            <ToolOutlined className="me-sidebar__logo-icon" />
-          ) : (
-            <h2 className="me-sidebar__logo-text">
-              {language === "en" ? "Mining Operations" : "சுரங்க செயல்பாடுகள்"}
-            </h2>
-          )}
-        </div>
-        <Menu
-          className="me-sidebar__menu"
-          theme="light"
-          defaultSelectedKeys={['dashboard']}
-          defaultOpenKeys={['appointments', 'mining-licenses']}
-          mode="inline"
-          onSelect={({ key }) => {
-            if (key === 'pending-scheduling' || key === 'scheduled') {
-              setActiveTab('appointments');
-              setActiveAppointmentTab(key === 'pending-scheduling' ? 'pending' : 'approved');
-            } else if (key === 'approved-licenses' || key === 'rejected-licenses') {
-              setActiveTab('mining-licenses');
-              setActiveLicenseTab(key === 'approved-licenses' ? 'approved' : 'rejected');
-            } else {
-              setActiveTab(key);
-            }
+      <Content className="me-content" style={{ margin: '16px' }}>
+        <Row className="me-metrics-row" gutter={16} style={{ marginBottom: 24 }}>
+          <Col className="me-metrics-col" span={6}>
+            <Card className="me-stat-card me-stat-card--mines">
+              <Statistic
+                className="me-stat-card__content"
+                title={language === "en" ? "Pending Appointments" : "நிலுவையிலுள்ள சந்திப்புகள்"}
+                value={pendingAppointments}
+                suffix={language === "en" 
+                  ? "awaiting scheduling" 
+                  : "திட்டமிடல் காத்திருக்கிறது"}
+              />
+              <Progress
+                className="me-stat-card__progress"
+                percent={Math.round((pendingAppointments / (pendingAppointments + scheduledAppointments)) * 100)}
+                status="active"
+                strokeColor="#faad14"
+                strokeWidth={10}
+              />
+            </Card>
+          </Col>
+          <Col className="me-metrics-col" span={6}>
+            <Card className="me-stat-card me-stat-card--equipment">
+              <Statistic
+                className="me-stat-card__content"
+                title={language === "en" ? "Scheduled Appointments" : "திட்டமிடப்பட்ட சந்திப்புகள்"}
+                value={scheduledAppointments}
+                suffix={language === "en" 
+                  ? "inspections planned" 
+                  : "திட்டமிடப்பட்ட ஆய்வுகள்"}
+              />
+              <Progress
+                className="me-stat-card__progress"
+                percent={Math.round((scheduledAppointments / (pendingAppointments + scheduledAppointments)) * 100)}
+                status="active"
+                strokeColor="#52c41a"
+                strokeWidth={10}
+              />
+            </Card>
+          </Col>
+          <Col className="me-metrics-col" span={6}>
+            <Card className="me-stat-card me-stat-card--safety">
+              <Statistic
+                className="me-stat-card__content"
+                title={language === "en" ? "Approved Licenses" : "அங்கீகரிக்கப்பட்ட உரிமங்கள்"}
+                value={approvedLicenses}
+                suffix={language === "en" 
+                  ? `${licenseTrend} from last month` 
+                  : `${licenseTrend} கடந்த மாதத்திலிருந்து`}
+              />
+              <Progress
+                className="me-stat-card__progress"
+                percent={Math.round((approvedLicenses / (approvedLicenses + rejectedLicenses)) * 100)}
+                status={licenseTrend === 'improving' ? 'success' : 'exception'}
+                strokeWidth={10}
+                format={percent => `${percent}% approval rate`}
+              />
+            </Card>
+          </Col>
+          <Col className="me-metrics-col" span={6}>
+            <Card className="me-stat-card me-stat-card--production">
+              <Statistic
+                className="me-stat-card__content"
+                title={language === "en" ? "Rejected Licenses" : "நிராகரிக்கப்பட்ட உரிமங்கள்"}
+                value={rejectedLicenses}
+                suffix={language === "en" 
+                  ? "needs review" 
+                  : "மறுபரிசீலனை தேவை"}
+              />
+              <Progress
+                className="me-stat-card__progress"
+                percent={Math.round((rejectedLicenses / (approvedLicenses + rejectedLicenses)) * 100)}
+                status="exception"
+                strokeColor="#ff4d4f"
+                strokeWidth={10}
+              />
+            </Card>
+          </Col>
+        </Row>
+        
+        <Tabs 
+          className="modern-tabs"
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          tabBarStyle={{
+            marginBottom: 24,
+            paddingLeft: 8,
+            borderBottom: 'none'
           }}
+          tabBarGutter={16}
         >
-          {renderMenuItems(menuItems)}
-        </Menu>
-      </Sider>
-
-      <Layout className="me-content-area">
-        <Content className="me-content" style={{ margin: '16px' }}>
-          {activeTab === 'dashboard' && (
-            <>
-              <Row className="me-metrics-row" gutter={16} style={{ marginBottom: 16 }}>
-                <Col className="me-metrics-col" span={6}>
-                  <Card className="me-stat-card me-stat-card--mines">
-                    <Statistic
-                      className="me-stat-card__content"
-                      title={language === "en" ? "Pending Appointments" : "நிலுவையிலுள்ள சந்திப்புகள்"}
-                      value={pendingAppointments}
-                      suffix={language === "en" 
-                        ? "awaiting scheduling" 
-                        : "திட்டமிடல் காத்திருக்கிறது"}
-                    />
-                    <Progress
-                      className="me-stat-card__progress"
-                      percent={Math.round((pendingAppointments / (pendingAppointments + scheduledAppointments)) * 100)}
-                      status="active"
-                      strokeColor="#faad14"
-                    />
-                  </Card>
-                </Col>
-                <Col className="me-metrics-col" span={6}>
-                  <Card className="me-stat-card me-stat-card--equipment">
-                    <Statistic
-                      className="me-stat-card__content"
-                      title={language === "en" ? "Scheduled Appointments" : "திட்டமிடப்பட்ட சந்திப்புகள்"}
-                      value={scheduledAppointments}
-                      suffix={language === "en" 
-                        ? "inspections planned" 
-                        : "திட்டமிடப்பட்ட ஆய்வுகள்"}
-                    />
-                    <Progress
-                      className="me-stat-card__progress"
-                      percent={Math.round((scheduledAppointments / (pendingAppointments + scheduledAppointments)) * 100)}
-                      status="active"
-                      strokeColor="#52c41a"
-                    />
-                  </Card>
-                </Col>
-                <Col className="me-metrics-col" span={6}>
-                  <Card className="me-stat-card me-stat-card--safety">
-                    <Statistic
-                      className="me-stat-card__content"
-                      title={language === "en" ? "Approved Licenses" : "அங்கீகரிக்கப்பட்ட உரிமங்கள்"}
-                      value={approvedLicenses}
-                      suffix={language === "en" 
-                        ? `${licenseTrend} from last month` 
-                        : `${licenseTrend} கடந்த மாதத்திலிருந்து`}
-                    />
-                    <Progress
-                      className="me-stat-card__progress"
-                      percent={Math.round((approvedLicenses / (approvedLicenses + rejectedLicenses)) * 100)}
-                      status={licenseTrend === 'improving' ? 'success' : 'exception'}
-                      format={percent => `${percent}% approval rate`}
-                    />
-                  </Card>
-                </Col>
-                <Col className="me-metrics-col" span={6}>
-                  <Card className="me-stat-card me-stat-card--production">
-                    <Statistic
-                      className="me-stat-card__content"
-                      title={language === "en" ? "Rejected Licenses" : "நிராகரிக்கப்பட்ட உரிமங்கள்"}
-                      value={rejectedLicenses}
-                      suffix={language === "en" 
-                        ? "needs review" 
-                        : "மறுபரிசீலனை தேவை"}
-                    />
-                    <Progress
-                      className="me-stat-card__progress"
-                      percent={Math.round((rejectedLicenses / (approvedLicenses + rejectedLicenses)) * 100)}
-                      status="exception"
-                      strokeColor="#ff4d4f"
-                    />
-                  </Card>
-                </Col>
-              </Row>
-
-              <Card
-                className="me-production-card"
-                title={language === "en" ? "Weekly License Approvals" : "வாராந்திர உரிமை அங்கீகாரங்கள்"}
-                style={{ marginBottom: 16 }}
-                extra={
-                  <Button type="link" className="me-production-card__view-details">
-                    {language === "en" ? "View Details" : "விவரங்களை பார்வையிட"}
-                  </Button>
-                }
-              >
-                <Row className="me-production-card__chart" gutter={16}>
-                  {productionData.map((day) => (
-                    <Col key={day.day} span={3}>
-                      <div className="me-production-card__chart-column">
-                        <div className="me-production-card__chart-bars">
-                          <div 
-                            className="me-production-card__chart-bar me-production-card__chart-bar--ore"
-                            style={{ height: `${day.ore / 100}px` }}
-                          ></div>
-                          <div 
-                            className="me-production-card__chart-bar me-production-card__chart-bar--waste"
-                            style={{ height: `${day.waste / 100}px` }}
-                          ></div>
-                        </div>
-                        <div className="me-production-card__chart-label">{day.day}</div>
-                      </div>
-                    </Col>
-                  ))}
-                </Row>
-                <div className="me-production-card__legend">
-                  <Tag className="me-tag me-tag--ore" color="green">Approved</Tag>
-                  <Tag className="me-tag me-tag--waste" color="red">Rejected</Tag>
-                </div>
-              </Card>
-            </>
-          )}
-
-          {activeTab === 'appointments' && (
-            <AppointmentsPage activeTab={activeAppointmentTab} />
-          )}
-
-          {activeTab === 'mining-licenses' && (
-            <Card className="me-licenses-card">
-              <Tabs 
-                className="me-licenses-tabs"
-                activeKey={activeLicenseTab} 
-                onChange={(key) => setActiveLicenseTab(key)}
-              >
-                <TabPane
-                  tab={
-                    <span className="me-licenses-tab">
-                      <CheckCircleOutlined className="me-licenses-tab__icon me-licenses-tab__icon--approved" />
-                      {language === "en" ? " Approved Licenses" : " அங்கீகரிக்கப்பட்ட உரிமைகள்"}
-                    </span>
-                  }
-                  key="approved"
-                >
-                  <ApprovedLicensesTable 
-                    className="me-licenses-table"
-                    data={licenses.filter(license => license.status === 'approved')}
-                    onViewDetails={handleViewDetails}
-                    language={language}
-                  />
-                </TabPane>
-                <TabPane
-                  tab={
-                    <span className="me-licenses-tab">
-                      <CloseCircleOutlined className="me-licenses-tab__icon me-licenses-tab__icon--rejected" />
-                      {language === "en" ? " Rejected Licenses" : " நிராகரிக்கப்பட்ட உரிமைகள்"}
-                    </span>
-                  }
-                  key="rejected"
-                >
-                  <RejectedLicensesTable 
-                    className="me-licenses-table"
-                    data={licenses.filter(license => license.status === 'rejected')}
-                    onViewDetails={handleViewDetails}
-                    language={language}
-                  />
-                </TabPane>
-              </Tabs>
+          <TabPane
+            tab={
+              <TabLabel 
+                icon={<ScheduleOutlined />}
+                active={activeTab === 'pending'}
+                title={language === "en" ? "Pending Scheduling" : "நிலுவையிலுள்ள திட்டமிடல்"}
+                type="pending"
+              />
+            }
+            key="pending"
+          >
+            <Card className="me-tab-content">
+              <AppointmentsPage activeTab="pending" />
             </Card>
-          )}
-
-          {activeTab !== 'dashboard' && activeTab !== 'appointments' && activeTab !== 'mining-licenses' && (
-            <Card className="me-generic-card">
-              <h3 className="me-generic-card__title">
-                {menuItems.find(item => item.key === activeTab)?.label} View
-              </h3>
-              <p className="me-generic-card__content">
-                This section would contain detailed {activeTab} information and management tools.
-              </p>
+          </TabPane>
+          
+          <TabPane
+            tab={
+              <TabLabel 
+                icon={<CheckCircleOutlined />}
+                active={activeTab === 'scheduled'}
+                title={language === "en" ? "Scheduled" : "திட்டமிடப்பட்டது"}
+                type="scheduled"
+              />
+            }
+            key="scheduled"
+          >
+            <Card className="me-tab-content">
+              <AppointmentsPage activeTab="scheduled" />
             </Card>
-          )}
-        </Content>
-      </Layout>
+          </TabPane>
+          
+          <TabPane
+            tab={
+              <TabLabel 
+                icon={<SafetyCertificateOutlined />}
+                active={activeTab === 'approved-licenses'}
+                title={language === "en" ? "Approved Licenses" : "அங்கீகரிக்கப்பட்ட உரிமங்கள்"}
+                type="approved"
+              />
+            }
+            key="approved-licenses"
+          >
+            <Card className="me-tab-content">
+              <ApprovedLicensesTable 
+                data={licenses.filter(license => license.status === 'approved')}
+                onViewDetails={handleViewDetails}
+                language={language}
+              />
+            </Card>
+          </TabPane>
+          
+          <TabPane
+            tab={
+              <TabLabel 
+                icon={<CloseCircleOutlined />}
+                active={activeTab === 'rejected-licenses'}
+                title={language === "en" ? "Rejected Licenses" : "நிராகரிக்கப்பட்ட உரிமங்கள்"}
+                type="rejected"
+              />
+            }
+            key="rejected-licenses"
+          >
+            <Card className="me-tab-content">
+              <RejectedLicensesTable 
+                data={licenses.filter(license => license.status === 'rejected')}
+                onViewDetails={handleViewDetails}
+                language={language}
+              />
+            </Card>
+          </TabPane>
+        </Tabs>
 
-      <ViewLicenseModal 
-        className="me-license-modal"
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        selectedLicense={selectedLicense}
-        language={language}
-      />
+        <ViewLicenseModal 
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          selectedLicense={selectedLicense}
+          language={language}
+        />
+      </Content>
     </Layout>
+  );
+};
+
+// Custom tab label component
+const TabLabel = ({ icon, title, count, active, type }) => {
+  return (
+    <div 
+      className={`modern-tab-label ${active ? 'active' : ''} tab-type-${type}`}
+      data-tab-key={title.toLowerCase().replace(/\s+/g, '-')}
+    >
+      <span className="tab-icon">{icon}</span>
+      <span className="tab-title">{title}</span>
+    </div>
   );
 };
 
