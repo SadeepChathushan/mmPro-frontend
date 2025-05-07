@@ -35,22 +35,16 @@ const { Sider, Content } = Layout;
 const { SubMenu } = Menu;
 const { TabPane } = Tabs;
 
-// Main Dashboard Component
 const MEDashboard = () => {
   const { language } = useLanguage();
-  const [activeMines, setActiveMines] = useState(3);
+  const [pendingAppointments, setPendingAppointments] = useState(12);
+  const [scheduledAppointments, setScheduledAppointments] = useState(24);
   const [selectedLicense, setSelectedLicense] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [equipmentStatus, setEquipmentStatus] = useState({
-    operational: 42,
-    maintenance: 5,
-    outOfService: 3
-  });
-  const [safetyIncidents, setSafetyIncidents] = useState({
-    thisMonth: 2,
-    lastMonth: 4,
-    trend: 'improving'
-  });
+  const [approvedLicenses, setApprovedLicenses] = useState(42);
+  const [rejectedLicenses, setRejectedLicenses] = useState(5);
+  const [licenseTrend, setLicenseTrend] = useState('improving');
+  
   const [productionData] = useState([
     { day: 'Mon', ore: 4500, waste: 3200 },
     { day: 'Tue', ore: 5200, waste: 2800 },
@@ -108,11 +102,9 @@ const MEDashboard = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (Math.random() > 0.7) {
-        setEquipmentStatus(prev => ({
-          ...prev,
-          operational: Math.max(0, prev.operational + (Math.random() > 0.5 ? 1 : -1)),
-          maintenance: Math.max(0, prev.maintenance + (Math.random() > 0.5 ? 1 : -1))
-        }));
+        setPendingAppointments(prev => Math.max(0, prev + (Math.random() > 0.5 ? 1 : -1)));
+        setScheduledAppointments(prev => Math.max(0, prev + (Math.random() > 0.5 ? 1 : -1)));
+        setApprovedLicenses(prev => Math.max(0, prev + (Math.random() > 0.5 ? 1 : -1)));
       }
     }, 5000);
 
@@ -171,13 +163,22 @@ const MEDashboard = () => {
     return items.map(item => {
       if (item.children) {
         return (
-          <SubMenu key={item.key} icon={item.icon} title={item.label}>
+          <SubMenu 
+            key={item.key} 
+            icon={item.icon} 
+            title={item.label}
+            className="me-sidebar__submenu"
+          >
             {renderMenuItems(item.children)}
           </SubMenu>
         );
       }
       return (
-        <Menu.Item key={item.key} icon={item.icon}>
+        <Menu.Item 
+          key={item.key} 
+          icon={item.icon}
+          className="me-sidebar__menu-item"
+        >
           {item.label}
         </Menu.Item>
       );
@@ -190,18 +191,26 @@ const MEDashboard = () => {
   };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout className="me-dashboard" style={{ minHeight: '100vh' }}>
       <Sider
+        className="me-sidebar"
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
         width={250}
         theme="light"
       >
-        <div className="logo" style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {collapsed ? <ToolOutlined style={{ fontSize: '24px' }} /> : <h2>{language === "en" ? "Mining Operations" : "சுரங்க செயல்பாடுகள்"}</h2>}
+        <div className="me-sidebar__logo">
+          {collapsed ? (
+            <ToolOutlined className="me-sidebar__logo-icon" />
+          ) : (
+            <h2 className="me-sidebar__logo-text">
+              {language === "en" ? "Mining Operations" : "சுரங்க செயல்பாடுகள்"}
+            </h2>
+          )}
         </div>
         <Menu
+          className="me-sidebar__menu"
           theme="light"
           defaultSelectedKeys={['dashboard']}
           defaultOpenKeys={['appointments', 'mining-licenses']}
@@ -222,103 +231,117 @@ const MEDashboard = () => {
         </Menu>
       </Sider>
 
-      <Layout>
-        <Content style={{ margin: '16px' }}>
+      <Layout className="me-content-area">
+        <Content className="me-content" style={{ margin: '16px' }}>
           {activeTab === 'dashboard' && (
             <>
-              <Row gutter={16} style={{ marginBottom: 16 }}>
-                <Col span={6}>
-                  <Card>
+              <Row className="me-metrics-row" gutter={16} style={{ marginBottom: 16 }}>
+                <Col className="me-metrics-col" span={6}>
+                  <Card className="me-stat-card me-stat-card--mines">
                     <Statistic
-                      title={language === "en" ? "Active Mines" : "செயலில் உள்ள சுரங்கங்கள்"}
-                      value={activeMines}
+                      className="me-stat-card__content"
+                      title={language === "en" ? "Pending Appointments" : "நிலுவையிலுள்ள சந்திப்புகள்"}
+                      value={pendingAppointments}
                       suffix={language === "en" 
-                        ? `${activeMines} open pit, 0 underground` 
-                        : `${activeMines} திறந்த குழி, 0 நிலத்தடி`}
+                        ? "awaiting scheduling" 
+                        : "திட்டமிடல் காத்திருக்கிறது"}
+                    />
+                    <Progress
+                      className="me-stat-card__progress"
+                      percent={Math.round((pendingAppointments / (pendingAppointments + scheduledAppointments)) * 100)}
+                      status="active"
+                      strokeColor="#faad14"
                     />
                   </Card>
                 </Col>
-                <Col span={6}>
-                  <Card>
+                <Col className="me-metrics-col" span={6}>
+                  <Card className="me-stat-card me-stat-card--equipment">
                     <Statistic
-                      title={language === "en" ? "Equipment Status" : "உபகரணங்களின் நிலை"}
-                      value={`${equipmentStatus.operational}/${equipmentStatus.operational + equipmentStatus.maintenance + equipmentStatus.outOfService}`}
+                      className="me-stat-card__content"
+                      title={language === "en" ? "Scheduled Appointments" : "திட்டமிடப்பட்ட சந்திப்புகள்"}
+                      value={scheduledAppointments}
                       suffix={language === "en" 
-                        ? `${equipmentStatus.maintenance} in maintenance` 
-                        : `${equipmentStatus.maintenance} பராமரிப்பில் உள்ளது`}
+                        ? "inspections planned" 
+                        : "திட்டமிடப்பட்ட ஆய்வுகள்"}
                     />
                     <Progress
-                      percent={Math.round((equipmentStatus.operational / (equipmentStatus.operational + equipmentStatus.maintenance + equipmentStatus.outOfService)) * 100)}
+                      className="me-stat-card__progress"
+                      percent={Math.round((scheduledAppointments / (pendingAppointments + scheduledAppointments)) * 100)}
                       status="active"
                       strokeColor="#52c41a"
                     />
                   </Card>
                 </Col>
-                <Col span={6}>
-                  <Card>
+                <Col className="me-metrics-col" span={6}>
+                  <Card className="me-stat-card me-stat-card--safety">
                     <Statistic
-                      title={language === "en" ? "Safety Incidents" : "பாதுகாப்பு சம்பவங்கள்"}
-                      value={safetyIncidents.thisMonth}
+                      className="me-stat-card__content"
+                      title={language === "en" ? "Approved Licenses" : "அங்கீகரிக்கப்பட்ட உரிமங்கள்"}
+                      value={approvedLicenses}
                       suffix={language === "en" 
-                        ? `${safetyIncidents.trend} from last month` 
-                        : `${safetyIncidents.trend} கடந்த மாதத்திலிருந்து`}
+                        ? `${licenseTrend} from last month` 
+                        : `${licenseTrend} கடந்த மாதத்திலிருந்து`}
                     />
                     <Progress
-                      percent={Math.round((1 - safetyIncidents.thisMonth / safetyIncidents.lastMonth) * 100)}
-                      status={safetyIncidents.trend === 'improving' ? 'success' : 'exception'}
-                      format={percent => `${percent}% ${safetyIncidents.trend}`}
+                      className="me-stat-card__progress"
+                      percent={Math.round((approvedLicenses / (approvedLicenses + rejectedLicenses)) * 100)}
+                      status={licenseTrend === 'improving' ? 'success' : 'exception'}
+                      format={percent => `${percent}% approval rate`}
                     />
                   </Card>
                 </Col>
-                <Col span={6}>
-                  <Card>
+                <Col className="me-metrics-col" span={6}>
+                  <Card className="me-stat-card me-stat-card--production">
                     <Statistic
-                      title={language === "en" ? "Daily Production" : "தினசரி உற்பத்தி"}
-                      value={productionData.find(d => d.day === 'Fri').ore}
+                      className="me-stat-card__content"
+                      title={language === "en" ? "Rejected Licenses" : "நிராகரிக்கப்பட்ட உரிமங்கள்"}
+                      value={rejectedLicenses}
                       suffix={language === "en" 
-                        ? "tons ore mined today" 
-                        : "இன்று அகழப்பட்ட தாது தொன்கள்"}
+                        ? "needs review" 
+                        : "மறுபரிசீலனை தேவை"}
                     />
                     <Progress
-                      percent={Math.round((productionData.find(d => d.day === 'Fri').ore / 6000 * 100))}
-                      status="normal"
+                      className="me-stat-card__progress"
+                      percent={Math.round((rejectedLicenses / (approvedLicenses + rejectedLicenses)) * 100)}
+                      status="exception"
+                      strokeColor="#ff4d4f"
                     />
                   </Card>
                 </Col>
               </Row>
 
               <Card
-                title={language === "en" ? "Weekly Production (tons)" : "வாராந்திர உற்பத்தி (தொன்கள்)"}
+                className="me-production-card"
+                title={language === "en" ? "Weekly License Approvals" : "வாராந்திர உரிமை அங்கீகாரங்கள்"}
                 style={{ marginBottom: 16 }}
-                extra={<Button type="link">{language === "en" 
-                  ? "View Details" 
-                  : "விவரங்களை பார்வையிட"}</Button>}
+                extra={
+                  <Button type="link" className="me-production-card__view-details">
+                    {language === "en" ? "View Details" : "விவரங்களை பார்வையிட"}
+                  </Button>
+                }
               >
-                <Row gutter={16}>
+                <Row className="me-production-card__chart" gutter={16}>
                   {productionData.map((day) => (
                     <Col key={day.day} span={3}>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ height: '200px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                          <div style={{
-                            height: `${day.ore / 100}px`,
-                            backgroundColor: '#1890ff',
-                            marginBottom: '4px',
-                            borderRadius: '4px 4px 0 0'
-                          }}></div>
-                          <div style={{
-                            height: `${day.waste / 100}px`,
-                            backgroundColor: '#faad14',
-                            borderRadius: '0 0 4px 4px'
-                          }}></div>
+                      <div className="me-production-card__chart-column">
+                        <div className="me-production-card__chart-bars">
+                          <div 
+                            className="me-production-card__chart-bar me-production-card__chart-bar--ore"
+                            style={{ height: `${day.ore / 100}px` }}
+                          ></div>
+                          <div 
+                            className="me-production-card__chart-bar me-production-card__chart-bar--waste"
+                            style={{ height: `${day.waste / 100}px` }}
+                          ></div>
                         </div>
-                        <div>{day.day}</div>
+                        <div className="me-production-card__chart-label">{day.day}</div>
                       </div>
                     </Col>
                   ))}
                 </Row>
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
-                  <Tag color="blue">Ore</Tag>
-                  <Tag color="orange">Waste</Tag>
+                <div className="me-production-card__legend">
+                  <Tag className="me-tag me-tag--ore" color="green">Approved</Tag>
+                  <Tag className="me-tag me-tag--waste" color="red">Rejected</Tag>
                 </div>
               </Card>
             </>
@@ -329,21 +352,23 @@ const MEDashboard = () => {
           )}
 
           {activeTab === 'mining-licenses' && (
-            <Card>
+            <Card className="me-licenses-card">
               <Tabs 
+                className="me-licenses-tabs"
                 activeKey={activeLicenseTab} 
                 onChange={(key) => setActiveLicenseTab(key)}
               >
                 <TabPane
                   tab={
-                    <span>
-                      <CheckCircleOutlined />
+                    <span className="me-licenses-tab">
+                      <CheckCircleOutlined className="me-licenses-tab__icon me-licenses-tab__icon--approved" />
                       {language === "en" ? " Approved Licenses" : " அங்கீகரிக்கப்பட்ட உரிமைகள்"}
                     </span>
                   }
                   key="approved"
                 >
                   <ApprovedLicensesTable 
+                    className="me-licenses-table"
                     data={licenses.filter(license => license.status === 'approved')}
                     onViewDetails={handleViewDetails}
                     language={language}
@@ -351,14 +376,15 @@ const MEDashboard = () => {
                 </TabPane>
                 <TabPane
                   tab={
-                    <span>
-                      <CloseCircleOutlined />
+                    <span className="me-licenses-tab">
+                      <CloseCircleOutlined className="me-licenses-tab__icon me-licenses-tab__icon--rejected" />
                       {language === "en" ? " Rejected Licenses" : " நிராகரிக்கப்பட்ட உரிமைகள்"}
                     </span>
                   }
                   key="rejected"
                 >
                   <RejectedLicensesTable 
+                    className="me-licenses-table"
                     data={licenses.filter(license => license.status === 'rejected')}
                     onViewDetails={handleViewDetails}
                     language={language}
@@ -369,16 +395,20 @@ const MEDashboard = () => {
           )}
 
           {activeTab !== 'dashboard' && activeTab !== 'appointments' && activeTab !== 'mining-licenses' && (
-            <Card>
-              <h3>{menuItems.find(item => item.key === activeTab)?.label} View</h3>
-              <p>This section would contain detailed {activeTab} information and management tools.</p>
+            <Card className="me-generic-card">
+              <h3 className="me-generic-card__title">
+                {menuItems.find(item => item.key === activeTab)?.label} View
+              </h3>
+              <p className="me-generic-card__content">
+                This section would contain detailed {activeTab} information and management tools.
+              </p>
             </Card>
           )}
         </Content>
       </Layout>
 
-      {/* View License Modal - placed at root level */}
       <ViewLicenseModal 
+        className="me-license-modal"
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         selectedLicense={selectedLicense}
