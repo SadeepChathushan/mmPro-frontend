@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const token = localStorage.getItem("USER_TOKEN");
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const sendOtpService = async (phoneNumber) => {
   if (phoneNumber === "0769025999") {
@@ -9,7 +10,7 @@ const sendOtpService = async (phoneNumber) => {
 
   try {
     const response = await axios.post(
-      "http://127.0.0.1:5000/general-public/send-verification",
+      `${BASE_URL}/general-public/send-verification`,
       { phone: phoneNumber },
       {
         headers: {
@@ -31,7 +32,7 @@ const verifyOtpService = async (phoneNumber, otp) => {
 
   try {
     const response = await axios.post(
-      "http://127.0.0.1:5000/general-public/verify-code",
+      `${BASE_URL}/general-public/verify-code`,
       { phone: phoneNumber, code: otp },
       {
         headers: {
