@@ -214,9 +214,9 @@ export const getMeApproveMiningLicense = async () => {
       success: true, 
       data: licenses.map(license => ({
         id: license.id,
-        licenseNumber: license.exploration_license_no,
-        owner: license.Land_owner_name || 'N/A',
-        location: `${license.Land_Name}, ${license.administrative_district}`,
+        licenseNumber: license.mining_license_number,
+        owner: license.assigned_to || 'N/A',
+        location: license.Google_location,
         date: new Date().toLocaleDateString(), // Add actual date if available
         status: license.status,
         rawData: license // Keep original data for details view
@@ -227,6 +227,50 @@ export const getMeApproveMiningLicense = async () => {
     return { 
       success: false, 
       message: error.response?.data?.message || "Failed to fetch licenses" 
+    };
+  }
+};
+
+
+export const getMeApproveSingleMiningLicense = async (licenseId) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      return { success: false, message: "Authentication required" };
+    }
+
+    const response = await axios.get(
+      `${BASE_URL}/mining-engineer/me-approve-license/${licenseId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // Handle the array-with-null response structure
+    const licenseData = response.data;
+    
+    const formattedData = {
+      success: true, 
+      
+        id: licenseData.id || licenseId,
+        licenseNumber: licenseData.mining_license_number,
+        owner: licenseData.assigned_to || 'N/A',
+        location: licenseData.Google_location,
+        date: new Date().toLocaleDateString(), // Add actual date if available
+        status: licenseData.status,
+  
+    };
+    return { 
+      success: true, 
+      data: formattedData
+    };
+  } catch (error) {
+    console.error("API Error (getMeApproveSingleMiningLicense):", error.response || error.message);
+    return { 
+      success: false, 
+      message: error.response?.data?.message || "Failed to fetch license details." 
     };
   }
 };
