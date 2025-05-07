@@ -1,12 +1,9 @@
-
 import React, { useState, useEffect } from "react";
-import { Table, Tag, Space, Spin, Alert } from "antd"; // Added Spin and Alert
-// import { FilePdfOutlined } from "@ant-design/icons"; // This import is unused in the current logic
+import { Table, Tag, Space, Spin, Alert } from "antd";
 import { getMeApproveMiningLicense } from "../../services/miningEngineerService";
 import PropTypes from "prop-types";
+import { EnvironmentOutlined } from "@ant-design/icons";
 
-
-// Removed the 'data' prop as the component fetches its own data
 const ApprovedLicensesTable = ({ onViewDetails, language }) => {
   const [loading, setLoading] = useState(false);
   const [approvedLicenses, setApprovedLicenses] = useState([]);
@@ -15,70 +12,91 @@ const ApprovedLicensesTable = ({ onViewDetails, language }) => {
   useEffect(() => {
     const fetchApprovedLicenses = async () => {
       setLoading(true);
-      setError(null); // Reset error before fetching
+      setError(null);
       try {
         const result = await getMeApproveMiningLicense();
         if (result.success && result.data) {
           console.log("Approved Licenses:", result.data);
-          // Ensure the data is an array before setting state
           setApprovedLicenses(Array.isArray(result.data) ? result.data : []);
         } else {
-          // Use result.message or a default error message
-          const errorMessage = result.message || "Failed to fetch approved licenses.";
+          const errorMessage =
+            result.message || "Failed to fetch approved licenses.";
           setError(errorMessage);
           console.error("API Error:", errorMessage);
-          setApprovedLicenses([]); // Clear data on error
+          setApprovedLicenses([]);
         }
       } catch (err) {
-        const errorMessage = err.message || "An unexpected error occurred during fetch.";
+        const errorMessage =
+          err.message || "An unexpected error occurred during fetch.";
         setError(errorMessage);
         console.error("Fetch Error:", err);
-        setApprovedLicenses([]); // Clear data on error
+        setApprovedLicenses([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchApprovedLicenses();
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
 
-  // Function to safely format date or return 'N/A'
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return "N/A";
     try {
-      // Assuming date format is 'M/D/YYYY' - adjust if needed
-      // For robustness, consider using a date library like dayjs or moment
       const date = new Date(dateString);
-      if (isNaN(date.getTime())) { // Check if date is valid
-         return dateString; // Return original string if parsing fails
+      if (isNaN(date.getTime())) {
+        return dateString;
       }
-      // Return date in a locale-friendly format
       return date.toLocaleDateString();
     } catch (e) {
       console.error("Date formatting error:", e);
-      return dateString; // Return original string on error
+      return dateString;
     }
   };
-
 
   const columns = [
     {
       title: language === "en" ? "License No" : "அனுமதி எண்",
       dataIndex: "licenseNumber",
       key: "licenseNo",
-      render: (text) => text ? <Tag color="green">{text}</Tag> : 'N/A',
+      render: (text) => (text ? <Tag color="green">{text}</Tag> : "N/A"),
     },
     {
       title: language === "en" ? "ML Owner" : "உரிமையாளர்",
       dataIndex: "owner", // Corrected dataIndex based on sample data
       key: "owner",
-      render: (text) => text || 'N/A', // Handle cases where owner might be null/undefined
+      render: (text) => text || "N/A", // Handle cases where owner might be null/undefined
     },
     {
       title: language === "en" ? "Location" : "இடம்",
       dataIndex: "location",
       key: "location",
-      render: (text) => text || 'N/A',
+      render: (location) => (
+        <Space>
+          <EnvironmentOutlined
+            style={{
+              color: "#52c41a",
+              fontSize: "18px",
+              background: "#f6ffed",
+              padding: "4px",
+              borderRadius: "50%",
+            }}
+          />
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+              location
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#389e0d" }}
+          >
+            {language === "en"
+              ? "View on Map"
+              : language === "si"
+              ? "සිතියමේ පෙන්වන්න"
+              : "வரைபடத்தில் காண்க"}
+          </a>
+        </Space>
+      ),
     },
     {
       title: language === "en" ? "Approved Date" : "அங்கீகரிக்கப்பட்ட தேதி",
@@ -89,7 +107,8 @@ const ApprovedLicensesTable = ({ onViewDetails, language }) => {
     {
       title: language === "en" ? "Status" : "நிலை",
       key: "status",
-      render: () => ( // Status is always 'Approved' for this table
+      render: () => (
+        // Status is always 'Approved' for this table
         <Tag color="success">
           {language === "en" ? "Approved" : "அங்கீகரிக்கப்பட்டது"}
         </Tag>
@@ -98,9 +117,12 @@ const ApprovedLicensesTable = ({ onViewDetails, language }) => {
     {
       title: language === "en" ? "Actions" : "செயல்கள்",
       key: "actions",
-      render: (_, record) => ( // Pass the whole record to onViewDetails
+      render: (
+        _,
+        record // Pass the whole record to onViewDetails
+      ) => (
         <Space size="middle">
-          <a onClick={() => onViewDetails(record)}>
+          <a onClick={() => onViewDetails(record.id)}>
             {language === "en" ? "View Details" : "விவரங்களைக் காட்டு"}
           </a>
           {/* You could add other actions here, e.g., view PDF */}
@@ -111,12 +133,6 @@ const ApprovedLicensesTable = ({ onViewDetails, language }) => {
       ),
     },
   ];
-
-  // Render loading state
-  // Note: Antd Table has a built-in `loading` prop which is generally preferred
-  // if (loading) {
-  //   return <div style={{ textAlign: 'center', padding: '50px' }}><Spin size="large" /></div>;
-  // }
 
   // Render error state
   if (error) {
@@ -131,7 +147,7 @@ const ApprovedLicensesTable = ({ onViewDetails, language }) => {
       rowKey="id" // Make sure each license object has a unique 'id' property
       loading={loading} // Use Antd's built-in loading indicator
       pagination={{ pageSize: 5 }} // Set desired page size
-      scroll={{ x: 'max-content' }} // Optional: improve horizontal scrolling on small screens
+      scroll={{ x: "max-content" }} // Optional: improve horizontal scrolling on small screens
     />
   );
 };
@@ -143,11 +159,11 @@ ApprovedLicensesTable.propTypes = {
       owner: PropTypes.string.isRequired,
       location: PropTypes.string.isRequired,
       date: PropTypes.string.isRequired,
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     })
   ).isRequired,
   onViewDetails: PropTypes.func.isRequired,
-  language: PropTypes.oneOf(['en', 'ta']).isRequired
+  language: PropTypes.oneOf(["en", "ta"]).isRequired,
 };
 
 export default ApprovedLicensesTable;

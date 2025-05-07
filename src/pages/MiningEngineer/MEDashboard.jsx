@@ -184,8 +184,8 @@ const MEDashboard = () => {
     });
   };
 
-  const handleViewDetails = (license) => {
-    setSelectedLicense(license);
+  const handleViewDetails = (licenseId) => {
+    setSelectedLicense(licenseId);
     setModalVisible(true);
   };
 
