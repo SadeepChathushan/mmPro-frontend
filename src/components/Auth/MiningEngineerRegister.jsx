@@ -30,7 +30,7 @@ const MiningEngineerRegister = () => {
         formData.append("nic_number", values.nic);
         formData.append("mobile_number", values.mobile);
         formData.append("designation", values.designation);
-        formData.append("user_Type", "mining_engineer");
+        formData.append("user_Type", "miningEngineer");
     
         if (nicFrontFile.length > 0) {
           formData.append("nic_front", nicFrontFile[0]);
