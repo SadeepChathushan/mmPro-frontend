@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Layout,
   Card,
@@ -11,8 +11,8 @@ import {
   Menu,
   Table,
   Tabs,
-  Space
-} from 'antd';
+  Space,
+} from "antd";
 import {
   DashboardOutlined,
   ToolOutlined,
@@ -22,14 +22,15 @@ import {
   CheckCircleOutlined,
   ScheduleOutlined,
   SafetyCertificateOutlined,
-  FilePdfOutlined
-} from '@ant-design/icons';
-import '../../styles/MiningEngineer/MEDashboard.css';
-import AppointmentsPage from '../MiningEngineer/Appointments.jsx';
-import ApprovedLicensesTable from './ApprovedLisencesTable.jsx';
-import RejectedLicensesTable from './RejectedLisencesTable.jsx';
-import ViewLicenseModal from './ViewDetails.jsx';
+  FilePdfOutlined,
+} from "@ant-design/icons";
+import "../../styles/MiningEngineer/MEDashboard.css";
+import AppointmentsPage from "../MiningEngineer/Appointments.jsx";
+import ApprovedLicensesTable from "./ApprovedLisencesTable.jsx";
+import RejectedLicensesTable from "./RejectedLisencesTable.jsx";
+import ViewLicenseModal from "./ViewDetails.jsx";
 import { useLanguage } from "../../contexts/LanguageContext";
+import ApprovalModal from "./ApprovalModal.jsx";
 
 const { Sider, Content } = Layout;
 const { SubMenu } = Menu;
@@ -41,77 +42,90 @@ const MEDashboard = () => {
   const [activeMines, setActiveMines] = useState(3);
   const [selectedLicense, setSelectedLicense] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedMiningNumber, setSelectedMiningNumber] = useState(null);
   const [equipmentStatus, setEquipmentStatus] = useState({
     operational: 42,
     maintenance: 5,
-    outOfService: 3
+    outOfService: 3,
   });
   const [safetyIncidents, setSafetyIncidents] = useState({
     thisMonth: 2,
     lastMonth: 4,
-    trend: 'improving'
+    trend: "improving",
   });
   const [productionData] = useState([
-    { day: 'Mon', ore: 4500, waste: 3200 },
-    { day: 'Tue', ore: 5200, waste: 2800 },
-    { day: 'Wed', ore: 4800, waste: 3100 },
-    { day: 'Thu', ore: 5100, waste: 2900 },
-    { day: 'Fri', ore: 4900, waste: 3300 },
-    { day: 'Sat', ore: 3800, waste: 2500 },
-    { day: 'Sun', ore: 0, waste: 0 }
+    { day: "Mon", ore: 4500, waste: 3200 },
+    { day: "Tue", ore: 5200, waste: 2800 },
+    { day: "Wed", ore: 4800, waste: 3100 },
+    { day: "Thu", ore: 5100, waste: 2900 },
+    { day: "Fri", ore: 4900, waste: 3300 },
+    { day: "Sat", ore: 3800, waste: 2500 },
+    { day: "Sun", ore: 0, waste: 0 },
   ]);
 
   const [licenses] = useState([
     {
       id: 1,
-      licenseNumber: 'ML-2023-001',
-      owner: 'Pasindu Lakshan',
-      businessName: 'ABC Mining',
-      location: 'Kaduwela',
-      type: 'Quarry',
-      appliedDate: '2023-06-10',
-      date: '2023-06-15',
-      status: 'approved',
-      rejectionReason: '',
+      licenseNumber: "ML-2023-001",
+      owner: "Pasindu Lakshan",
+      businessName: "ABC Mining",
+      location: "Kaduwela",
+      type: "Quarry",
+      appliedDate: "2023-06-10",
+      date: "2023-06-15",
+      status: "approved",
+      rejectionReason: "",
       documents: {
-        license: '/sample-docs/license1.pdf',
-        applicationForm: '/sample-docs/app1.pdf',
-        idProof: '/sample-docs/id1.pdf',
-        addressProof: '/sample-docs/address1.pdf'
-      }
+        license: "/sample-docs/license1.pdf",
+        applicationForm: "/sample-docs/app1.pdf",
+        idProof: "/sample-docs/id1.pdf",
+        addressProof: "/sample-docs/address1.pdf",
+      },
     },
     {
       id: 2,
-      licenseNumber: 'ML-2023-002',
-      owner: 'Another Owner',
-      businessName: 'XYZ Minerals',
-      location: 'Colombo',
-      type: 'Metal',
-      appliedDate: '2023-06-15',
-      date: '2023-06-20',
-      status: 'rejected',
-      rejectionReason: 'Incomplete documentation',
+      licenseNumber: "ML-2023-002",
+      owner: "Another Owner",
+      businessName: "XYZ Minerals",
+      location: "Colombo",
+      type: "Metal",
+      appliedDate: "2023-06-15",
+      date: "2023-06-20",
+      status: "rejected",
+      rejectionReason: "Incomplete documentation",
       documents: {
-        license: '/sample-docs/license2.pdf',
-        applicationForm: '/sample-docs/app2.pdf',
-        idProof: '/sample-docs/id2.pdf',
-        addressProof: '/sample-docs/address2.pdf'
-      }
-    }
+        license: "/sample-docs/license2.pdf",
+        applicationForm: "/sample-docs/app2.pdf",
+        idProof: "/sample-docs/id2.pdf",
+        addressProof: "/sample-docs/address2.pdf",
+      },
+    },
   ]);
 
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [activeAppointmentTab, setActiveAppointmentTab] = useState('pending');
-  const [activeLicenseTab, setActiveLicenseTab] = useState('approved');
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeAppointmentTab, setActiveAppointmentTab] = useState("pending");
+  const [activeLicenseTab, setActiveLicenseTab] = useState("approved");
   const [collapsed, setCollapsed] = useState(false);
+
+  const handleShowApproval = (mining_number_param) => {
+    console.log("Mining Number in MEDashboard (handleShowApproval):", mining_number_param); // Added for debugging
+    setSelectedMiningNumber(mining_number_param);
+    setModalVisible(true);
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (Math.random() > 0.7) {
-        setEquipmentStatus(prev => ({
+        setEquipmentStatus((prev) => ({
           ...prev,
-          operational: Math.max(0, prev.operational + (Math.random() > 0.5 ? 1 : -1)),
-          maintenance: Math.max(0, prev.maintenance + (Math.random() > 0.5 ? 1 : -1))
+          operational: Math.max(
+            0,
+            prev.operational + (Math.random() > 0.5 ? 1 : -1)
+          ),
+          maintenance: Math.max(
+            0,
+            prev.maintenance + (Math.random() > 0.5 ? 1 : -1)
+          ),
         }));
       }
     }, 5000);
@@ -121,54 +135,57 @@ const MEDashboard = () => {
 
   const menuItems = [
     {
-      key: 'dashboard', 
-      icon: <DashboardOutlined />, 
-      label: language === "en" ? "Dashboard" : "டாஷ்போர்டு"
+      key: "dashboard",
+      icon: <DashboardOutlined />,
+      label: language === "en" ? "Dashboard" : "டாஷ்போர்டு",
     },
     {
-      key: 'appointments',
+      key: "appointments",
       icon: <ScheduleOutlined />,
       label: language === "en" ? "Appointments" : "சந்திப்புகள்",
       children: [
         {
-          key: 'pending-scheduling', 
-          label: language === "en" ? "Pending Scheduling" : "நிலுவையிலுள்ள திட்டமிடல்"
+          key: "pending-scheduling",
+          label:
+            language === "en"
+              ? "Pending Scheduling"
+              : "நிலுவையிலுள்ள திட்டமிடல்",
         },
         {
-          key: 'scheduled', 
-          label: language === "en" ? "Scheduled" : "திட்டமிடப்பட்டது"
-        }
-      ]
+          key: "scheduled",
+          label: language === "en" ? "Scheduled" : "திட்டமிடப்பட்டது",
+        },
+      ],
     },
     {
-      key: 'mining-licenses',
+      key: "mining-licenses",
       icon: <SafetyCertificateOutlined />,
       label: language === "en" ? "Mining Licenses" : "சுரங்க உரிமங்கள்",
       children: [
-        { 
-          key: 'approved-licenses', 
-          label: language === "en" ? "Approved" : "அங்கீகரிக்கப்பட்டது" 
+        {
+          key: "approved-licenses",
+          label: language === "en" ? "Approved" : "அங்கீகரிக்கப்பட்டது",
         },
-        { 
-          key: 'rejected-licenses', 
-          label: language === "en" ? "Rejected" : "நிராகரிக்கப்பட்டது" 
-        }
-      ]
+        {
+          key: "rejected-licenses",
+          label: language === "en" ? "Rejected" : "நிராகரிக்கப்பட்டது",
+        },
+      ],
     },
-    { 
-      key: 'reports', 
-      icon: <FileTextOutlined />, 
-      label: language === "en" ? "Reports" : "அறிக்கைகள்" 
+    {
+      key: "reports",
+      icon: <FileTextOutlined />,
+      label: language === "en" ? "Reports" : "அறிக்கைகள்",
     },
-    { 
-      key: 'settings', 
-      icon: <SettingOutlined />, 
-      label: language === "en" ? "Settings" : "அமைப்புகள்" 
+    {
+      key: "settings",
+      icon: <SettingOutlined />,
+      label: language === "en" ? "Settings" : "அமைப்புகள்",
     },
   ];
 
   const renderMenuItems = (items) => {
-    return items.map(item => {
+    return items.map((item) => {
       if (item.children) {
         return (
           <SubMenu key={item.key} icon={item.icon} title={item.label}>
@@ -184,13 +201,8 @@ const MEDashboard = () => {
     });
   };
 
-  const handleViewDetails = (licenseId) => {
-    setSelectedLicense(licenseId);
-    setModalVisible(true);
-  };
-
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ minHeight: "100vh" }}>
       <Sider
         collapsible
         collapsed={collapsed}
@@ -198,21 +210,42 @@ const MEDashboard = () => {
         width={250}
         theme="light"
       >
-        <div className="logo" style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {collapsed ? <ToolOutlined style={{ fontSize: '24px' }} /> : <h2>{language === "en" ? "Mining Operations" : "சுரங்க செயல்பாடுகள்"}</h2>}
+        <div
+          className="logo"
+          style={{
+            height: "64px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {collapsed ? (
+            <ToolOutlined style={{ fontSize: "24px" }} />
+          ) : (
+            <h2>
+              {language === "en" ? "Mining Operations" : "சுரங்க செயல்பாடுகள்"}
+            </h2>
+          )}
         </div>
         <Menu
           theme="light"
-          defaultSelectedKeys={['dashboard']}
-          defaultOpenKeys={['appointments', 'mining-licenses']}
+          defaultSelectedKeys={["dashboard"]}
+          defaultOpenKeys={["appointments", "mining-licenses"]}
           mode="inline"
           onSelect={({ key }) => {
-            if (key === 'pending-scheduling' || key === 'scheduled') {
-              setActiveTab('appointments');
-              setActiveAppointmentTab(key === 'pending-scheduling' ? 'pending' : 'approved');
-            } else if (key === 'approved-licenses' || key === 'rejected-licenses') {
-              setActiveTab('mining-licenses');
-              setActiveLicenseTab(key === 'approved-licenses' ? 'approved' : 'rejected');
+            if (key === "pending-scheduling" || key === "scheduled") {
+              setActiveTab("appointments");
+              setActiveAppointmentTab(
+                key === "pending-scheduling" ? "pending" : "approved"
+              );
+            } else if (
+              key === "approved-licenses" ||
+              key === "rejected-licenses"
+            ) {
+              setActiveTab("mining-licenses");
+              setActiveLicenseTab(
+                key === "approved-licenses" ? "approved" : "rejected"
+              );
             } else {
               setActiveTab(key);
             }
@@ -223,32 +256,54 @@ const MEDashboard = () => {
       </Sider>
 
       <Layout>
-        <Content style={{ margin: '16px' }}>
-          {activeTab === 'dashboard' && (
+        <Content style={{ margin: "16px" }}>
+          {activeTab === "dashboard" && (
             <>
               <Row gutter={16} style={{ marginBottom: 16 }}>
                 <Col span={6}>
                   <Card>
                     <Statistic
-                      title={language === "en" ? "Active Mines" : "செயலில் உள்ள சுரங்கங்கள்"}
+                      title={
+                        language === "en"
+                          ? "Active Mines"
+                          : "செயலில் உள்ள சுரங்கங்கள்"
+                      }
                       value={activeMines}
-                      suffix={language === "en" 
-                        ? `${activeMines} open pit, 0 underground` 
-                        : `${activeMines} திறந்த குழி, 0 நிலத்தடி`}
+                      suffix={
+                        language === "en"
+                          ? `${activeMines} open pit, 0 underground`
+                          : `${activeMines} திறந்த குழி, 0 நிலத்தடி`
+                      }
                     />
                   </Card>
                 </Col>
                 <Col span={6}>
                   <Card>
                     <Statistic
-                      title={language === "en" ? "Equipment Status" : "உபகரணங்களின் நிலை"}
-                      value={`${equipmentStatus.operational}/${equipmentStatus.operational + equipmentStatus.maintenance + equipmentStatus.outOfService}`}
-                      suffix={language === "en" 
-                        ? `${equipmentStatus.maintenance} in maintenance` 
-                        : `${equipmentStatus.maintenance} பராமரிப்பில் உள்ளது`}
+                      title={
+                        language === "en"
+                          ? "Equipment Status"
+                          : "உபகரணங்களின் நிலை"
+                      }
+                      value={`${equipmentStatus.operational}/${
+                        equipmentStatus.operational +
+                        equipmentStatus.maintenance +
+                        equipmentStatus.outOfService
+                      }`}
+                      suffix={
+                        language === "en"
+                          ? `${equipmentStatus.maintenance} in maintenance`
+                          : `${equipmentStatus.maintenance} பராமரிப்பில் உள்ளது`
+                      }
                     />
                     <Progress
-                      percent={Math.round((equipmentStatus.operational / (equipmentStatus.operational + equipmentStatus.maintenance + equipmentStatus.outOfService)) * 100)}
+                      percent={Math.round(
+                        (equipmentStatus.operational /
+                          (equipmentStatus.operational +
+                            equipmentStatus.maintenance +
+                            equipmentStatus.outOfService)) *
+                          100
+                      )}
                       status="active"
                       strokeColor="#52c41a"
                     />
@@ -257,30 +312,57 @@ const MEDashboard = () => {
                 <Col span={6}>
                   <Card>
                     <Statistic
-                      title={language === "en" ? "Safety Incidents" : "பாதுகாப்பு சம்பவங்கள்"}
+                      title={
+                        language === "en"
+                          ? "Safety Incidents"
+                          : "பாதுகாப்பு சம்பவங்கள்"
+                      }
                       value={safetyIncidents.thisMonth}
-                      suffix={language === "en" 
-                        ? `${safetyIncidents.trend} from last month` 
-                        : `${safetyIncidents.trend} கடந்த மாதத்திலிருந்து`}
+                      suffix={
+                        language === "en"
+                          ? `${safetyIncidents.trend} from last month`
+                          : `${safetyIncidents.trend} கடந்த மாதத்திலிருந்து`
+                      }
                     />
                     <Progress
-                      percent={Math.round((1 - safetyIncidents.thisMonth / safetyIncidents.lastMonth) * 100)}
-                      status={safetyIncidents.trend === 'improving' ? 'success' : 'exception'}
-                      format={percent => `${percent}% ${safetyIncidents.trend}`}
+                      percent={Math.round(
+                        (1 -
+                          safetyIncidents.thisMonth /
+                            safetyIncidents.lastMonth) *
+                          100
+                      )}
+                      status={
+                        safetyIncidents.trend === "improving"
+                          ? "success"
+                          : "exception"
+                      }
+                      format={(percent) =>
+                        `${percent}% ${safetyIncidents.trend}`
+                      }
                     />
                   </Card>
                 </Col>
                 <Col span={6}>
                   <Card>
                     <Statistic
-                      title={language === "en" ? "Daily Production" : "தினசரி உற்பத்தி"}
-                      value={productionData.find(d => d.day === 'Fri').ore}
-                      suffix={language === "en" 
-                        ? "tons ore mined today" 
-                        : "இன்று அகழப்பட்ட தாது தொன்கள்"}
+                      title={
+                        language === "en"
+                          ? "Daily Production"
+                          : "தினசரி உற்பத்தி"
+                      }
+                      value={productionData.find((d) => d.day === "Fri").ore}
+                      suffix={
+                        language === "en"
+                          ? "tons ore mined today"
+                          : "இன்று அகழப்பட்ட தாது தொன்கள்"
+                      }
                     />
                     <Progress
-                      percent={Math.round((productionData.find(d => d.day === 'Fri').ore / 6000 * 100))}
+                      percent={Math.round(
+                        (productionData.find((d) => d.day === "Fri").ore /
+                          6000) *
+                          100
+                      )}
                       status="normal"
                     />
                   </Card>
@@ -288,35 +370,58 @@ const MEDashboard = () => {
               </Row>
 
               <Card
-                title={language === "en" ? "Weekly Production (tons)" : "வாராந்திர உற்பத்தி (தொன்கள்)"}
+                title={
+                  language === "en"
+                    ? "Weekly Production (tons)"
+                    : "வாராந்திர உற்பத்தி (தொன்கள்)"
+                }
                 style={{ marginBottom: 16 }}
-                extra={<Button type="link">{language === "en" 
-                  ? "View Details" 
-                  : "விவரங்களை பார்வையிட"}</Button>}
+                extra={
+                  <Button type="link">
+                    {language === "en" ? "View Details" : "விவரங்களை பார்வையிட"}
+                  </Button>
+                }
               >
                 <Row gutter={16}>
                   {productionData.map((day) => (
                     <Col key={day.day} span={3}>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ height: '200px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                          <div style={{
-                            height: `${day.ore / 100}px`,
-                            backgroundColor: '#1890ff',
-                            marginBottom: '4px',
-                            borderRadius: '4px 4px 0 0'
-                          }}></div>
-                          <div style={{
-                            height: `${day.waste / 100}px`,
-                            backgroundColor: '#faad14',
-                            borderRadius: '0 0 4px 4px'
-                          }}></div>
+                      <div style={{ textAlign: "center" }}>
+                        <div
+                          style={{
+                            height: "200px",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "flex-end",
+                          }}
+                        >
+                          <div
+                            style={{
+                              height: `${day.ore / 100}px`,
+                              backgroundColor: "#1890ff",
+                              marginBottom: "4px",
+                              borderRadius: "4px 4px 0 0",
+                            }}
+                          ></div>
+                          <div
+                            style={{
+                              height: `${day.waste / 100}px`,
+                              backgroundColor: "#faad14",
+                              borderRadius: "0 0 4px 4px",
+                            }}
+                          ></div>
                         </div>
                         <div>{day.day}</div>
                       </div>
                     </Col>
                   ))}
                 </Row>
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: "16px",
+                  }}
+                >
                   <Tag color="blue">Ore</Tag>
                   <Tag color="orange">Waste</Tag>
                 </div>
@@ -324,28 +429,32 @@ const MEDashboard = () => {
             </>
           )}
 
-          {activeTab === 'appointments' && (
+          {activeTab === "appointments" && (
             <AppointmentsPage activeTab={activeAppointmentTab} />
           )}
 
-          {activeTab === 'mining-licenses' && (
+          {activeTab === "mining-licenses" && (
             <Card>
-              <Tabs 
-                activeKey={activeLicenseTab} 
+              <Tabs
+                activeKey={activeLicenseTab}
                 onChange={(key) => setActiveLicenseTab(key)}
               >
                 <TabPane
                   tab={
                     <span>
                       <CheckCircleOutlined />
-                      {language === "en" ? " Approved Licenses" : " அங்கீகரிக்கப்பட்ட உரிமைகள்"}
+                      {language === "en"
+                        ? " Approved Licenses"
+                        : " அங்கீகரிக்கப்பட்ட உரிமைகள்"}
                     </span>
                   }
                   key="approved"
                 >
-                  <ApprovedLicensesTable 
-                    data={licenses.filter(license => license.status === 'approved')}
-                    onViewDetails={handleViewDetails}
+                  <ApprovedLicensesTable
+                    data={licenses.filter(
+                      (license) => license.status === "approved"
+                    )}
+                    onShowApproval={handleShowApproval}
                     language={language}
                   />
                 </TabPane>
@@ -353,13 +462,17 @@ const MEDashboard = () => {
                   tab={
                     <span>
                       <CloseCircleOutlined />
-                      {language === "en" ? " Rejected Licenses" : " நிராகரிக்கப்பட்ட உரிமைகள்"}
+                      {language === "en"
+                        ? " Rejected Licenses"
+                        : " நிராகரிக்கப்பட்ட உரிமைகள்"}
                     </span>
                   }
                   key="rejected"
                 >
-                  <RejectedLicensesTable 
-                    data={licenses.filter(license => license.status === 'rejected')}
+                  <RejectedLicensesTable
+                    data={licenses.filter(
+                      (license) => license.status === "rejected"
+                    )}
                     onViewDetails={handleViewDetails}
                     language={language}
                   />
@@ -368,17 +481,33 @@ const MEDashboard = () => {
             </Card>
           )}
 
-          {activeTab !== 'dashboard' && activeTab !== 'appointments' && activeTab !== 'mining-licenses' && (
-            <Card>
-              <h3>{menuItems.find(item => item.key === activeTab)?.label} View</h3>
-              <p>This section would contain detailed {activeTab} information and management tools.</p>
-            </Card>
-          )}
+          {activeTab !== "dashboard" &&
+            activeTab !== "appointments" &&
+            activeTab !== "mining-licenses" && (
+              <Card>
+                <h3>
+                  {menuItems.find((item) => item.key === activeTab)?.label} View
+                </h3>
+                <p>
+                  This section would contain detailed {activeTab} information
+                  and management tools.
+                </p>
+              </Card>
+            )}
         </Content>
       </Layout>
+      {/* Approval Modal */}
+      <ApprovalModal
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        onOk={(data) => {
+          console.log("Form Data0111:", data);
+        }}
+        mining_number={selectedMiningNumber} // Pass the selected mining number
+      />
 
       {/* View License Modal - placed at root level */}
-      <ViewLicenseModal 
+      <ViewLicenseModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         selectedLicense={selectedLicense}
