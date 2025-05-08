@@ -7,15 +7,15 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 const authService = {
   login: async (values) => {
     const { username, password } = values;
-    try {
-      console.log(BASE_URL);
+    // try {
+      // console.log(BASE_URL);
       const response = await api.post("/auth/login", {
         username,
         password,
       });
 
       if (response.data.token) {
-        message.success("Login successful!");
+        // message.success("Login successful!");
         // Save token in localStorage (or sessionStorage depending on your needs)
         localStorage.setItem("USER_ID", response.data.userId);
         localStorage.setItem("USER_TOKEN", response.data.token);
@@ -23,13 +23,10 @@ const authService = {
         localStorage.setItem("USERROLE", response.data.role);
         localStorage.setItem("USERNAME", response.data.username);
         return response.data.role;
-      } else {
-        message.error("Login failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("Login failed:", error);
-      message.error("Login failed. Please try again.");
-    }
+      } 
+    // } catch (error) {
+    //   throw error;
+    // }
   },
 
   initiatePasswordReset: async (email) => {
