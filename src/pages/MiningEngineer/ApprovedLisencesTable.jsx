@@ -6,8 +6,10 @@ import { EnvironmentOutlined } from "@ant-design/icons";
 
 const ApprovedLicensesTable = ({ onViewDetails, language }) => {
   const [loading, setLoading] = useState(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [approvedLicenses, setApprovedLicenses] = useState([]);
   const [error, setError] = useState(null);
+
 
   useEffect(() => {
     const fetchApprovedLicenses = async () => {
@@ -122,7 +124,7 @@ const ApprovedLicensesTable = ({ onViewDetails, language }) => {
         record // Pass the whole record to onViewDetails
       ) => (
         <Space size="middle">
-          <a onClick={() => onViewDetails(record.id)}>
+          <a onClick={() => onViewDetails(record.id)}>                
             {language === "en" ? "View Details" : "விவரங்களைக் காட்டு"}
           </a>
           {/* You could add other actions here, e.g., view PDF */}

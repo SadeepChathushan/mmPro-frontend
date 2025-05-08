@@ -203,7 +203,7 @@ export const getMeApproveMiningLicense = async () => {
 };
 
 
-export const getMeApproveSingleMiningLicense = async (licenseId) => {
+export const getMeApproveSingleMiningLicense = async (issue_id) => {
   try {
     const token = localStorage.getItem("USER_TOKEN");
     if (!token) {
@@ -211,7 +211,7 @@ export const getMeApproveSingleMiningLicense = async (licenseId) => {
     }
 
     const response = await axios.get(
-      `${BASE_URL}/mining-engineer/me-approve-license/${licenseId}`,
+      `${BASE_URL}/mining-engineer/me-approve-single-license/${issue_id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -219,7 +219,6 @@ export const getMeApproveSingleMiningLicense = async (licenseId) => {
       }
     );
 
-    // Handle the array-with-null response structure
     const licenseData = response.data;
     
     const formattedData = {
@@ -229,7 +228,12 @@ export const getMeApproveSingleMiningLicense = async (licenseId) => {
         licenseNumber: licenseData.mining_license_number,
         owner: licenseData.assigned_to || 'N/A',
         location: licenseData.Google_location,
-        date: new Date().toLocaleDateString(), // Add actual date if available
+        Grama_Niladhari: licenseData.Grama_Niladhari,
+        Land_Name: licenseData.Land_Name,
+        Land_owner_name: licenseData.Land_owner_name,
+        Name_of_village: licenseData.Name_of_village,
+        administrative_district: licenseData.administrative_district,
+        date: new Date().toLocaleDateString(), 
         status: licenseData.status,
   
     };
@@ -255,10 +259,8 @@ export const miningEngineerApprovedLicense = async (me_appointment_issue_id, for
       return { success: false, message: "Authentication required" };
     }
 
-    // Prepare the API endpoint
     const endpoint = `${BASE_URL}/mining-engineer/miningEngineer-approve/${me_appointment_issue_id}`;
 
-    // Send the PUT request with form data
     const response = await axios.put(endpoint, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -266,7 +268,6 @@ export const miningEngineerApprovedLicense = async (me_appointment_issue_id, for
       },
     });
 
-    // Handle the response
     if (response.data.success) {
       return { success: true, data: response.data.data };
     } else {
