@@ -129,7 +129,7 @@ const MEDashboard = () => {
                 className="me-stat-card__progress"
                 percent={Math.round((scheduledAppointments / (pendingAppointments + scheduledAppointments)) * 100)}
                 status="active"
-                strokeColor="#52c41a"
+                strokeColor="#3333C4"
                 strokeWidth={10}
               />
             </Card>

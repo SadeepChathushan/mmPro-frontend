@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Row, Col, Card, Typography, message } from 'antd';
+import { Card, Typography, message } from 'antd';
 import PropTypes from 'prop-types';
 import AppointmentsTable from './AppointmentsTable';
 import ApprovalModal from './ApprovalModal';
@@ -65,7 +65,6 @@ const Appointments = ({ activeTab }) => {
     if (activeTab === 'pending') {
       return app.status === 'pending';
     } else {
-      // Show both scheduled and approved appointments in the Scheduled tab
       return app.status === 'scheduled';
     }
   });
@@ -181,22 +180,6 @@ const Appointments = ({ activeTab }) => {
 
   return (
     <div className="appointments-page">
-      <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
-        <Col>
-          <Title level={3}>
-            {activeTab === 'pending'
-              ? language === "en"
-                ? "Pending Scheduling"
-                : "நிலுவையிலுள்ள திட்டமிடல்"
-              : language === "en"
-              ? "Scheduled"
-              : "திட்டமிடப்பட்ட"}{" "}
-            {language === "en"
-              ? "Appointments"
-              : "சந்திப்புகள்"}
-          </Title>
-        </Col>
-      </Row>
 
       <Card>
         <AppointmentsTable 

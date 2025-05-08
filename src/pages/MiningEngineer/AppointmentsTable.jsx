@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Table, Space, Button, Popover, DatePicker, message, Tag } from "antd";
-import { CalendarOutlined, EnvironmentOutlined } from "@ant-design/icons";
+import { CalendarOutlined, EnvironmentOutlined, EyeOutlined } from "@ant-design/icons";
 import moment from "moment";
 import PropTypes from "prop-types";
 import StatusActions from "./StatusActions";
@@ -8,9 +8,12 @@ import {
   getMeAwatingList,
   scheduleMiningEngineerAppointmentDate,
 } from "../../services/miningEngineerService";
+import ViewLicenseModal from './ViewDetails'; 
+import "../../styles/MiningEngineer/AppointmentsTable.css";
 
 const AppointmentsTable = ({
   activeTab,
+  onViewDetails,
   onShowApproval,
   onHold,
   onReject,
@@ -20,6 +23,8 @@ const AppointmentsTable = ({
 }) => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isViewModalVisible, setIsViewModalVisible] = useState(false);
+  const [selectedLicense, setSelectedLicense] = useState(null);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -50,14 +55,12 @@ const AppointmentsTable = ({
   const handleConfirmDate = async (mining_number, dateString) => {
     if (dateString) {
       try {
-        // Call the scheduleAppointment API
         const result = await scheduleMiningEngineerAppointmentDate(
           mining_number,
           dateString
         );
 
         if (result.success) {
-          // Update the local state
           setAppointments((prev) =>
             prev.map((item) =>
               item.mining_number === mining_number
@@ -71,7 +74,6 @@ const AppointmentsTable = ({
             )
           );
 
-          // Show success message
           message.success(
             language === "en"
               ? "Date confirmed and appointment scheduled!"
@@ -80,7 +82,6 @@ const AppointmentsTable = ({
               : "தேதி உறுதி செய்யப்பட்டு சந்திப்பு திட்டமிடப்பட்டது!"
           );
 
-          // Call the onConfirmScheduleDate callback
           onConfirmScheduleDate(mining_number, dateString);
           onDateChange && onDateChange(mining_number, null, dateString);
         } else {
@@ -118,40 +119,28 @@ const AppointmentsTable = ({
     return current && current < moment().startOf("day");
   };
 
-  // Filter appointments based on activeTab and status
   const filteredAppointments = appointments.filter((item) => {
     if (activeTab === "pending") {
       return item.status === "Awaiting ME Scheduling";
     } else if (activeTab === "approved") {
       return item.status === "ME Appointment Scheduled";
     }
-    return true; // show all if not these tabs
+    return true;
   });
 
-  const columns = [
+  const baseColumns = [
     {
-      title:
-        language === "en"
-          ? "ML Owner"
-          : language === "si"
-          ? "ඇමතුම් හිමිකරු"
-          : "ML உரிமையாளர்",
+      title: language === "en" ? "ML Owner" : language === "si" ? "ඇමතුම් හිමිකරු" : "ML உரிமையாளர்",
       dataIndex: "assigned_to",
       key: "mlOwner",
     },
     {
-      title:
-        language === "en"
-          ? "GSMB Officer"
-          : language === "si"
-          ? "ගොඩනැගිලි නිලධාරියා"
-          : "GSMB அதிகாரி",
+      title: language === "en" ? "GSMB Officer" : language === "si" ? "ගොඩනැගිලි නිලධාරියා" : "GSMB அதிகாரி",
       dataIndex: "gsmbOfficer",
       key: "gsmbOfficer",
     },
     {
-      title:
-        language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்",
+      title: language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்",
       dataIndex: "Google_location",
       key: "location",
       render: (location) => (
@@ -166,32 +155,23 @@ const AppointmentsTable = ({
             }}
           />
           <a
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-              location
-            )}`}
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`}
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: "#389e0d" }}
           >
-            {language === "en"
-              ? "View on Map"
-              : language === "si"
-              ? "සිතියමේ පෙන්වන්න"
-              : "வரைபடத்தில் காண்க"}
+            {language === "en" ? "View on Map" : language === "si" ? "සිතියමේ පෙන්වන්න" : "வரைபடத்தில் காண்க"}
           </a>
         </Space>
       ),
     },
   ];
 
+  let columns = [...baseColumns];
+
   if (activeTab === "pending") {
     columns.push({
-      title:
-        language === "en"
-          ? "Set Date"
-          : language === "si"
-          ? "දිනය සකසන්න"
-          : "திகதி அமைக்கவும்",
+      title: language === "en" ? "Set Date" : language === "si" ? "දිනය සකසන්න" : "திகதி அமைக்கவும்",
       key: "setDate",
       render: (_, record) => (
         <Popover
@@ -213,29 +193,15 @@ const AppointmentsTable = ({
                   handleConfirmDate(record.mining_number, record.tempDateString)
                 }
               >
-                {language === "en"
-                  ? "Confirm"
-                  : language === "si"
-                  ? "තහවුරු කරන්න"
-                  : "உறுதிப்படுத்தவும்"}
+                {language === "en" ? "Confirm" : language === "si" ? "තහවුරු කරන්න" : "உறுதிப்படுத்தவும்"}
               </Button>
             </Space>
           }
-          title={
-            language === "en"
-              ? "Select Appointment Date"
-              : language === "si"
-              ? "දිනය තෝරන්න"
-              : "சந்திப்பு தேதியைத் தேர்ந்தெடுக்கவும்"
-          }
+          title={language === "en" ? "Select Appointment Date" : language === "si" ? "දිනය තෝරන්න" : "சந்திப்பு தேதியைத் தேர்ந்தெடுக்கவும்"}
           trigger="click"
         >
           <Button icon={<CalendarOutlined />}>
-            {language === "en"
-              ? "Set Date"
-              : language === "si"
-              ? "දිනය සකසන්න"
-              : "திகதி அமைக்கவும்"}
+            {language === "en" ? "Set Date" : language === "si" ? "දිනය සකසන්න" : "திகதி அமைக்கவும்"}
           </Button>
         </Popover>
       ),
@@ -243,14 +209,8 @@ const AppointmentsTable = ({
   }
 
   if (activeTab === "approved") {
-    // Add Scheduled Date column before the Actions column
     columns.push({
-      title:
-        language === "en"
-          ? "Scheduled Date"
-          : language === "si"
-          ? "සැලසුම් කළ දිනය"
-          : "திட்டமிடப்பட்ட தேதி",
+      title: language === "en" ? "Scheduled Date" : language === "si" ? "සැලසුම් කළ දිනය" : "திட்டமிடப்பட்ட தேதி",
       dataIndex: "date",
       key: "scheduledDate",
       render: (date) => (
@@ -260,40 +220,64 @@ const AppointmentsTable = ({
       ),
       sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
     });
-
-    columns.push({
-      title:
-        language === "en"
-          ? "Action"
-          : language === "si"
-          ? "ක්‍රියාව"
-          : "நடவடிக்கை",
-      key: "statusActions",
-      render: (_, record) => (
-        <StatusActions
-          record={record}
-          onApprove={onShowApproval}
-          onHold={onHold}
-          onReject={onReject}
-        />
-      ),
-    });
   }
 
+  // Add the actions column that includes both view and status actions
+  columns.push({
+    title: language === "en" ? "Actions" : language === "si" ? "ක්‍රියා" : "செயல்கள்",
+    key: "actions",
+    fixed: 'right',
+    width: activeTab === "approved" ? 200 : 120,
+    render: (_, record) => (
+      <Space>
+        <Button 
+          icon={<EyeOutlined />}
+          onClick={() => {
+            setSelectedLicense(record.mining_number);
+            setIsViewModalVisible(true);
+          }}
+          className="view-details-btn"
+        >
+          {language === "en" ? "View" : language === "si" ? "බලන්න" : "காண்க"}
+        </Button>
+        
+        {activeTab === "approved" && (
+          <StatusActions
+            record={record}
+            onApprove={onShowApproval}
+            onHold={onHold}
+            onReject={onReject}
+          />
+        )}
+      </Space>
+    ),
+  });
+
   return (
-    <Table
-      columns={columns}
-      dataSource={filteredAppointments}
-      rowKey="mining_number"
-      loading={loading}
-      pagination={{ pageSize: 5 }}
-    />
+    <>
+      <Table
+        columns={columns}
+        dataSource={filteredAppointments}
+        rowKey="mining_number"
+        loading={loading}
+        pagination={{ pageSize: 5 }}
+        scroll={{ x: true }}
+        className="appointments-table"
+      />
+      
+      <ViewLicenseModal
+        visible={isViewModalVisible}
+        onClose={() => setIsViewModalVisible(false)}
+        selectedLicense={selectedLicense}
+        language={language}
+      />
+    </>
   );
 };
 
 AppointmentsTable.propTypes = {
   activeTab: PropTypes.oneOf(["pending", "approved"]).isRequired,
-  onViewDetails: PropTypes.func,
+  onViewDetails: PropTypes.func.isRequired,
   onShowApproval: PropTypes.func.isRequired,
   onHold: PropTypes.func.isRequired,
   onReject: PropTypes.func.isRequired,
