@@ -247,6 +247,16 @@ const AppointmentsTable = ({
     columns.push({
       title:
         language === "en"
+          ? "Mining License No."
+          : language === "si"
+          ? "පතල් බලපත්‍ර අංකය"
+          : "சுரங்க உரிம எண்",
+      dataIndex: "mining_number", // Assuming 'mining_number' holds the license number
+      key: "mining_number",
+    });
+    columns.push({
+      title:
+        language === "en"
           ? "Scheduled Date"
           : language === "si"
           ? "සැලසුම් කළ දිනය"
@@ -272,7 +282,10 @@ const AppointmentsTable = ({
       render: (_, record) => (
         <StatusActions
           record={record}
-          onApprove={onShowApproval}
+          onApprove={() => {
+            console.log("AppointmentsTable: Approving record:", record.mining_number,record.id); // Log mining_number here
+            onShowApproval(record.mining_number,record.id); // Pass mining_number to parent
+          }}
           onHold={onHold}
           onReject={onReject}
         />
@@ -284,7 +297,7 @@ const AppointmentsTable = ({
     <Table
       columns={columns}
       dataSource={filteredAppointments}
-      rowKey="mining_number"
+      rowKey={(record) => record.id || record.mining_number}
       loading={loading}
       pagination={{ pageSize: 5 }}
     />
