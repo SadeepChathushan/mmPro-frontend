@@ -13,6 +13,7 @@ import {
   message,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import { miningEngineerApprovedLicense } from "../../services/miningEngineerService";
 
 const ApprovalModal = ({
   visible,
@@ -20,7 +21,7 @@ const ApprovalModal = ({
   onOk,
   appointmentId,
   mining_number,
-  id
+  id,
 }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = React.useState([]);
@@ -52,32 +53,44 @@ const ApprovalModal = ({
     setFileList(newFileList);
   };
 
-  const handleSubmit = () => {
-    form.validateFields().then((values) => {
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
       setUploading(true);
 
       // Prepare form data for submission
       const formData = new FormData();
       fileList.forEach((file) => {
-        formData.append("files", file.originFileObj);
+        formData.append("me_report", file.originFileObj);
       });
 
       // Add form values to formData
-      formData.append("totalCapacity", values.totalCapacity);
-      formData.append("monthlyCapacity", values.monthlyCapacity);
-      formData.append("startDate", values.startDate.format("YYYY-MM-DD"));
-      formData.append("dueDate", values.dueDate.format("YYYY-MM-DD"));
-      formData.append("comments", values.comments);
-      formData.append("mining_number", mining_number); // Include mining_number
-      //formData.append("id", id); // Include id
+      formData.append("Capacity", values.totalCapacity);
+      formData.append("month_capacity", values.monthlyCapacity);
+      formData.append("start_date", values.startDate.format("YYYY-MM-DD"));
+      formData.append("due_date", values.dueDate.format("YYYY-MM-DD"));
+      formData.append("me_comment", values.comments);
+      formData.append("ml_number", mining_number); // Include mining_number
 
-      // Call the onOk function with the id and formData
-      onOk(id, formData);
+      // Call the service function with the id and formData
+      const result = await miningEngineerApprovedLicense(id, formData);
 
+      if (result.success) {
+        message.success("Mining license approved successfully!");
+        onOk(id, formData); // Notify parent component
+      } else {
+        message.error(
+          result.message || "Failed to approve the mining license."
+        );
+      }
+    } catch (error) {
+      console.error("Error during submission:", error);
+      message.error("An error occurred during submission.");
+    } finally {
       setUploading(false);
       form.resetFields();
       setFileList([]);
-    });
+    }
   };
 
   return (
@@ -90,12 +103,6 @@ const ApprovalModal = ({
       confirmLoading={uploading}
       okText={uploading ? "Uploading..." : "Submit"}
     >
-      <p>
-        <strong>Id:</strong> {id}
-      </p>
-      <p>
-        <strong>Mining Number:</strong> {mining_number}
-      </p>
       <Form form={form} layout="vertical">
         <Form.Item
           label="Total Capacity (m³)"

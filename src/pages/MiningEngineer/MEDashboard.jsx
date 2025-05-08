@@ -87,8 +87,8 @@ const MEDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleViewDetails = (licenseId) => {
-    setSelectedLicense(licenseId);
+  const handleViewDetails = (id) => {
+    setSelectedLicense(id);
     setModalVisible(true);
   };
 
@@ -161,7 +161,7 @@ const MEDashboard = () => {
                 value={rejectedLicenses}
                 suffix={language === "en" 
                   ? "needs review" 
-                  : "மறுபரிசீலனை தேவை"}
+                  : "மறுபரிசீலனை தேவை"}  
               />
               <Progress
                 className="me-stat-card__progress"
@@ -232,6 +232,7 @@ const MEDashboard = () => {
               <ApprovedLicensesTable 
                 data={licenses.filter(license => license.status === 'approved')}
                 onViewDetails={handleViewDetails}
+                id = {selectedLicense} 
                 language={language}
               />
             </Card>
@@ -252,6 +253,7 @@ const MEDashboard = () => {
               <RejectedLicensesTable 
                 data={licenses.filter(license => license.status === 'rejected')}
                 onViewDetails={handleViewDetails}
+                  
                 language={language}
               />
             </Card>
@@ -261,7 +263,7 @@ const MEDashboard = () => {
         <ViewLicenseModal 
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
-          selectedLicense={selectedLicense}
+          selectedLicense={selectedLicense} 
           language={language}
         />
       </Content>
