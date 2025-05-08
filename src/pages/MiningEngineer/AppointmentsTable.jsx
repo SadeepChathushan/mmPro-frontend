@@ -123,7 +123,7 @@ const AppointmentsTable = ({
     if (activeTab === "pending") {
       return item.status === "Awaiting ME Scheduling";
     } else if (activeTab === "approved") {
-      return item.status === "ME Appointment Scheduled";
+      return item.status === "ME Appointment Scheduled";  
     }
     return true;
   });
@@ -245,8 +245,7 @@ const AppointmentsTable = ({
         <StatusActions
           record={record}
           onApprove={() => {
-            console.log("AppointmentsTable: Approving record:", record.mining_number,record.id); // Log mining_number here
-            onShowApproval(record.mining_number,record.id); // Pass mining_number to parent
+            onShowApproval(record.mining_number,record.id); 
           }}
           onHold={onHold}
           onReject={onReject}
