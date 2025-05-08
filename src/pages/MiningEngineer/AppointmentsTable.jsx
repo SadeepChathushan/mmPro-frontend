@@ -253,7 +253,7 @@ const AppointmentsTable = ({
         />
       ),
     });
-  }
+  
 
   return (
     <Table
