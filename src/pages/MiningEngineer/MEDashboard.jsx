@@ -30,7 +30,6 @@ import ApprovedLicensesTable from "./ApprovedLisencesTable.jsx";
 import RejectedLicensesTable from "./RejectedLisencesTable.jsx";
 import ViewLicenseModal from "./ViewDetails.jsx";
 import { useLanguage } from "../../contexts/LanguageContext";
-import ApprovalModal from "./ApprovalModal.jsx";
 
 const { Sider, Content } = Layout;
 const { SubMenu } = Menu;
@@ -42,7 +41,6 @@ const MEDashboard = () => {
   const [activeMines, setActiveMines] = useState(3);
   const [selectedLicense, setSelectedLicense] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedMiningNumber, setSelectedMiningNumber] = useState(null);
   const [equipmentStatus, setEquipmentStatus] = useState({
     operational: 42,
     maintenance: 5,
@@ -106,12 +104,6 @@ const MEDashboard = () => {
   const [activeAppointmentTab, setActiveAppointmentTab] = useState("pending");
   const [activeLicenseTab, setActiveLicenseTab] = useState("approved");
   const [collapsed, setCollapsed] = useState(false);
-
-  const handleShowApproval = (mining_number_param) => {
-    console.log("Mining Number in MEDashboard (handleShowApproval):", mining_number_param); // Added for debugging
-    setSelectedMiningNumber(mining_number_param);
-    setModalVisible(true);
-  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -496,15 +488,6 @@ const MEDashboard = () => {
             )}
         </Content>
       </Layout>
-      {/* Approval Modal */}
-      <ApprovalModal
-        visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        onOk={(data) => {
-          console.log("Form Data0111:", data);
-        }}
-        mining_number={selectedMiningNumber} // Pass the selected mining number
-      />
 
       {/* View License Modal - placed at root level */}
       <ViewLicenseModal

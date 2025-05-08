@@ -20,6 +20,7 @@ const ApprovalModal = ({
   onOk,
   appointmentId,
   mining_number,
+  id
 }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = React.useState([]);
@@ -68,21 +69,14 @@ const ApprovalModal = ({
       formData.append("dueDate", values.dueDate.format("YYYY-MM-DD"));
       formData.append("comments", values.comments);
       formData.append("mining_number", mining_number); // Include mining_number
+      //formData.append("id", id); // Include id
 
-      // Simulate file upload and form submission
-      setTimeout(() => {
-        onOk(appointmentId, {
-          ...values,
-          mining_number, // Include mining_number in the submitted data
-          attachments: fileList.map((file) => ({
-            name: file.name,
-            url: URL.createObjectURL(file.originFileObj), // In real app, this would be server URL
-          })),
-        });
-        setUploading(false);
-        form.resetFields();
-        setFileList([]);
-      }, 1500);
+      // Call the onOk function with the id and formData
+      onOk(id, formData);
+
+      setUploading(false);
+      form.resetFields();
+      setFileList([]);
     });
   };
 
@@ -96,6 +90,9 @@ const ApprovalModal = ({
       confirmLoading={uploading}
       okText={uploading ? "Uploading..." : "Submit"}
     >
+      <p>
+        <strong>Id:</strong> {id}
+      </p>
       <p>
         <strong>Mining Number:</strong> {mining_number}
       </p>

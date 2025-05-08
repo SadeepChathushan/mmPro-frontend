@@ -247,7 +247,7 @@ export const getMeApproveSingleMiningLicense = async (licenseId) => {
 };
 
 //This is the function to approve the mining engineer license
-export const miningEngineerApprovedLicense = async (me_appointment_issue_id, formData) => {
+export const miningEngineerApprovedLicense = async (id, formData) => {
   try {
     const token = localStorage.getItem("USER_TOKEN");
     if (!token) {
@@ -256,7 +256,9 @@ export const miningEngineerApprovedLicense = async (me_appointment_issue_id, for
     }
 
     // Prepare the API endpoint
-    const endpoint = `${BASE_URL}/mining-engineer/miningEngineer-approve/${me_appointment_issue_id}`;
+    const endpoint = `${BASE_URL}/mining-engineer/miningEngineer-approve/${id}`;
+    console.log("API Endpoint:", endpoint); // Log the endpoint for debugging
+    console.log("Form Data:", formData); // Log the form data for debugging
 
     // Send the PUT request with form data
     const response = await axios.put(endpoint, formData, {
