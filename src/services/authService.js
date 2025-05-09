@@ -188,71 +188,18 @@ const authService = {
         return response.data;
       } else {
         console.error("Failed to register user:", response.data);
-        throw new Error(response.data.error || 'Registration failed');
+        throw new Error(error.response.data.message || error.response.data.error || 'Registration failed');
       }
     } catch (error) {
       console.error("Error registering user:", error);
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        throw new Error(error.response.data.message || error.response.data.error || 'Registration failed');
+      if (error.response?.data) {
+        throw error.response.data; // keep full error object
       } else if (error.request) {
-        // The request was made but no response was received
-        throw new Error('No response received from server. Please try again.');
+        throw { error: { errors: ['No response received from server. Please try again.'] } };
       } else {
-        // Something happened in setting up the request that triggered an Error
-        throw new Error(error.message || 'Error setting up registration request.');
+        throw { error: { errors: [error.message || 'Unknown error occurred'] } };
       }
-    }
+    }    
   }
 };
 export default authService;
-
-/** 
-export const registerUser = async (payload, role) => {
-  try {
-    let endpoint;
-    const token = localStorage.getItem("USER_TOKEN");
-    
-    if (!token) {
-      throw new Error('Authentication token not found');
-    }
-
-    // Determine endpoint based on role
-    if (role === 'police') {
-      endpoint = `${BASE_URL}/auth/register-police-officer`;
-    } else if (role === 'gsmb_officer') {
-      endpoint = `${BASE_URL}/auth/register-gsmb-officer`;
-    } else {
-      throw new Error('Invalid role selected');
-    }
-
-    const formData = new FormData();
-    formData.append('login', payload.email);
-    formData.append('first_name', payload.firstName);
-    formData.append('last_name', payload.lastName);
-    formData.append('email', payload.email);
-    formData.append('password', payload.password);
-    formData.append('designation', payload.designation);
-    formData.append('nic_number', payload.nic);
-    formData.append('mobile_number', payload.mobile);
-
-    const response = await axios.post(endpoint, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response.status === 201) {
-      return response.data;
-    } else {
-      console.error("Failed to register user:", response.data);
-      throw new Error(response.data.error || 'Registration failed');
-    }
-  } catch (error) {
-    console.error("Error registering user:", error);
-    throw error;
-  }
-};
-*/
