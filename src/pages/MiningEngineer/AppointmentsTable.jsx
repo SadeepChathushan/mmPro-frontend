@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Table, Space, Button, Popover, DatePicker, message, Tag } from "antd";
 import { CalendarOutlined, EnvironmentOutlined } from "@ant-design/icons";
 import moment from "moment";
+import PropTypes from "prop-types";
 import StatusActions from "./StatusActions";
-import { useLanguage } from "../../contexts/LanguageContext";
 import {
   getMeAwatingList,
   scheduleMiningEngineerAppointmentDate,
@@ -11,14 +11,13 @@ import {
 
 const AppointmentsTable = ({
   activeTab,
-  onViewDetails,
   onShowApproval,
   onHold,
   onReject,
   onDateChange,
   onConfirmScheduleDate,
+  language,
 }) => {
-  const { language } = useLanguage();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -61,7 +60,7 @@ const AppointmentsTable = ({
           // Update the local state
           setAppointments((prev) =>
             prev.map((item) =>
-              item.id === id
+              item.mining_number === mining_number
                 ? {
                     ...item,
                     status: "ME Appointment Scheduled",
@@ -124,7 +123,7 @@ const AppointmentsTable = ({
     if (activeTab === "pending") {
       return item.status === "Awaiting ME Scheduling";
     } else if (activeTab === "approved") {
-      return item.status === "ME Appointment Scheduled";
+      return item.status === "ME Appointment Scheduled";  
     }
     return true; // show all if not these tabs
   });
@@ -211,7 +210,7 @@ const AppointmentsTable = ({
               <Button
                 type="primary"
                 onClick={() =>
-                  handleConfirmDate(record.id, record.tempDateString)
+                  handleConfirmDate(record.mining_number, record.tempDateString)
                 }
               >
                 {language === "en"
@@ -248,6 +247,16 @@ const AppointmentsTable = ({
     columns.push({
       title:
         language === "en"
+          ? "Mining License No."
+          : language === "si"
+          ? "පතල් බලපත්‍ර අංකය"
+          : "சுரங்க உரிம எண்",
+      dataIndex: "mining_number", // Assuming 'mining_number' holds the license number
+      key: "mining_number",
+    });
+    columns.push({
+      title:
+        language === "en"
           ? "Scheduled Date"
           : language === "si"
           ? "සැලසුම් කළ දිනය"
@@ -273,7 +282,9 @@ const AppointmentsTable = ({
       render: (_, record) => (
         <StatusActions
           record={record}
-          onApprove={onShowApproval}
+          onApprove={() => {
+            onShowApproval(record.mining_number,record.id); 
+          }}
           onHold={onHold}
           onReject={onReject}
         />
@@ -285,11 +296,22 @@ const AppointmentsTable = ({
     <Table
       columns={columns}
       dataSource={filteredAppointments}
-      rowKey="id"
+      rowKey={(record) => record.id || record.mining_number}
       loading={loading}
       pagination={{ pageSize: 5 }}
     />
   );
+};
+
+AppointmentsTable.propTypes = {
+  activeTab: PropTypes.oneOf(["pending", "approved"]).isRequired,
+  onViewDetails: PropTypes.func,
+  onShowApproval: PropTypes.func.isRequired,
+  onHold: PropTypes.func.isRequired,
+  onReject: PropTypes.func.isRequired,
+  onDateChange: PropTypes.func,
+  onConfirmScheduleDate: PropTypes.func.isRequired,
+  language: PropTypes.oneOf(["en", "si", "ta"]).isRequired,
 };
 
 export default AppointmentsTable;

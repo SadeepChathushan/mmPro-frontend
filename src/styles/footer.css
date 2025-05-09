@@ -1,5 +1,5 @@
 .footer {
-  background-color: #fcd5d0; /* Tailwind's bg-gray-900 */
+  background-color: #fcd5d0 !important; /* Tailwind's bg-gray-900 */
   text-align: center;
   padding-top: 10px;
 }

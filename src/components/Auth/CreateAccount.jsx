@@ -190,7 +190,7 @@
 
 import React from "react";
 import { Modal, Button } from "antd";
-import { UserOutlined, SecurityScanOutlined, SafetyOutlined } from "@ant-design/icons";
+import { UserOutlined, SecurityScanOutlined, SafetyOutlined, ToolOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 const CreateAccountModal = ({ visible, onCancel }) => {
@@ -218,7 +218,7 @@ const CreateAccountModal = ({ visible, onCancel }) => {
     {
       role: 'mining_engineer',
       label: 'Mining Engineer',
-      icon: <SafetyOutlined />,
+      icon: <ToolOutlined />,
       path: '/MiningEngineerRegister'
     }
   ];

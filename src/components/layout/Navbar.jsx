@@ -1,4 +1,6 @@
 import { Layout, Menu, Row, Col, Button, Space } from "antd";
+import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
+import { useState } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import mmprologo from "../../assets/images/LOGO.png";
@@ -32,8 +34,8 @@ const Navbar = () => {
     {
       key: "home",
       label: (
-        <Link 
-          to="/" 
+        <Link
+          to="/"
           onClick={(e) => {
             if (location.pathname === "/") {
               e.preventDefault();
@@ -46,8 +48,8 @@ const Navbar = () => {
             {language === "en"
               ? "Home"
               : language === "si"
-              ? "මුල් පිටුව"
-              : "முகப்பு"}
+                ? "මුල් පිටුව"
+                : "முகப்பு"}
           </motion.span>
         </Link>
       )
@@ -55,8 +57,8 @@ const Navbar = () => {
     {
       key: "services",
       label: (
-        <Link 
-          to="/#service" 
+        <Link
+          to="/#service"
           onClick={(e) => handleHashClick('service', e)}
           style={{ color: textColor }}
         >
@@ -64,8 +66,8 @@ const Navbar = () => {
             {language === "en"
               ? "Services"
               : language === "si"
-              ? "සේවාව"
-              : "சேவைகள்"}
+                ? "සේවාව"
+                : "சேவைகள்"}
           </motion.span>
         </Link>
       )
@@ -73,8 +75,8 @@ const Navbar = () => {
     {
       key: "about",
       label: (
-        <Link 
-          to="/#about" 
+        <Link
+          to="/#about"
           onClick={(e) => handleHashClick('about', e)}
           style={{ color: textColor }}
         >
@@ -82,8 +84,8 @@ const Navbar = () => {
             {language === "en"
               ? "About"
               : language === "si"
-              ? "පිළිබඳ"
-              : "பற்றிய"}
+                ? "පිළිබඳ"
+                : "பற்றிய"}
           </motion.span>
         </Link>
       )
@@ -100,9 +102,12 @@ const Navbar = () => {
     }
   ];
 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const toggleMenu = () => setMenuOpen(prev => !prev);
+
   return (
-    <Header 
-      style={{ 
+    <Header
+      style={{
         backgroundColor: bgColor,
         boxShadow: "0 2px 10px rgba(0, 0, 0, 0.08)",
         position: "sticky",
@@ -110,13 +115,15 @@ const Navbar = () => {
         zIndex: 100,
         padding: "0 24px",
         height: "80px",
-        minWidth: "1024px"
-      }} 
+        // minWidth: "1024px"
+        width: "100%"
+
+      }}
       id="h-header"
     >
       <Row justify="space-between" align="middle" style={{ height: "100%", flexWrap: "nowrap" }}>
         <Col flex="none">
-          <motion.div 
+          <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -130,12 +137,12 @@ const Navbar = () => {
             </Link>
           </motion.div>
         </Col>
-        
-        <Col flex="auto" style={{ overflow: "hidden" }}>
+
+        {/* <Col flex="auto" style={{ overflow: "hidden" }}>
           <div style={{ display: "flex", justifyContent: "center" }}>
-            <Menu 
-              mode="horizontal" 
-              style={{ 
+            <Menu
+              mode="horizontal"
+              style={{
                 borderBottom: "none",
                 lineHeight: "78px",
                 color: textColor,
@@ -150,8 +157,64 @@ const Navbar = () => {
               disabledOverflow={true} // This prevents the menu from collapsing
             />
           </div>
-        </Col>
+        </Col> */}
         
+
+<Col flex="auto" style={{ overflow: "hidden" }}>
+
+  <div className="desktop-menu" style={{ display: "flex", justifyContent: "center" }}>
+    <Menu
+      mode="horizontal"
+      style={{
+        borderBottom: "none",
+        lineHeight: "78px",
+        color: textColor,
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        flexWrap: "nowrap",
+        whiteSpace: "nowrap"
+      }}
+      className="modern-menu"
+      items={menuItems}
+      
+      >
+     
+      {menuOpen ? <CloseOutlined style={{ marginLeft: 'auto' }} /> : <MenuOutlined style={{ marginLeft: 'auto' }} />}
+    </Menu>
+  </div>
+
+  {/* Mobile Menu */}
+  {/* <div className="mobile-menu-icon">
+  <Button
+    type="text"
+    icon={menuOpen ? <CloseOutlined /> : <MenuOutlined />}
+    onClick={toggleMenu}
+    style={{ fontSize: "24px", color: textColor }}
+  />
+</div> */}
+
+  {/* {menuOpen && (
+    <Menu
+     className="modern-menu show"
+      mode="vertical"
+      style={{
+        position: "absolute",
+        top: "80px",
+        left: 0,
+        right: 0,
+        backgroundColor: bgColor,
+        zIndex: 1000,
+      }}
+      // items={menuItems}
+      
+      
+    />
+  )} */}
+
+</Col>
+
+
         <Col flex="none">
           <Space size="middle" align="center" style={{ flexWrap: "nowrap" }}>
             {language === "en" && (
@@ -238,7 +301,7 @@ const Navbar = () => {
                 </motion.div>
               </>
             )}
-            
+
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link to="/signin">
                 <Button
@@ -255,8 +318,8 @@ const Navbar = () => {
                   {language === "en"
                     ? "Login"
                     : language === "si"
-                    ? "පිවිසුම"
-                    : "உள்நுழைய"}
+                      ? "පිවිසුම"
+                      : "உள்நுழைய"}
                 </Button>
               </Link>
             </motion.div>
@@ -271,6 +334,7 @@ const Navbar = () => {
           border-radius: 8px;
           transition: all 0.3s ease;
           flex-shrink: 0;
+          
         }
         
         .modern-menu .ant-menu-item:hover {
@@ -290,6 +354,7 @@ const Navbar = () => {
         .menu-item a {
           font-weight: 500;
           transition: color 0.2s ease;
+          
         }
 
         /* Prevent menu from collapsing */
@@ -302,6 +367,75 @@ const Navbar = () => {
         .ant-menu-overflow-item {
           flex-shrink: 0;
         }
+
+        // .mobile-menu-icon {
+        //   display: none;
+        // }
+
+       
+        @media (max-width: 768px) {
+          #h-header {
+            flex-direction: column !important;
+            height: auto !important;
+            padding: 0 12px !important;
+          }
+          // .mobile-menu-icon {
+          //   display: block !important;
+          //   text-align: right; 
+          //   // display: flex;
+          //   justify-content: flex-end;
+          //   align-items: center;
+          //   height: 80px;
+          //   padding-right: 20px;
+          // }
+
+          .modern-menu {
+            flex-direction: column !important;
+            
+            align-items: center !important;
+            width: 100% !important;
+          }
+
+          .desktop-menu {
+            display: none ;
+          }
+
+           .modern-menu.hide {
+            display: none !important;
+          }
+          
+
+          // .modern-menu.show {
+          //   display: flex ;
+          // }
+
+         
+
+          .modern-menu .ant-menu-item {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin: 6px 0;
+          }
+       
+          .ant-space {
+            flex-direction: column !important;
+            width: 100%;
+            gap: 8px;
+            align-items: center;
+          }
+
+          .login-btn {
+            width: 100%;
+          }
+
+          .n-mmprologo {
+            height: 40px !important;
+          }
+        
+        
+
+      }
       `}</style>
     </Header>
   );
