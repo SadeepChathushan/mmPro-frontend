@@ -178,20 +178,20 @@ const authService = {
         throw new Error('Invalid role selected');
       }
   
-      // const config = {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //   }
-      // };
-  
-      // const response = await axios.post(endpoint, formData, config);
       const config = {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         }
       };
+  
+      const response = await axios.post(endpoint, formData, config);
+      // const config = {
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   }
+      // };
       
-      const response = await axios.post(endpoint, JSON.stringify(formData), config);
+      // const response = await axios.post(endpoint, JSON.stringify(formData), config);
   
       if (response.status === 201) {
         return response.data;
