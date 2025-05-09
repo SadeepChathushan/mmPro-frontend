@@ -80,14 +80,14 @@ const HoldConfirmation = ({ onHold, recordId }) => {
 
   return (
     <>
-      <Button 
+       <Button 
         icon={<PauseOutlined />} 
         onClick={showModal}
         style={{ color: '#faad14', borderColor: '#faad14' }}
-      >
-        {t.buttonText}
-      </Button>
-      
+        >
+         {t.buttonText}
+       </Button>
+
       <Modal
         title={t.title}
         visible={visible}
@@ -96,8 +96,12 @@ const HoldConfirmation = ({ onHold, recordId }) => {
           <Button 
             key="submit" 
             type="primary" 
-            style={{ backgroundColor: '#faad14', borderColor: '#faad14' }}
-            onClick={handleSubmit}
+            style={{
+              backgroundColor: '#faad14',
+              borderColor: '#faad14',
+              display: 'block',
+              margin: '0 auto'
+            }}            onClick={handleSubmit}
           >
             {t.submit}
           </Button>,
