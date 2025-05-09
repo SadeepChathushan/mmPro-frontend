@@ -172,17 +172,26 @@ const authService = {
         endpoint = `${BASE_URL}/auth/register-gsmb-officer`;
       } else if (role === 'mining_engineer') {
         endpoint = `${BASE_URL}/auth/register-mining-engineer`;
+      } else if (role === 'mlOwner') {
+        endpoint = `${BASE_URL}/auth/register-mlowners/individual`;
       } else {
         throw new Error('Invalid role selected');
       }
   
+      // const config = {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //   }
+      // };
+  
+      // const response = await axios.post(endpoint, formData, config);
       const config = {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         }
       };
-  
-      const response = await axios.post(endpoint, formData, config);
+      
+      const response = await axios.post(endpoint, JSON.stringify(formData), config);
   
       if (response.status === 201) {
         return response.data;
