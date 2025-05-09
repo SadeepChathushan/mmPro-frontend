@@ -97,11 +97,12 @@ const HoldConfirmation = ({ onHold, recordId }) => {
             key="submit" 
             type="primary" 
             style={{
-              backgroundColor: '#faad14',
+              backgroundColor: '#CCC931',
               borderColor: '#faad14',
               display: 'block',
               margin: '0 auto'
-            }}            onClick={handleSubmit}
+            }}            
+            onClick={handleSubmit}
           >
             {t.submit}
           </Button>,

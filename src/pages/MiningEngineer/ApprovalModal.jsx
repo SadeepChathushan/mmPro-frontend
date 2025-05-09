@@ -15,6 +15,7 @@ import {
 import { UploadOutlined } from "@ant-design/icons";
 import { miningEngineerApprovedLicense } from "../../services/miningEngineerService";
 import { useLanguage } from "../../contexts/LanguageContext";
+import "../../styles/MiningEngineer/MEModals.css";
 
 const ApprovalModal = ({
   visible,
@@ -179,9 +180,9 @@ const ApprovalModal = ({
         <div style={{ textAlign: "center" }}>
           <Button
             type="primary"
+            className="approve-button"
             loading={uploading}
             onClick={handleSubmit}
-            style={{ minWidth: 120 }}
           >
             {uploading ? t.uploading : t.submit}
           </Button>
