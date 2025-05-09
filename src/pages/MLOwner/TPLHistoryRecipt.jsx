@@ -86,14 +86,14 @@ const TPLReceiptPage = () => {
     mlOwner: mldata?.assigned_to?.name || "N/A",
     startLocation: mllocation.value,
     mineralType: "Sand",
-    lorryContact: tpldata?.driver_contact || "N/A",
+    lorryContact:  driverContact ||tpldata?.driver_contact || "N/A",
     // loadCube: tpldata?.cubes || "N/A",
     //destination: tpldata?.destination || "N/A",
     printedDate: printedDate,
     tplId: tpl_id, //lorryNumber
     lorryNumber: lorryNumber,
     loadCube: cubes,
-    lorryContact: driverContact,
+    // lorryContact: driverContact,
     destination: destination,
   };
 

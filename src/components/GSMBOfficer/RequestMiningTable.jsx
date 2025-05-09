@@ -722,47 +722,49 @@ const RequestMiningTable = ({ searchText }) => {
   // --- Component Return ---
   return (
     <>
-      <div style={{ marginBottom: 16 }}>
-        <Row gutter={16} align="middle">
-          <Col>
-            <Select
-              placeholder={
-                language === "en"
-                  ? "Filter by status"
-                  : language === "si"
-                  ? ""
-                  : "நிலையின் அடிப்படையில் வடிகட்டவும்"
-              }
-              value={statusFilter}
-              onChange={setStatusFilter}
-              style={{ width: 200 }}
-              allowClear
-            >
-              {statusOptions.map((option) => (
-                <Option key={option.value} value={option.value}>
-                  {option.label}
-                </Option>
-              ))}
-            </Select>
-          </Col>
 
-          <Col>
-            <Button
-              type="default"
-              onClick={() => {
-                setSearchText("");
-                setStatusFilter(null);
-              }}
-            >
-              {language === "en"
-                ? "Reset Filters"
-                : language === "si"
-                ? ""
-                : "வடிகட்டிகளை மீட்டமைக்கவும்"}
-            </Button>
-          </Col>
-        </Row>
-      </div>
+    <div style={{ marginBottom: 16 }}>
+          <Row gutter={16} align="middle">
+            <Col>
+              <Select
+                placeholder={
+                  language === "en"
+                    ? "Filter by status"
+                    : language === "si"
+                    ? ""
+                    : "நிலையின் அடிப்படையில் வடிகட்டவும்"
+                }
+                value={statusFilter}
+                onChange={setStatusFilter}
+                style={{ width: 200 }}
+                allowClear
+              >
+                {statusOptions.map((option) => (
+                  <Option key={option.value} value={option.value}>
+                    {option.label}
+                  </Option>
+                ))}
+              </Select>
+            </Col>
+            
+            <Col>
+              <Button
+                type="default"
+                onClick={() => {
+                  setStatusFilter(null);
+                  setSearchText("");
+                }}
+              >
+                 {language === "en"
+    ? "Reset Filters"
+    : language === "si"
+    ? ""
+    : "வடிகட்டிகளை மீட்டமைக்கவும்"}
+              </Button>
+            </Col>
+          </Row>
+        </div>
+
 
       <Table
         dataSource={mlRequestData
