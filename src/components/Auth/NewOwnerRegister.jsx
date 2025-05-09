@@ -620,50 +620,79 @@ const PoliceOfficerRegister = () => {
       }
 
       setLoading(true);
-      const formData = new FormData();
+      // const formData = new FormData();
 
-      // Append all form fields
-      formData.append("login", values.username);
-      formData.append("first_name", values.firstName);
-      formData.append("last_name", values.lastName);
-      formData.append("email", values.email);
-      formData.append("password", values.password);
-      formData.append("nic_number", values.nic);
-      formData.append("mobile_number", values.mobile);
-      formData.append("designation", values.designation);
-      formData.append("user_Type", "police");
+      // // Append all form fields
+      // formData.append("login", values.username);
+      // formData.append("first_name", values.firstName);
+      // formData.append("last_name", values.lastName);
+      // formData.append("email", values.email);
+      // formData.append("password", values.password);
+      // formData.append("nic_number", values.nic);
+      // formData.append("mobile_number", values.mobile);
+      // formData.append("designation", values.designation);
+      // formData.append("user_Type", "MLOwner");
 
-      // Append files from state (not from values)
-      if (nicFrontFile.length > 0) {
-        formData.append("nic_front", nicFrontFile[0]);
-      }
-      if (nicBackFile.length > 0) {
-        formData.append("nic_back", nicBackFile[0]);
-      }
-      if (workIdFile.length > 0) {
-        formData.append("work_id", workIdFile[0]);
-      }
-
+      // // Append files from state (not from values)
+      // if (nicFrontFile.length > 0) {
+      //   formData.append("nic_front", nicFrontFile[0]);
+      // }
+      // if (nicBackFile.length > 0) {
+      //   formData.append("nic_back", nicBackFile[0]);
+      // }
+      // if (workIdFile.length > 0) {
+      //   formData.append("work_id", workIdFile[0]);
+      // }
+      const data = {
+        login: values.username,
+        first_name: values.firstName,
+        last_name: values.lastName,
+        email: values.email,
+        password: values.password,
+        national_identity_card: values.nic,
+        mobile_number: values.mobile,
+        designation: values.designation,
+        user_Type: "MLOwner"
+      };
+      // await authService.registerUser(data, "mlOwner");
       // Call the registration service with 'gsmb_officer' role
-      const result = await authService.registerUser(formData, "police");
+      // const result = await authService.registerUser(formData, "mlOwner");
 
-      if (result) {
-        message.success("GSMB Officer account created successfully!");
-        form.resetFields();
-        setNicFrontFile([]);
-        setNicBackFile([]);
-        setWorkIdFile([]);
-      }
-    } catch (error) {
-      console.error("Account Creation Error:", error);
-      message.error(
-        error.response?.data?.message ||
-          error.message ||
-          "Failed to create account. Please try again."
-      );
-    } finally {
-      setLoading(false);
+
+    //   if (result) {
+    //     message.success("GSMB Officer account created successfully!");
+    //     form.resetFields();
+    //     setNicFrontFile([]);
+    //     setNicBackFile([]);
+    //     setWorkIdFile([]);
+    //   }
+    // } catch (error) {
+    //   console.error("Account Creation Error:", error);
+    //   message.error(
+    //     error.response?.data?.message ||
+    //       error.message ||
+    //       "Failed to create account. Please try again."
+    //   );
+    // } finally {
+    //   setLoading(false);
+    // }
+    const result = await authService.registerUser(data, "mlOwner");
+
+    if (result) {
+      message.success("ML Owner account created successfully!");
+      form.resetFields();
+      setNicFrontFile([]);
+      setNicBackFile([]);
+      setWorkIdFile([]);
     }
+  } catch (error) {
+    console.error("Account Creation Error:", error);
+    message.error(
+      error.message || "Failed to create account. Please try again."
+    );
+  } finally {
+    setLoading(false);
+  }
   };
 
   const createUploadProps = (fileList, setFileList, label) => ({
