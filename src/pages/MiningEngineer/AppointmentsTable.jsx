@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Space, Button, Popover, DatePicker, message, Tag } from "antd";
+import { Table, Space, Button, Popover, DatePicker, message } from "antd";
 import { CalendarOutlined, EnvironmentOutlined, EyeOutlined } from "@ant-design/icons";
 import moment from "moment";
 import PropTypes from "prop-types";
@@ -13,7 +13,6 @@ import "../../styles/MiningEngineer/AppointmentsTable.css";
 
 const AppointmentsTable = ({
   activeTab,
-  onViewDetails,
   onShowApproval,
   onHold,
   onReject,
@@ -36,13 +35,20 @@ const AppointmentsTable = ({
         );
       } catch (error) {
         console.error("Error fetching appointments:", error);
+        message.error(
+          language === "en"
+            ? "Failed to load appointments"
+            : language === "si"
+            ? "ඇමතුම් පෑම බැහැර කිරීමට අසමත් විය"
+            : "நியமனங்களை ஏற்றுவதில் தோல்வி"
+        );
       } finally {
         setLoading(false);
       }
     };
 
     fetchAppointments();
-  }, [activeTab]);
+  }, [activeTab, language]);
 
   const handleTempDateChange = (id, dateString) => {
     setAppointments((prev) =>
@@ -123,12 +129,13 @@ const AppointmentsTable = ({
     if (activeTab === "pending") {
       return item.status === "Awaiting ME Scheduling";
     } else if (activeTab === "approved") {
-      return item.status === "ME Appointment Scheduled";  
+      return item.status === "ME Appointment Scheduled";
     }
     return true;
   });
 
-  const baseColumns = [
+  // Common columns for both tabs
+  const commonColumns = [
     {
       title: language === "en" ? "ML Owner" : language === "si" ? "ඇමතුම් හිමිකරු" : "ML உரிமையாளர்",
       dataIndex: "assigned_to",
@@ -167,10 +174,10 @@ const AppointmentsTable = ({
     },
   ];
 
-  let columns = [...baseColumns];
-
-  if (activeTab === "pending") {
-    columns.push({
+  // Pending Tab Columns
+  const pendingColumns = [
+    ...commonColumns,
+    {
       title: language === "en" ? "Set Date" : language === "si" ? "දිනය සකසන්න" : "திகதி அமைக்கவும்",
       key: "setDate",
       render: (_, record) => (
@@ -205,63 +212,83 @@ const AppointmentsTable = ({
           </Button>
         </Popover>
       ),
-    });
-  }
-
-  if (activeTab === "approved") {
-    // Add Scheduled Date column before the Actions column
-    columns.push({
-      title:
-        language === "en"
-          ? "Mining License No."
-          : language === "si"
-          ? "පතල් බලපත්‍ර අංකය"
-          : "சுரங்க உரிம எண்",
-      dataIndex: "mining_number", // Assuming 'mining_number' holds the license number
-      key: "mining_number",
-    });
-    columns.push({
-      title: language === "en" ? "Scheduled Date" : language === "si" ? "සැලසුම් කළ දිනය" : "திட்டமிடப்பட்ட தேதி",
-      dataIndex: "date",
-      key: "scheduledDate",
-      render: (date) => (
-        <Tag color="blue" style={{ padding: "4px 8px", borderRadius: "4px" }}>
-          {moment(date).format("YYYY-MM-DD")}
-        </Tag>
-      ),
-      sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
-    });
-  }
-
-    columns.push({
-      title:
-        language === "en"
-          ? "Action"
-          : language === "si"
-          ? "ක්‍රියාව"
-          : "நடவடிக்கை",
-      key: "statusActions",
+    },
+    {
+      title: language === "en" ? "Actions" : language === "si" ? "ක්‍රියා" : "செயல்கள்",
+      key: "actions",
+      fixed: 'right',
+      width: 150,
       render: (_, record) => (
-        <StatusActions
-          record={record}
-          onApprove={() => {
-            onShowApproval(record.mining_number,record.id); 
+        <Button 
+          icon={<EyeOutlined />}
+          onClick={() => {
+            setSelectedLicense(record.mining_number);
+            setIsViewModalVisible(true);
           }}
-          onHold={onHold}
-          onReject={onReject}
-        />
+          className="view-details-btn"
+        >
+          {language === "en" ? "View" : language === "si" ? "බලන්න" : "காண்க"}
+        </Button>
       ),
-    });
-  
+    }
+  ];
+
+  // Scheduled Tab Columns
+  const approvedColumns = [
+    ...commonColumns,
+    {
+      title: language === "en" ? "Scheduled Date" : language === "si" ? "නියමිත දිනය" : "திட்டமிடப்பட்ட தேதி",
+      dataIndex: "date",
+      key: "date",
+      render: (date) => date ? moment(date).format("YYYY-MM-DD") : "-",
+    },
+    {
+      title: language === "en" ? "Actions" : language === "si" ? "ක්‍රියා" : "செயல்கள்",
+      key: "actions",
+      fixed: 'right',
+      width: 250,
+      render: (_, record) => (
+        <Space size="middle">
+          <Button 
+            icon={<EyeOutlined />}
+            onClick={() => {
+              setSelectedLicense(record.mining_number);
+              setIsViewModalVisible(true);
+            }}
+            className="view-details-btn"
+          >
+            {language === "en" ? "View" : language === "si" ? "බලන්න" : "காண்க"}
+          </Button>
+          <StatusActions
+            record={record}
+            onApprove={() => onShowApproval(record.mining_number, record.id)}
+            onHold={onHold}
+            onReject={onReject}
+          />
+        </Space>
+      ),
+    }
+  ];
 
   return (
-    <Table
-      columns={columns}
-      dataSource={filteredAppointments}
-      rowKey={(record) => record.id || record.mining_number}
-      loading={loading}
-      pagination={{ pageSize: 5 }}
-    />
+    <>
+      <Table
+        columns={activeTab === "pending" ? pendingColumns : approvedColumns}
+        dataSource={filteredAppointments}
+        rowKey={(record) => record.id || record.mining_number}
+        loading={loading}
+        pagination={{ pageSize: 5 }}
+        scroll={{ x: true }}
+        className="appointments-table"
+      />
+      
+      <ViewLicenseModal
+        visible={isViewModalVisible}
+        onClose={() => setIsViewModalVisible(false)}
+        selectedLicense={selectedLicense}
+        language={language}
+      />
+    </>
   );
 };
 
