@@ -78,11 +78,12 @@ const PoliceOfficerRegister = () => {
       }
     } catch (error) {
       console.error("Account Creation Error:", error);
-      message.error(
-        error.response?.data?.message ||
-          error.message ||
-          "Failed to create account. Please try again."
-      );
+
+      if (error?.error?.errors?.length > 0) {
+        error.error.errors.forEach((err) => message.error(err));
+      } else {
+        message.error("Registration failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -200,7 +201,7 @@ const PoliceOfficerRegister = () => {
                     rules={[
                       { required: true, message: "Please input your nic!" },
                       {
-                       // pattern: /^[0-9]{9}[vVxX]?$/,
+                        // pattern: /^[0-9]{9}[vVxX]?$/,
                         message: "Please enter a valid NIC Number!",
                       },
                     ]}

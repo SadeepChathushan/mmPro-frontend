@@ -620,29 +620,6 @@ const PoliceOfficerRegister = () => {
       }
 
       setLoading(true);
-      // const formData = new FormData();
-
-      // // Append all form fields
-      // formData.append("login", values.username);
-      // formData.append("first_name", values.firstName);
-      // formData.append("last_name", values.lastName);
-      // formData.append("email", values.email);
-      // formData.append("password", values.password);
-      // formData.append("nic_number", values.nic);
-      // formData.append("mobile_number", values.mobile);
-      // formData.append("designation", values.designation);
-      // formData.append("user_Type", "MLOwner");
-
-      // // Append files from state (not from values)
-      // if (nicFrontFile.length > 0) {
-      //   formData.append("nic_front", nicFrontFile[0]);
-      // }
-      // if (nicBackFile.length > 0) {
-      //   formData.append("nic_back", nicBackFile[0]);
-      // }
-      // if (workIdFile.length > 0) {
-      //   formData.append("work_id", workIdFile[0]);
-      // }
       const data = {
         login: values.username,
         first_name: values.firstName,
@@ -652,47 +629,28 @@ const PoliceOfficerRegister = () => {
         national_identity_card: values.nic,
         mobile_number: values.mobile,
         designation: values.designation,
-        user_Type: "MLOwner"
+        user_Type: "MLOwner",
       };
-      // await authService.registerUser(data, "mlOwner");
-      // Call the registration service with 'gsmb_officer' role
-      // const result = await authService.registerUser(formData, "mlOwner");
+      const result = await authService.registerUser(data, "mlOwner");
 
+      if (result) {
+        message.success("ML Owner account created successfully!");
+        form.resetFields();
+        setNicFrontFile([]);
+        setNicBackFile([]);
+        setWorkIdFile([]);
+      }
+    } catch (error) {
+      console.error("Account Creation Error:", error);
 
-    //   if (result) {
-    //     message.success("GSMB Officer account created successfully!");
-    //     form.resetFields();
-    //     setNicFrontFile([]);
-    //     setNicBackFile([]);
-    //     setWorkIdFile([]);
-    //   }
-    // } catch (error) {
-    //   console.error("Account Creation Error:", error);
-    //   message.error(
-    //     error.response?.data?.message ||
-    //       error.message ||
-    //       "Failed to create account. Please try again."
-    //   );
-    // } finally {
-    //   setLoading(false);
-    // }
-    const result = await authService.registerUser(data, "mlOwner");
-
-    if (result) {
-      message.success("ML Owner account created successfully!");
-      form.resetFields();
-      setNicFrontFile([]);
-      setNicBackFile([]);
-      setWorkIdFile([]);
+      if (error?.error?.errors?.length > 0) {
+        error.error.errors.forEach((err) => message.error(err));
+      } else {
+        message.error("Registration failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Account Creation Error:", error);
-    message.error(
-      error.message || "Failed to create account. Please try again."
-    );
-  } finally {
-    setLoading(false);
-  }
   };
 
   const createUploadProps = (fileList, setFileList, label) => ({
@@ -840,20 +798,6 @@ const PoliceOfficerRegister = () => {
                   </Form.Item>
                 </Col>
               </Row>
-
-              {/* <Form.Item
-                label="Designation"
-                name="designation"
-                rules={[
-                  { required: true, message: "Please input your Designation!" },
-                ]}
-              >
-                <Input
-                  prefix={<SolutionOutlined />}
-                  placeholder="Enter your Designation"
-                />
-              </Form.Item> */}
-
               <Row gutter={16}>
                 <Col xs={24} md={12}>
                   <Form.Item
@@ -905,87 +849,6 @@ const PoliceOfficerRegister = () => {
                   </Form.Item>
                 </Col>
               </Row>
-
-              {/* Document Upload Section
-              <Title level={5} style={{ marginBottom: 16 }}>
-                Upload Required Documents
-              </Title>
-
-              <Row gutter={16}>
-                <Col xs={24} md={8}>
-                  <Form.Item
-                    label="NIC Front Side"
-                    name="nicFront"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please upload NIC front side!",
-                      },
-                    ]}
-                  >
-                    <Upload
-                      {...createUploadProps(
-                        nicFrontFile,
-                        setNicFrontFile,
-                        "NIC Front"
-                      )}
-                    >
-                      <Button icon={<FileImageOutlined />} block size="large">
-                        Upload NIC Front
-                      </Button>
-                    </Upload>
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={8}>
-                  <Form.Item
-                    label="NIC Back Side"
-                    name="nicBack"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please upload NIC back side!",
-                      },
-                    ]}
-                  >
-                    <Upload
-                      {...createUploadProps(
-                        nicBackFile,
-                        setNicBackFile,
-                        "NIC Back"
-                      )}
-                    >
-                      <Button icon={<FileImageOutlined />} block size="large">
-                        Upload NIC Back
-                      </Button>
-                    </Upload>
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={8}>
-                  <Form.Item
-                    label="Work ID"
-                    name="workId"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please upload your Work ID!",
-                      },
-                    ]}
-                  >
-                    <Upload
-                      {...createUploadProps(
-                        workIdFile,
-                        setWorkIdFile,
-                        "Work ID"
-                      )}
-                    >
-                      <Button icon={<FileImageOutlined />} block size="large">
-                        Upload Work ID
-                      </Button>
-                    </Upload>
-                  </Form.Item>
-                </Col>
-              </Row> */}
-
               <Form.Item>
                 <Button
                   type="primary"
