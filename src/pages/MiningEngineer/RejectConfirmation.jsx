@@ -113,6 +113,10 @@ const RejectConfirmation = ({ onReject, recordId }) => {
             key="submit" 
             type="primary" 
             danger 
+            style={{
+              display: 'block',
+              margin: '0 auto'
+            }}
             onClick={handleSubmit}
           >
             {t.submit}
