@@ -129,7 +129,7 @@ const History = () => {
           driverContact: item.driver_contact,
           dueDate: item.due_date,
           cubes: item.cubes,
-        }
+        },
       },
     });
   };
@@ -206,7 +206,7 @@ const History = () => {
       {error && <div className="error-message">{error}</div>}
 
       <Row gutter={[16, 16]} style={{ marginBottom: "20px" }}>
-        <Col xs={24} sm={12} md={6}>
+        <Col xs={24} sm={25} md={6}>
           <DatePicker
             onChange={(date) =>
               setStartDate(date ? moment(date).format("YYYY-MM-DD") : null)
@@ -221,7 +221,7 @@ const History = () => {
             className="history-datepicker"
           />
         </Col>
-        <Col xs={24} sm={12} md={6}>
+        <Col xs={24} sm={24} md={12} lg={8}>
           <DatePicker
             onChange={(date) =>
               setEndDate(date ? moment(date).format("YYYY-MM-DD") : null)
@@ -255,11 +255,10 @@ const History = () => {
       ) : (
         <Row gutter={[16, 16]}>
           {filteredDispatchHistory.map((item) => {
-            const buttonDisabled =
-              (clickCounts[item.license_number] || 0) >= 3;
+            const buttonDisabled = (clickCounts[item.license_number] || 0) >= 3;
 
             return (
-              <Col xs={24} sm={12} md={8} lg={6} key={item.tpl_id}>
+              <Col xs={24} sm={12} md={8} lg={7} key={item.tpl_id}>
                 <Card
                   className="history-card"
                   hoverable
