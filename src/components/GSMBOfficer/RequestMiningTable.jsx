@@ -262,7 +262,7 @@ const RequestMiningTable = ({searchText}) => {
           {language === "en"
     ? "View"
     : language === "si"
-    ? ""
+    ? "බලන්න"
     : "பார்க்க"}
         </Button>
         
@@ -277,7 +277,7 @@ const RequestMiningTable = ({searchText}) => {
               {language === "en"
     ? "Validate the license"
     : language === "si"
-    ? ""
+    ? "බලපත්‍රය වලංගු කරන්න"
     : "அனுமதி உரிமத்தை சரிபார்க்கவும்"}
 
           </Button>
@@ -293,7 +293,7 @@ const RequestMiningTable = ({searchText}) => {
               {language === "en"
     ? "Physical Meeting Status"
     : language === "si"
-    ? ""
+    ? "භෞතික රැස්වීම් තත්වය"
     : "நிகழ்நிலை சந்திப்பு நிலை"}
             </Button>
           ) : (          
@@ -306,7 +306,7 @@ const RequestMiningTable = ({searchText}) => {
                 {language === "en"
     ? "Schedule"
     : language === "si"
-    ? ""
+    ? "කාලසටහන"
     : "திட்டமிடு"}
             </Button>
           )
@@ -570,14 +570,14 @@ const RequestMiningTable = ({searchText}) => {
       language === "en"
         ? "ID"
         : language === "si"
-        ? ""
+        ? "අංකය"
         : "அடையாள எண்", dataIndex: "id", key: "id", width: 80, fixed: "left" },
     {
       title:
   language === "en"
     ? "Request Subject"
     : language === "si"
-    ? " "
+    ? "ඉල්ලීම් විෂය"
     : "கோரிக்கையின் தலைப்பு",
       dataIndex: "subject",
       key: "subject",
@@ -588,7 +588,7 @@ const RequestMiningTable = ({searchText}) => {
   language === "en"
     ? "Assigned To"
     : language === "si"
-    ? " "
+    ? "පවරා ඇත"
     : "ஒதுக்கப்பட்டவர்",
       dataIndex: "assigned_to",
       key: "assigned_to",
@@ -600,7 +600,7 @@ const RequestMiningTable = ({searchText}) => {
   language === "en"
     ? "Mobile"
     : language === "si"
-    ? ""
+    ? "දුරකථන අංකය"
     : "தொலைபேசி",
       dataIndex: "mobile_number",
       key: "mobile_number",
@@ -612,7 +612,7 @@ const RequestMiningTable = ({searchText}) => {
   language === "en"
     ? "District"
     : language === "si"
-    ? ""
+    ? "දිස්ත්‍රික්කය"
     : "மாவட்டம்",
       dataIndex: "administrative_district",
       key: "administrative_district",
@@ -624,7 +624,7 @@ const RequestMiningTable = ({searchText}) => {
   language === "en"
     ? "Date Created"
     : language === "si"
-    ? ""
+    ? "සාදන ලද දිනය"
     : "உருவாக்கப்பட்ட திகதி",
       dataIndex: "created_on",
       key: "created_on",
@@ -637,7 +637,7 @@ const RequestMiningTable = ({searchText}) => {
   language === "en"
     ? "Status"
     : language === "si"
-    ? ""
+    ? "තත්වය"
     : "நிலை", 
       dataIndex: "status", 
       key: "status", 
@@ -650,7 +650,7 @@ const RequestMiningTable = ({searchText}) => {
   language === "en"
     ? "Action"
     : language === "si"
-    ? ""
+    ? "ක්‍රියාව"
     : "நடவடிக்கை",
       key: "action",
       width: 150,
@@ -886,7 +886,7 @@ const RequestMiningTable = ({searchText}) => {
                 {language === "en"
     ? "Cancel"
     : language === "si"
-    ? " "
+    ? "අවලංගු කරන්න"
     : "ரத்து செய்க"}
               </Button>
               <Button
@@ -898,7 +898,7 @@ const RequestMiningTable = ({searchText}) => {
                 {language === "en"
     ? "Update Details"
     : language === "si"
-    ? ""
+    ? "යාවත්කාලීන විස්තර"
     : "விவரங்களைப் புதுப்பிக்கவும்"}
               </Button>
             </Col>
