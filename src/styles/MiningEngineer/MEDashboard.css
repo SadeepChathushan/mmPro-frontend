@@ -182,13 +182,13 @@
 }
 
 /* Modern Tabs Styling */
-.modern-tabs {
+.me-tabs {
   background: #fff;
   border-radius: 8px;
   padding: 0 16px;
 }
 
-.modern-tab-label {
+.me-tab-label {
   display: flex;
   align-items: center;
   padding: 12px 16px;
@@ -198,18 +198,18 @@
   margin-right: 8px;
 }
 
-.modern-tab-label .tab-icon {
+.me-tab-label .tab-icon {
   margin-right: 8px;
   font-size: 16px;
   transition: all 0.3s ease;
 }
 
-.modern-tab-label .tab-title {
+.me-tab-label .tab-title {
   font-weight: 500;
   transition: all 0.3s ease;
 }
 
-.modern-tab-label .tab-count {
+.me-tab-label .tab-count {
   margin-left: 8px;
   background: rgba(0, 0, 0, 0.06);
   padding: 2px 6px;
