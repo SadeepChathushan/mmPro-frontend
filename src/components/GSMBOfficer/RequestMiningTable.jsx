@@ -804,8 +804,8 @@ const RequestMiningTable = ({searchText}) => {
               <Button
                 type="default"
                 onClick={() => {
-                  setSearchText("");
                   setStatusFilter(null);
+                  setSearchText("");
                 }}
               >
                  {language === "en"
