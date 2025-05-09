@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from "axios";
 
-// Define the base URL and default headers
-// const BASE_URL = "http://127.0.0.1:5000/";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -75,15 +73,6 @@ export const fetchTopMiningHolders = async () => {
 
     const miningData = response.data.issues;
 
-    // Format the data
-    // const formattedData = miningData.map(item => ({
-    //   label: item.label,
-    //   value: item.value,
-    //   capacity: item.capacity,
-    // }));
-
-    // return formattedData;
-    // Format the data
     const formatMiningData = (item) => ({
       label: item.label,
       value: item.value,

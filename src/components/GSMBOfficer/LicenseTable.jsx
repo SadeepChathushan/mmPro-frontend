@@ -480,14 +480,6 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
             <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
           </Form.Item>
           
-          <Form.Item
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Mining License Number</span>}
-            name="license_number"
-            style={{ marginBottom: "18px" }}
-          >
-            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
-          </Form.Item>
-          
           {/* Document files with download options */}
           {renderFileField("economic_viability_report", "Economic Viability Report", currentRecord.economic_viability_report)}
           {renderFileField("license_fee_receipt", "License Fee Receipt", currentRecord.license_fee_receipt)}
@@ -534,23 +526,6 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
           >
             <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
           </Form.Item>
-          
-          {/* <Form.Item
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Start Date</span>}
-            name="start_date"
-            style={{ marginBottom: "18px" }}
-          >
-            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
-          </Form.Item>
-          
-          <Form.Item
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Due Date</span>}
-            name="due_date"
-            style={{ marginBottom: "18px" }}
-          >
-            <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
-          </Form.Item> */}
-          
           <Form.Item
             label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Lorry Number</span>}
             name="lorry_number"
@@ -596,18 +571,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
     return tracker === "ML" ? renderMLFields() : renderTPLFields();
   };
-  // const data = data.filter((item) => {
-  //   const search = searchText.toLowerCase();
-  //   return (
-  //     item.id?.toString().toLowerCase().includes(search) ||
-  //     item.subject?.toLowerCase().includes(search) ||
-  //     item.assigned_to?.toLowerCase().includes(search) ||
-  //     item.mobile_number?.toLowerCase().includes(search) ||
-  //     item.administrative_district?.toLowerCase().includes(search) ||
-  //     item.status?.toLowerCase().includes(search)
-  //   );
-  // });
-
+  
   return (
     <>
       <Table
