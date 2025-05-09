@@ -450,6 +450,13 @@ const AddNewLicense = () => {
           values.Deed_plan[0].originFileObj
         );
       }
+      if (values.economic_viability_report && values.economic_viability_report.length > 0 && values.economic_viability_report[0].originFileObj) {
+        formData.append( "economic_viability_report", values.economic_viability_report[0].originFileObj );
+      }
+      if (values.license_boundary_survey && values.license_boundary_survey.length > 0 && values.license_boundary_survey[0].originFileObj) {
+        formData.append( "license_boundary_survey", values.license_boundary_survey[0].originFileObj );
+      }
+
 
       // Call the service with FormData
       const result = await addNewLicense(formData);
@@ -522,6 +529,9 @@ const AddNewLicense = () => {
       bondNature: "Nature of amount of bound (if any)",
       minerals: "Names of Mineral/Minerals to be mined",
       licenseFee: "Licence fee receipt (attach)",
+      economicViabilityReport: "Attach Economic Viability Report",
+      licenseBoundarySurvey: "Attach License Boundary Survey",
+
       declaration:
         "I, the undersigned, do hereby certify that the statements contained in this application are true and correct to the best of my knowledge and undertake to comply with the provisions the Mines & Minerals Act, No. 33 of 1992, and the Regulation made thereunder.",
       date: "Date",
@@ -673,7 +683,7 @@ const AddNewLicense = () => {
           <Input />
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           label={currentTranslations.landFile}
           name="Deed_plan"
           valuePropName="fileList"
@@ -689,7 +699,7 @@ const AddNewLicense = () => {
           >
             <Button icon={<UploadOutlined />}>Select File</Button>
           </Upload>
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item
           label={currentTranslations.land_google}
@@ -779,7 +789,7 @@ const AddNewLicense = () => {
           </Select>
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           label={currentTranslations.restorationPlan}
           name="detailed_mine_plan"
           valuePropName="fileList"
@@ -798,7 +808,7 @@ const AddNewLicense = () => {
           >
             <Button icon={<UploadOutlined />}>Select File</Button>
           </Upload>
-        </Form.Item>
+        </Form.Item> */}
 
         {/* Commented sections */}
 
@@ -899,6 +909,91 @@ const AddNewLicense = () => {
             </Form.Item>
           </Col>
         </Row>
+        <Row gutter={16}>
+  <Col xs={24} sm={12}>
+        <Form.Item
+          label={currentTranslations.landFile}
+          name="Deed_plan"
+          valuePropName="fileList"
+          getValueFromEvent={normFile} // Use helper function
+          rules={[
+            { required: true, message: "Please upload the Deed/Survey Plan!" },
+          ]}
+        >
+          <Upload
+            beforeUpload={() => false}
+            maxCount={1}
+            accept=".pdf,.doc,.docx,.jpg,.png,.jpeg"
+          >
+            <Button icon={<UploadOutlined />}>Select File</Button>
+          </Upload>
+        </Form.Item>
+        </Col>
+
+  <Col xs={24} sm={12}>
+
+        <Form.Item
+          label={currentTranslations.restorationPlan}
+          name="detailed_mine_plan"
+          valuePropName="fileList"
+          getValueFromEvent={normFile} // Use helper function
+          rules={[
+            {
+              required: true,
+              message: "Please upload the Detailed Mine Plan!",
+            },
+          ]}
+        >
+          <Upload
+            beforeUpload={() => false}
+            maxCount={1}
+            accept=".pdf,.doc,.docx,.jpg,.png,.jpeg"
+          >
+            <Button icon={<UploadOutlined />}>Select File</Button>
+          </Upload>
+        </Form.Item>
+        </Col>
+</Row>
+
+<Row gutter={16}>
+  <Col xs={24} sm={12}>
+
+
+        <Form.Item
+                  label={currentTranslations.economicViabilityReport}
+                  name="economic_viability_report"
+                  valuePropName="fileList"
+                  getValueFromEvent={normFile} // Use helper function
+                  rules={[{ required: true, message: 'Please upload the economic viability report!' }]}
+                >
+                  <Upload
+                    beforeUpload={() => false}
+                    maxCount={1}
+                    accept=".pdf,.doc,.docx,.jpg,.png,.jpeg"
+                  >
+                    <Button icon={<UploadOutlined />}>Select File</Button>
+                  </Upload>
+                </Form.Item>
+                </Col>
+
+  <Col xs={24} sm={12}>
+        <Form.Item
+                  label={currentTranslations.licenseBoundarySurvey}
+                  name="license_boundary_survey"
+                  valuePropName="fileList"
+                  getValueFromEvent={normFile} // Use helper function
+                  rules={[{ required: true, message: 'Please upload the economic viability report!' }]}
+                >
+                  <Upload
+                    beforeUpload={() => false}
+                    maxCount={1}
+                    accept=".pdf,.doc,.docx,.jpg,.png,.jpeg"
+                  >
+                    <Button icon={<UploadOutlined />}>Select File</Button>
+                  </Upload>
+                </Form.Item> 
+                </Col>
+                </Row>       
 
         {/* Commented sections */}
 

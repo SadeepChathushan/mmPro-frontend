@@ -45,7 +45,7 @@ export const getMeScheduledList = async () => {
       }
   
       const response = await axios.get(
-        `${BASE_URL}/mining-engineer/me-scheduled-appointments`,
+        `${BASE_URL}/mining-engineer/me-appointments`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -66,35 +66,6 @@ export const getMeScheduledList = async () => {
     }
 };
 
-// export const scheduleAppointment = async (appointmentId, date) => {
-//     try {
-//       const token = localStorage.getItem("USER_TOKEN");
-//       if (!token) {
-//         console.error("User token not found in localStorage");
-//         return { success: false, message: "Authentication required" };
-//       }
-
-//       const response = await axios.post(
-//         `${BASE_URL}/mining-engineer/schedule-appointment`,
-//         { appointmentId, date },
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//             "Content-Type": "application/json",
-//           },
-//         }
-//       );
-  
-//       if (response.data.success) {
-//         return { success: true, data: response.data.data };
-//       } else {
-//         return { success: false, message: response.data.message || "Failed to schedule appointment" };
-//       }
-//     } catch (error) {
-//       console.error("Failed to schedule appointment:", error);
-//       return { success: false, message: error.response?.data?.message || "An error occurred" };
-//     }
-// };
 
 export const updateAppointmentStatus = async (appointmentId, status) => {
     try {
@@ -186,6 +157,124 @@ export const scheduleMiningEngineerAppointmentDate = async (mining_number, date)
     }
   } catch (error) {
     console.error("Failed to schedule appointment:", error);
+    return { success: false, message: error.response?.data?.message || "An error occurred" };
+  }
+};
+
+
+export const getMeApproveMiningLicense = async () => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      return { success: false, message: "Authentication required" };
+    }
+
+    const response = await axios.get(
+      `${BASE_URL}/mining-engineer/me-approve-license`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // Handle the array-with-null response structure
+    const licenses = Array.isArray(response.data) ? response.data[0] || [] : [];
+    
+    return { 
+      success: true, 
+      data: licenses.map(license => ({
+        id: license.id,
+        licenseNumber: license.mining_license_number,
+        owner: license.assigned_to || 'N/A',
+        location: license.Google_location,
+        date: new Date().toLocaleDateString(), // Add actual date if available
+        status: license.status,
+        rawData: license // Keep original data for details view
+      }))
+    };
+  } catch (error) {
+    console.error("API Error:", error);
+    return { 
+      success: false, 
+      message: error.response?.data?.message || "Failed to fetch licenses" 
+    };
+  }
+};
+
+
+export const getMeApproveSingleMiningLicense = async (issue_id) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      return { success: false, message: "Authentication required" };
+    }
+
+    const response = await axios.get(
+      `${BASE_URL}/mining-engineer/me-approve-single-license/${issue_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const licenseData = response.data;
+    
+    const formattedData = {
+      success: true, 
+      
+        id: licenseData.id || licenseId,
+        licenseNumber: licenseData.mining_license_number,
+        owner: licenseData.assigned_to || 'N/A',
+        location: licenseData.Google_location,
+        Grama_Niladhari: licenseData.Grama_Niladhari,
+        Land_Name: licenseData.Land_Name,
+        Land_owner_name: licenseData.Land_owner_name,
+        Name_of_village: licenseData.Name_of_village,
+        administrative_district: licenseData.administrative_district,
+        date: new Date().toLocaleDateString(), 
+        status: licenseData.status,
+  
+    };
+    return { 
+      success: true, 
+      data: formattedData
+    };
+  } catch (error) {
+    console.error("API Error (getMeApproveSingleMiningLicense):", error.response || error.message);
+    return { 
+      success: false, 
+      message: error.response?.data?.message || "Failed to fetch license details." 
+    };
+  }
+};
+
+//This is the function to approve the mining engineer license
+export const miningEngineerApprovedLicense = async (me_appointment_issue_id, formData) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return { success: false, message: "Authentication required" };
+    }
+
+    const endpoint = `${BASE_URL}/mining-engineer/miningEngineer-approve/${me_appointment_issue_id}`;
+
+    const response = await axios.put(endpoint, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data", // Required for file uploads
+      },
+    });
+
+    if (response.data.success) {
+      return { success: true, data: response.data.data };
+    } else {
+      return { success: false, message: response.data.message || "Failed to approve the license" };
+    }
+  } catch (error) {
+    console.error("Failed to approve the mining license:", error);
     return { success: false, message: error.response?.data?.message || "An error occurred" };
   }
 };

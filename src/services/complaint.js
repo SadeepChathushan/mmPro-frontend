@@ -2,7 +2,7 @@ import axios from "axios";
 import { message } from "antd";
 import config from "./config";
 import api from "../services/axiosConfig";
-
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 export const submitComplaintPublic = async (
   phone,
   vehicleNumber,
@@ -24,7 +24,7 @@ export const submitComplaintPublic = async (
     };
 
     const response = await axios.post(
-      "http://127.0.0.1:5000/general-public/create-complaint",
+      `${BASE_URL}/general-public/create-complaint`,
       payload
     );
 
@@ -48,55 +48,6 @@ export const submitComplaintPublic = async (
     return false;
   }
 };
-
-// export const submitComplaint = async (input, language = "en") => {
-//   try {
-//     const token = localStorage.getItem("USER_TOKEN");
-//     const userID = localStorage.getItem("USER_ID");
-
-//     if (!token) {
-//       throw new Error("Missing Authorization Token");
-//     }
-
-//     const payload = {
-//       input,
-//       userID,
-//     };
-
-//     const axiosConfig = {
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
-//       timeout: 10000, // 10-second timeout
-//     };
-
-//     const response = await api.post(
-//       "http://127.0.0.1:5000/police-officer/create-complaint",
-//       payload,
-//       axiosConfig
-//     );
-
-//     message.success(
-//       language === "en"
-//         ? "Report Submitted successfully!"
-//         : "පැමිණිල්ල සාර්ථකව ඉදිරිපත් කරන ලදී."
-//     );
-
-//     return true;
-//   } catch (error) {
-//     console.error("Submission Error:", error);
-
-//     const errorMessage =
-//       error.response?.data?.message ||
-//       (language === "en"
-//         ? "Report Submission Failed! Please try again."
-//         : "පැමිණිල්ල ඉදිරිපත් කිරීම අසාර්ථකයි. නැවත උත්සාහ කරන්න.");
-
-//     message.error(errorMessage);
-//     return false;
-//   }
-// };
 
 export const submitComplaint = async (input, language = "en") => {
   try {

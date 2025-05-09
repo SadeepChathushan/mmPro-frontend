@@ -27,10 +27,14 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log(error);
-    if (error.response && error.response.status === 401) {
-      console.log("error detected");
+    const originalRequest = error.config;
 
+    // ✅ Don't intercept login route errors — let them reach the UI
+    if (originalRequest.url.includes("/auth/login")) {
+      return Promise.reject(error); // Let onFinish handle it
+    }
+
+    if (error.response && error.response.status === 401) {
       const refreshToken = localStorage.getItem("REFRESH_TOKEN");
 
       if (refreshToken) {
