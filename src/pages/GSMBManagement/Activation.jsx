@@ -357,15 +357,15 @@ const Activation = () => {
     ],
     mlOwner: [
       {
-        title: "First Name",
-        dataIndex: "fname",
+        title: "Name",
+        dataIndex: "name",
         key: "fname",
       },
-      {
-        title: "Last Name",
-        dataIndex: "lname",
-        key: "lname",
-      },
+      // {
+      //   title: "Last Name",
+      //   dataIndex: "lname",
+      //   key: "lname",
+      // },
 
       {
         title: "Email",
