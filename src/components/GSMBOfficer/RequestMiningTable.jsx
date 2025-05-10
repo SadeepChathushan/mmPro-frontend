@@ -468,71 +468,6 @@ const RequestMiningTable = ({ searchText }) => {
     );
   };
 
-  // const renderAction = (_, record) => {
-  //   const restrictedStatuses = [
-  //     "Awaiting ME Scheduling",
-  //     "ME Appointment Scheduled",
-  //     "Hold",
-  //     "Rejected",
-  //   ];
-
-  //   const isRestrictedStatus = restrictedStatuses.includes(record.status);
-  //   const isMEApproved = record.status === "ME Approved";
-  //   const isPhysicalDocument =
-  //     record.status?.toLowerCase() === "physical document";
-
-  //   return (
-  //     <div style={{ display: "flex", gap: "8px" }}>
-  //       <Button
-  //         type="primary"
-  //         size="small"
-  //         icon={<span>👁️</span>}
-  //         onClick={() => handleViewClick(record)}
-  //       >
-  //         View
-  //       </Button>
-
-  //       {isMEApproved ? (
-  //         <Button
-  //           type="primary"
-  //           size="small"
-  //           icon={<span>✅</span>}
-  //           onClick={() => handleValidateLicense(record)}
-  //           style={{
-  //             backgroundColor: "#ffffff",
-  //             borderColor: "#52c41a",
-  //             color: "#52c41a",
-  //           }}
-  //         >
-  //           Validate the license
-  //         </Button>
-  //       ) : (
-  //         !isRestrictedStatus &&
-  //         (isPhysicalDocument ? (
-  //           <Button
-  //             type="default"
-  //             size="small"
-  //             icon={<span>📝</span>}
-  //             onClick={() => handleUpdatePhysicalMeetingStatus(record)}
-  //             style={{ backgroundColor: "#f0f0f0", borderColor: "#d9d9d9" }}
-  //           >
-  //             Physical Meeting Status
-  //           </Button>
-  //         ) : (
-  //           <Button
-  //             type="default"
-  //             size="small"
-  //             icon={<span>🗓️</span>}
-  //             onClick={() => handleScheduleAppointment(record)}
-  //           >
-  //             Schedule
-  //           </Button>
-  //         ))
-  //       )}
-  //     </div>
-  //   );
-  // };
-
   const columns = [
     {
       title: language === "en" ? "ID" : language === "si" ? "" : "அடையாள எண்",
@@ -722,49 +657,47 @@ const RequestMiningTable = ({ searchText }) => {
   // --- Component Return ---
   return (
     <>
+      <div style={{ marginBottom: 16 }}>
+        <Row gutter={16} align="middle">
+          <Col>
+            <Select
+              placeholder={
+                language === "en"
+                  ? "Filter by status"
+                  : language === "si"
+                  ? ""
+                  : "நிலையின் அடிப்படையில் வடிகட்டவும்"
+              }
+              value={statusFilter}
+              onChange={setStatusFilter}
+              style={{ width: 200 }}
+              allowClear
+            >
+              {statusOptions.map((option) => (
+                <Option key={option.value} value={option.value}>
+                  {option.label}
+                </Option>
+              ))}
+            </Select>
+          </Col>
 
-    <div style={{ marginBottom: 16 }}>
-          <Row gutter={16} align="middle">
-            <Col>
-              <Select
-                placeholder={
-                  language === "en"
-                    ? "Filter by status"
-                    : language === "si"
-                    ? ""
-                    : "நிலையின் அடிப்படையில் வடிகட்டவும்"
-                }
-                value={statusFilter}
-                onChange={setStatusFilter}
-                style={{ width: 200 }}
-                allowClear
-              >
-                {statusOptions.map((option) => (
-                  <Option key={option.value} value={option.value}>
-                    {option.label}
-                  </Option>
-                ))}
-              </Select>
-            </Col>
-            
-            <Col>
-              <Button
-                type="default"
-                onClick={() => {
-                  setStatusFilter(null);
-                  setSearchText("");
-                }}
-              >
-                 {language === "en"
-    ? "Reset Filters"
-    : language === "si"
-    ? ""
-    : "வடிகட்டிகளை மீட்டமைக்கவும்"}
-              </Button>
-            </Col>
-          </Row>
-        </div>
-
+          <Col>
+            <Button
+              type="default"
+              onClick={() => {
+                setStatusFilter(null);
+                setSearchText("");
+              }}
+            >
+              {language === "en"
+                ? "Reset Filters"
+                : language === "si"
+                ? ""
+                : "வடிகட்டிகளை மீட்டமைக்கவும்"}
+            </Button>
+          </Col>
+        </Row>
+      </div>
 
       <Table
         dataSource={mlRequestData
