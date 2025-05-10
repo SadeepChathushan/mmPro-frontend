@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { Table, Space, Button, Popover, DatePicker, message } from "antd";
-import { CalendarOutlined, EnvironmentOutlined, EyeOutlined } from "@ant-design/icons";
+import {
+  CalendarOutlined,
+  EnvironmentOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 import moment from "moment";
 import PropTypes from "prop-types";
 import StatusActions from "./StatusActions";
@@ -8,7 +12,7 @@ import {
   getMeAwatingList,
   scheduleMiningEngineerAppointmentDate,
 } from "../../services/miningEngineerService";
-import ViewLicenseModal from './ViewDetails'; 
+import ViewLicenseModal from "./ViewDetails";
 import "../../styles/MiningEngineer/AppointmentsTable.css";
 
 const AppointmentsTable = ({
@@ -30,6 +34,7 @@ const AppointmentsTable = ({
       setLoading(true);
       try {
         const data = await getMeAwatingList();
+        console.log("Fetched Appointments Data:", data);
         setAppointments(
           data.map((item) => ({ ...item, tempDateString: null }))
         );
@@ -128,7 +133,7 @@ const AppointmentsTable = ({
   const filteredAppointments = appointments.filter((item) => {
     if (activeTab === "pending") {
       return item.status === "Awaiting ME Scheduling";
-    } else if (activeTab === "approved") {
+    } else if (activeTab === "scheduled") {
       return item.status === "ME Appointment Scheduled";
     }
     return true;
@@ -137,17 +142,28 @@ const AppointmentsTable = ({
   // Common columns for both tabs
   const commonColumns = [
     {
-      title: language === "en" ? "ML Owner" : language === "si" ? "ඇමතුම් හිමිකරු" : "ML உரிமையாளர்",
+      title:
+        language === "en"
+          ? "ML Owner"
+          : language === "si"
+          ? "ඇමතුම් හිමිකරු"
+          : "ML உரிமையாளர்",
       dataIndex: "assigned_to",
       key: "mlOwner",
     },
+    // {
+    //   title:
+    //     language === "en"
+    //       ? "GSMB Officer"
+    //       : language === "si"
+    //       ? "ගොඩනැගිලි නිලධාරියා"
+    //       : "GSMB அதிகாரி",
+    //   dataIndex: "gsmbOfficer",
+    //   key: "gsmbOfficer",
+    // },
     {
-      title: language === "en" ? "GSMB Officer" : language === "si" ? "ගොඩනැගිලි නිලධාරියා" : "GSMB அதிகாரி",
-      dataIndex: "gsmbOfficer",
-      key: "gsmbOfficer",
-    },
-    {
-      title: language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்",
+      title:
+        language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்",
       dataIndex: "Google_location",
       key: "location",
       render: (location) => (
@@ -162,12 +178,18 @@ const AppointmentsTable = ({
             }}
           />
           <a
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`}
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+              location
+            )}`}
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: "#389e0d" }}
           >
-            {language === "en" ? "View on Map" : language === "si" ? "සිතියමේ පෙන්වන්න" : "வரைபடத்தில் காண்க"}
+            {language === "en"
+              ? "View on Map"
+              : language === "si"
+              ? "සිතියමේ පෙන්වන්න"
+              : "வரைபடத்தில் காண்க"}
           </a>
         </Space>
       ),
@@ -178,7 +200,12 @@ const AppointmentsTable = ({
   const pendingColumns = [
     ...commonColumns,
     {
-      title: language === "en" ? "Set Date" : language === "si" ? "දිනය සකසන්න" : "திகதி அமைக்கவும்",
+      title:
+        language === "en"
+          ? "Set Date"
+          : language === "si"
+          ? "දිනය සකසන්න"
+          : "திகதி அமைக்கவும்",
       key: "setDate",
       render: (_, record) => (
         <Popover
@@ -200,26 +227,45 @@ const AppointmentsTable = ({
                   handleConfirmDate(record.mining_number, record.tempDateString)
                 }
               >
-                {language === "en" ? "Confirm" : language === "si" ? "තහවුරු කරන්න" : "உறுதிப்படுத்தவும்"}
+                {language === "en"
+                  ? "Confirm"
+                  : language === "si"
+                  ? "තහවුරු කරන්න"
+                  : "உறுதிப்படுத்தவும்"}
               </Button>
             </Space>
           }
-          title={language === "en" ? "Select Appointment Date" : language === "si" ? "දිනය තෝරන්න" : "சந்திப்பு தேதியைத் தேர்ந்தெடுக்கவும்"}
+          title={
+            language === "en"
+              ? "Select Appointment Date"
+              : language === "si"
+              ? "දිනය තෝරන්න"
+              : "சந்திப்பு தேதியைத் தேர்ந்தெடுக்கவும்"
+          }
           trigger="click"
         >
           <Button icon={<CalendarOutlined />}>
-            {language === "en" ? "Set Date" : language === "si" ? "දිනය සකසන්න" : "திகதி அமைக்கவும்"}
+            {language === "en"
+              ? "Set Date"
+              : language === "si"
+              ? "දිනය සකසන්න"
+              : "திகதி அமைக்கவும்"}
           </Button>
         </Popover>
       ),
     },
     {
-      title: language === "en" ? "Actions" : language === "si" ? "ක්‍රියා" : "செயல்கள்",
+      title:
+        language === "en"
+          ? "Actions"
+          : language === "si"
+          ? "ක්‍රියා"
+          : "செயல்கள்",
       key: "actions",
-      fixed: 'right',
+      fixed: "right",
       width: 150,
       render: (_, record) => (
-        <Button 
+        <Button
           icon={<EyeOutlined />}
           onClick={() => {
             setSelectedLicense(record.mining_number);
@@ -230,26 +276,46 @@ const AppointmentsTable = ({
           {language === "en" ? "View" : language === "si" ? "බලන්න" : "காண்க"}
         </Button>
       ),
-    }
+    },
   ];
 
   // Scheduled Tab Columns
   const approvedColumns = [
     ...commonColumns,
     {
-      title: language === "en" ? "Scheduled Date" : language === "si" ? "නියමිත දිනය" : "திட்டமிடப்பட்ட தேதி",
-      dataIndex: "date",
-      key: "date",
-      render: (date) => date ? moment(date).format("YYYY-MM-DD") : "-",
+      title:
+        language === "en"
+          ? "Mining License No."
+          : language === "si"
+          ? "නියමිත දිනය"
+          : "திட்டமிடப்பட்ட தேதி",
+      dataIndex: "mining_number",
+      key: "mining_number",
     },
     {
-      title: language === "en" ? "Actions" : language === "si" ? "ක්‍රියා" : "செயல்கள்",
+      title:
+        language === "en"
+          ? "Scheduled Date"
+          : language === "si"
+          ? "නියමිත දිනය"
+          : "திட்டமிடப்பட்ட தேதி",
+      dataIndex: "date",
+      key: "date",
+      render: (date) => (date ? moment(date).format("YYYY-MM-DD") : "-"),
+    },
+    {
+      title:
+        language === "en"
+          ? "Actions"
+          : language === "si"
+          ? "ක්‍රියා"
+          : "செயல்கள்",
       key: "actions",
-      fixed: 'right',
+      fixed: "right",
       width: 250,
       render: (_, record) => (
         <Space size="middle">
-          <Button 
+          <Button
             icon={<EyeOutlined />}
             onClick={() => {
               setSelectedLicense(record.mining_number);
@@ -267,13 +333,18 @@ const AppointmentsTable = ({
           />
         </Space>
       ),
-    }
+    },
   ];
 
   return (
     <>
       <Table
         columns={activeTab === "pending" ? pendingColumns : approvedColumns}
+        // if(activeTab === "pending"){
+        //   pendingColumns
+        // } else if(activeTab === "approved") {
+        //   approvedColumns
+        // }
         dataSource={filteredAppointments}
         rowKey={(record) => record.id || record.mining_number}
         loading={loading}
@@ -281,7 +352,7 @@ const AppointmentsTable = ({
         scroll={{ x: true }}
         className="appointments-table"
       />
-      
+
       <ViewLicenseModal
         visible={isViewModalVisible}
         onClose={() => setIsViewModalVisible(false)}
