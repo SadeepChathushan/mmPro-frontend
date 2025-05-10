@@ -69,7 +69,7 @@ const MLRequest = () => {
       const userId = localStorage.getItem("USER_ID") || "";
 
       // Append all form fields (ensure values are not undefined/null if possible)
-      formData.append( "subject", `Mining License Request - ${username}` );
+      formData.append("subject", `Mining License Request - ${username}`);
       formData.append("assigned_to", userId);
       formData.append("author", userId);
       formData.append("exploration_nb", values.exploration_nb || ""); // Add fallback for safety
@@ -77,19 +77,25 @@ const MLRequest = () => {
       formData.append("land_owner_name", values.land_owner_name);
       formData.append("village_name", values.village_name);
       formData.append("grama_niladari", values.grama_niladari);
-      formData.append( "divisional_secretary_division", values.divisional_secretary_division );
+      formData.append("divisional_secretary_division", values.divisional_secretary_division);
       formData.append("administrative_district", values.district);
       formData.append("google_location", values.land_google);
 
       // Append files safely checking they exist
       if (values.detailed_mine_plan && values.detailed_mine_plan.length > 0 && values.detailed_mine_plan[0].originFileObj) {
-        formData.append( "detailed_mine_plan", values.detailed_mine_plan[0].originFileObj );
+        formData.append("detailed_mine_plan", values.detailed_mine_plan[0].originFileObj);
       }
       if (values.payment_receipt && values.payment_receipt.length > 0 && values.payment_receipt[0].originFileObj) {
-        formData.append( "payment_receipt", values.payment_receipt[0].originFileObj );
+        formData.append("payment_receipt", values.payment_receipt[0].originFileObj);
       }
       if (values.Deed_plan && values.Deed_plan.length > 0 && values.Deed_plan[0].originFileObj) {
         formData.append("Deed_plan", values.Deed_plan[0].originFileObj);
+      }
+      if (values.economic_viability_report && values.economic_viability_report.length > 0 && values.economic_viability_report[0].originFileObj) {
+        formData.append( "economic_viability_report", values.economic_viability_report[0].originFileObj );
+      }
+      if (values.license_boundary_survey && values.license_boundary_survey.length > 0 && values.license_boundary_survey[0].originFileObj) {
+        formData.append( "license_boundary_survey", values.license_boundary_survey[0].originFileObj );
       }
 
       // Call the service with FormData
@@ -99,13 +105,13 @@ const MLRequest = () => {
         message.success("Mining Licenses Request successfully submitted!");
         form.resetFields();
       } else {
-         // Handle cases where the API might return a non-error response but indicate failure
-         message.error("Submission failed. Please check the details and try again.");
+        // Handle cases where the API might return a non-error response but indicate failure
+        message.error("Submission failed. Please check the details and try again.");
       }
 
     } catch (error) {
       console.error("Mining Licenses Request Error:", error);
-       // Provide more specific error feedback if possible
+      // Provide more specific error feedback if possible
       const errorMessage = error?.response?.data?.message || error.message || "Mining Licenses Request Error. Please try again.";
       message.error(errorMessage);
     } finally {
@@ -156,6 +162,8 @@ const MLRequest = () => {
       divisionalSecretary: "Divisional Secretary's Division",
       district: "Administrative District",
       restorationPlan: "Detailed Mine Restoration Plan (attach)",
+      economicViabilityReport: "Attach Economic Viability Report",
+      licenseBoundarySurvey: "Attach License Boundary Survey",
       bondNature: "Nature of amount of bound (if any)",
       minerals: "Names of Mineral/Minerals to be mined",
       licenseFee: "Licence fee receipt (attach)",
@@ -277,7 +285,7 @@ const MLRequest = () => {
           name="exploration_nb"
         >
           <Input
-           // placeholder={ /* Placeholder text */ }
+          // placeholder={ /* Placeholder text */ }
           />
         </Form.Item>
 
@@ -289,11 +297,11 @@ const MLRequest = () => {
           label={currentTranslations.landName}
           name="land_name"
           rules={[{ required: true, message: 'Please input the land name!' }]}
-         >
+        >
           <Input />
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           label={currentTranslations.landFile}
           name="Deed_plan"
           valuePropName="fileList"
@@ -307,15 +315,15 @@ const MLRequest = () => {
           >
             <Button icon={<UploadOutlined />}>Select File</Button>
           </Upload>
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item
           label={currentTranslations.land_google}
           name="land_google"
-           rules={[
-                { required: true, message: 'Please input the Google Maps link!' },
-                { type: 'url', warningOnly: true, message: 'Please enter a valid URL (e.g., https://maps...)' },
-            ]}
+          rules={[
+            { required: true, message: 'Please input the Google Maps link!' },
+            { type: 'url', warningOnly: true, message: 'Please enter a valid URL (e.g., https://maps...)' },
+          ]}
         >
           <Input
             placeholder="e.g., https://maps.app.goo.gl/..."
@@ -323,9 +331,9 @@ const MLRequest = () => {
         </Form.Item>
 
         <Form.Item
-            label={currentTranslations.landOwner}
-            name="land_owner_name"
-            rules={[{ required: true, message: 'Please input the land owner name!' }]}
+          label={currentTranslations.landOwner}
+          name="land_owner_name"
+          rules={[{ required: true, message: 'Please input the land owner name!' }]}
         >
           <Input />
         </Form.Item>
@@ -351,46 +359,46 @@ const MLRequest = () => {
           </Col>
           <Col xs={24} sm={8}>
 
-        <Form.Item
-          label={currentTranslations.district}
-          name="district"
-          rules={[{ required: true, message: 'Please select the district!' }]}
-        >
-          <Select
-            placeholder="Select district"
-            onChange={handleDistrictChange}
-          >
-            {Object.keys(districtData).map(district => (
-              <Option key={district} value={district}>{district}</Option>
-            ))}
-          </Select>
-        </Form.Item>           
+            <Form.Item
+              label={currentTranslations.district}
+              name="district"
+              rules={[{ required: true, message: 'Please select the district!' }]}
+            >
+              <Select
+                placeholder="Select district"
+                onChange={handleDistrictChange}
+              >
+                {Object.keys(districtData).map(district => (
+                  <Option key={district} value={district}>{district}</Option>
+                ))}
+              </Select>
+            </Form.Item>
           </Col>
 
         </Row>
 
         <Form.Item
-            label={currentTranslations.divisionalSecretary}
-            name="divisional_secretary_division"
-            rules={[{ required: true, message: 'Please select the division!' }]}
+          label={currentTranslations.divisionalSecretary}
+          name="divisional_secretary_division"
+          rules={[{ required: true, message: 'Please select the division!' }]}
+        >
+          <Select
+            placeholder="Select division"
+            disabled={!divisions.length}
           >
-            <Select
-              placeholder="Select division"
-              disabled={!divisions.length}
-            >
-              {divisions.map(division => (
-                <Option key={division} value={division}>{division}</Option>
-              ))}
-            </Select>
+            {divisions.map(division => (
+              <Option key={division} value={division}>{division}</Option>
+            ))}
+          </Select>
         </Form.Item>
-
-
+         <Row gutter={16}>
+          <Col xs={24} sm={12}>
         <Form.Item
-          label={currentTranslations.restorationPlan}
-          name="detailed_mine_plan"
+          label={currentTranslations.landFile}
+          name="Deed_plan"
           valuePropName="fileList"
           getValueFromEvent={normFile} // Use helper function
-           rules={[{ required: true, message: 'Please upload the Detailed Mine Plan!' }]}
+          rules={[{ required: true, message: 'Please upload the Deed/Survey Plan!' }]}
         >
           <Upload
             beforeUpload={() => false}
@@ -400,6 +408,66 @@ const MLRequest = () => {
             <Button icon={<UploadOutlined />}>Select File</Button>
           </Upload>
         </Form.Item>
+         </Col>
+        
+          <Col xs={24} sm={12}>
+
+
+        <Form.Item
+          label={currentTranslations.restorationPlan}
+          name="detailed_mine_plan"
+          valuePropName="fileList"
+          getValueFromEvent={normFile} // Use helper function
+          rules={[{ required: true, message: 'Please upload the Detailed Mine Plan!' }]}
+        >
+          <Upload
+            beforeUpload={() => false}
+            maxCount={1}
+            accept=".pdf,.doc,.docx,.jpg,.png,.jpeg"
+          >
+            <Button icon={<UploadOutlined />}>Select File</Button>
+          </Upload>
+        </Form.Item>
+        </Col>
+        </Row>
+        
+        <Row gutter={16}>
+          <Col xs={24} sm={12}>
+        <Form.Item
+          label={currentTranslations.economicViabilityReport}
+          name="economic_viability_report"
+          valuePropName="fileList"
+          getValueFromEvent={normFile} // Use helper function
+          rules={[{ required: true, message: 'Please upload the economic viability report!' }]}
+        >
+          <Upload
+            beforeUpload={() => false}
+            maxCount={1}
+            accept=".pdf,.doc,.docx,.jpg,.png,.jpeg"
+          >
+            <Button icon={<UploadOutlined />}>Select File</Button>
+          </Upload>
+        </Form.Item>
+        </Col>
+        
+          <Col xs={24} sm={12}>
+        <Form.Item
+                          label={currentTranslations.licenseBoundarySurvey}
+                          name="license_boundary_survey"
+                          valuePropName="fileList"
+                          getValueFromEvent={normFile} // Use helper function
+                          rules={[{ required: true, message: 'Please upload the economic viability report!' }]}
+                        >
+                          <Upload
+                            beforeUpload={() => false}
+                            maxCount={1}
+                            accept=".pdf,.doc,.docx,.jpg,.png,.jpeg"
+                          >
+                            <Button icon={<UploadOutlined />}>Select File</Button>
+                          </Upload>
+                        </Form.Item>
+                        </Col>
+                                        </Row>   
 
         {/* Commented sections */}
 
