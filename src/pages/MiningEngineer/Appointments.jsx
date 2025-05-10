@@ -80,10 +80,10 @@ const Appointments = ({ activeTab }) => {
           ? {
               ...app,
               date: dateString,
-              status: "scheduled", // Update status to 'scheduled'
+              status: "scheduled", 
               licenseDetails: {
                 ...app.licenseDetails,
-                status: "Scheduled", // Update license status
+                status: "Scheduled", 
               },
             }
           : app
