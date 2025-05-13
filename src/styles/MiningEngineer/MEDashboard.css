@@ -1,0 +1,358 @@
+/* MEDashboard.css */
+
+.me-content {
+  padding: 0;
+  background-color: transparent;
+}
+
+/* Metrics Cards */
+.me-metrics-row {
+  margin-bottom: 24px !important;
+}
+
+.me-metrics-col {
+  padding: 12px !important;
+}
+
+.me-stat-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  overflow: hidden;
+}
+
+.me-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.me-stat-card--mines {
+  background: linear-gradient(135deg, #fff9e6 0%, #ffecb3 100%);
+  border-left: 4px solid #faad14;
+}
+
+.me-stat-card--equipment {
+  background: linear-gradient(135deg, #e6f7ff 0%, #b3e0ff 100%);
+  border-left: 4px solid #1890ff;
+}
+
+.me-stat-card--safety {
+  background: linear-gradient(135deg, #e6ffed 0%, #b7eb8f 100%);
+  border-left: 4px solid #52c41a;
+}
+
+.me-stat-card--production {
+  background: linear-gradient(135deg, #fff1f0 0%, #ffccc7 100%);
+  border-left: 4px solid #ff4d4f;
+}
+
+.me-stat-card__content .ant-statistic-title {
+  color: #595959;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.me-stat-card__content .ant-statistic-content {
+  font-size: 28px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.me-stat-card__content .ant-statistic-content-suffix {
+  font-size: 18px;
+  color: #7e7e7e;
+  font-weight: 400;
+}
+
+.me-stat-card__progress {
+  margin-top: 16px;
+}
+
+.me-stat-card__progress .ant-progress-text {
+  font-size: 12px;
+  color: #595959;
+}
+
+/* Tabs Styling */
+.me-main-tabs {
+  margin-top: 16px;
+}
+
+.me-main-tabs .ant-tabs-nav {
+  margin-bottom: 24px;
+}
+
+.me-main-tabs .ant-tabs-tab {
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #595959;
+  transition: all 0.3s ease;
+}
+
+.me-main-tabs {
+  height: 3px;
+  background: #000000;
+}
+
+.me-main-tabs {
+  display: flex;
+  align-items: center;
+}
+
+.me-main-tabs  {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+
+/* License Table Styling */
+.me-licenses-table {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.me-licenses-table .ant-table-thead > tr > th {
+  background-color: #fafafa;
+  font-weight: 600;
+  color: #262626;
+}
+
+.me-licenses-table .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.me-licenses-table .ant-table-tbody > tr:hover > td {
+  background-color: #fafafa !important;
+}
+
+/* Modal Styling */
+.me-license-modal .ant-modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.me-license-modal .ant-modal-header {
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #fafafa;
+}
+
+.me-license-modal .ant-modal-title {
+  font-weight: 600;
+  color: #262626;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .me-metrics-col {
+    margin-bottom: 16px;
+  }
+  
+  .me-stat-card__content .ant-statistic-content {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .me-content {
+    padding: 16px;
+  }
+  
+  .me-metrics-col {
+    padding: 8px !important;
+  }
+  
+  .me-stat-card__content .ant-statistic-title {
+    font-size: 12px;
+  }
+  
+  .me-stat-card__content .ant-statistic-content {
+    font-size: 20px;
+  }
+  
+  .me-main-tabs .ant-tabs-tab {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+
+/* Modern Tabs Styling */
+.me-tabs {
+  background: #fff;
+  border-radius: 8px;
+  padding: 0 16px;
+}
+
+.me-tab-label {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.me-tab-label .tab-icon {
+  margin-right: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.me-tab-label .tab-title {
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.me-tab-label .tab-count {
+  margin-left: 8px;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+/* Pending Tab */
+.tab-type-pending .tab-icon,
+.tab-type-pending .tab-title {
+  color: #8c8c8c;
+}
+
+.tab-type-pending:hover .tab-icon,
+.tab-type-pending:hover .tab-title {
+  color: #faad14;
+}
+
+.tab-type-pending.active {
+  background: rgba(250, 173, 20, 0.1);
+}
+
+.tab-type-pending.active .tab-icon,
+.tab-type-pending.active .tab-title {
+  color: #faad14;
+}
+
+/* Scheduled Tab */
+.tab-type-scheduled .tab-icon,
+.tab-type-scheduled .tab-title {
+  color: #8c8c8c;
+}
+
+.tab-type-scheduled:hover .tab-icon,
+.tab-type-scheduled:hover .tab-title {
+  color: #1890ff;
+}
+
+.tab-type-scheduled.active {
+  background: rgba(24, 144, 255, 0.1);
+}
+
+.tab-type-scheduled.active .tab-icon,
+.tab-type-scheduled.active .tab-title {
+  color: #1890ff;
+}
+
+/* Approved Tab */
+.tab-type-approved .tab-icon,
+.tab-type-approved .tab-title {
+  color: #8c8c8c;
+}
+
+.tab-type-approved:hover .tab-icon,
+.tab-type-approved:hover .tab-title {
+  color: #52c41a;
+}
+
+.tab-type-approved.active {
+  background: rgba(82, 196, 26, 0.1);
+}
+
+.tab-type-approved.active .tab-icon,
+.tab-type-approved.active .tab-title {
+  color: #52c41a;
+}
+
+/* Rejected Tab */
+.tab-type-rejected .tab-icon,
+.tab-type-rejected .tab-title {
+  color: #8c8c8c;
+}
+
+.tab-type-rejected:hover .tab-icon,
+.tab-type-rejected:hover .tab-title {
+  color: #ff4d4f;
+}
+
+.tab-type-rejected.active {
+  background: rgba(255, 77, 79, 0.1);
+}
+
+.tab-type-rejected.active .tab-icon,
+.tab-type-rejected.active .tab-title {
+  color: #ff4d4f;
+}
+
+/* Tab content styling */
+.me-tab-content {
+  border-radius: 0 0 8px 8px;
+  border-top: none;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+}
+
+/* MEDashboard.css */
+
+/* Modern Tabs Styling - Updated with stronger selectors */
+.me-tabs {
+  background: #fff;
+  border-radius: 8px;
+  padding: 0 16px;
+}
+
+/* Tab indicator (ink bar) styling with !important */
+.me-tabs .ant-tabs-ink-bar {
+  height: 3px !important;
+  background-color: currentColor !important;
+}
+
+/* Active tab text color - this will control the ink bar color */
+.me-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: inherit !important;
+}
+
+/* Pending Tab */
+.tab-type-pending.active {
+  color: #faad14 !important;
+}
+
+/* Scheduled Tab */
+.tab-type-scheduled.active {
+  color: #1890ff !important;
+}
+
+/* Approved Tab */
+.tab-type-approved.active {
+  color: #52c41a !important;
+}
+
+/* Rejected Tab */
+.tab-type-rejected.active {
+  color: #ff4d4f !important;
+}
+
+/* Rest of your existing tab styles... */
+.me-tab-label {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  margin-right: 8px;
+}
+

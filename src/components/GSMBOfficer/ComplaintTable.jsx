@@ -71,7 +71,7 @@ const ComplaintTable = () => {
               borderBottom: "2px solid #ddd",
             }}
           >
-            <th style={{ padding: "10px", fontWeight: "bold" }}>Complaint ID</th>
+            {/* <th style={{ padding: "10px", fontWeight: "bold" }}>Complaint ID</th> */}
             <th style={{ padding: "10px", fontWeight: "bold" }}>Lorry Number</th>
             <th style={{ padding: "10px", fontWeight: "bold" }}>Role</th>
             <th style={{ padding: "10px", fontWeight: "bold" }}>Assigned To</th>
@@ -89,9 +89,9 @@ const ComplaintTable = () => {
                 borderBottom: "1px solid #ddd",
               }}
             >
-              <td style={{ padding: "10px" }}>
+              {/* <td style={{ padding: "10px" }}>
                 {complaint.custom_fields.find((field) => field.name === "Complaint ID")?.value || "N/A"}
-              </td>
+              </td> */}
               <td style={{ padding: "10px" }}>
                 {complaint.custom_fields.find((field) => field.name === "Lorry Number")?.value || "N/A"}
               </td>

@@ -1,152 +1,188 @@
-const API_CREDENTIALS = {
-    username: '@achinthamihiran',
-    password: 'Ab2#*De#'
-  };
-  
-  const getAuthHeaders = () => {
-    const credentials = btoa(`${API_CREDENTIALS.username}:${API_CREDENTIALS.password}`);
-    return {
-      'Content-Type': 'application/json',
-      Authorization: `Basic ${credentials}`,
+import { useState, useEffect } from 'react';
+import axios from "axios";
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+const axiosInstance = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("USER_TOKEN");
+    
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export const fetchComplaintCounts = async () => {
+  try {
+    const response = await axiosInstance.get("gsmb-management/complaint-counts");
+    
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching complaint data:", error);
+    throw error;
+  }
+};
+
+export const fetchRoleCounts = async () => {
+  try {
+    const response = await axiosInstance.get("gsmb-management/role-counts");
+   
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching role data:", error);
+    throw error;
+  }
+};
+
+//mining-license-counts
+export const fetchMiningLicenseCounts = async () => {
+  try {
+    const response = await axiosInstance.get("gsmb-management/mining-license-count");
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching mining license data:', error);
+    throw error;
+  }
+};
+
+export const fetchMonthlyCubesCounts = async () => {
+  try {
+    const response = await axiosInstance.get("gsmb-management/monthly-total-sand");
+    return response.data.issues;
+  } catch (error) {
+    console.error("Error fetching Monthly cubes data:", error);
+    throw new Error(`Failed to fetch data. Please try again later. Error: ${error.message}`);
+  }
+};
+
+// Top Mining License Holders (by Capacity)
+export const fetchTopMiningHolders = async () => {
+  try {
+    const response = await axiosInstance.get("gsmb-management/fetch-top-mining-holders");
+
+    const miningData = response.data.issues;
+
+    const formatMiningData = (item) => ({
+      label: item.label,
+      value: item.value,
+      capacity: item.capacity,
+    });
+
+    const formattedData = miningData.map(formatMiningData);
+
+    // Limit to the top 5 holders
+    const top5Holders = formattedData.slice(0, 5);
+
+    return top5Holders;
+
+
+  } catch (error) {
+    console.error("Error fetching Top Mining License Holders data:", error);
+    throw new Error(`Failed to fetch data. Please try again later. Error: ${error.message}`);
+  }
+};
+
+// Fetch mining license data by location
+export const fetchTotalLocationML = async (setStartLocationData) => {
+  try {
+    const response = await axiosInstance.get("gsmb-management/total-location-ml");
+    const data = response.data;
+    const formattedData = data.issues;
+    setStartLocationData(formattedData); 
+  } catch (error) {
+    console.error('Error fetching mining license data:', error);
+  }
+};
+
+// Fetch transport license data by location
+export const fetchTransportLicenseDestinations = async (setTransportData) => {
+  try {
+    const response = await axiosInstance.get('/gsmb-management/transport-license-destination');
+    
+    // Assuming the response data structure has an `issues` field
+    setTransportData(response.data.issues);
+    
+  } catch (error) {
+    console.error('Error fetching transport license data:', error);
+  }
+};
+
+export const fetchRoyaltyCounts = async () => {
+  try {
+    const response = await axiosInstance.get("gsmb-management/fetch-royalty-counts");
+    const mappedData = {
+      totalRoyalty: response.data.total_royalty, 
+      orders: response.data.orders,
     };
-  };
-  
-  const handleApiResponse = async (response) => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  };
-  
-  export const fetchComplaintCounts = async () => {
-    try {
-      const response = await fetch('/api/projects/GSMB/issues.json', {
-        headers: getAuthHeaders(),
-      });
-      
-      const data = await handleApiResponse(response);
-      const counts = {
-        New: 0,
-        Rejected: 0,
-        InProgress: 0,
-        Executed: 0,
-      };
-  
-      const filteredIssues = data.issues.filter((issue) => {
-        const tracker = issue.tracker || {};
-        return tracker.id === 26 && tracker.name === 'Complaints';
-      });
-  
-      counts.total = filteredIssues.length;
-  
-      filteredIssues.forEach((issue) => {
-        const status = issue.status?.name || '';
-        if (status === 'New') counts.New++;
-        if (status === 'Rejected') counts.Rejected++;
-        if (status === 'In Progress') counts.InProgress++;
-        if (status === 'Executed') counts.Executed++;
-      });
-      
-      return counts;
-    } catch (error) {
-      console.error('Error fetching complaint data:', error);
-      throw error;
-    }
-  };
-  
-  export const fetchRoleCounts = async () => {
-    try {
-      const response = await fetch('/api/projects/GSMB/memberships.json', {
-        headers: getAuthHeaders(),
-      });
-      
-      const data = await handleApiResponse(response);
-      const counts = {
-        licenceOwner: 0,
-        activeGSMBOfficers: 0,
-        policeOfficers: 0,
-        public: 0,
-      };
-  
-      data.memberships.forEach((membership) => {
-        const roleName = membership.roles[0]?.name || '';
-        if (roleName === 'MLOwner') counts.licenceOwner++;
-        if (roleName === 'GSMBOfficer') counts.activeGSMBOfficers++;
-        if (roleName === 'PoliceOfficer') counts.policeOfficers++;
-        if (roleName === 'Public') counts.public++;
-      });
-  
-      return counts;
-    } catch (error) {
-      console.error('Error fetching role data:', error);
-      throw error;
-    }
-  };
-  
-  export const fetchMiningLicenseCounts = async () => {
-    try {
-      const response = await fetch('/api/projects/GSMB/issues.json', {
-        headers: getAuthHeaders(),
-      });
-      
-      const data = await handleApiResponse(response);
-      const counts = {
-        valid: 0,
-        expired: 0,
-        rejected: 0,
-      };
-  
-      const filteredIssues = data.issues.filter((issue) => {
-        const tracker = issue.tracker || {};
-        return tracker.id === 7 && tracker.name === 'ML';
-      });
-  
-      counts.total = filteredIssues.length;
-  
-      filteredIssues.forEach((issue) => {
-        const status = issue.status?.name || '';
-        if (status === 'Valid') counts.valid++;
-        if (status === 'Expired') counts.expired++;
-        if (status === 'Rejected') counts.rejected++;
-      });
-  
-      return counts;
-    } catch (error) {
-      console.error('Error fetching license data:', error);
-      throw error;
-    }
-  };
-  
-  export const fetchRoyaltyCounts = async () => {
-    try {
-      const response = await fetch('/api/projects/GSMB/issues.json', {
-        headers: getAuthHeaders(),
-      });
-      
-      const data = await handleApiResponse(response);
-      
-      const filteredIssues = data.issues.filter((issue) => {
-        const tracker = issue.tracker || {};
-        return tracker.id === 7 && tracker.name === 'ML';
-      });
-  
-      const total = filteredIssues.reduce((sum, issue) => {
-        const royaltyField = issue.custom_fields?.find(
-          (field) => field.name === 'Royalty(sand)due'
-        );
-  
-        if (royaltyField && royaltyField.value) {
-          const numericValue = parseFloat(
-            royaltyField.value.replace(/[^\d.]/g, '').replace(',', '')
-          );
-          return sum + numericValue;
-        }
-        return sum;
-      }, 0);
-  
-      return total;
-    } catch (error) {
-      console.error('Error fetching royalty data:', error);
-      throw error;
-    }
-  };
+    
+    return mappedData;
+  } catch (error) {
+    console.error("Error fetching Top Royalty Contributors data:", error);
+    return { totalRoyalty: 0, orders: [] }; 
+  }
+};
+
+//monthly-mining-license-count
+export const useFetchMiningData = () => {
+  const [miningLicenseData, setMonthlyMLLicenses] = useState([]);
+  useEffect(() => {
+    const fetchMonthlyMLLicenses = async () => {
+      try {
+        const response = await axiosInstance.get('/gsmb-management/monthly-mining-license-count');   
+        setMonthlyMLLicenses(response.data.issues);
+        console.log("fetchMonthlyMLLicenses", response.data.issues);
+      } catch (error) {
+        console.error("Error fetching license data:", error);
+      }
+    };
+    fetchMonthlyMLLicenses();
+  }, []);
+  return miningLicenseData;
+};
+
+
+//Users Active data load
+export const fetchUnActiveUsers = async () => {
+  try {
+    const response = await axiosInstance.get('/gsmb-management/unactive-gsmb-officers');
+    console.log("Fetched unactive officers:", response.data.officers);
+    return {
+      success: true,
+      officers: response.data.officers,
+      count: response.data.count
+    };
+  } catch (error) {
+    console.error("Error fetching unactive officers:", error);
+    return {
+      success: false,
+      error: error.response?.data?.error || "Failed to fetch unactive officers"
+    };
+  }
+}; 
+
+export const activateOfficer = async (id, updateData) => {
+  try {
+    const response = await axiosInstance.put(`/gsmb-management/active-gsmb-officers/${id}`, updateData);
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Error activating officer:", error);
+    return {
+      success: false,
+      error: error.response?.data?.error || "Failed to update officer status"
+    };
+  }
+};

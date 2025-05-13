@@ -1,118 +1,132 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useLanguage } from '../../contexts/LanguageContext';
-import axios from 'axios';
-import config from '../../services/config';
-import '../../styles/PoliceOfficer/ValidPage.css';
-
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { useLanguage } from "../../contexts/LanguageContext";
+import "../../styles/PoliceOfficer/ValidPage.css";
 
 const ValidPage = () => {
   const { language } = useLanguage();
   const { state } = useLocation();
   const [data, setData] = useState(null);
-  // const [responsiveStyles, setResponsiveStyles] = useState({});
-  const vehicleNumber = state?.vehicleNumber;
-  const isSinhala = language === 'si';
-  const isTamil = language === 'ta';
+
+  const isSinhala = language === "si";
+  const isTamil = language === "ta";
+
+  const { licenseDetails } = state || {};
+
+  useEffect(() => {
+    setData(licenseDetails);
+  }, [licenseDetails]);
 
   const textContent = {
-    licenseTitle: isSinhala ? 'වැලි පතල් බලපත්‍රය' : isTamil ? 'மணல் சுரங்க உரிமம்' : 'Sand Mining License',
-    validText: isSinhala ? 'වලංගුයි' : isTamil ? 'செல்லுபடியாகும்' : 'Valid',
+    licenseTitle: isSinhala
+      ? "වැලි පතල් බලපත්‍රය"
+      : isTamil
+      ? "மணல் சுரங்க உரிமம்"
+      : "Sand Mining License",
+    validText: isSinhala ? "වලංගුයි" : isTamil ? "செல்லுபடியாகும்" : "Valid",
     fields: [
       [
-        { label: isSinhala ? 'බලපත්‍ර අංකය' : isTamil ? 'உரிம எண்' : 'License Number', dataIndex: 'licenseNumber' },
-        { label: isSinhala ? 'ආරම්භක ස්ථානය' : isTamil ? 'இடம் தொடங்கியது' : 'Location Started', dataIndex: 'location' },
+        {
+          label: isSinhala
+            ? "බලපත්‍ර අංකය"
+            : isTamil
+            ? "உரிம எண்"
+            : "License Number",
+          dataIndex: "licenseNumber",
+        },
+        {
+          label: isSinhala
+            ? "ආරම්භක ස්ථානය"
+            : isTamil
+            ? "இடம் தொடங்கியது"
+            : "Location Started",
+          dataIndex: "location",
+        },
       ],
       [
+        {
+          label: isSinhala
+            ? "කල් ඉකුත්වන දිනය"
+            : isTamil
+            ? "காலாவதியாகிறது"
+            : "Expires",
+          dataIndex: "expires",
+          render: (text) => text, // Directly display the pre-formatted text
+        },
 
-        { label: isSinhala ? 'කල් ඉකුත්වන දිනය' : isTamil ? 'காலாவதியாகிறது' : 'Expires', dataIndex: 'expires' },
-        { label: isSinhala ? 'පැටවූ දිනය / වේලාව' : isTamil ? 'ஏற்றப்பட்ட தேதி/நேரம்' : 'Loaded date/time', dataIndex: 'start' },
-
+        {
+          label: isSinhala
+            ? "පැටවූ දිනය / වේලාව"
+            : isTamil
+            ? "ஏற்றப்பட்ட தேதி/நேரம்"
+            : "Destination",
+          dataIndex: "destination",
+        },
       ],
       [
-        { label: isSinhala ? 'කියුබ් ගණන' : isTamil ? 'கொள்ளளவு (கனசதுரங்கள்)' : 'Capacity(Cubes)', dataIndex: 'capacity' },
-        { label: isSinhala ? 'අවලංගු දිනය/ වේලාව' : isTamil ? 'நிலுவைத் தேதி/நேரம்' : 'Due date/Time', dataIndex: 'dueDate' },
+        {
+          label: isSinhala
+            ? "කියුබ් ගණන"
+            : isTamil
+            ? "கொள்ளளவு (கனசதுரங்கள்)"
+            : "Capacity(Cubes)",
+          dataIndex: "capacity",
+        },
+        {
+          label: isSinhala
+            ? "අවලංගු දිනය/ වේලාව"
+            : isTamil
+            ? "நிலுவைத் தேதி/நேரம்"
+            : "Route 01",
+          dataIndex: "Route_01",
+        },
       ],
       [
-
-        { label: isSinhala ? 'පැටවුම් අංකය' : isTamil ? 'சுமை எண்' : 'Load Number', dataIndex: 'loadNumber' },
-        { label: isSinhala ? 'ගමනාන්තය' : isTamil ? 'சேருமிடம்' : 'Destination', dataIndex: 'destination' },
-
+        {
+          label: isSinhala ? "පැටවුම් අංකය" : isTamil ? "சுமை எண்" : "Route 02",
+          dataIndex: "Route_02",
+        },
+        {
+          label: isSinhala ? "ගමනාන්තය" : isTamil ? "சேருமிடம்" : "Route 03",
+          dataIndex: "Route_03",
+        },
       ],
-      [{ label: isSinhala ? 'බලපත්‍ර හිමිකරු' : isTamil ? 'உரிமம் வைத்திருப்பவர்' : 'License Holder', dataIndex: 'owner' }],
+      [
+        {
+          label: isSinhala
+            ? "බලපත්‍ර හිමිකරු"
+            : isTamil
+            ? "உரிமம் வைத்திருப்பவர்"
+            : "License Holder",
+          dataIndex: "owner",
+        },
+        
+      ],
     ],
   };
 
-  const fetchData = async () => {
-    try {
-      const apiKey = config.getPoliceOfficerApiKey();
-      const response = await axios.get('/api/projects/gsmb/issues.json', {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Redmine-API-Key': apiKey,
-        },
-      });
-
-      const issues = response.data.issues;
-
-      const tplIssue = issues.find(
-        (issue) =>
-          issue.tracker.name === 'TPL' &&
-          issue.custom_fields.find((field) => field.name === 'Lorry Number')?.value === vehicleNumber
-      );
-
-      if (tplIssue) {
-        const licenseNumber = tplIssue.custom_fields.find((field) => field.name === 'License Number')?.value;
-
-        const mlIssue = issues.find(
-          (issue) =>
-            issue.tracker.name === 'ML' &&
-            issue.custom_fields.find((field) => field.name === 'License Number')?.value === licenseNumber
-        );
-
-        const expires = mlIssue ? mlIssue.due_date || 'N/A' : 'N/A';
-
-        setData({
-          licenseNumber,
-          location: tplIssue.custom_fields.find((field) => field.name === 'Location')?.value || 'N/A',
-          start: tplIssue.start_date,
-          dueDate: tplIssue.due_date,
-          capacity: tplIssue.custom_fields.find((field) => field.name === 'Cubes')?.value || 'N/A',
-          destination: tplIssue.custom_fields.find((field) => field.name === 'Destination')?.value || 'N/A',
-          loadNumber: tplIssue.id.toString(),
-          owner: tplIssue.custom_fields.find((field) => field.name === 'Owner Name')?.value || 'N/A',
-          expires, 
-        });
-      } else {
-        console.warn('No TPL issue found for the given vehicle number.');
-        setData(null);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
-
-  useEffect(() => {
-    if (vehicleNumber) {
-      fetchData();
-    }
-  }, [vehicleNumber]);
-
-  if (!vehicleNumber) {
+  if (!licenseDetails) {
     return (
       <div className="pov-container">
-        {language === 'en'
-          ? 'No vehicle number provided'
-          : language === 'si'
-            ? 'වාහන අංකයක් සපයා නැත'
-            : 'வாகன எண் எதுவும் வழங்கப்படவில்லை.'}
+        {language === "en"
+          ? "No vehicle number provided"
+          : language === "si"
+          ? "වාහන අංකයක් සපයා නැත"
+          : "வாகன எண் எதுவும் வழங்கப்படவில்லை."}
       </div>
     );
   }
 
   if (!data) {
-    return <div className="pov-container">{language === 'en' ? 'Loading...' : language === 'si' ? 'පූරණය වෙමින්...' : 'ஏற்றுகிறது...'}</div>;
+    return (
+      <div className="pov-container">
+        {language === "en"
+          ? "Loading..."
+          : language === "si"
+          ? "පූරණය වෙමින්..."
+          : "ஏற்றுகிறது..."}
+      </div>
+    );
   }
 
   return (
@@ -128,7 +142,13 @@ const ValidPage = () => {
             {row.map((field, colIndex) => (
               <div key={`${rowIndex}-${colIndex}`} className="pov-field">
                 <div className="pov-label">{field.label}</div>
-                <input className="pov-input" type="text" value={data[field.dataIndex] || 'N/A'} readOnly />
+
+                <input
+                  className="pov-input"
+                  type="text"
+                  value={data[field.dataIndex] || "N/A"}
+                  readOnly
+                />
               </div>
             ))}
           </div>

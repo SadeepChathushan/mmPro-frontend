@@ -1,11 +1,30 @@
 import axios from "axios";
 import moment from "moment";
 
-const BASE_URL = "/api";
+// const BASE_URL = "http://127.0.0.1:5000/";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+const axiosInstance = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-// const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiTUxPd25lciIsImV4cCI6MTczOTkwNDg4NX0.A_rqIpfZMdI5dgS9lMzJaNvhwvERe72Zs29zG4C9JhI';
-
-// const token = localStorage.getItem("USER_TOKEN");
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("USER_TOKEN");
+    const username = localStorage.getItem("USERNAME");
+    console.log("User Name01", username);
+    console.log("User token", token);
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
   
 const MLOService = {
@@ -17,7 +36,7 @@ const MLOService = {
         return [];
       }
 
-      const response = await axios.get("http://127.0.0.1:5000/mining-owner/mining-homeLicenses", {
+      const response = await axios.get(`${BASE_URL}/mining-owner/mining-homeLicenses`, {
         headers: {
           "Authorization": `Bearer ${USER_TOKEN}`,
           "Content-Type": "application/json",
@@ -67,10 +86,6 @@ const MLOService = {
 };
 
 
-
-
-
-
 export const fetchLicenses = async () => {
   try {
     // Get the JWT token from localStorage using the correct key name
@@ -82,7 +97,7 @@ export const fetchLicenses = async () => {
     }
 
     // Send the GET request with the Authorization header
-    const response = await axios.get("http://127.0.0.1:5000/mining-owner/mining-licenses", {
+    const response = await axios.get(`${BASE_URL}/mining-owner/mining-licenses`, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`, // Attach the token to the Authorization header
@@ -129,87 +144,20 @@ export const fetchLicenses = async () => {
 
 // src/services/dispatchHistoryService.js
 
-// Fetch dispatch history data
-
-
-
-
-export const fetchDispatchHistoryData = async (licenseNumber = "") => {
-  try {
-    // Retrieve the user token from localStorage
-    const token = localStorage.getItem("USER_TOKEN");
-    if (!token) {
-      console.error("User token not found in localStorage");
-      return [];
-    }
-
-    // Make the API request to fetch the dispatch history data
-    const response = await axios.get("http://127.0.0.1:5000/mining-owner/view-tpls", {
-      headers: {
-        "Authorization": `Bearer ${token}`, // Use the token in the Authorization header
-        "Content-Type": "application/json",
-      },
-      params: {
-        licenseNumber: licenseNumber, // Send the licenseNumber as a query parameter
-      },
-    });
-
-    // Check if the response is valid and contains the expected data
-    if (response.data && response.data.view_tpls && Array.isArray(response.data.view_tpls)) {
-      const dispatchHistory = response.data.view_tpls;
-
-      // Format the dispatch history data
-      const formattedDispatchHistory = dispatchHistory.map((item) => {
-        // Safely extract custom fields
-        const customFields = item.custom_fields ? item.custom_fields.reduce((acc, field) => {
-          acc[field.name] = field.value;
-          return acc;
-        }, {}) : {};
-
-        return {
-          licenseNumber: customFields["License Number"] || "",
-          owner: customFields["Owner Name"] || "",
-          location: customFields["Location"] || "",
-          destination: customFields["Destination"] || "",
-          lorryNumber: customFields["Lorry Number"] || "",
-          cubes: customFields["Cubes"] || "",
-          dispatchDate: item.created_on || "", // Using created_on instead of start_date
-          dueDate: item.due_date || "",
-          status: item.status || "Unknown",  // Default status if not found
-          lorryDriverContact: customFields["Driver Contact"] || "",
-        };
-      });
-
-      return formattedDispatchHistory;
-    } else {
-      console.error("Invalid data structure received from API.");
-      return [];
-    }
-  } catch (error) {
-    console.error("Error fetching dispatch history:", error);
-    return [];  // Return an empty array in case of an error
-  }
-};
-
-
-
 // Fetch ML data by license number
 export const fetchMLData = async (l_number) => {
   const e_l_number = encodeURIComponent(l_number);
   const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.get(`http://127.0.0.1:5000/mining-owner/ml-detail?l_number=${e_l_number}`, {
+    const response = await axios.get(`${BASE_URL}/mining-owner/ml-detail?l_number=${e_l_number}`, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`,
       },
     });
+    console.log(response);
+    return response.data.ml_detail;
 
-    if (response.data && response.data.issues) {
-      const issues = response.data.issues;
-      const filteredMLIssues = issues.filter(issue => issue.subject === l_number);
-      return filteredMLIssues[0];
-    }
   } catch (error) {
     console.error("Error fetching data:", error);
     return null;
@@ -242,11 +190,12 @@ export const fetchLocationSuggestions = async (value) => {
 
 // Fetch issues from the API
 export const fetchIssues = async () => {
+  const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.get("/api/projects/gsmb/issues.json", {
+    const response = await axios.get(`${BASE_URL}/mining-owner/mining-licenses`, {
       headers: {
         "Content-Type": "application/json",
-        "X-Redmine-API-Key": localStorage.getItem("API_Key"),
+        "Authorization": `Bearer ${token}`,
       },
     });
     return response.data.issues;
@@ -256,27 +205,11 @@ export const fetchIssues = async () => {
   }
 };
 
-// // Fetch issue from the API using issue id
-// export const fetchIssue = async () => {
-//   try {
-//     const response = await axios.get("/api/projects/gsmb/issues.json", {
-//       headers: {
-//         "Content-Type": "application/json",
-//         "X-Redmine-API-Key": localStorage.getItem("API_Key"),
-//       },
-//     });
-//     return response.data.issues;
-//   } catch (error) {
-//     console.error("Error fetching issues:", error);
-//     throw error;
-//   }
-// };
-
 // Update an issue with new data
 export const updateIssue = async (issueId, updatedIssue) => {
   const token = localStorage.getItem("USER_TOKEN");
   try {
-    const response = await axios.put(`http://127.0.0.1:5000/mining-owner/update-ml/${issueId}`, {
+    const response = await axios.put(`${BASE_URL}/mining-owner/update-ml/${issueId}`, {
       issue: updatedIssue,
     }, {
       headers: {
@@ -293,20 +226,31 @@ export const updateIssue = async (issueId, updatedIssue) => {
 
 // Create a new issue
 export const createIssue = async (data) => {
-  const token = localStorage.getItem("USER_TOKEN");
+  const token = localStorage.getItem("USER_TOKEN"); // Retrieve the token from localStorage
   try {
-    const response = await axios.post("http://127.0.0.1:5000/mining-owner/create-tpl", {
-      issue: data,
-    }, {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+    const response = await axios.post(
+      `${BASE_URL}/mining-owner/create-tpl`,
+      {
+        mining_license_number: data.mining_license_number,
+        destination: data.destination,
+        lorry_number: data.lorryNumber, // Map lorryNumber to lorry_number
+        driver_contact: data.driverContact, // Map driverContact to driver_contact
+        route_01: data.Root1, // Map Root1 to route_01
+        route_02: data.Root2, // Map Root2 to route_02
+        route_03: data.Root3, // Map Root3 to route_03
+        cubes: data.cubes,
       },
-    });
-    return response.data;
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Add the token to the request headers
+        },
+      }
+    );
+    return response.data; // Return the response data
   } catch (error) {
     console.error("Error creating issue:", error);
-    throw error;
+    throw error; // Throw the error for handling in the component
   }
 };
 
@@ -314,7 +258,7 @@ export const get_user = async () => {
   const token = localStorage.getItem("USER_TOKEN");
   const userId = localStorage.getItem("USER_ID");
   try {
-    const response = await axios.get(`http://127.0.0.1:5000/mining-owner/user-detail/${userId}`, {
+    const response = await axios.get(`${BASE_URL}/mining-owner/user-detail/${userId}`, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`,
@@ -324,6 +268,115 @@ export const get_user = async () => {
   } catch (error) {
     console.error("Error fetching issues:", error);
     throw error;
+  }
+};
+
+
+/** ---------------------------------------------------*/
+//Achintha
+export const fetchHomeLicense = async () => {
+  try {
+    console.log("Fetching home licenses...");
+    const response = await axiosInstance.get("mining-owner/mining-homeLicenses");
+    console.log("API Response:", response);
+
+    if (!response.data?.mining_home) {
+      throw new Error("Invalid API response structure");
+    }
+
+    console.log("Fetched Home Licenses Data:", response.data.mining_home);
+    return response.data.mining_home;
+  } catch (error) {
+    console.error("Error fetching home licenses:", error);
+    throw error;
+  }
+};
+
+export const fetchAllLicense = async () => {
+  try {
+    console.log("Fetching All licenses...");
+    const response = await axiosInstance.get("mining-owner/mining-licenses");
+    console.log("All License API Response:", response);
+
+    if (!response.data?.issues) {
+      throw new Error("Invalid API response structure");
+    }
+
+    console.log("Fetched All Licenses Data:", response.data.issues);
+    return response.data.issues;
+  } catch (error) {
+    console.error("Error fetching All licenses:", error);
+    throw error;
+  }
+};
+
+// Fetch dispatch history data
+export const fetchDispatchHistoryData = async (licenseNumber) => {
+  try {
+    const response = await axiosInstance.get(`mining-owner/view-tpls`, {
+      params: { mining_license_number: licenseNumber }
+    });
+
+    console.log("Raw API response:", response); // Debug raw response
+
+    if (!response.data) {
+      throw new Error("Empty API response");
+    }
+
+    // Debug response structure
+    console.log("Response data structure:", {
+      isArray: Array.isArray(response.data),
+      keys: Object.keys(response.data),
+      hasViewTpls: !!response.data.view_tpls
+    });
+
+    // Handle the response structure with view_tpls
+    if (response.data.view_tpls && Array.isArray(response.data.view_tpls)) {
+      return response.data.view_tpls; // Return the array from view_tpls
+    }
+    if (Array.isArray(response.data)) {
+      return response.data; // Direct array response (fallback)
+    }
+
+    // If we get here, the response format is unexpected
+    console.error("Unexpected API response format:", response.data);
+    throw new Error(`Unexpected API response format. Received: ${JSON.stringify(response.data)}`);
+  } catch (error) {
+    console.error("Error fetching TPL History:", error);
+    throw error;
+  }
+};
+
+//ML request Post
+export const submitMLRequest = async (formData) => {
+  const token = localStorage.getItem("USER_TOKEN");
+  
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/mining-owner/ml-request`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error submitting ML request:", error);
+    
+    // Extract and format error message
+    let errorMessage = "Failed to submit request";
+    if (error.response) {
+      errorMessage = error.response.data.error || 
+                   error.response.data.message || 
+                   error.response.statusText;
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    throw new Error(errorMessage);
   }
 };
 

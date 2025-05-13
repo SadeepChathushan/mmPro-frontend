@@ -5,17 +5,18 @@ import AddNewLicense from '../pages/GSMBOfficer/AddNewLicense';
 import RegNewowner from '../pages/GSMBOfficer/RegNewOwner';
 import ViewLicense from '../pages/GSMBOfficer/ViewLicenseDetails';
 import TPLHistory from '../components/GSMBOfficer/TPLHistory';
+// import AddNewLicenseForm from '../pages/GSMBOfficer/AddNewLicense';
 
 
 
 const GSMBRoutes = () => (
   <Routes>
     <Route path="dashboard" element={<Dashboard />} />
-    <Route path="add-new-license" element={<AddNewLicense />} />
+    {/* <Route path="add-new-license" element={<AddNewLicense />} /> */}
     <Route path="register-new-owner" element={<RegNewowner />} />
     <Route path="license/:licenseId" element={<ViewLicense />} />
     <Route path="dashboard/TPLHistory" element={<TPLHistory />} />
-
+    <Route path="add-new-license/:id" element={<AddNewLicense />} />
 
   </Routes>
 );

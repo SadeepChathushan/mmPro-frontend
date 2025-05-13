@@ -1,26 +1,30 @@
-import React, { useState } from 'react';
-import OtpVerificationModal from './OtpVerificationModal.jsx';
-import axios from 'axios';
+import React, { useState } from "react";
+import OtpVerificationModal from "./OtpVerificationModal.jsx";
+import axios from "axios";
+import { submitComplaintPublic } from "../../services/complaint.js";
 
-const Modal = ({ 
-  modalMessage, 
-  language, 
-  closeModal
-  //reportDetails 
+const Modal = ({
+  modalMessage,
+  language,
+  closeModal,
+  vehicleNumber,
+  setInput,
+  //reportDetails
 }) => {
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [verifiedPhoneNumber, setVerifiedPhoneNumber] = useState(null);
 
   const textContent = {
-    reportButton: language === 'si'
-      ? 'GSMB වෙත වාර්තා කරන්න'
-      : language === 'ta'
-        ? 'GSMB இற்கு புகார் செய்யவும்'
-        : 'Report to GSMB',
+    reportButton:
+      language === "si"
+        ? "GSMB වෙත වාර්තා කරන්න"
+        : language === "ta"
+        ? "GSMB இற்கு புகார் செய்யவும்"
+        : "Report to GSMB",
     contacts: [
-      { number: '+94-11-2886289', icon: '📞' },
-      { number: '+94-11-2886290', icon: '📞' },
-      { number: '901', icon: '📞' },
+      { number: "+94-11-2886289", icon: "📞" },
+      { number: "+94-11-2886290", icon: "📞" },
+      { number: "901", icon: "📞" },
     ],
   };
 
@@ -32,22 +36,19 @@ const Modal = ({
     setIsOtpModalOpen(false);
   };
 
-  const handleSubmitReport = async (phoneNumber) => {
-    try {
-      const response = await axios.post('http://127.0.0.1:5000/submit-report', {
-        //...reportDetails,
-        phoneNumber: phoneNumber
-      });
+  const onClose = () => {
+    closeModal();
+  };
 
-      if (response.data.success) {
-        // Handle successful report submission
-        onClose(); // Close the modal
-      } else {
-        // Handle submission error
-        console.error('Report submission failed');
-      }
-    } catch (error) {
-      console.error('Error submitting report', error);
+  const handleSubmitReport = async (phone, vehicleNumber) => {
+    const isSubmitted = await submitComplaintPublic(
+      phone,
+      vehicleNumber,
+      language
+    );
+    if (isSubmitted) {
+      setInput("");
+      onClose(); // Close the modal if submission is successful
     }
   };
 
@@ -62,15 +63,26 @@ const Modal = ({
             type="text"
             value={modalMessage}
             readOnly
-            className={modalMessage === (language === 'en' ? 'Valid Load' : language === 'si' ? 'වලංගු පැටවීමකි' : 'சரியான ஏற்றுதல்') ? 'valid-message' : 'invalid-message'}
+            className={
+              modalMessage ===
+              (language === "en"
+                ? "Valid Load"
+                : language === "si"
+                ? "වලංගු පැටවීමකි"
+                : "சரியான ஏற்றுதல்")
+                ? "valid-message"
+                : "invalid-message"
+            }
           />
 
-          {modalMessage !== (language === 'en' ? 'Valid Load' : language === 'si' ? 'වලංගු පැටවීමකි' : 'சரியான ஏற்றுதல்') && (
+          {modalMessage !==
+            (language === "en"
+              ? "Valid Load"
+              : language === "si"
+              ? "වලංගු පැටවීමකි"
+              : "சரியான ஏற்றுதல்") && (
             <div className="modal-actions">
-              <button 
-                className="gp-report-button" 
-                onClick={handleOpenOtpModal}
-              >
+              <button className="gp-report-button" onClick={handleOpenOtpModal}>
                 {textContent.reportButton}
               </button>
 
@@ -89,7 +101,9 @@ const Modal = ({
         <OtpVerificationModal
           isOpen={isOtpModalOpen}
           onClose={handleCloseOtpModal}
-          onVerificationSuccess={handleSubmitReport}
+          onVerificationSuccess={(phone) =>
+            handleSubmitReport(phone, vehicleNumber)
+          }
           language={language}
         />
       </div>

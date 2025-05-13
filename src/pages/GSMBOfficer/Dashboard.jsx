@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Button, Input, Row, Col, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-import officerService from "../../services/officerService"; // Import the officerService
+import officerService from "../../services/officerService";
 import { useLanguage } from "../../contexts/LanguageContext";
 import StatsBox from "../../components/GSMBOfficer/StatsBox";
 import TabSection from "../../components/GSMBOfficer/TabSection";
 import LicenseTable from "../../components/GSMBOfficer/LicenseTable";
-import MlOwnersTable from "../../components/GSMBOfficer/MlOwnersTable"; // Import the new ML Owners component
+import MlOwnersTable from "../../components/GSMBOfficer/MlOwnersTable";
+import RequestMiningTable from "../../components/GSMBOfficer/RequestMiningTable";
 
 const { Text } = Typography;
 
@@ -16,107 +17,265 @@ const Dashboard = () => {
   const [searchText, setSearchText] = useState("");
   const [tableData, setTableData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  // Set default tab to "ML" (or change as needed)
-  const [activeTab, setActiveTab] = useState("ML");
+  const [activeTab, setActiveTab] = useState("MLOWNER");
+  const [mlOwnersCount, setMlOwnersCount] = useState(0);
+  const [tplData, setTplData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [mlData, setMlData] = useState([]);
+  const [complaintData, setComplaintData] = useState([]);
 
-  // Add a new tab for ML Owners
   const tabs = [
-    { key: "ML", label: language === "en" ? "Mining License" : "බලපත්‍ර" },
-    { key: "TPL", label: language === "en" ? "Transport License" : "ප්‍රවාහන බලපත්‍ර" },
-    { key: "CMPLN", label: language === "en" ? "Complaints" : "පැමිණිලි" },
-    { key: "MLOWNER", label: language === "en" ? "ML Owners" : "ML හිමියන්" },
+    {
+      key: "MLOWNER",
+      label:
+        language === "en"
+          ? "ML Owners"
+          : language === "si"
+          ? "ML හිමියන්"
+          : "ML உரிமையாளர்கள்",
+    },
+    {
+      key: "ML",
+      label:
+        language === "en"
+          ? "Mining License"
+          : language === "si"
+          ? "බලපත්‍ර"
+          : "சுரங்க அனுமதி",
+    },
+    {
+      key: "TPL",
+      label:
+        language === "en"
+          ? "Transport License"
+          : language === "si"
+          ? "ප්‍රවාහන බලපත්‍ර"
+          : "போக்குவரத்து அனுமதி",
+    },
+    {
+      key: "CMPLN",
+      label:
+        language === "en"
+          ? "Complaints"
+          : language === "si"
+          ? "පැමිණිලි"
+          : "முறையீடுகள்",
+    },
+    // {
+    //   key: "MEA",
+    //   label:
+    //     language === "en"
+    //       ? "ME Approved"
+    //       : language === "si"
+    //       ? "පතල් ඉංජිනේරු අනුමත කර ඇත"
+    //       : "சுரங்கப் பொறியாளர் ஒப்புதல் அளித்துள்ளார்",
+    // },
+    {
+      key: "RM",
+      label:
+        language === "en"
+          ? "Request Mining"
+          : language === "si"
+          ? "පතල් කැණීම ඉල්ලීම් කිරීම"
+          : "சுரங்க கோரிக்கை",
+    },
   ];
 
   useEffect(() => {
-    console.log("Fetching data for the dashboard...");
-    const fetchData = async () => {
+    const fetchMlOwners = async () => {
       try {
-        const issuesData = await officerService.getIssuesData(); // Use the service to get data
-        if (Array.isArray(issuesData)) {
-          const transformedData = issuesData.map((issue) => ({
-            id: issue.id,
-            tracker:
-              issue.tracker.name === "Complaints"
-                ? "CMPLN"
-                : issue.tracker.name === "TPL"
-                ? "TPL"
-                : "ML",
-            licenseNumber:
-              issue.custom_fields.find((field) => field.name === "License Number")?.value || "N/A",
-            ownerName:
-              issue.custom_fields.find((field) => field.name === "Owner Name")?.value || "N/A",
-            mobileNumber:
-              issue.custom_fields.find((field) => field.name === "Mobile Number")?.value || "N/A",
-            lorryNumber:
-              issue.custom_fields.find((field) => field.name === "Lorry Number")?.value || "N/A",
-            assignee:
-              issue.custom_fields.find((field) => field.name === "Assignee")?.value || "N/A",
-            complaintID:
-              issue.custom_fields.find((field) => field.name === "Complaint ID")?.value || "N/A",
-            start_date:
-              issue.custom_fields.find((field) => field.name === "startDate")?.value ||
-              issue.start_date ||
-              "N/A",
-          }));
-          setTableData(transformedData);
-          // Initially, if the active tab is a license type, filter the data
-          if (activeTab !== "MLOWNER") {
-            setFilteredData(transformedData.filter((item) => item.tracker === activeTab));
-          }
-        } else {
-          console.error("Issues data is not an array:", issuesData);
-        }
+        setLoading(true);
+        const mlOwnersList = await officerService.getMlOwners();
+        setMlOwnersCount(mlOwnersList.length);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching ML owners data/count:", error);
+        setMlOwnersCount(0);
+      } finally {
+      }
+    };
+    fetchMlOwners();
+  }, []);
+
+  // Fetch TPL data separately
+  useEffect(() => {
+    const fetchTplData = async () => {
+      try {
+        setLoading(true);
+        const tplData = await officerService.getAllTpls();
+
+        // Transform TPL data if needed
+        // const formattedTplData = tplData.map((tpl) => ({
+        //   ...tpl,
+        //   tracker: "TPL", // Explicitly set tracker for TPL items
+        // }));
+
+        setTplData(tplData);
+      } catch (error) {
+        console.error("Error fetching TPL data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchData();
+    fetchTplData();
   }, []);
 
-  // Update filtered data whenever activeTab or tableData changes
   useEffect(() => {
-    // Only filter license data for the non-MLOWNER tabs
-    if (activeTab !== "MLOWNER") {
+    const fetchMlData = async () => {
+      try {
+        setLoading(true);
+        const mlData = await officerService.getMiningLicenses();
+        console.log("ML Data from service:", mlData);
+
+        // Transform ML data if needed
+        // const formattedMlData = mlData.map((ml) => ({
+        //   ...ml,
+        //   tracker: "ML", // Explicitly set tracker for ML items
+        // }));
+
+        setMlData(mlData);
+      } catch (error) {
+        console.error("Error fetching ML data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMlData();
+  }, []);
+
+  useEffect(() => {
+    const fetchComplaintData = async () => {
+      try {
+        setLoading(true);
+        const complaintData = await officerService.getAllComplaints();
+        console.log("Complaint Data from service:", complaintData);
+
+        // Transform Complaint data if needed
+        // const formattedComplaintData = complaintData.map((complaint) => ({
+        //   ...complaint,
+        //   tracker: "Complaint", // Explicitly set tracker for Complaint items
+        // }));
+
+        setComplaintData(complaintData);
+      } catch (error) {
+        console.error("Error fetching complaint data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchComplaintData();
+  }, []);
+
+  // Update filtered data when tab or data changes
+  useEffect(() => {
+    if (activeTab === "MLOWNER") {
+      setFilteredData([]);
+    } else if (activeTab === "TPL") {
+      setFilteredData(tplData);
+    } else if (activeTab === "ML") {
+      setFilteredData(mlData);
+    } else if (activeTab === "CMPLN") {
+      setFilteredData(complaintData);
+    } else if (activeTab === "RM") {
+      setFilteredData([]);
+    } else {
       const filtered = tableData.filter((item) => item.tracker === activeTab);
       setFilteredData(filtered);
     }
-  }, [activeTab, tableData]);
+  }, [activeTab, tableData, tplData, mlData, complaintData]);
 
   const handleSearch = (value) => {
-    setSearchText(value);
-    const filtered = tableData
-      .filter((item) => item.tracker === activeTab)
-      .filter(
-        (item) =>
-          item.licenseNumber.toLowerCase().includes(value.toLowerCase()) ||
-          item.ownerName.toLowerCase().includes(value.toLowerCase())
-      );
-    setFilteredData(filtered);
+    setSearchText(value.toLowerCase());
   };
 
+  // Handle search
+  // const handleSearch = (value) => {
+  //   setSearchText(value);
+
+  //   if (activeTab === "TPL") {
+  //     const filtered = tplData.filter(
+  //       (item) =>
+  //         item.mining_license_number
+  //           ?.toLowerCase()
+  //           .includes(value.toLowerCase()) ||
+  //         item.lorry_number?.toLowerCase().includes(value.toLowerCase()) ||
+  //         item.driver_contact?.toLowerCase().includes(value.toLowerCase())
+  //     );
+  //     setFilteredData(filtered);
+  //   } else if (activeTab === "ML") {
+  //     const filtered = mlData.filter(
+  //       (item) =>
+  //         item.subject?.toLowerCase().includes(value.toLowerCase()) ||
+  //         item.author?.toLowerCase().includes(value.toLowerCase()) ||
+  //         item.mobile_number?.toLowerCase().includes(value.toLowerCase())
+  //     );
+  //     setFilteredData(filtered);
+  //   } else {
+  //     const filtered = tableData
+  //       .filter((item) => item.tracker === activeTab)
+  //       .filter(
+  //         (item) =>
+  //           item.licenseNumber.toLowerCase().includes(value.toLowerCase()) ||
+  //           item.ownerName.toLowerCase().includes(value.toLowerCase())
+  //       );
+  //     setFilteredData(filtered);
+  //   }
+  // };
+
+  // Stats boxes data
+  const statsBoxes = [
+    {
+      title:
+        language === "en"
+          ? "ML Owners"
+          : language === "si"
+          ? "ML හිමියන්"
+          : "ML உரிமையாளர்கள்",
+      count: mlOwnersCount,
+      color: "#FF8C00",
+    },
+    {
+      title:
+        language === "en"
+          ? "Mining Licenses"
+          : language === "si"
+          ? "පතල් බලපත්‍ර"
+          : "சுரங்க உரிமங்கள்",
+      count: mlData.length,
+      color: "#1890ff",
+    },
+    {
+      title:
+        language === "en"
+          ? "Transport Licenses"
+          : language === "si"
+          ? "ප්‍රවාහන බලපත්‍ර"
+          : "போக்குவரத்து உரிமங்கள்",
+      count: tplData.length,
+      color: "#408220",
+    },
+    {
+      title:
+        language === "en"
+          ? "Complaints"
+          : language === "si"
+          ? "පැමිණිලි"
+          : "முறையீடுகள்",
+      count: complaintData.length,
+      color: "#950C33",
+    },
+  ];
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#f0f2f5", padding: "16px" }}>
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: "#f0f2f5", padding: "16px" }}
+    >
       {/* Stats Section */}
       <Row gutter={[16, 16]} justify="space-around">
-        {[
-          {
-            title: language === "en" ? "Total Licenses" : "මුළු බලපත්‍ර",
-            count: tableData.filter((item) => item.tracker === "ML").length,
-            color: "#1890ff",
-          },
-          {
-            title: language === "en" ? "Transport Licenses" : "ප්‍රවාහන බලපත්‍ර",
-            count: tableData.filter((item) => item.tracker === "TPL").length,
-            color: "#408220",
-          },
-          {
-            title: language === "en" ? "Complaints" : "පැමිණිලි",
-            count: tableData.filter((item) => item.tracker === "CMPLN").length,
-            color: "#950C33",
-          },
-          // You can also add a stats box for ML Owners if needed.
-        ].map((box, index) => (
+        {statsBoxes.map((box, index) => (
           <Col xs={24} sm={12} md={8} lg={6} key={index}>
             <StatsBox title={box.title} count={box.count} color={box.color} />
           </Col>
@@ -126,40 +285,46 @@ const Dashboard = () => {
       {/* Tab Section */}
       <TabSection tabs={tabs} activeKey={activeTab} onChange={setActiveTab} />
 
-      {/* Only show the search input and related buttons when NOT on the ML Owners tab */}
-      {activeTab !== "MLOWNER" && (
-        <Row gutter={[16, 16]} align="middle" style={{ marginTop: "16px" }}>
-          <Col xs={24} sm={16}>
-            <Input
-              placeholder={language === "en" ? "Search" : "සොයන්න"}
-              prefix={<SearchOutlined />}
-              style={{
-                width: "100%",
-                borderRadius: "4px",
-                padding: "8px 16px",
-                backgroundColor: "#ffffff",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              }}
-              value={searchText}
-              onChange={(e) => handleSearch(e.target.value)}
-            />
-          </Col>
-          <Col xs={24} sm={8} style={{ textAlign: "right" }}>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-              <Link to="/gsmb/register-new-owner">
-                <Button type="primary" style={{ backgroundColor: "#950C33", color: "white" }}>
-                  {language === "en" ? "+ Register New Owner" : "+ අයිතිකරු ලියාපදිංචි කරන්න"}
-                </Button>
-              </Link>
-              <Link to="/gsmb/add-new-license">
-                <Button type="default" style={{ backgroundColor: "white", borderColor: "#d9d9d9" }}>
-                  {language === "en" ? "+ Add New License" : "+ නව අවසරපත්‍රයක් එකතු කරන්න"}
-                </Button>
-              </Link>
-            </div>
-          </Col>
-        </Row>
-      )}
+      {/* Search and buttons */}
+      <Row gutter={[16, 16]} align="middle" style={{ marginTop: "16px" }}>
+        <Col xs={24} sm={16}>
+          <Input
+            placeholder={
+              language === "en"
+                ? "Search"
+                : language === "si"
+                ? "සොයන්න"
+                : "தேடு"
+            }
+            prefix={<SearchOutlined />}
+            style={{
+              width: "100%",
+              borderRadius: "4px",
+              padding: "8px 16px",
+              backgroundColor: "#ffffff",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            }}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+        </Col>
+        <Col xs={24} sm={8} style={{ textAlign: "right" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            <Link to="/gsmb/register-new-owner">
+              {/* <Button
+                type="primary"
+                style={{ backgroundColor: "#950C33", color: "white" }}
+              >
+                {language === "en"
+                  ? "+ Register New Owner"
+                  : language === "si"
+                  ? "+ අයිතිකරු ලියාපදිංචි කරන්න"
+                  : "+ புதிய உரிமையாளரை பதிவு செய்"}
+              </Button> */}
+            </Link>
+          </div>
+        </Col>
+      </Row>
 
       {/* Table Section */}
       <div
@@ -173,9 +338,11 @@ const Dashboard = () => {
         }}
       >
         {activeTab === "MLOWNER" ? (
-          <MlOwnersTable />
+          <MlOwnersTable data={filteredData} searchText={searchText} />
+        ) : activeTab === "RM" ? (
+          <RequestMiningTable data={filteredData} searchText={searchText}/>
         ) : (
-          <LicenseTable data={filteredData} tracker={activeTab} />
+          <LicenseTable data={filteredData} tracker={activeTab} searchText={searchText} />
         )}
       </div>
     </div>

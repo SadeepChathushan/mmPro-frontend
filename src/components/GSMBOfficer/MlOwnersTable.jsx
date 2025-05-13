@@ -1,11 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Popconfirm } from "antd";
+import {
+  Table,
+  Button,
+  Popconfirm,
+  Modal,
+  Form,
+  Input,
+  DatePicker,
+  TimePicker,
+  Select,
+  message,
+} from "antd";
 import { Link } from "react-router-dom";
 import officerService from "../../services/officerService"; // Import officerService
+import dayjs from "dayjs";
+import { useLanguage } from "../../contexts/LanguageContext";
 
-const MlOwnersTable = () => {
+const MlOwnersTable = ({searchText}) => {
   const [ownersData, setOwnersData] = useState([]);
   const [loading, setLoading] = useState(true);
+  // const [language, setLanguage] = useState("en"); // default to "en"
+  const [isAppointmentModalVisible, setIsAppointmentModalVisible] =
+    useState(false);
+  const [selectedOwner, setSelectedOwner] = useState(null);
+  const [form] = Form.useForm();
+    const { language } = useLanguage();
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,7 +50,7 @@ const MlOwnersTable = () => {
   // Handle License Status Change (Activate/Deactivate)
   const handleLicenseStatusChange = async (licenseId, currentStatus) => {
     try {
-      if (currentStatus === 'active') {
+      if (currentStatus === "active") {
         // Deactivate the license
         await officerService.deactivateLicense(licenseId);
       } else {
@@ -38,127 +58,164 @@ const MlOwnersTable = () => {
         await officerService.activateLicense(licenseId);
       }
       // Optionally refresh data or show a success message
-      alert(`License status changed successfully.`);
+      message.success(`License status changed successfully.`);
     } catch (error) {
       console.error("Error updating license status:", error);
+      message.error("Failed to update license status.");
     }
   };
 
+  const showAppointmentModal = (owner) => {
+    setSelectedOwner(owner);
+    setIsAppointmentModalVisible(true);
+    form.resetFields();
+  };
 
-  // Define columns for the ML owners table
-const columns = [
-  {
-    title: "ID",
-    dataIndex: "id",
-    key: "id",
-  },
-  {
-    title: "Owner Name",
-    dataIndex: "ownerName",
-    key: "ownerName",
-  },
-  {
-    title: "Email",
-    key: "email",
-    render: (text, record) => {
-      // Check if email exists and use a fallback if missing
-      const email = record.userDetails?.mail || "No Email";
-      return email;
-    },
-  },
-  {
-    title: "NIC",
-    key: "nic",
-    render: (text, record) => {
-      // Access the NIC value from custom_fields
-      const nicField = record.userDetails.custom_fields.find(field => field.name === "NIC");
-      return nicField ? nicField.value : "N/A";
-    },
-  },
-  {
-    title: "Phone Number",
-    key: "phone",
-    render: (text, record) => {
-      // Access the Phone Number value from custom_fields
-      const phoneField = record.userDetails.custom_fields.find(field => field.name === "Phone Number");
-      return phoneField ? phoneField.value : "N/A";
-    },
-  },
-  {
-    title: "Total Licenses",
-    dataIndex: "licenses",
-    key: "licenses",
-    render: (licenses) => licenses.length,
-  },
-  {
-    title: "Action",
-    key: "action",
-    render: (_, record) => (
-      <Link to={`/gsmb/ml-owner/${record.id}`} state={{ owner: record }}>
-        <Button type="link">View</Button>
-      </Link>
-    ),
-  },
-];
+  const handleAppointmentSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      const appointmentData = {
+        ownerId: selectedOwner.id,
+        date: values.date.format("YYYY-MM-DD"),
+        time: values.time.format("HH:mm"),
+        venue: values.venue,
+        purpose: values.purpose || "General Meeting",
+      };
 
+      // Here you would typically call an API to save the appointment
+      // await officerService.scheduleAppointment(appointmentData);
+
+      message.success("Appointment scheduled successfully!");
+      setIsAppointmentModalVisible(false);
+    } catch (error) {
+      console.error("Error scheduling appointment:", error);
+      message.error("Failed to schedule appointment.");
+    }
+  };
+
+  const columns = [
+    {
+      title:  language === "en"
+      ? "ID"
+      : language === "si"
+      ? ""
+      : "அடையாள எண்",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: language === "en" ? "Owner Name" : language === "si" ? "" : "உரிமையாளர் பெயர்",
+      dataIndex: "ownerName",
+      key: "ownerName",
+    },
+    {
+      title: language === "en" ? "Email" : language === "si" ? "" : "மின்னஞ்சல்",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: language === "en" ? "NIC" : language === "si" ? "" : "தே.அ.அட்டை",
+      dataIndex: "NIC",
+      key: "nic",
+    },
+    {
+      title: language === "en" ? "Phone Number" : language === "si" ? "" : "தொலைபேசி எண்",
+      dataIndex: "phoneNumber",
+      key: "phone",
+    },
+    {
+      title: language === "en" ? "Total Licenses" : language === "si" ? "" : "மொத்த உரிமங்கள்",
+      dataIndex: "totalLicenses",
+      key: "totalLicenses",
+    },
+    {
+      title: language === "en" ? "Action" : language === "si" ? "" : "நடவடிக்கை",
+      key: "action",
+      render: (_, record) => (
+        <div style={{ display: "flex", gap: "8px" }}>
+          <Link
+            to={{
+              pathname: `/gsmb/add-new-license/${record.id}`,
+              state: { ownerId: record.id }, // Pass as state as well
+            }}
+          >
+            <Button
+              type="default"
+              style={{ backgroundColor: "white", borderColor: "#d9d9d9" }}
+            >
+                {language === "en"
+  ? "+ Add New License"
+  : language === "si"
+  ? "+ නව අවසරපත්‍රයක් එකතු කරන්න"
+  : "+ புதிய உரிமத்தைச் சேர்க்கவும்"}
+            </Button>
+          </Link>
+          {/* <Button 
+            type="primary" 
+            onClick={() => showAppointmentModal(record)}
+            style={{ backgroundColor: "black" }}
+          >
+            {language === "en" ? "Appointment" : "වේලාවක් ගන්න"}
+          </Button> */}
+        </div>
+      ),
+    },
+  ];
 
   // Expanded row render to show the nested table of licenses for each owner
-  const expandedRowRender = (record) => {
-    const licenseColumns = [
-      { title: "License Number", dataIndex: "licenseNumber", key: "licenseNumber" },
-      { title: "Location", dataIndex: "location", key: "location" },
-      { title: "Capacity", dataIndex: "capacity", key: "capacity" },
-      { title: "Issue Date", dataIndex: "issueDate", key: "issueDate" },
-      { title: "Expiry Date", dataIndex: "expiryDate", key: "expiryDate" },
-      {
-        title: "License Status",
-        key: "status",
-        render: (_, license) => {
-          const buttonText = license.status === 'active' ? 'Deactivate' : 'Activate';
-          return (
-            <Popconfirm
-              title={`Are you sure you want to ${buttonText.toLowerCase()} this license?`}
-              onConfirm={() => handleLicenseStatusChange(license.licenseNumber, license.status)}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Button type={buttonText === 'Activate' ? 'primary' : 'danger'}>
-                {buttonText}
-              </Button>
-            </Popconfirm>
-          );
-        },
-      },
+  // const expandedRowRender = (record) => {
+  //   const licenseColumns = [
+  //     { title: "License Number", dataIndex: "licenseNumber", key: "licenseNumber" },
+  //     { title: "Location", dataIndex: "location", key: "location" },
+  //     { title: "Capacity", dataIndex: "capacity", key: "capacity" },
+  //     { title: "Issue Date", dataIndex: "issueDate", key: "issueDate" },
+  //     { title: "Expiry Date", dataIndex: "expiryDate", key: "expiryDate" },
+  //     {
+  //       title: "License Status",
+  //       key: "status",
+  //       render: (_, license) => {
+  //         const buttonText = license.status === 'active' ? 'Deactivate' : 'Activate';
+  //         return (
+  //           <Popconfirm
+  //             title={`Are you sure you want to ${buttonText.toLowerCase()} this license?`}
+  //             onConfirm={() => handleLicenseStatusChange(license.licenseNumber, license.status)}
+  //             okText="Yes"
+  //             cancelText="No"
+  //           >
+  //             <Button type={buttonText === 'Activate' ? 'primary' : 'danger'}>
+  //               {buttonText}
+  //             </Button>
+  //           </Popconfirm>
+  //         );
+  //       },
+  //     },
+  //     {
+  //       title: "Transport License History",
+  //       key: "history",
+  //       render: (_, record) => (
+  //         <Link to={`/gsmb/dashboard/TPLHistory?licenseNumber=${record.licenseNumber}`}>
+  //           <Button type="link" style={{ color: "#000000", backgroundColor: "#ca8282", borderColor: "#ca8282" }}>
+  //             View History
+  //           </Button>
+  //         </Link>
+  //       ),
+  //     },
+  //   ];
 
-      {
-        title: "Transport License History",
-        key: "history",
-        render: (_, record) => (
-          // <Link to={`/TPLHistory/${record.licensePrefix}/${record.licenseNumber}/${record.uniqueId}`}>
-          <Link to={`/gsmb/dashboard/TPLHistory?licenseNumber=${record.licenseNumber}`}>
-          <Button type="link" style={{ color: "#000000", backgroundColor: "#ca8282", borderColor: "#ca8282" }}>
-            View History
-          </Button>
-        </Link>
-
-        ),
-      },
-    ];
-
-    return (
-      <Table
-        columns={licenseColumns}
-        dataSource={record.licenses}
-        pagination={false}
-        rowKey="licenseNumber"
-        style={{
-          margin: 0,
-          backgroundColor: "#f9f9f9", // Change background color here
-        }}
-        rowClassName="expanded-row" // Add a CSS class for row customization
-      />
-    );
-  };
+  //   return (
+  //     <Table
+  //       columns={licenseColumns}
+  //       dataSource={record.licenses}
+  //       pagination={false}
+  //       rowKey="licenseNumber"
+  //       style={{
+  //         margin: 0,
+  //         backgroundColor: "#f9f9f9", // Change background color here
+  //       }}
+  //       rowClassName="expanded-row" // Add a CSS class for row customization
+  //     />
+  //   );
+  // };
 
   return (
     <div
@@ -171,12 +228,94 @@ const columns = [
       }}
     >
       <Table
-        dataSource={ownersData}
+        dataSource={ownersData
+          .filter((item) => {
+            if (!searchText) return true;
+            const search = searchText.toLowerCase();
+            return (
+              item.id?.toString().toLowerCase().includes(search) ||
+              item.ownerName?.toLowerCase().includes(search) ||
+              item.email?.toLowerCase().includes(search) ||
+              item.NIC?.toLowerCase().includes(search) ||
+              item.phoneNumber?.toLowerCase().includes(search)            );
+          }
+          
+        )
+        }
         columns={columns}
         loading={loading}
-        expandable={{ expandedRowRender }}
+        //expandable={{ expandedRowRender }}
         rowKey="id"
       />
+
+      <Modal
+        title={`Schedule Appointment for ${
+          selectedOwner?.owner_name || "Owner"
+        }`}
+        visible={isAppointmentModalVisible}
+        onOk={handleAppointmentSubmit}
+        onCancel={() => setIsAppointmentModalVisible(false)}
+        okText="Schedule"
+        cancelText="Cancel"
+        okButtonProps={{
+          style: {
+            backgroundColor: "#950C33", // Green color
+            borderColor: "#950C33",
+          },
+        }}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            name="date"
+            label="Date"
+            rules={[{ required: true, message: "Please select a date" }]}
+          >
+            <DatePicker
+              style={{ width: "100%" }}
+              disabledDate={(current) =>
+                current && current < dayjs().startOf("day")
+              }
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="time"
+            label="Time"
+            rules={[{ required: true, message: "Please select a time" }]}
+          >
+            <TimePicker
+              style={{ width: "100%" }}
+              format="HH:mm"
+              minuteStep={15}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="venue"
+            label="Venue"
+            rules={[{ required: true, message: "Please select a venue" }]}
+          >
+            <Select placeholder="Select venue">
+              <Select.Option value="GSMB Head Office">
+                GSMB Head Office
+              </Select.Option>
+              <Select.Option value="Regional Office - Colombo">
+                Regional Office - Colombo
+              </Select.Option>
+              <Select.Option value="Regional Office - Kandy">
+                Regional Office - Kandy
+              </Select.Option>
+              <Select.Option value="Regional Office - Galle">
+                Regional Office - Galle
+              </Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item name="purpose" label="Purpose">
+            <Input.TextArea placeholder="Enter purpose of the meeting (optional)" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

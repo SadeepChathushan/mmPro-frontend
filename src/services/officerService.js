@@ -1,71 +1,125 @@
-// officerService.js
-
 import axios from "axios";
+// import moment from "moment";
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 // Wrap your named functions in an object
 const officerService = {
+  /** 
   getIssuesData: async () => {
+    const token = localStorage.getItem("USER_TOKEN");
     try {
-      const apiKey = localStorage.getItem("API_Key");
-      if (!apiKey) {
-        console.error("API Key not found in localStorage");
+      if (!token) {
+        console.error("User token not found in localStorage");
         return [];
       }
-      const response = await axios.get("/api/projects/gsmb/issues.json", {
+
+      const response = await axios.get(`${BASE_URL}/gsmb-officer/gsmb-issue`, {
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
-          "X-Redmine-API-Key": apiKey,
         },
       });
-      return response.data.issues || [];
+
+      if (
+        response.status === 200 &&
+        Array.isArray(response.data.mining_licenses)
+      ) {
+        return response.data.mining_licenses;
+      } else {
+        console.error("Invalid data format: Expected an array of issues.");
+        return [];
+      }
     } catch (error) {
-      console.error("Error fetching issues data:", error);
+      console.error("Error fetching data:", error.message); // More descriptive error
       return [];
     }
   },
-
-  addNewLicense: async (payload) => {
+*/
+  getUserDetails: async (userId) => {
+    const token = localStorage.getItem("USER_TOKEN");
     try {
-      const apiKey = localStorage.getItem("API_Key");
-      if (!apiKey) {
-        console.error("API Key not found in localStorage");
-        return [];
+      if (!token) {
+        console.error("User token not found in localStorage");
+        return null; // Return null if the token is missing
       }
 
-      const response = await axios.post(
-        "/api/projects/gsmb/issues.json",
-        payload,
+      const response = await axios.get(
+        `${BASE_URL}/gsmb-officer/user-detail/${userId}`,
         {
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
-            "X-Redmine-API-Key": apiKey,
           },
         }
       );
-      return response.data;
+
+      console.log("API Response:", response.data);
+
+      if (response.status === 200 && response.data) {
+        return response.data; // Return the user_detail object
+      } else {
+        console.error("Invalid data format: Expected user_detail object.");
+        return null;
+      }
     } catch (error) {
-      console.error("Error adding new license:", error);
-      return [];
+      console.error("Error fetching data:", error);
+      return null;
     }
   },
 
+  // addNewLicense: async (formData) => {
+  //   try {
+  //     // const token = localStorage.getItem("USER_TOKEN");  // Use token for Authorization header
+  //     const token = localStorage.getItem("USER_TOKEN");
+  //     if (!token) {
+  //       console.error("User token not found in localStorage");
+  //       return null;
+  //     }
+  //     const response = await axios.post(
+  //       `${BASE_URL}/gsmb-officer/upload-mining-license`,
+  //       formData,
+  //       {
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data',
+  //           'Authorization': `Bearer ${token}`
+  //         }
+  //       }
+  //     );
+
+  //     if (response.status === 201 && response.data.success) {
+  //       return response.data; // Return the newly created license data
+  //     } else {
+  //       console.error("Failed to add new license:", response.data);
+  //       return null;
+  //     }
+  //   } catch (error) {
+  //     console.error("Error adding new license:", error);
+  //     return null;
+  //   }
+  // },
+
   // New Function: Fetch a single license by ID
   getLicenseById: async (licenseId) => {
+    const token = localStorage.getItem("USER_TOKEN");
     try {
-      const apiKey = localStorage.getItem("API_Key");
-      if (!apiKey) {
-        console.error("API Key not found in localStorage");
-        return null;
+      if (!token) {
+        console.error("User token not found in localStorage");
+        return null; // Return null if the token is missing
       }
 
-      const response = await axios.get(`/api/issues/${licenseId}.json`, {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Redmine-API-Key": apiKey,
-        },
-      });
+      const response = await axios.get(
+        `${BASE_URL}/gsmb-officer/get-license/${licenseId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      return response.data.issue || null;
+      console.log("response data ", response.data);
+      return response.data.data || null;
     } catch (error) {
       console.error(`Error fetching license with ID ${licenseId}:`, error);
       return null;
@@ -74,20 +128,21 @@ const officerService = {
 
   // New Function: Update a license by ID
   updateLicense: async (licenseId, payload) => {
+    const token = localStorage.getItem("USER_TOKEN");
     try {
-      const apiKey = localStorage.getItem("API_Key");
-      if (!apiKey) {
-        console.error("API Key not found in localStorage");
-        return null;
+      if (!token) {
+        console.error("User token not found in localStorage");
+        return null; // Return null if the token is missing
       }
+      console.log("This is upload in officer", payload);
 
       const response = await axios.put(
-        `/api/issues/${licenseId}.json`,
+        `${BASE_URL}/gsmb-officer/update-license/${licenseId}`,
         payload,
         {
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
-            "X-Redmine-API-Key": apiKey,
           },
         }
       );
@@ -99,19 +154,74 @@ const officerService = {
     }
   },
 
+  registerUser: async (userData) => {
+    try {
+      const token = localStorage.getItem("USER_TOKEN");
+      if (!token) {
+        console.error("User token not found in localStorage");
+        return null;
+      }
 
- 
-  //  registerUser: async (userData) => {
+      const response = await axios.post(
+        `${BASE_URL}/gsmb-officer/add-mlowner`,
+        userData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 201 && response.data.success) {
+        return response.data.data; // Return the newly created ML owner data
+      } else {
+        console.error("Failed to add ML owner:", response.data);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error adding ML owner:", error);
+      return null;
+    }
+  },
+  getMlOwners: async () => {
+    try {
+      const token = localStorage.getItem("USER_TOKEN"); // Get the token from localStorage
+      if (!token) {
+        console.error("User token not found in localStorage");
+        return [];
+      }
+
+      // Make a GET request to the backend API
+      const response = await axios.get(
+        `${BASE_URL}/gsmb-officer/get-mlowners`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the request headers
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch ML owners:", error);
+      return [];
+    }
+  },
+
+  // // Fetch all licenses (ML) for a user by their ID
+  // getUserLicenses: async (userId) => {
   //   try {
   //     const apiKey = localStorage.getItem("API_Key");
   //     if (!apiKey) {
   //       console.error("API Key not found in localStorage");
-  //       return null;
+  //       return [];
   //     }
 
-  //     const response = await axios.post(
-  //       `api/users.json`,
-  //       userData,
+  //     // Fetch issues assigned to the user (which include licenses)
+  //     const response = await axios.get(
+  //       `/api/projects/gsmb/issues.json?assigned_to_id=${userId}`,
   //       {
   //         headers: {
   //           "Content-Type": "application/json",
@@ -120,212 +230,367 @@ const officerService = {
   //       }
   //     );
 
-  //     return response.data.user || null;
+  //     // Filter to get only Mining Licenses (ML)
+  //     const licenses = response.data.issues
+  //       .filter((issue) => issue.tracker.name === "ML")
+  //       .map((issue) => ({
+  //         licenseNumber:
+  //           issue.custom_fields.find((field) => field.name === "License Number")
+  //             ?.value || "N/A",
+  //         location:
+  //           issue.custom_fields.find((field) => field.name === "Location")
+  //             ?.value || "N/A",
+  //         capacity:
+  //           issue.custom_fields.find((field) => field.name === "Capacity")
+  //             ?.value || "N/A",
+  //         issueDate: issue.start_date,
+  //         expiryDate: issue.due_date,
+  //       }));
+
+  //     return licenses;
   //   } catch (error) {
-  //     console.error("Error registering user:", error);
-  //     return null;
+  //     console.error("Error fetching licenses for user:", error);
+  //     return [];
   //   }
   // },
 
+  // Corrected method for fetching dispatch history data
+  fetchDispatchHistoryData: async () => {
+    const token = localStorage.getItem("USER_TOKEN");
 
-
- 
-  registerUser: async (userData) => {
     try {
-      const apiKey = localStorage.getItem("API_Key");
-      if (!apiKey) {
-        console.error("API Key not found in localStorage");
-        return null;
+      if (!token) {
+        console.error("User token not found in localStorage");
+        return null; // Return null if the token is missing
       }
 
-      // Log the payload for debugging
-      console.log("User Data Payload:", userData);
+      // const response = await axios.get("/api/projects/gsmb/issues.json", {
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     "X-Redmine-API-Key": apiKey,
+      //   },
+      // });
 
-      const response = await axios.post("/api/users.json", userData, {
+      const response = await axios.get(`${BASE_URL}/gsmb-officer/view-tpls`, {
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
-          "X-Redmine-API-Key": apiKey,
         },
       });
 
-      // Return the user data from the response
-      return response.data.user || null;
+      if (response.data && response.data.view_tpls) {
+        const issues = response.data.view_tpls;
+        const filteredIssues = issues.filter((issue) => issue.tracker.id === 8);
+
+        const formattedDispatchHistory = filteredIssues.map((issue) => {
+          const customFields = issue.custom_fields.reduce((acc, field) => {
+            acc[field.name] = field.value;
+            return acc;
+          }, {});
+
+          return {
+            licenseNumber: customFields["Mining License Number"] || "",
+            owner: customFields["Owner Name"] || "",
+            location: customFields["Location"] || "",
+            Destination: customFields["Destination"] || "",
+            lorryNumber: customFields["Lorry Number"] || "",
+            cubes: customFields["Cubes"] || "",
+            dispatchDate: issue.start_date || "",
+            due_date: issue.due_date || "",
+            lorryDriverContact: customFields["Driver Contact"] || "",
+          };
+        });
+
+        return formattedDispatchHistory;
+      }
     } catch (error) {
-      console.error("Error registering user:", error.response ? error.response.data : error.message);
-      return null;
+      console.error("Error fetching dispatch history:", error);
+      throw error;
     }
   },
 
-  // Step 2: Assign user to GSMB project with ML Owner role
-  assignUserToProject: async (userId, projectId, roleId) => {
+  getAllTpls: async () => {
     try {
-      const apiKey = localStorage.getItem("API_Key");
-      if (!apiKey) {
-        console.error("API Key not found in localStorage");
-        return null;
+      const token = localStorage.getItem("USER_TOKEN");
+      if (!token) {
+        console.error("User token not found in localStorage");
+        return [];
       }
 
-      const payload = {
-        membership: {
-          user_id: userId,
-          role_ids: [roleId], // ML Owner Role ID
+      // Make a GET request to the backend API
+      const response = await axios.get(`${BASE_URL}/gsmb-officer/get-tpls`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-      };
+      });
 
-      const response = await axios.post(`/api/projects/gsmb/memberships.json`,
-        payload,
+      console.log("Get All Tpl Full API response:", response);
+
+      if (response.data.success && Array.isArray(response.data.data)) {
+        // Assuming the API returns an array of ML owners directly
+        return response.data.data;
+      } else {
+        console.error("Failed to fetch ML owners: Unexpected data format");
+        return [];
+      }
+    } catch (error) {
+      console.error("Failed to fetch ML owners:", error);
+      return [];
+    }
+  },
+
+  getAllComplaints: async () => {
+    try {
+      const token = localStorage.getItem("USER_TOKEN");
+      if (!token) {
+        console.error("User token not found in localStorage");
+        return [];
+      }
+
+      const response = await axios.get(
+        `${BASE_URL}/gsmb-officer/get-complaints`,
         {
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
-            "X-Redmine-API-Key": apiKey,
           },
         }
       );
 
-      return response.data || null;
+      if (response.data.success && Array.isArray(response.data.data)) {
+        return response.data.data;
+      } else {
+        console.error("Failed to fetch complaints: Unexpected data format");
+        return [];
+      }
     } catch (error) {
-      console.error("Error assigning user to project:", error);
-      return null;
+      console.error("Failed to fetch complaints:", error);
+      return [];
     }
   },
 
+  // Add this to your officerService object
+  getMiningLicenses: async () => {
+    try {
+      const token = localStorage.getItem("USER_TOKEN");
+      if (!token) {
+        console.error("User token not found in localStorage");
+        return [];
+      }
 
-
-
-
-
-// Get users with the "MLOwner" role
-getMlOwners: async () => {
-  try {
-    const apiKey = localStorage.getItem("API_Key");
-    if (!apiKey) {
-      console.error("API Key not found in localStorage");
-      return [];
-    }
-
-    // Fetch all users in the GSMB project
-    const response = await axios.get("/api/projects/GSMB/memberships.json", {
-      headers: {
-        "X-Redmine-API-Key": apiKey,
-      },
-    });
-
-    // Filter users with the "MLOwner" role
-    const mlOwners = response.data.memberships.filter(
-      (membership) => membership.roles.some((role) => role.name === "MLOwner")
-    );
-
-    // For each MLOwner, fetch their associated licenses (ML) and user details
-    const ownersWithDetailsAndLicenses = await Promise.all(
-      mlOwners.map(async (owner) => {
-        // Fetch user details
-        const userResponse = await axios.get(`/api/users/${owner.user.id}.json`, {
+      const response = await axios.get(
+        `${BASE_URL}/gsmb-officer/get-mining-licenses`,
+        {
           headers: {
-            "X-Redmine-API-Key": apiKey,
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
-        });
-
-        // Fetch licenses for the user
-        const licenses = await officerService.getUserLicenses(owner.user.id);
-
-        // Combine user details and licenses into one object
-        return {
-          id: owner.user.id,
-          ownerName: owner.user.name,
-          userDetails: userResponse.data.user, // User details from /users/{userId}.json
-          licenses: licenses, // Licenses associated with the user
-        };
-      })
-    );
-
-    console.log("Owners with their ML Licenses and User Details:", ownersWithDetailsAndLicenses);
-    return ownersWithDetailsAndLicenses;
-  } catch (error) {
-    console.error("Error fetching ML Owners:", error);
-    return [];
-  }
-},
-
-// Fetch all licenses (ML) for a user by their ID
-getUserLicenses: async (userId) => {
-  try {
-    const apiKey = localStorage.getItem("API_Key");
-    if (!apiKey) {
-      console.error("API Key not found in localStorage");
-      return [];
-    }
-
-    // Fetch issues assigned to the user (which include licenses)
-    const response = await axios.get(`/api/projects/gsmb/issues.json?assigned_to_id=${userId}`, {
-      headers: {
-        "Content-Type": "application/json",
-        "X-Redmine-API-Key": apiKey,
-      },
-    });
-
-    // Filter to get only Mining Licenses (ML)
-    const licenses = response.data.issues.filter(
-      (issue) => issue.tracker.name === "ML"
-    ).map((issue) => ({
-      licenseNumber: issue.custom_fields.find((field) => field.name === "License Number")?.value || "N/A",
-      location: issue.custom_fields.find((field) => field.name === "Location")?.value || "N/A",
-      capacity: issue.custom_fields.find((field) => field.name === "Capacity")?.value || "N/A",
-      issueDate: issue.start_date,
-      expiryDate: issue.due_date,
-    }));
-
-    return licenses;
-  } catch (error) {
-    console.error("Error fetching licenses for user:", error);
-    return [];
-  }
-},
-
- // Corrected method for fetching dispatch history data
- fetchDispatchHistoryData: async (apiKey) => {
-  try {
-    const response = await axios.get("/api/projects/gsmb/issues.json", {
-      headers: {
-        "Content-Type": "application/json",
-        "X-Redmine-API-Key": apiKey,
-      },
-    });
-
-    if (response.data && response.data.issues) {
-      const issues = response.data.issues;
-      const filteredIssues = issues.filter(
-        (issue) => issue.tracker.id === 8
+        }
       );
 
-      const formattedDispatchHistory = filteredIssues.map((issue) => {
-        const customFields = issue.custom_fields.reduce((acc, field) => {
-          acc[field.name] = field.value;
-          return acc;
-        }, {});
-
-        return {
-          licenseNumber: customFields["License Number"] || "",
-          owner: customFields["Owner Name"] || "",
-          location: customFields["Location"] || "",
-          Destination: customFields["Destination"] || "",
-          lorryNumber: customFields["Lorry Number"] || "",
-          cubes: customFields["Cubes"] || "",
-          dispatchDate: issue.start_date || "",
-          due_date: issue.due_date || "",
-          lorryDriverContact: customFields["Driver Contact"] || "",
-        };
-      });
-
-      return formattedDispatchHistory;
+      if (response.data.success && Array.isArray(response.data.data)) {
+        console.log("response licesnes", response.data.data);
+        return response.data.data;
+      } else {
+        console.error(
+          "Failed to fetch mining licenses: Unexpected data format"
+        );
+        return [];
+      }
+    } catch (error) {
+      console.error("Failed to fetch mining licenses:", error);
+      return [];
     }
-  } catch (error) {
-    console.error("Error fetching dispatch history:", error);
-    throw error;
-  }
-},
-
-
+  },
 };
 
-// Now export the service object as the default
+export const addNewLicense = async (formData) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    // Log the full URL
+    const apiUrl = `${BASE_URL}/gsmb-officer/upload-mining-license`;
+    console.log("API URL:", apiUrl);
+
+    // Log the formData
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ": " + pair[1]);
+    }
+
+    const response = await axios.post(apiUrl, formData, config);
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Request failed");
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("API Error Details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
+    throw error;
+  }
+};
+
+export const getMlRequest = async () => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return [];
+    }
+
+    const response = await axios.get(
+      `${BASE_URL}/gsmb-officer/get-mining-license-requests`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.data.success && Array.isArray(response.data.data)) {
+      console.log("Get Mining License Requests API response:", response.data);
+      return response.data.data;
+    } else {
+      console.error(
+        "Failed to fetch mining request licenses : Unexpected data format"
+      );
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch mining request licenses:", error);
+    return [];
+  }
+};
+
+export const approveMiningLicense = async (issueId) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return null;
+    }
+
+    const payload = {
+      issue_id: issueId,
+      new_status_id: "7", // assuming "7" always means "approved"
+    };
+
+    const response = await axios.post(
+      `${BASE_URL}/gsmb-officer/approve-mining-license`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.data.success) {
+      console.log("License approved successfully:", response.data);
+      return response.data;
+    } else {
+      console.error(
+        "Approval failed: Unexpected response format",
+        response.data
+      );
+      return null;
+    }
+  } catch (error) {
+    console.error("Failed to approve mining license:", error);
+    return null;
+  }
+};
+
+export const physicalMeeting = async (payload) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    console.log("Sending payload:", payload);
+
+    const response = await axios.post(
+      `${BASE_URL}/gsmb-officer/create-appointment`,
+      payload,
+      config
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Request failed");
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("API Error Details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
+    throw error;
+  }
+};
+
+
+export const physicalMeetingStatus = async (payload) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`
+      }
+    };
+
+    console.log("Sending payload:", payload);
+
+    const response = await axios.post(
+      `${BASE_URL}/gsmb-officer/approve-physical-document`,
+      payload,
+      config
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Request failed");
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("API Error Details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
+    throw error;
+  }
+};
+
 export default officerService;
