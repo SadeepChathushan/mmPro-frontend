@@ -23,6 +23,7 @@ const AppointmentsTable = ({
   onDateChange,
   onConfirmScheduleDate,
   language,
+  onViewDetails,
 }) => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -268,7 +269,7 @@ const AppointmentsTable = ({
         <Button
           icon={<EyeOutlined />}
           onClick={() => {
-            setSelectedLicense(record.mining_number);
+            setSelectedLicense(record.id);
             setIsViewModalVisible(true);
           }}
           className="view-details-btn"
@@ -292,17 +293,17 @@ const AppointmentsTable = ({
       dataIndex: "mining_number",
       key: "mining_number",
     },
-    {
-      title:
-        language === "en"
-          ? "Scheduled Date"
-          : language === "si"
-          ? "නියමිත දිනය"
-          : "திட்டமிடப்பட்ட தேதி",
-      dataIndex: "date",
-      key: "date",
-      render: (date) => (date ? moment(date).format("YYYY-MM-DD") : "-"),
-    },
+    // {
+    //   title:
+    //     language === "en"
+    //       ? "Scheduled Date"
+    //       : language === "si"
+    //       ? "නියමිත දිනය"
+    //       : "திட்டமிடப்பட்ட தேதி",
+    //   dataIndex: "date",
+    //   key: "date",
+    //   render: (date) => (date ? moment(date).format("YYYY-MM-DD") : "-"),
+    // },
     {
       title:
         language === "en"
@@ -318,8 +319,9 @@ const AppointmentsTable = ({
           <Button
             icon={<EyeOutlined />}
             onClick={() => {
-              setSelectedLicense(record.mining_number);
+              setSelectedLicense(record.id);
               setIsViewModalVisible(true);
+              // onViewDetails(record.id);
             }}
             className="view-details-btn"
           >
@@ -327,7 +329,10 @@ const AppointmentsTable = ({
           </Button>
           <StatusActions
             record={record}
-            onApprove={() => onShowApproval(record.mining_number, record.id)}
+            onApprove={() => {
+              console.log("Approve clicked:", record.mining_number, record.id);
+              onShowApproval(record.mining_number, record.id);
+            }}
             onHold={onHold}
             onReject={onReject}
           />

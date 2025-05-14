@@ -5,6 +5,7 @@ import {
   FilePdfOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
+  EnvironmentOutlined,
 } from "@ant-design/icons"; // Added CheckCircleOutlined, ClockCircleOutlined
 import { getMeApproveSingleMiningLicense } from "../../services/miningEngineerService";
 
@@ -184,29 +185,12 @@ const ViewLicenseModal = ({ visible, onClose, selectedLicense, language }) => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {licenseDetails.location}
+                  <EnvironmentOutlined style={{ fontSize: "16px" }} />
                 </a>
               ) : (
                 naText
               )}
             </Descriptions.Item>
-            {/* <Descriptions.Item
-              label={language === "en" ? "License Type" : "உரிம வகை"}
-            >
-              {licenseDetails?.type || naText}
-            </Descriptions.Item> */}
-            {/* <Descriptions.Item
-              label={language === "en" ? "Applied Date" : "விண்ணப்பித்த தேதி"}
-            >
-              {licenseDetails?.appliedDate ? new Date(licenseDetails.appliedDate).toLocaleDateString() : naText}
-            </Descriptions.Item> */}
-
-            {/* <Descriptions.Item // Field from service: 'date' (Interpreted as Approved/Relevant Date)
-              label={language === "en" ? "Approval/Relevant Date" : "அங்கீகாரம்/தொடர்புடைய தேதி"}
-            >
-              {licenseDetails?.date || naText}
-            </Descriptions.Item> */}
-
             <Descriptions.Item
               label={language === "en" ? "Name of Land" : "நிலத்தின் பெயர்"}
             >
@@ -287,9 +271,7 @@ const ViewLicenseModal = ({ visible, onClose, selectedLicense, language }) => {
                   target="_blank"
                   disabled={!licenseDetails.documents.mineRestorationPlan}
                 >
-                  {language === "en"
-                    ? "Detailed Plan"
-                    : "பாதுகாப்பு திட்டம்"}
+                  {language === "en" ? "Detailed Plan" : "பாதுகாப்பு திட்டம்"}
                 </Button>
               </Space>
             ) : (
