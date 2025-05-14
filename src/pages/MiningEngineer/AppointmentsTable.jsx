@@ -151,16 +151,6 @@ const AppointmentsTable = ({
       dataIndex: "assigned_to",
       key: "mlOwner",
     },
-    // {
-    //   title:
-    //     language === "en"
-    //       ? "GSMB Officer"
-    //       : language === "si"
-    //       ? "ගොඩනැගිලි නිලධාරියා"
-    //       : "GSMB அதிகாரி",
-    //   dataIndex: "gsmbOfficer",
-    //   key: "gsmbOfficer",
-    // },
     {
       title:
         language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்",
@@ -199,6 +189,16 @@ const AppointmentsTable = ({
   // Pending Tab Columns
   const pendingColumns = [
     ...commonColumns,
+    {
+      title:
+        language === "en"
+          ? "Mining License No."
+          : language === "si"
+          ? "නියමිත දිනය"
+          : "திட்டமிடப்பட்ட தேதி",
+      dataIndex: "mining_number",
+      key: "mining_number",
+    },
     {
       title:
         language === "en"
@@ -340,11 +340,6 @@ const AppointmentsTable = ({
     <>
       <Table
         columns={activeTab === "pending" ? pendingColumns : approvedColumns}
-        // if(activeTab === "pending"){
-        //   pendingColumns
-        // } else if(activeTab === "approved") {
-        //   approvedColumns
-        // }
         dataSource={filteredAppointments}
         rowKey={(record) => record.id || record.mining_number}
         loading={loading}

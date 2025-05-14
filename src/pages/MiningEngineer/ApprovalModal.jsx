@@ -17,13 +17,7 @@ import { miningEngineerApprovedLicense } from "../../services/miningEngineerServ
 import { useLanguage } from "../../contexts/LanguageContext";
 import "../../styles/MiningEngineer/MEModals.css";
 
-const ApprovalModal = ({
-  visible,
-  onCancel,
-  onOk,
-  mining_number,
-  appointmentId,
-}) => {
+const ApprovalModal = ({ visible, onCancel, onOk, mining_number, id }) => {
   const { language } = useLanguage();
   const [form] = Form.useForm();
   const [fileList, setFileList] = React.useState([]);
@@ -54,12 +48,13 @@ const ApprovalModal = ({
       requiredMonthlyCapacity: "Please enter monthly capacity",
       requiredStartDate: "Please select start date",
       requiredDueDate: "Please select expiry date",
-      requiredUpload: "Please upload report"
+      requiredUpload: "Please upload report",
     },
     si: {
       title: "පතල් බලපත්‍රය අනුමත කරන්න",
       totalCapacityLabel: "සම්පූර්ණ ධාරිතාව (m³)",
-      totalCapacityPlaceholder: "කියුබික් මීටර වලින් සම්පූර්ණ ධාරිතාව ඇතුළත් කරන්න",
+      totalCapacityPlaceholder:
+        "කියුබික් මීටර වලින් සම්පූර්ණ ධාරිතාව ඇතුළත් කරන්න",
       monthlyCapacityLabel: "මාසික උපරිම ධාරිතාව (m³)",
       monthlyCapacityPlaceholder: "මාසික උපරිම ධාරිතාව ඇතුළත් කරන්න",
       startDateLabel: "ආරම්භක දිනය",
@@ -80,7 +75,7 @@ const ApprovalModal = ({
       requiredMonthlyCapacity: "කරුණාකර මාසික ධාරිතාව ඇතුළත් කරන්න",
       requiredStartDate: "කරුණාකර ආරම්භක දිනය තෝරන්න",
       requiredDueDate: "කරුණාකර කල් ඉකුත් වන දිනය තෝරන්න",
-      requiredUpload: "කරුණාකර වාර්තාව උඩුගත කරන්න"
+      requiredUpload: "කරුණාකර වාර්තාව උඩුගත කරන්න",
     },
     ta: {
       title: "சுரங்க உரிமம் அங்கீகரிக்கவும்",
@@ -100,14 +95,15 @@ const ApprovalModal = ({
       success: "சுரங்க உரிமம் வெற்றிகரமாக அங்கீகரிக்கப்பட்டது!",
       error: "சுரங்க உரிமத்தை அங்கீகரிக்க முடியவில்லை.",
       submissionError: "சமர்ப்பிக்கும் போது பிழை ஏற்பட்டது.",
-      fileTypeError: "நீங்கள் PDF, JPG அல்லது PNG கோப்புகளை மட்டுமே பதிவேற்ற முடியும்!",
+      fileTypeError:
+        "நீங்கள் PDF, JPG அல்லது PNG கோப்புகளை மட்டுமே பதிவேற்ற முடியும்!",
       fileSizeError: "கோப்பு 5MB ஐ விட சிறியதாக இருக்க வேண்டும்!",
       requiredTotalCapacity: "மொத்த திறனை உள்ளிடவும்",
       requiredMonthlyCapacity: "மாதாந்திர திறனை உள்ளிடவும்",
       requiredStartDate: "தொடக்க தேதியைத் தேர்ந்தெடுக்கவும்",
       requiredDueDate: "காலாவதி தேதியைத் தேர்ந்தெடுக்கவும்",
-      requiredUpload: "அறிக்கையை பதிவேற்றவும்"
-    }
+      requiredUpload: "அறிக்கையை பதிவேற்றவும்",
+    },
   };
 
   const t = translations[language] || translations.en;
@@ -152,11 +148,12 @@ const ApprovalModal = ({
       formData.append("me_comment", values.comments);
       formData.append("ml_number", mining_number);
 
-      const result = await miningEngineerApprovedLicense(appointmentId, formData);
-
+      const result = await miningEngineerApprovedLicense(id, formData);
+      consolet.log("API Response license approve:", result);
+      
       if (result.success) {
         message.success(t.success);
-        onOk(appointmentId, formData);
+        onOk(id, formData);
       } else {
         message.error(t.error);
       }
@@ -189,16 +186,19 @@ const ApprovalModal = ({
         </div>
       }
     >
+      <p>{`Mining Number: ${mining_number}`}</p>
+      <p>{`ID : ${id}`}</p>
+
       <Form form={form} layout="vertical">
         <Form.Item
           label={t.totalCapacityLabel}
           name="totalCapacity"
           rules={[{ required: true, message: t.requiredTotalCapacity }]}
         >
-          <InputNumber 
-            style={{ width: "100%" }} 
-            min={1} 
-            placeholder={t.totalCapacityPlaceholder} 
+          <InputNumber
+            style={{ width: "100%" }}
+            min={1}
+            placeholder={t.totalCapacityPlaceholder}
           />
         </Form.Item>
 
@@ -207,10 +207,10 @@ const ApprovalModal = ({
           name="monthlyCapacity"
           rules={[{ required: true, message: t.requiredMonthlyCapacity }]}
         >
-          <InputNumber 
-            style={{ width: "100%" }} 
-            min={1} 
-            placeholder={t.monthlyCapacityPlaceholder} 
+          <InputNumber
+            style={{ width: "100%" }}
+            min={1}
+            placeholder={t.monthlyCapacityPlaceholder}
           />
         </Form.Item>
 
@@ -265,7 +265,8 @@ ApprovalModal.propTypes = {
   visible: PropTypes.bool.isRequired,
   onCancel: PropTypes.func.isRequired,
   onOk: PropTypes.func.isRequired,
-  appointmentId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  appointmentId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    .isRequired,
   mining_number: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 

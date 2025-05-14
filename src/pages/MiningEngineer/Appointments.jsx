@@ -13,9 +13,8 @@ const Appointments = ({ activeTab }) => {
   const [isApprovalModalVisible, setIsApprovalModalVisible] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [approvingAppointmentId, setApprovingAppointmentId] = useState(null);
-  const [approvingAppointmentIssuesId, setApprovingAppointmentIssuesId] =
-    useState(null);
-  const { language } = useLanguage();
+  const [approvingAppointmentIssuesId, setApprovingAppointmentIssuesId] = useState(null);
+  const { language } = useLanguage(); 
 
   const [appointments, setAppointments] = useState([
     {
