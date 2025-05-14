@@ -112,6 +112,7 @@ const ApprovalModal = ({ visible, onCancel, onOk, mining_number, id }) => {
     const isPdfOrImage =
       file.type === "application/pdf" ||
       file.type === "image/jpeg" ||
+      file.type === "image/jpg" ||
       file.type === "image/png";
     if (!isPdfOrImage) {
       message.error(t.fileTypeError);
@@ -141,25 +142,40 @@ const ApprovalModal = ({ visible, onCancel, onOk, mining_number, id }) => {
         formData.append("me_report", file.originFileObj);
       });
 
+      // Format dates properly
+      const formattedStartDate = values.startDate.format("YYYY-MM-DD");
+      const formattedDueDate = values.dueDate.format("YYYY-MM-DD");
+
       formData.append("Capacity", values.totalCapacity);
       formData.append("month_capacity", values.monthlyCapacity);
-      formData.append("start_date", values.startDate.format("YYYY-MM-DD"));
-      formData.append("due_date", values.dueDate.format("YYYY-MM-DD"));
+      formData.append("start_date", formattedStartDate);
+      formData.append("due_date", formattedDueDate);
       formData.append("me_comment", values.comments);
       formData.append("ml_number", mining_number);
+      formData.append("status_id", 32); // Add status_id if required by backend
+
+      console.log("Form data being sent:", {
+        Capacity: values.totalCapacity,
+        month_capacity: values.monthlyCapacity,
+        start_date: formattedStartDate,
+        due_date: formattedDueDate,
+        me_comment: values.comments,
+        ml_number: mining_number,
+        fileCount: fileList.length,
+      });
 
       const result = await miningEngineerApprovedLicense(id, formData);
-      consolet.log("API Response license approve:", result);
-      
+      console.log("API Response license approve:", result);
+
       if (result.success) {
         message.success(t.success);
         onOk(id, formData);
       } else {
-        message.error(t.error);
+        message.error(result.message || t.error);
       }
     } catch (error) {
       console.error("Error during submission:", error);
-      message.error(t.submissionError);
+      message.error(error.message || t.submissionError);
     } finally {
       setUploading(false);
       form.resetFields();
@@ -221,7 +237,7 @@ const ApprovalModal = ({ visible, onCancel, onOk, mining_number, id }) => {
               name="startDate"
               rules={[{ required: true, message: t.requiredStartDate }]}
             >
-              <DatePicker style={{ width: "100%" }} />
+              <DatePicker style={{ width: "100%" }} format="YYYY-MM-DD" />
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -230,7 +246,7 @@ const ApprovalModal = ({ visible, onCancel, onOk, mining_number, id }) => {
               name="dueDate"
               rules={[{ required: true, message: t.requiredDueDate }]}
             >
-              <DatePicker style={{ width: "100%" }} />
+              <DatePicker style={{ width: "100%" }} format="YYYY-MM-DD" />
             </Form.Item>
           </Col>
         </Row>
@@ -265,8 +281,7 @@ ApprovalModal.propTypes = {
   visible: PropTypes.bool.isRequired,
   onCancel: PropTypes.func.isRequired,
   onOk: PropTypes.func.isRequired,
-  appointmentId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-    .isRequired,
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   mining_number: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
