@@ -100,7 +100,7 @@ const PhysicalMeetingModal = ({
         language === "en"
           ? "Update Physical Meeting Status"
           : language === "si"
-          ? ""
+          ? "භෞතික රැස්වීම් තත්ත්වය යාවත්කාලීන කරන්න"
           : "நிகழ்நிலை சந்திப்பு நிலையை புதுப்பிக்கவும்"
       }
       
@@ -108,13 +108,13 @@ const PhysicalMeetingModal = ({
       onCancel={onCancel}
 
       footer={[
-        <Button key="cancel" onClick={onCancel} disabled={loading}>
-          {language === "en"
-    ? "Cancel"
-    : language === "si"
-    ? ""
-    : "ரத்து செய்க"}
-        </Button>,
+    //     <Button key="cancel" onClick={onCancel} disabled={loading}>
+    //       {language === "en"
+    // ? "Cancel"
+    // : language === "si"
+    // ? ""
+    // : "ரத்து செய்க"}
+    //     </Button>,
         <Button
           key="reject"
           type="default"
@@ -126,7 +126,7 @@ const PhysicalMeetingModal = ({
           {language === "en"
     ? "Reject"
     : language === "si"
-    ? ""
+    ? "ප්‍රතික්ෂේප කරන්න"
     : "நிராகரிக்க"}
         </Button>,
         <Button
@@ -138,7 +138,7 @@ const PhysicalMeetingModal = ({
            {language === "en"
     ? "Approve"
     : language === "si"
-    ? ""
+    ? "අනුමත කරන්න"
     : "அனுமதிக்க"}
         </Button>,
       ]}
@@ -157,7 +157,7 @@ const PhysicalMeetingModal = ({
             language === "en"
               ? "Comments (Approval or Rejection Notes)"
               : language === "si"
-              ? ""
+              ? "අදහස් (අනුමත හෝ ප්‍රතික්ෂේප සටහන්)"
               : "கருத்துகள் (அனுமதி அல்லது நிராகரிப்பு குறிப்புகள்)"
           }
           rules={[
@@ -166,7 +166,7 @@ const PhysicalMeetingModal = ({
               message: language === "en"
               ? "Please provide your comments"
               : language === "si"
-              ? ""
+              ? "කරුණාකර ඔබගේ අදහස් ලබා දෙන්න"
               : "தயவுசெய்து உங்கள் கருத்துகளை வழங்கவும்",
             },
           ]}
@@ -174,7 +174,13 @@ const PhysicalMeetingModal = ({
         >
           <Input.TextArea
             rows={4}
-            placeholder="Enter approval or rejection notes..."
+            placeholder={
+              language === "en"
+                ? "Enter approval or rejection notes..."
+                : language === "si"
+                ? "අනුමත හෝ ප්‍රතික්ෂේප සටහන් ඇතුළත් කරන්න..."
+                : ""
+            }
             className="comments-textarea"
           />
         </Form.Item>
@@ -186,7 +192,7 @@ const PhysicalMeetingModal = ({
             language === "en"
               ? "Upload Receipt (PDF only)"
               : language === "si"
-              ? ""
+              ? "රිසිට්පත උඩුගත කරන්න (PDF පමණි)"
               : " ரசீதை பதிவேற்றவும் (PDF மட்டும்)"
           }
           valuePropName="fileList"
@@ -197,12 +203,12 @@ const PhysicalMeetingModal = ({
               message:language === "en"
               ? "Please upload the receipt (PDF only)"
               : language === "si"
-              ? ""
+              ? "කරුණාකර රිසිට්පත උඩුගත කරන්න (PDF පමණි)"
               : "தயவுசெய்து ரசீதை பதிவேற்றவும் (PDF மட்டும்)",
             },
 
           ]}
-          extra="Only PDF files are accepted"
+          // extra="Only PDF files are accepted"
         >
           <Upload
             beforeUpload={beforeUpload}
@@ -211,45 +217,34 @@ const PhysicalMeetingModal = ({
             className="receipt-upload"
           >
 
-            <Button icon={<UploadOutlined />}>{
+            {/* <Button icon={<UploadOutlined />}>{
   language === "en"
     ? "Click to Upload"
     : language === "si"
     ? ""
     : "பதிவேற்ற கிளிக் செய்யவும்"
-}</Button>
+}</Button> */}
 
-//             <div className="upload-container">
-//               <UploadOutlined />
-//               <div className="upload-instructions">
-//                 Click or drag file to upload
-//               </div>
-//               <div className="upload-format">PDF format only</div>
-//             </div>
+             <div className="upload-container">
+               <UploadOutlined />
+               <div className="upload-instructions">
+               {language === "en"
+                ? "Click or drag file to upload"
+                : language === "si"
+                ? "උඩුගත කිරීම සඳහා ගොනුව ක්ලික් කරන්න හෝ ඇද දමන්න"
+                : ""}
+               </div>
+               <div className="upload-format">
+               {language === "en"
+                ?"PDF format only"
+                : language === "si"
+                ? "PDF ආකෘතිය පමණි"
+                : ""}
+               </div>
+            </div>
 
           </Upload>
         </Form.Item>
-
-        <div className="modal-footer-actions">
-          <Space>
-            <Button
-              danger
-              onClick={() => handleAction("reject")}
-              disabled={loading}
-              className="action-button"
-            >
-              Reject
-            </Button>
-            <Button
-              type="primary"
-              onClick={() => handleSubmit("approve")}
-              disabled={loading}
-              className="action-button"
-            >
-              Approve
-            </Button>
-          </Space>
-        </div>
       </Form>
     </Modal>
   );

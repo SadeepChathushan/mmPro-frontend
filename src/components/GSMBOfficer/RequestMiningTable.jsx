@@ -259,7 +259,12 @@ const RequestMiningTable = ({ searchText }) => {
           icon={<span>👁️</span>}
           onClick={() => handleViewClick(record)}
         >
-          {language === "en" ? "View" : language === "si" ? "" : "பார்க்க"}
+
+          {language === "en"
+    ? "View"
+    : language === "si"
+    ? "බලන්න"
+    : "பார்க்க"}
         </Button>
 
         {isMEApproved ? (
@@ -274,11 +279,13 @@ const RequestMiningTable = ({ searchText }) => {
               color: "#52c41a",
             }}
           >
-            {language === "en"
-              ? "Validate the license"
-              : language === "si"
-              ? ""
-              : "அனுமதி உரிமத்தை சரிபார்க்கவும்"}
+
+              {language === "en"
+    ? "Validate the license"
+    : language === "si"
+    ? "බලපත්‍රය වලංගු කරන්න"
+    : "அனுமதி உரிமத்தை சரிபார்க்கவும்"}
+
           </Button>
         ) : (
           !isRestrictedStatus &&
@@ -291,10 +298,12 @@ const RequestMiningTable = ({ searchText }) => {
               style={{ backgroundColor: "#f0f0f0", borderColor: "#d9d9d9" }}
             >
               {language === "en"
-                ? "Physical Meeting Status"
-                : language === "si"
-                ? ""
-                : "நிகழ்நிலை சந்திப்பு நிலை"}
+
+    ? "Physical Meeting Status"
+    : language === "si"
+    ? "භෞතික රැස්වීම් තත්වය"
+    : "நிகழ்நிலை சந்திப்பு நிலை"}
+
             </Button>
           ) : (
             <Button
@@ -303,11 +312,13 @@ const RequestMiningTable = ({ searchText }) => {
               icon={<span>🗓️</span>}
               onClick={() => handleScheduleAppointment(record)}
             >
-              {language === "en"
-                ? "Schedule"
-                : language === "si"
-                ? ""
-                : "திட்டமிடு"}
+
+                {language === "en"
+    ? "Schedule"
+    : language === "si"
+    ? "කාලසටහන"
+    : "திட்டமிடு"}
+
             </Button>
           ))
         )}
@@ -469,38 +480,47 @@ const RequestMiningTable = ({ searchText }) => {
   };
 
   const columns = [
-    {
-      title: language === "en" ? "ID" : language === "si" ? "" : "அடையாள எண்",
-      dataIndex: "id",
-      key: "id",
-      width: 80,
-      fixed: "left",
-    },
+
+    { title:
+      language === "en"
+        ? "ID"
+        : language === "si"
+        ? "අංකය"
+        : "அடையாள எண்", dataIndex: "id", key: "id", width: 80, fixed: "left" },
     {
       title:
-        language === "en"
-          ? "Request Subject"
-          : language === "si"
-          ? " "
-          : "கோரிக்கையின் தலைப்பு",
+  language === "en"
+    ? "Request Subject"
+    : language === "si"
+    ? "ඉල්ලීම් විෂය"
+    : "கோரிக்கையின் தலைப்பு",
       dataIndex: "subject",
       key: "subject",
       width: 200,
     },
     {
       title:
-        language === "en"
-          ? "Assigned To"
-          : language === "si"
-          ? " "
-          : "ஒதுக்கப்பட்டவர்",
+
+  language === "en"
+    ? "Assigned To"
+    : language === "si"
+    ? "පවරා ඇත"
+    : "ஒதுக்கப்பட்டவர்",
+
       dataIndex: "assigned_to",
       key: "assigned_to",
       width: 150,
       render: (text) => text || "-",
     },
     {
-      title: language === "en" ? "Mobile" : language === "si" ? "" : "தொலைபேசி",
+
+      title:
+  language === "en"
+    ? "Mobile"
+    : language === "si"
+    ? "දුරකථන අංකය"
+    : "தொலைபேசி",
+
       dataIndex: "mobile_number",
       key: "mobile_number",
       width: 150,
@@ -508,7 +528,13 @@ const RequestMiningTable = ({ searchText }) => {
     },
     {
       title:
-        language === "en" ? "District" : language === "si" ? "" : "மாவட்டம்",
+
+  language === "en"
+    ? "District"
+    : language === "si"
+    ? "දිස්ත්‍රික්කය"
+    : "மாவட்டம்",
+
       dataIndex: "administrative_district",
       key: "administrative_district",
       width: 150,
@@ -516,28 +542,41 @@ const RequestMiningTable = ({ searchText }) => {
     },
     {
       title:
-        language === "en"
-          ? "Date Created"
-          : language === "si"
-          ? ""
-          : "உருவாக்கப்பட்ட திகதி",
+
+  language === "en"
+    ? "Date Created"
+    : language === "si"
+    ? "සාදන ලද දිනය"
+    : "உருவாக்கப்பட்ட திகதி",
+
       dataIndex: "created_on",
       key: "created_on",
       width: 120,
       render: (text) => (text ? text.split("T")[0] : "-"),
     },
 
-    {
-      title: language === "en" ? "Status" : language === "si" ? "" : "நிலை",
-      dataIndex: "status",
-      key: "status",
+    { 
+      title:
+  language === "en"
+    ? "Status"
+    : language === "si"
+    ? "තත්වය"
+    : "நிலை", 
+      dataIndex: "status", 
+      key: "status", 
 
       width: 100,
       render: renderStatus,
     },
     {
       title:
-        language === "en" ? "Action" : language === "si" ? "" : "நடவடிக்கை",
+
+  language === "en"
+    ? "Action"
+    : language === "si"
+    ? "ක්‍රියාව"
+    : "நடவடிக்கை",
+
       key: "action",
       width: 150,
       fixed: "right",
@@ -766,10 +805,24 @@ const RequestMiningTable = ({ searchText }) => {
                 disabled={updateLoading}
               >
                 {language === "en"
-                  ? "Cancel"
-                  : language === "si"
-                  ? " "
-                  : "ரத்து செய்க"}
+
+    ? "Cancel"
+    : language === "si"
+    ? "අවලංගු කරන්න"
+    : "ரத்து செய்க"}
+              </Button>
+              <Button
+                key="update"
+                type="primary"
+                onClick={handleUpdate}
+                loading={updateLoading}
+              >
+                {language === "en"
+    ? "Update Details"
+    : language === "si"
+    ? "යාවත්කාලීන විස්තර"
+    : "விவரங்களைப் புதுப்பிக்கவும்"}
+
               </Button>
             </Col>
           </Row>

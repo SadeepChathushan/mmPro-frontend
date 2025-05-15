@@ -258,11 +258,53 @@ export const miningEngineerApprovedLicense = async (me_appointment_issue_id, for
       console.error("User token not found in localStorage");
       return { success: false, message: "Authentication required" };
     }
+    const endpoint = `${BASE_URL}/mining-engineer/miningEngineer-approve/${me_appointment_issue_id}`;
+
+    const response = await axios.put(endpoint, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+      validateStatus: (status) => status < 500, // Don't throw for 401/403
+    });
+
+    if (response.data.success) {
+      return { success: true, data: response.data.data };
+    } else {
+      return { 
+        success: false, 
+        message: response.data.message || response.data.error || "Failed to approve the license",
+        status: response.status
+      };
+    }
+  } catch (error) {
+    console.error("API Error Details:", error.response?.data || error.message);
+    return { 
+      success: false, 
+      message: error.response?.data?.message || 
+              error.response?.data?.error || 
+              error.message || 
+              "An error occurred",
+      status: error.response?.status
+    };
+  }
+};
+
+///miningEngineer-reject/<int:me_appointment_issue_id>
+
+//This is the function to reject the mining engineer license
+export const miningEngineerRejectLicense = async (me_appointment_issue_id, formData) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return { success: false, message: "Authentication required" };
+    }
 
     // Debug: Print token to verify it's correct
     console.log("Using token:", token);
 
-    const endpoint = `${BASE_URL}/mining-engineer/miningEngineer-approve/${me_appointment_issue_id}`;
+    const endpoint = `${BASE_URL}/mining-engineer/miningEngineer-reject/${me_appointment_issue_id}`;
 
     const response = await axios.put(endpoint, formData, {
       headers: {
