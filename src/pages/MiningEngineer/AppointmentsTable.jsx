@@ -334,7 +334,9 @@ const AppointmentsTable = ({
               onShowApproval(record.mining_number, record.id);
             }}
             onHold={onHold}
-            onReject={onReject}
+            onReject={(record) => {
+              onReject(record.mining_number, record.id);
+            }}
           />
         </Space>
       ),
