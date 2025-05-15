@@ -258,10 +258,9 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
     cubes: "Cubes",
     mining_license_number: "Mining License Number",
     destination: "Destination",
-<<<<<<< HEAD
+
     license_boundary_survey: "License Boundary Survey"
-=======
->>>>>>> 5cbc13f99e1222ba383bdeb12e4b64e95082bc91
+
   };
 
   const getFileIcon = (key, fileType) => {
@@ -304,7 +303,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
         name={fieldName}
         style={{ marginBottom: "18px" }}
       >
-<<<<<<< HEAD
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           {/* <div 
             style={{ 
@@ -315,18 +314,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
               borderRadius: '4px',
               backgroundColor: '#f5f5f5',
               flexGrow: 1
-=======
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "8px 16px",
-              border: "1px solid #d9d9d9",
-              borderRadius: "4px",
-              backgroundColor: "#f5f5f5",
-              flexGrow: 1,
->>>>>>> 5cbc13f99e1222ba383bdeb12e4b64e95082bc91
+
             }}
           >
             {getFileIcon(fieldName, fileType)}
