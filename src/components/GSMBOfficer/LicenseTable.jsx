@@ -258,6 +258,10 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
     cubes: "Cubes",
     mining_license_number: "Mining License Number",
     destination: "Destination",
+<<<<<<< HEAD
+    license_boundary_survey: "License Boundary Survey"
+=======
+>>>>>>> 5cbc13f99e1222ba383bdeb12e4b64e95082bc91
   };
 
   const getFileIcon = (key, fileType) => {
@@ -300,6 +304,18 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
         name={fieldName}
         style={{ marginBottom: "18px" }}
       >
+<<<<<<< HEAD
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* <div 
+            style={{ 
+              display: 'flex',
+              alignItems: 'center',
+              padding: '8px 16px',
+              border: '1px solid #d9d9d9',
+              borderRadius: '4px',
+              backgroundColor: '#f5f5f5',
+              flexGrow: 1
+=======
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <div
             style={{
@@ -310,6 +326,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
               borderRadius: "4px",
               backgroundColor: "#f5f5f5",
               flexGrow: 1,
+>>>>>>> 5cbc13f99e1222ba383bdeb12e4b64e95082bc91
             }}
           >
             {getFileIcon(fieldName, fileType)}
@@ -323,7 +340,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
             >
               {fileName}
             </Text>
-          </div>
+          </div> */}
           <Button
             type="primary"
             icon={<DownloadOutlined />}
@@ -334,7 +351,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
               )
             }
           >
-            Download
+            {language === "en" ? "Download" : language === "si" ? "බාගත කරන්න" : "பதிவிறக்க"}
           </Button>
         </div>
       </Form.Item>
@@ -520,6 +537,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
           {renderFileField("economic_viability_report", language === "en" ? "Economic Viability Report" : language === "si" ? "ආර්ථික ප්‍රතිඵල වාර්තාව" : " ", currentRecord.economic_viability_report)}
           {renderFileField("detailed_mine_restoration_plan", language === "en" ? "Mine Restoration Plan" : language === "si" ? "ඛණිජ ප්‍රතිසංස්කරණ සැලැස්ම" : " ", currentRecord.detailed_mine_restoration_plan)}
           {renderFileField("payment_receipt", language === "en" ? "Payment Receipt" : language === "si" ? "බලපත්‍ර ගාස්තු ගෙවීම් රිසිට්පත" : " ", currentRecord.payment_receipt)}
+          {renderFileField("license_boundary_survey", language === "en" ? "License Boundary Survey" : language === "si" ? "බලපත්‍ර සීමා සමීක්ෂණය" : " ", currentRecord.license_boundary_survey)}
         </Form>
       );
     };
