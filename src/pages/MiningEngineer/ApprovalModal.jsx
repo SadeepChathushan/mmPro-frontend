@@ -154,18 +154,7 @@ const ApprovalModal = ({ visible, onCancel, onOk, mining_number, id }) => {
       formData.append("ml_number", mining_number);
       formData.append("status_id", 32); // Add status_id if required by backend
 
-      console.log("Form data being sent:", {
-        Capacity: values.totalCapacity,
-        month_capacity: values.monthlyCapacity,
-        start_date: formattedStartDate,
-        due_date: formattedDueDate,
-        me_comment: values.comments,
-        ml_number: mining_number,
-        fileCount: fileList.length,
-      });
-
       const result = await miningEngineerApprovedLicense(id, formData);
-      console.log("API Response license approve:", result);
 
       if (result.success) {
         message.success(t.success);
@@ -202,9 +191,6 @@ const ApprovalModal = ({ visible, onCancel, onOk, mining_number, id }) => {
         </div>
       }
     >
-      <p>{`Mining Number: ${mining_number}`}</p>
-      <p>{`ID : ${id}`}</p>
-
       <Form form={form} layout="vertical">
         <Form.Item
           label={t.totalCapacityLabel}
