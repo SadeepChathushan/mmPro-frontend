@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { Modal, Button, Form, Input, Upload, message } from 'antd';
-import { CloseOutlined, UploadOutlined } from '@ant-design/icons';
+import { useState } from "react";
+import { Modal, Button, Form, Input, Upload, message } from "antd";
+import { CloseOutlined, UploadOutlined } from "@ant-design/icons";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { miningEngineerRejectLicense } from "../../services/miningEngineerService";
 
-const RejectConfirmation = ({ onReject, recordId }) => {
+const RejectConfirmation = ({ onReject, recordId, mining_number }) => {
   const { language } = useLanguage();
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
@@ -21,7 +22,7 @@ const RejectConfirmation = ({ onReject, recordId }) => {
       cancel: "Cancel",
       submit: "Confirm ML Rejection",
       fileError: "Please upload a PDF file only.",
-      fileSizeError: "File must be smaller than 5MB!"
+      fileSizeError: "File must be smaller than 5MB!",
     },
     si: {
       title: "හමුවීම ප්‍රතික්ෂේප කරන්න",
@@ -34,7 +35,7 @@ const RejectConfirmation = ({ onReject, recordId }) => {
       cancel: "අවලංගු කරන්න",
       submit: "ඉදිරිපත් කරන්න",
       fileError: "කරුණාකර PDF ගොනුවක් පමණක් උඩුගත කරන්න.",
-      fileSizeError: "ගොනුව MB 5 ට වඩා කුඩා විය යුතුය!"
+      fileSizeError: "ගොනුව MB 5 ට වඩා කුඩා විය යුතුය!",
     },
     ta: {
       title: "சந்திப்பை நிராகரிக்கவும்",
@@ -47,8 +48,8 @@ const RejectConfirmation = ({ onReject, recordId }) => {
       cancel: "ரத்து செய்",
       submit: "சமர்ப்பிக்கவும்",
       fileError: "PDF கோப்பு மட்டுமே பதிவேற்றவும்.",
-      fileSizeError: "கோப்பு 5MB ஐ விட சிறியதாக இருக்க வேண்டும்!"
-    }
+      fileSizeError: "கோப்பு 5MB ஐ விட சிறியதாக இருக்க வேண்டும்!",
+    },
   };
 
   const t = translations[language] || translations.en;
@@ -64,7 +65,7 @@ const RejectConfirmation = ({ onReject, recordId }) => {
   };
 
   const beforeUpload = (file) => {
-    const isPDF = file.type === 'application/pdf';
+    const isPDF = file.type === "application/pdf";
     const isLt5MB = file.size / 1024 / 1024 < 5;
 
     if (!isPDF) {
@@ -85,17 +86,23 @@ const RejectConfirmation = ({ onReject, recordId }) => {
     setFileList([]);
   };
 
-  const handleSubmit = () => {
-    form.validateFields().then(values => {
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
       const formData = new FormData();
-      formData.append('comment', values.comment);
+      formData.append("me_comment", values.comment);
+      formData.append("ml_number", mining_number);
       if (fileList.length > 0) {
-        formData.append('report', fileList[0]);
+        formData.append("me_report", fileList[0]);
       }
-      
+
+      const result = await miningEngineerRejectLicense(recordId, formData);
+
       onReject(recordId, formData);
       handleCancel();
-    });
+    } catch (error) {
+      message.error("Please fill all required fields.");
+    }
   };
 
   return (
@@ -103,19 +110,19 @@ const RejectConfirmation = ({ onReject, recordId }) => {
       <Button danger icon={<CloseOutlined />} onClick={showModal}>
         {t.buttonText}
       </Button>
-      
+
       <Modal
         title={t.title}
         visible={visible}
         onCancel={handleCancel}
         footer={[
-          <Button 
-            key="submit" 
-            type="primary" 
-            danger 
+          <Button
+            key="submit"
+            type="primary"
+            danger
             style={{
-              display: 'block',
-              margin: '0 auto'
+              display: "block",
+              margin: "0 auto",
             }}
             onClick={handleSubmit}
           >
@@ -124,7 +131,25 @@ const RejectConfirmation = ({ onReject, recordId }) => {
         ]}
       >
         <p>{t.confirmText}</p>
-        
+
+        {/* Display the mining number and ID */}
+        <div style={{ marginBottom: 16 }}>
+          <p>
+            <strong>
+              {language === "en"
+                ? "Mining License No."
+                : language === "si"
+                ? "පතල් බලපත්‍ර අංකය"
+                : "சுரங்க உரிமம் எண்"}
+              :
+            </strong>{" "}
+            {mining_number}
+          </p>
+          <p>
+            <strong>ID:</strong> {recordId}
+          </p>
+        </div>
+
         <Form form={form} layout="vertical">
           <Form.Item
             name="comment"
@@ -133,10 +158,8 @@ const RejectConfirmation = ({ onReject, recordId }) => {
           >
             <Input.TextArea rows={4} />
           </Form.Item>
-          
-          <Form.Item
-            label={t.uploadLabel}
-          >
+
+          <Form.Item label={t.uploadLabel}>
             <Upload
               beforeUpload={beforeUpload}
               onRemove={onRemove}

@@ -13,8 +13,12 @@ const Appointments = ({ activeTab }) => {
   const [isApprovalModalVisible, setIsApprovalModalVisible] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [approvingAppointmentId, setApprovingAppointmentId] = useState(null);
-  const [approvingAppointmentIssuesId, setApprovingAppointmentIssuesId] = useState(null);
-  const { language } = useLanguage(); 
+  const [approvingAppointmentIssuesId, setApprovingAppointmentIssuesId] =
+    useState(null);
+  const [rejectAppointmentId, setrejectAppointmentId] = useState(null);
+  const [rejectMiningLicenseNumber, setrejectMiningLicenseNumber] =
+    useState(null);
+  const { language } = useLanguage();
 
   const [appointments, setAppointments] = useState([
     {
@@ -79,10 +83,10 @@ const Appointments = ({ activeTab }) => {
           ? {
               ...app,
               date: dateString,
-              status: "scheduled", 
+              status: "scheduled",
               licenseDetails: {
                 ...app.licenseDetails,
-                status: "Scheduled", 
+                status: "Scheduled",
               },
             }
           : app
@@ -107,6 +111,13 @@ const Appointments = ({ activeTab }) => {
     setApprovingAppointmentIssuesId(mining_number); // Set the mining_number
     setIsApprovalModalVisible(true); // Open the modal
   };
+
+  //  // Show approval modal
+  // const handleReject = (mining_number, id) => {
+  //   setrejectAppointmentId(id); // Set the id
+  //   setrejectMiningLicenseNumber(mining_number); // Set the mining_number
+  //   setIsApprovalModalVisible(true); // Open the modal
+  // };
   // Handle approval
   const handleApprovalOk = (id, values) => {
     setAppointments(
@@ -167,7 +178,8 @@ const Appointments = ({ activeTab }) => {
   };
 
   // Reject appointment
-  const handleReject = (id) => {
+  const handleReject = (mining_number, id) => {
+    console.log("Rejecting appointment:", { mining_number, id });
     setAppointments(
       appointments.map((app) =>
         app.id === id
