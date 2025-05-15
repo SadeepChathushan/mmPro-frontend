@@ -259,22 +259,39 @@ export const miningEngineerApprovedLicense = async (me_appointment_issue_id, for
       return { success: false, message: "Authentication required" };
     }
 
+    // Debug: Print token to verify it's correct
+    console.log("Using token:", token);
+
     const endpoint = `${BASE_URL}/mining-engineer/miningEngineer-approve/${me_appointment_issue_id}`;
 
     const response = await axios.put(endpoint, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data", // Required for file uploads
+        "Content-Type": "multipart/form-data",
       },
+      validateStatus: (status) => status < 500, // Don't throw for 401/403
     });
+
+    console.log("Full API response:", response); // Debug response
 
     if (response.data.success) {
       return { success: true, data: response.data.data };
     } else {
-      return { success: false, message: response.data.message || "Failed to approve the license" };
+      return { 
+        success: false, 
+        message: response.data.message || response.data.error || "Failed to approve the license",
+        status: response.status
+      };
     }
   } catch (error) {
-    console.error("Failed to approve the mining license:", error);
-    return { success: false, message: error.response?.data?.message || "An error occurred" };
+    console.error("API Error Details:", error.response?.data || error.message);
+    return { 
+      success: false, 
+      message: error.response?.data?.message || 
+              error.response?.data?.error || 
+              error.message || 
+              "An error occurred",
+      status: error.response?.status
+    };
   }
 };

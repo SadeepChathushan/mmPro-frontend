@@ -30,7 +30,7 @@ const { Link } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
 
-const RequestMiningTable = ({searchText}) => {
+const RequestMiningTable = ({ searchText }) => {
   // --- State Variables ---
   const { language } = useLanguage();
   const [loading, setLoading] = useState(false);
@@ -150,7 +150,6 @@ const RequestMiningTable = ({searchText}) => {
         start_date: values.date.format("YYYY-MM-DD"),
         description: values.notes || "",
       };
-      console.log("physical meeting ", payload);
       await physicalMeeting(payload);
 
       notification.success({
@@ -244,13 +243,14 @@ const RequestMiningTable = ({searchText}) => {
       "Awaiting ME Scheduling",
       "ME Appointment Scheduled",
       "Hold",
-      "Rejected"
+      "Rejected",
     ];
-    
+
     const isRestrictedStatus = restrictedStatuses.includes(record.status);
     const isMEApproved = record.status === "ME Approved";
-    const isPhysicalDocument = record.status?.toLowerCase() === "physical document";
-    
+    const isPhysicalDocument =
+      record.status?.toLowerCase() === "physical document";
+
     return (
       <div style={{ display: "flex", gap: "8px" }}>
         <Button
@@ -259,21 +259,27 @@ const RequestMiningTable = ({searchText}) => {
           icon={<span>👁️</span>}
           onClick={() => handleViewClick(record)}
         >
+
           {language === "en"
     ? "View"
     : language === "si"
     ? "බලන්න"
     : "பார்க்க"}
         </Button>
-        
+
         {isMEApproved ? (
           <Button
             type="primary"
             size="small"
             icon={<span>✅</span>}
             onClick={() => handleValidateLicense(record)}
-            style={{ backgroundColor: '#ffffff', borderColor: '#52c41a', color:'#52c41a'}}
+            style={{
+              backgroundColor: "#ffffff",
+              borderColor: "#52c41a",
+              color: "#52c41a",
+            }}
           >
+
               {language === "en"
     ? "Validate the license"
     : language === "si"
@@ -281,35 +287,40 @@ const RequestMiningTable = ({searchText}) => {
     : "அனுமதி உரிமத்தை சரிபார்க்கவும்"}
 
           </Button>
-        ) : !isRestrictedStatus && (
-          isPhysicalDocument ? (
+        ) : (
+          !isRestrictedStatus &&
+          (isPhysicalDocument ? (
             <Button
               type="default"
               size="small"
               icon={<span>📝</span>}
               onClick={() => handleUpdatePhysicalMeetingStatus(record)}
-              style={{ backgroundColor: '#f0f0f0', borderColor: '#d9d9d9' }}
+              style={{ backgroundColor: "#f0f0f0", borderColor: "#d9d9d9" }}
             >
               {language === "en"
+
     ? "Physical Meeting Status"
     : language === "si"
     ? "භෞතික රැස්වීම් තත්වය"
     : "நிகழ்நிலை சந்திப்பு நிலை"}
+
             </Button>
-          ) : (          
+          ) : (
             <Button
               type="default"
               size="small"
               icon={<span>🗓️</span>}
               onClick={() => handleScheduleAppointment(record)}
             >
+
                 {language === "en"
     ? "Schedule"
     : language === "si"
     ? "කාලසටහන"
     : "திட்டமிடு"}
+
             </Button>
-          )
+          ))
         )}
       </div>
     );
@@ -377,9 +388,6 @@ const RequestMiningTable = ({searchText}) => {
 
       message.success("Physical meeting rejected");
       setIsPhysicalMeetingModalVisible(false);
-
-      // Refresh the table data
-      // await fetchMlRequestData();
     } catch (error) {
       console.error("Rejection error:", error);
       message.error(
@@ -390,34 +398,6 @@ const RequestMiningTable = ({searchText}) => {
     }
   };
 
-  // const handleValidateLicenseSubmit = async (values) => {
-  //   try {
-  //     setValidateLoading(true);
-
-  //     // Prepare payload for validation
-  //     const payload = {
-  //       id: currentRecord.id,
-  //       comments: values.comments,
-  //       status: 'valid' // or whatever status indicates validation
-  //     };
-
-  //     // Call your API here
-  //     // Example: await validateLicense(payload);
-  //     console.log('Validation payload:', payload);
-
-  //     message.success('License validated successfully');
-  //     setIsValidateModalVisible(false);
-
-  //     // Refresh the table data
-  //     // await fetchMlRequestData();
-  //   } catch (error) {
-  //     console.error('Validation error:', error);
-  //     message.error(error.response?.data?.message || 'Failed to validate license');
-  //   } finally {
-  //     setValidateLoading(false);
-  //   }
-  // };
-
   const handleValidateLicenseSubmit = async (values) => {
     try {
       setValidateLoading(true);
@@ -425,7 +405,6 @@ const RequestMiningTable = ({searchText}) => {
       if (!currentRecord?.id) {
         throw new Error("No record ID found for validation");
       }
-
       // Call the Axios service
       await approveMiningLicense(currentRecord.id);
 
@@ -500,72 +479,8 @@ const RequestMiningTable = ({searchText}) => {
     );
   };
 
-  // const renderAction = (_, record) => {
-  //   const restrictedStatuses = [
-  //     "Awaiting ME Scheduling",
-  //     "ME Appointment Scheduled",
-  //     "Hold",
-  //     "Rejected",
-  //   ];
-
-  //   const isRestrictedStatus = restrictedStatuses.includes(record.status);
-  //   const isMEApproved = record.status === "ME Approved";
-  //   const isPhysicalDocument =
-  //     record.status?.toLowerCase() === "physical document";
-
-  //   return (
-  //     <div style={{ display: "flex", gap: "8px" }}>
-  //       <Button
-  //         type="primary"
-  //         size="small"
-  //         icon={<span>👁️</span>}
-  //         onClick={() => handleViewClick(record)}
-  //       >
-  //         View
-  //       </Button>
-
-  //       {isMEApproved ? (
-  //         <Button
-  //           type="primary"
-  //           size="small"
-  //           icon={<span>✅</span>}
-  //           onClick={() => handleValidateLicense(record)}
-  //           style={{
-  //             backgroundColor: "#ffffff",
-  //             borderColor: "#52c41a",
-  //             color: "#52c41a",
-  //           }}
-  //         >
-  //           Validate the license
-  //         </Button>
-  //       ) : (
-  //         !isRestrictedStatus &&
-  //         (isPhysicalDocument ? (
-  //           <Button
-  //             type="default"
-  //             size="small"
-  //             icon={<span>📝</span>}
-  //             onClick={() => handleUpdatePhysicalMeetingStatus(record)}
-  //             style={{ backgroundColor: "#f0f0f0", borderColor: "#d9d9d9" }}
-  //           >
-  //             Physical Meeting Status
-  //           </Button>
-  //         ) : (
-  //           <Button
-  //             type="default"
-  //             size="small"
-  //             icon={<span>🗓️</span>}
-  //             onClick={() => handleScheduleAppointment(record)}
-  //           >
-  //             Schedule
-  //           </Button>
-  //         ))
-  //       )}
-  //     </div>
-  //   );
-  // };
-
   const columns = [
+
     { title:
       language === "en"
         ? "ID"
@@ -585,23 +500,27 @@ const RequestMiningTable = ({searchText}) => {
     },
     {
       title:
+
   language === "en"
     ? "Assigned To"
     : language === "si"
     ? "පවරා ඇත"
     : "ஒதுக்கப்பட்டவர்",
+
       dataIndex: "assigned_to",
       key: "assigned_to",
       width: 150,
       render: (text) => text || "-",
     },
     {
+
       title:
   language === "en"
     ? "Mobile"
     : language === "si"
     ? "දුරකථන අංකය"
     : "தொலைபேசி",
+
       dataIndex: "mobile_number",
       key: "mobile_number",
       width: 150,
@@ -609,11 +528,13 @@ const RequestMiningTable = ({searchText}) => {
     },
     {
       title:
+
   language === "en"
     ? "District"
     : language === "si"
     ? "දිස්ත්‍රික්කය"
     : "மாவட்டம்",
+
       dataIndex: "administrative_district",
       key: "administrative_district",
       width: 150,
@@ -621,11 +542,13 @@ const RequestMiningTable = ({searchText}) => {
     },
     {
       title:
+
   language === "en"
     ? "Date Created"
     : language === "si"
     ? "සාදන ලද දිනය"
     : "உருவாக்கப்பட்ட திகதி",
+
       dataIndex: "created_on",
       key: "created_on",
       width: 120,
@@ -647,11 +570,13 @@ const RequestMiningTable = ({searchText}) => {
     },
     {
       title:
+
   language === "en"
     ? "Action"
     : language === "si"
     ? "ක්‍රියාව"
     : "நடவடிக்கை",
+
       key: "action",
       width: 150,
       fixed: "right",
@@ -706,10 +631,6 @@ const RequestMiningTable = ({searchText}) => {
         if (indexB === -1) return -1;
         return indexA - indexB;
       });
-
-      // const handleSearch = (value) => {
-      //   setSearchText(value.toLowerCase());
-      // };
 
     return (
       <Form
@@ -775,54 +696,56 @@ const RequestMiningTable = ({searchText}) => {
   // --- Component Return ---
   return (
     <>
+      <div style={{ marginBottom: 16 }}>
+        <Row gutter={16} align="middle">
+          <Col>
+            <Select
+              placeholder={
+                language === "en"
+                  ? "Filter by status"
+                  : language === "si"
+                  ? ""
+                  : "நிலையின் அடிப்படையில் வடிகட்டவும்"
+              }
+              value={statusFilter}
+              onChange={setStatusFilter}
+              style={{ width: 200 }}
+              allowClear
+            >
+              {statusOptions.map((option) => (
+                <Option key={option.value} value={option.value}>
+                  {option.label}
+                </Option>
+              ))}
+            </Select>
+          </Col>
 
-    <div style={{ marginBottom: 16 }}>
-          <Row gutter={16} align="middle">
-            <Col>
-              <Select
-                placeholder={
-                  language === "en"
-                    ? "Filter by status"
-                    : language === "si"
-                    ? ""
-                    : "நிலையின் அடிப்படையில் வடிகட்டவும்"
-                }
-                value={statusFilter}
-                onChange={setStatusFilter}
-                style={{ width: 200 }}
-                allowClear
-              >
-                {statusOptions.map((option) => (
-                  <Option key={option.value} value={option.value}>
-                    {option.label}
-                  </Option>
-                ))}
-              </Select>
-            </Col>
-            
-            <Col>
-              <Button
-                type="default"
-                onClick={() => {
-                  setStatusFilter(null);
-                  setSearchText("");
-                }}
-              >
-                 {language === "en"
-    ? "Reset Filters"
-    : language === "si"
-    ? ""
-    : "வடிகட்டிகளை மீட்டமைக்கவும்"}
-              </Button>
-            </Col>
-          </Row>
-        </div>
+          <Col>
+            <Button
+              type="default"
+              onClick={() => {
+                setStatusFilter(null);
+                setSearchText("");
+              }}
+            >
+              {language === "en"
+                ? "Reset Filters"
+                : language === "si"
+                ? ""
+                : "வடிகட்டிகளை மீட்டமைக்கவும்"}
+            </Button>
+          </Col>
+        </Row>
+      </div>
 
       <Table
         dataSource={mlRequestData
           .filter((item) => item.status?.toLowerCase() !== "valid")
           .filter((item) =>
-            statusFilter ? item.status?.toLowerCase() === statusFilter.toLowerCase() : true)
+            statusFilter
+              ? item.status?.toLowerCase() === statusFilter.toLowerCase()
+              : true
+          )
           .filter((item) => {
             if (!searchText) return true;
             const search = searchText.toLowerCase();
@@ -835,9 +758,7 @@ const RequestMiningTable = ({searchText}) => {
               item.created_on?.toLowerCase().includes(search) ||
               item.status?.toLowerCase().includes(search)
             );
-          }
-          
-        )}
+          })}
         columns={columns}
         rowKey="id"
         pagination={{
@@ -884,6 +805,7 @@ const RequestMiningTable = ({searchText}) => {
                 disabled={updateLoading}
               >
                 {language === "en"
+
     ? "Cancel"
     : language === "si"
     ? "අවලංගු කරන්න"
@@ -900,6 +822,7 @@ const RequestMiningTable = ({searchText}) => {
     : language === "si"
     ? "යාවත්කාලීන විස්තර"
     : "விவரங்களைப் புதுப்பிக்கவும்"}
+
               </Button>
             </Col>
           </Row>
@@ -940,7 +863,7 @@ const RequestMiningTable = ({searchText}) => {
         form={physicalMeetingForm}
         recordId={currentRecord?.id} // Pass the ID here
       />
-      
+
       <ValidateModal
         visible={isValidateModalVisible}
         onCancel={() => {
