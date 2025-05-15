@@ -253,7 +253,8 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
     driver_contact: "Driver Contact",
     cubes: "Cubes",
     mining_license_number: "Mining License Number",
-    destination: "Destination"
+    destination: "Destination",
+    license_boundary_survey: "License Boundary Survey"
   };
 
   const getFileIcon = (key, fileType) => {
@@ -293,7 +294,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
         style={{ marginBottom: "18px" }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div 
+          {/* <div 
             style={{ 
               display: 'flex',
               alignItems: 'center',
@@ -315,13 +316,13 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
             >
               {fileName}
             </Text>
-          </div>
+          </div> */}
           <Button
             type="primary"
             icon={<DownloadOutlined />}
             onClick={() => handleDownload(fileUrl, `${displayName.replace(/\s+/g, '_')}_${currentRecord.id}`)}
           >
-            Download
+            {language === "en" ? "Download" : language === "si" ? "බාගත කරන්න" : "பதிவிறக்க"}
           </Button>
         </div>
       </Form.Item>
@@ -491,6 +492,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
           {renderFileField("economic_viability_report", language === "en" ? "Economic Viability Report" : language === "si" ? "ආර්ථික ප්‍රතිඵල වාර්තාව" : " ", currentRecord.economic_viability_report)}
           {renderFileField("detailed_mine_restoration_plan", language === "en" ? "Mine Restoration Plan" : language === "si" ? "ඛණිජ ප්‍රතිසංස්කරණ සැලැස්ම" : " ", currentRecord.detailed_mine_restoration_plan)}
           {renderFileField("payment_receipt", language === "en" ? "Payment Receipt" : language === "si" ? "බලපත්‍ර ගාස්තු ගෙවීම් රිසිට්පත" : " ", currentRecord.payment_receipt)}
+          {renderFileField("license_boundary_survey", language === "en" ? "License Boundary Survey" : language === "si" ? "බලපත්‍ර සීමා සමීක්ෂණය" : " ", currentRecord.license_boundary_survey)}
         </Form>
       );
     };
