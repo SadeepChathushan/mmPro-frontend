@@ -13,9 +13,8 @@ const Appointments = ({ activeTab }) => {
   const [isApprovalModalVisible, setIsApprovalModalVisible] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [approvingAppointmentId, setApprovingAppointmentId] = useState(null);
-  const [approvingAppointmentIssuesId, setApprovingAppointmentIssuesId] =
-    useState(null);
-  const { language } = useLanguage();
+  const [approvingAppointmentIssuesId, setApprovingAppointmentIssuesId] = useState(null);
+  const { language } = useLanguage(); 
 
   const [appointments, setAppointments] = useState([
     {
@@ -80,10 +79,10 @@ const Appointments = ({ activeTab }) => {
           ? {
               ...app,
               date: dateString,
-              status: "scheduled", // Update status to 'scheduled'
+              status: "scheduled", 
               licenseDetails: {
                 ...app.licenseDetails,
-                status: "Scheduled", // Update license status
+                status: "Scheduled", 
               },
             }
           : app

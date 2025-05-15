@@ -383,6 +383,15 @@ const AddNewLicense = () => {
 
   const handleSubmit = async (values) => {
     setLoading(true);
+    if (
+      values.start_date &&
+      values.end_date &&
+      values.end_date.isBefore(values.start_date)
+    ) {
+      message.error("Please make sure the due date comes after the start date.");
+      setLoading(false);
+      return;
+    }
     try {
       const formData = new FormData();
       formData.append("subject", `Mining License  - ${ownerId}`);

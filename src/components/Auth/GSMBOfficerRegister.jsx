@@ -43,9 +43,8 @@ const GSMBOfficerRegister = () => {
 
       setLoading(true);
       const formData = new FormData();
-
       // Append all form fields
-      formData.append("login", values.username); 
+      formData.append("login", values.username);
       formData.append("first_name", values.firstName);
       formData.append("last_name", values.lastName);
       formData.append("email", values.email);
@@ -65,9 +64,8 @@ const GSMBOfficerRegister = () => {
       if (workIdFile.length > 0) {
         formData.append("work_id", workIdFile[0]);
       }
-
-      // Call the registration service with 'gsmb_officer' role
       const result = await authService.registerUser(formData, "gsmb_officer");
+      console.log("Registration Result:", result);
 
       if (result) {
         message.success("GSMB Officer account created successfully!");
@@ -78,11 +76,12 @@ const GSMBOfficerRegister = () => {
       }
     } catch (error) {
       console.error("Account Creation Error:", error);
-      message.error(
-        error.response?.data?.message ||
-          error.message ||
-          "Failed to create account. Please try again."
-      );
+
+      if (error?.error?.errors?.length > 0) {
+        error.error.errors.forEach((err) => message.error(err));
+      } else {
+        message.error("Registration failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
