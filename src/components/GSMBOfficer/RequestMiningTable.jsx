@@ -40,6 +40,10 @@ const RequestMiningTable = ({ searchText }) => {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [form] = Form.useForm();
   const [statusFilter, setStatusFilter] = useState(null);
+  const [selectedMiningRequestId, setSelectedMiningRequestId] = useState(null);
+  const [selectedAssignedToId, setSelectedAssignedToId] = useState(null);
+  const [selectedRecord, setSelectedRecord] = React.useState(null);
+const [scheduleModalVisible, setScheduleModalVisible] = React.useState(false);
   // const [searchText, setSearchText] = useState("");
 
   // States for modals
@@ -105,6 +109,8 @@ const RequestMiningTable = ({ searchText }) => {
     setCurrentRecord(record);
     appointmentForm.resetFields();
     setIsAppointmentModalVisible(true);
+     setSelectedRecord(record);
+  setScheduleModalVisible(true);
   };
 
   const handleUpdatePhysicalMeetingStatus = (record) => {
@@ -138,14 +144,16 @@ const RequestMiningTable = ({ searchText }) => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (formValues) => {
     try {
       setAppointmentLoading(true);
       const values = await appointmentForm.validateFields();
 
       const payload = {
-        mining_request_id: currentRecord?.id || "",
-        assigned_to_id: currentRecord?.assigned_to_details?.id || "",
+         mining_request_id: selectedRecord.id,
+    assigned_to_id: selectedRecord.assigned_to_id,
+        // mining_request_id: currentRecord?.id || "",
+        // assigned_to_id: currentRecord?.assigned_to_details?.id || "",
         physical_meeting_location: values.location,
         start_date: values.date.format("YYYY-MM-DD"),
         description: values.notes || "",
@@ -866,6 +874,9 @@ const RequestMiningTable = ({ searchText }) => {
         onSubmit={handleSubmit}
         loading={appointmentLoading}
         form={appointmentForm}
+        miningRequestId={selectedMiningRequestId}
+        assignedToId={selectedAssignedToId}
+        selectedRecord={selectedRecord}
       />
 
       <ConfirmationModal

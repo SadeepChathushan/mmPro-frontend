@@ -128,7 +128,7 @@ export const getAppointmentDetails = async (appointmentId) => {
 
 //This is the function to schedule the appointment date for the mining engineer
 //It takes the date as a parameter and sends it to the backend API to schedule the appointment
-export const scheduleMiningEngineerAppointmentDate = async (mining_number, date) => {
+export const scheduleMiningEngineerAppointmentDate = async (mining_number, date,Google_location) => {
   try {
     const token = localStorage.getItem("USER_TOKEN");
     if (!token) {
@@ -140,7 +140,8 @@ export const scheduleMiningEngineerAppointmentDate = async (mining_number, date)
       `${BASE_URL}/mining-engineer/create-ml-appointment`,
       { 
         start_date: date,
-        mining_license_number: mining_number // Map mining_number to mining_license_number for the API
+        mining_license_number: mining_number, // Map mining_number to mining_license_number for the API
+        Google_location:Google_location
       },
       {
         headers: {
@@ -335,5 +336,79 @@ export const miningEngineerRejectLicense = async (me_appointment_issue_id, formD
               "An error occurred",
       status: error.response?.status
     };
+  }
+};
+
+export const licenseCount = async () => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return {};
+    }
+
+    const response = await axios.get(
+      `${BASE_URL}/mining-engineer/me-licenses-count`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.data.success && response.data.data && typeof response.data.data === "object") {
+      return response.data.data;
+    } else {
+      console.error(
+        "Failed to License count : Unexpected data format"
+      );
+      return {};
+    }
+  } catch (error) {
+    console.error("Failed to License count:", error);
+    return {};
+  }
+};
+
+export const meAppointments = async () => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return [];
+    }
+    const response = await axios.get(
+      `${BASE_URL}/mining-engineer/me-appointments`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Handle both { data: { appointments: [...] } } and { appointments: [...] }
+    let appointments = [];
+    if (response.data) {
+      if (Array.isArray(response.data.appointments)) {
+        appointments = response.data.appointments;
+      } else if (
+        response.data.data &&
+        Array.isArray(response.data.data.appointments)
+      ) {
+        appointments = response.data.data.appointments;
+      }
+    }
+
+    if (appointments.length > 0) {
+      return appointments;
+    } else {
+      console.error("Failed to fetch appointments: Unexpected data format");
+      return [];
+    }
+  } catch (error) {
+    console.error("Failed to fetch appointments:", error);
+    return [];
   }
 };
