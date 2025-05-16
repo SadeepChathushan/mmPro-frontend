@@ -275,7 +275,7 @@
 }
 
 /* Status Styles */
-.status-approved-by-gsmb {
+/* .status-approved-by-gsmb {
   color: #1890ff;
   font-weight: bold;
 }
@@ -285,12 +285,45 @@
   font-weight: bold;
 }
 
-.status-approved-by-engineer {
+.status-Pending {
   color: #13c2c2;
   font-weight: bold;
 }
 
 .status-ready-for-collection {
   color: #52c41a;
+  font-weight: bold;
+} */
+.status-pending {
+  color: #FFA500; /* orange */
+  font-weight: bold;
+}
+
+.status-physical-document {
+  color: #1E90FF; /* dodger blue */
+  font-weight: bold;
+}
+
+.status-awaiting-me-scheduling {
+  color: #8A2BE2; /* blue violet */
+  font-weight: bold;
+}
+
+.status-me-approved {
+  color: #228B22; /* forest green */
+  font-weight: bold;
+}
+
+.status-valid {
+  color: #2E8B57; /* sea green */
+  font-weight: bold;
+}
+
+.status-rejected {
+  color: #DC143C; /* crimson */
+  font-weight: bold;
+}
+.status-me-appointment-scheduled {
+  color: #20B2AA; /* light sea green */
   font-weight: bold;
 }

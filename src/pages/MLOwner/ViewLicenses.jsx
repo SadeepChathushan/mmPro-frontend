@@ -9,6 +9,7 @@ import {
   Space,
   Card,
   Empty,
+  Spin,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
@@ -26,6 +27,8 @@ const Licenses = () => {
   const [licenses, setLicenses] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [filteredLicenses, setFilteredLicenses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
 
   // Translations
   const translations = {
@@ -42,6 +45,7 @@ const Licenses = () => {
       dispatchLoad: "Dispatch Load",
       history: "History",
       backToHome: "Back to Home",
+      status: "Status"
     },
     si: {
       title: "කැණීමේ බලපත්‍ර හිමිකරුගේ බලපත්‍ර",
@@ -70,6 +74,7 @@ const Licenses = () => {
       dispatchLoad: "சரக்கு அனுப்பு",
       history: "வரலாறு",
       backToHome: "முகப்பு பக்கத்திற்கு திரும்பு",
+      status: "நிலை"
     },
   };
 
@@ -94,6 +99,9 @@ const Licenses = () => {
         setFilteredLicenses(mappedData); // Initialize filteredLicenses with all licenses
       } catch (error) {
         console.error("Failed to fetch licenses:", error);
+      }finally {
+        setLoading(false);
+        
       }
     };
     loadLicenses();
@@ -196,7 +204,12 @@ const Licenses = () => {
           />
         </Col>
       </Row>
-
+ {loading ? (
+          <div className="loading-container">
+            <Spin size="large" className="loading-icon" />
+          </div>
+        ) : (
+          <>
       {filteredLicenses.length === 0 ? (
         <div className="no-data-container">
           <Empty
@@ -205,8 +218,10 @@ const Licenses = () => {
           />
         </div>
       ) : (
-        <div className="card-container">
+        <Row gutter={[16, 16]} div className="card-container">
           {filteredLicenses.map((license) => (
+                <Col xs={24} sm={24} md={12} lg={8} xl={6} key={license.licenseNumber}>
+
             <Card
               key={license.licenseNumber}
               title={`License Number: ${license.licenseNumber}`}
@@ -215,6 +230,7 @@ const Licenses = () => {
               <p>
                 <strong>{currentTranslations.owner}:</strong> {license.owner}
               </p>
+              
               <p>
                 <strong>{currentTranslations.location}:</strong>{" "}
                 {license.location}
@@ -227,12 +243,34 @@ const Licenses = () => {
                 <strong>{currentTranslations.dueDate}:</strong>{" "}
                 {moment(license.dueDate).format("YYYY-MM-DD")}
               </p>
-              <Space>
+              <p>
+                <strong>{currentTranslations.status}:</strong>{" "}
+                {license.status}
+              </p>
+              {/* <p>
+                        <strong>{currentTranslations.status}:</strong>
+                        <span
+                          className={
+                            new Date() <= new Date(license.dueDate)
+                              ? "valid-status"
+                              : "expired-status"
+                          }
+                        >
+                          {new Date() <= new Date(license.dueDate)
+                            ? currentTranslations.active
+                            : currentTranslations.inactive}
+                        </span>
+                      </p> */}
+              <Space style={{
+                          width: "100%",
+                          display: "flex",
+                          justifyContent: "center",
+                        }}>
                 <Link
                   to={`/mlowner/home/dispatchload/${license.licenseNumber}`}
                 >
                   <Button
-                    className="dispatch-load-button"
+                    className="dispatch-load-button "
                     disabled={
                       parseInt(license.remainingCubes, 10) === 0 ||
                       new Date(license.dueDate) < new Date()
@@ -241,17 +279,30 @@ const Licenses = () => {
                     {currentTranslations.dispatchLoad}
                   </Button>
                 </Link>
+                </Space>
+                      <Space
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                      >
+                
                 <Link
                   to={`/mlowner/history?licenseNumber=${license.licenseNumber}`}
                 >
-                  <Button className="history-button1">
+                  <Button className="history-button1 ">
                     {currentTranslations.history}
                   </Button>
                 </Link>
+                 
+
               </Space>
             </Card>
+                </Col>
           ))}
-        </div>
+          
+     </Row>
       )}
 
       <div className="back_button_container">
@@ -260,6 +311,8 @@ const Licenses = () => {
           <FaArrowLeft className="mr-2" />
         </Button>
       </div>
+        </>
+       )}
     </div>
   );
 };

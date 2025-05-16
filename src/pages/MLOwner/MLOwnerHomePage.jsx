@@ -12,8 +12,9 @@ import {
 } from "antd";
 import { Link } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { fetchHomeLicense } from "../../services/MLOService";
+import { fetchHomeLicense, fetchRequestedMiningLicenses } from "../../services/MLOService";
 import "../../styles/MLOwner/MLOwnerHomePage.css";
+
 //fetchMLRequests
 const MLOwnerHomePage = () => {
   const { language } = useLanguage();
@@ -110,44 +111,54 @@ const MLOwnerHomePage = () => {
   const currentTranslations = translations[language] || translations["en"];
 
   // Hardcoded requested license data
-  const hardcodedRequestedLicenses = [
-    {
-      id: 1,
-      licenseNumber: "ML-REQ-2023-001",
-      status: "approved_by_gsmb",
-      requestDate: "2023-10-15",
-      lastUpdated: "2023-10-20",
-    },
-    {
-      id: 2,
-      licenseNumber: "ML-REQ-2023-002",
-      status: "appointment_fixed",
-      requestDate: "2023-10-18",
-      lastUpdated: "2023-10-22",
-      appointmentDate: "2023-11-05",
-    },
-    {
-      id: 3,
-      licenseNumber: "ML-REQ-2023-003",
-      status: "approved_by_engineer",
-      requestDate: "2023-10-20",
-      lastUpdated: "2023-10-25",
-    },
-    {
-      id: 4,
-      licenseNumber: "ML-REQ-2023-004",
-      status: "ready_for_collection",
-      requestDate: "2023-10-22",
-      lastUpdated: "2023-10-28",
-    },
-  ];
+  // const hardcodedRequestedLicenses = [
+  //   {
+  //     id: 1,
+  //     licenseNumber: "ML-REQ-2023-001",
+  //     status: "approved_by_gsmb",
+  //     requestDate: "2023-10-15",
+  //     lastUpdated: "2023-10-20",
+  //   },
+  //   {
+  //     id: 2,
+  //     licenseNumber: "ML-REQ-2023-002",
+  //     status: "appointment_fixed",
+  //     requestDate: "2023-10-18",
+  //     lastUpdated: "2023-10-22",
+  //     appointmentDate: "2023-11-05",
+  //   },
+  //   {
+  //     id: 3,
+  //     licenseNumber: "ML-REQ-2023-003",
+  //     status: "approved_by_engineer",
+  //     requestDate: "2023-10-20",
+  //     lastUpdated: "2023-10-25",
+  //   },
+  //   {
+  //     id: 4,
+  //     licenseNumber: "ML-REQ-2023-004",
+  //     status: "ready_for_collection",
+  //     requestDate: "2023-10-22",
+  //     lastUpdated: "2023-10-28",
+  //   },
+  // ];
+  
 
   useEffect(() => {
     // Set the hardcoded requested licenses
-    setRequestedLicenses(hardcodedRequestedLicenses);
+    // setRequestedLicenses(hardcodedRequestedLicenses);
 
     // Check for status updates to show notifications
-    showStatusNotifications(hardcodedRequestedLicenses);
+    // showStatusNotifications(hardcodedRequestedLicenses);
+const loadRequestedLicenses = async () => {
+    const data = await fetchRequestedMiningLicenses();
+    setRequestedLicenses(data);
+    showStatusNotifications(data);
+  };
+  
+
+  loadRequestedLicenses();
+  
 
     const fetchData = async () => {
       try {
@@ -252,6 +263,7 @@ const MLOwnerHomePage = () => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
+  
 
   return (
     <div className="page-container1">
@@ -300,18 +312,18 @@ const MLOwnerHomePage = () => {
           <Row gutter={[16, 16]} className="card-container">
             {requestedLicenses.map((request) => (
               <Col xs={24} sm={24} md={24} lg={24} key={request.id}>
-                <Card title={request.licenseNumber} className="request-card">
+                <Card title={ <span className="font-semibold">
+                License No:{request.mining_license_number} </span>
+            }className="request-card">
                   <p>
-                    <strong>Request Date:</strong> {request.requestDate}
+<strong>Request Date:</strong> {new Date(request.created_on).toISOString().split("T")[0]}
                   </p>
                   <p>
-                    <strong>Status:</strong>
-                    <span
-                      className={`status-${request.status.replace(/_/g, "-")}`}
-                    >
-                      {getStatusTranslation(request.status)}
-                    </span>
-                  </p>
+  <strong>Status:</strong>{" "}
+  <span className={`status-${request.status.toLowerCase().replace(/[_ ]+/g, "-")}`}>
+  {getStatusTranslation(request.status)}
+</span>
+</p>
                   {request.appointmentDate && (
                     <p>
                       <strong>Appointment Date:</strong>{" "}
@@ -319,7 +331,7 @@ const MLOwnerHomePage = () => {
                     </p>
                   )}
                   <p>
-                    <small>Last Updated: {request.lastUpdated}</small>
+                    <small>Last Updated: {new Date(request.updated_on).toISOString().split("T")[0]}</small>
                   </p>
                 </Card>
               </Col>
@@ -443,5 +455,6 @@ const MLOwnerHomePage = () => {
     </div>
   );
 };
+  
 
 export default MLOwnerHomePage;

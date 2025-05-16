@@ -379,5 +379,36 @@ export const submitMLRequest = async (formData) => {
     throw new Error(errorMessage);
   }
 };
+export const fetchRequestedMiningLicenses = async () => {
+  try {
+    // Step 1: Get JWT token
+    const token = localStorage.getItem("USER_TOKEN");
+
+    if (!token) {
+      throw new Error("Authorization token is missing");
+    }
+
+    // Step 2: Make GET request to the endpoint
+    const response = await axios.get(`${BASE_URL}/mining-owner/get-pending-license-details`, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    // Step 3: Check if success and return data
+    if (response.data && response.data.success) {
+      console.log("Requested Mining Licenses:", response.data.data);
+      return response.data.data;
+    } else {
+      console.error("Unexpected response:", response.data);
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching requested mining licenses:", error.message || error);
+    return [];
+  }
+};
+
 
 export default MLOService;
