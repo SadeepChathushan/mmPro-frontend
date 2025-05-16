@@ -148,8 +148,14 @@ const AppointmentsTable = ({
     return current && current < moment().startOf("day");
   };
 
-  // Common columns for both tabs
-  const commonColumns = [
+  // // Common columns for both tabs
+  // const commonColumns = [
+
+  // ];
+
+  // Pending Tab Columns
+  const pendingColumns = [
+    // ...commonColumns,
     {
       title:
         language === "en"
@@ -160,6 +166,7 @@ const AppointmentsTable = ({
       dataIndex: "assigned_to",
       key: "mlOwner",
     },
+
     {
       title:
         language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்",
@@ -193,11 +200,6 @@ const AppointmentsTable = ({
         </Space>
       ),
     },
-  ];
-
-  // Pending Tab Columns
-  const pendingColumns = [
-    ...commonColumns,
     {
       title:
         language === "en"
@@ -294,7 +296,52 @@ const AppointmentsTable = ({
 
   // Scheduled Tab Columns (with Scheduled Date)
   const scheduledColumns = [
-    ...commonColumns,
+    // ...commonColumns,
+
+    {
+      title:
+        language === "en"
+          ? "Mining Engineer"
+          : language === "si"
+          ? "ඇමතුම් හිමිකරු"
+          : "ML உரிமையாளர்",
+      dataIndex: "assigned_to",
+      key: "mlOwner",
+    },
+
+    {
+      title:
+        language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்",
+      dataIndex: "Google_location",
+      key: "location",
+      render: (location) => (
+        <Space>
+          <EnvironmentOutlined
+            style={{
+              color: "#52c41a",
+              fontSize: "18px",
+              background: "#f6ffed",
+              padding: "4px",
+              borderRadius: "50%",
+            }}
+          />
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+              location
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#389e0d" }}
+          >
+            {language === "en"
+              ? "View on Map"
+              : language === "si"
+              ? "සිතියමේ පෙන්වන්න"
+              : "வரைபடத்தில் காண்க"}
+          </a>
+        </Space>
+      ),
+    },
     {
       title:
         language === "en"
