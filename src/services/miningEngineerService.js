@@ -140,7 +140,7 @@ export const scheduleMiningEngineerAppointmentDate = async (mining_number, date,
       `${BASE_URL}/mining-engineer/create-ml-appointment`,
       { 
         start_date: date,
-        mining_license_number: mining_number, // Map mining_number to mining_license_number for the API
+        mining_license_number: mining_number, 
         Google_location:Google_location
       },
       {
@@ -234,6 +234,8 @@ export const getMeApproveSingleMiningLicense = async (issue_id) => {
         Land_owner_name: licenseData.Land_owner_name,
         Name_of_village: licenseData.Name_of_village,
         administrative_district: licenseData.administrative_district,
+        Deed_Plan: licenseData.Deed_Plan,
+        Detailed_Plan: licenseData.Detailed_Plan,
         date: new Date().toLocaleDateString(), 
         status: licenseData.status,
   
@@ -302,9 +304,6 @@ export const miningEngineerRejectLicense = async (me_appointment_issue_id, formD
       return { success: false, message: "Authentication required" };
     }
 
-    // Debug: Print token to verify it's correct
-    console.log("Using token:", token);
-
     const endpoint = `${BASE_URL}/mining-engineer/miningEngineer-reject/${me_appointment_issue_id}`;
 
     const response = await axios.put(endpoint, formData, {
@@ -314,8 +313,6 @@ export const miningEngineerRejectLicense = async (me_appointment_issue_id, formD
       },
       validateStatus: (status) => status < 500, // Don't throw for 401/403
     });
-
-    console.log("Full API response:", response); // Debug response
 
     if (response.data.success) {
       return { success: true, data: response.data.data };
@@ -338,6 +335,46 @@ export const miningEngineerRejectLicense = async (me_appointment_issue_id, formD
     };
   }
 };
+
+export const miningEngineerHoldLicense = async (data) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+      console.error("User token not found in localStorage");
+      return { success: false, message: "Authentication required" };
+    }
+    const endpoint = `${BASE_URL}/mining-engineer/set-license-hold`;
+
+    const response = await axios.post(endpoint, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      validateStatus: (status) => status < 500,
+    });
+
+    if (response.data.success) {
+      return { success: true, data: response.data.data };
+    } else {
+      return { 
+        success: false, 
+        message: response.data.message || response.data.error || "Failed to Hold the license",
+        status: response.status
+      };
+    }
+  } catch (error) {
+    console.error("API Error Details:", error.response?.data || error.message);
+    return { 
+      success: false, 
+      message: error.response?.data?.message || 
+              error.response?.data?.error || 
+              error.message || 
+              "An error occurred",
+      status: error.response?.status
+    };
+  }
+};
+
 
 export const licenseCount = async () => {
   try {

@@ -133,7 +133,7 @@ const RejectConfirmation = ({ onReject, recordId, mining_number }) => {
         <p>{t.confirmText}</p>
 
         {/* Display the mining number and ID */}
-        <div style={{ marginBottom: 16 }}>
+        {/* <div style={{ marginBottom: 16 }}>
           <p>
             <strong>
               {language === "en"
@@ -148,7 +148,7 @@ const RejectConfirmation = ({ onReject, recordId, mining_number }) => {
           <p>
             <strong>ID:</strong> {recordId}
           </p>
-        </div>
+        </div> */}
 
         <Form form={form} layout="vertical">
           <Form.Item

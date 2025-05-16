@@ -76,15 +76,10 @@ const AppointmentsTable = ({
   ) => {
     if (dateString) {
       try {
-        // You can use googleLocation here if needed, e.g. log or send to API
-        // console.log("Google Location:", googleLocation);
-
         const result = await scheduleMiningEngineerAppointmentDate(
           mining_number,
           dateString,
           Google_location
-          // If your API expects googleLocation, add it as a third argument
-          // mining_number, dateString, googleLocation
         );
 
         if (result.success) {
@@ -378,8 +373,14 @@ const AppointmentsTable = ({
           <Button
             icon={<EyeOutlined />}
             onClick={() => {
-              setSelectedLicense(record.id);
+              // Extract last 3 digits from mining_number
+              const last3 = record.mining_number
+                ? record.mining_number.match(/\d{3}$/)?.[0]
+                : "";
+              setSelectedLicense(last3);
               setIsViewModalVisible(true);
+              // Optional: log for debugging
+              console.log("Selected mining number last 3:", last3);
             }}
             className="view-details-btn"
           >
@@ -391,7 +392,9 @@ const AppointmentsTable = ({
               console.log("Approve clicked:", record.mining_number, record.id);
               onShowApproval(record.mining_number, record.id);
             }}
-            onHold={onHold}
+            onHold={(record) => {
+              onHold(record.mining_number, record.id);
+            }}
             onReject={(record) => {
               onReject(record.mining_number, record.id);
             }}

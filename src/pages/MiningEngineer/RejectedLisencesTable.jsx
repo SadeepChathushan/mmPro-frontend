@@ -97,12 +97,7 @@ const RejectedLicensesTable = ({  onViewDetails, language }) => {
         </Space>
       ),
     },
-    {
-      title: language === "en" ? "Rejected Date" : "நிராகரிக்கப்பட்ட தேதி",
-      dataIndex: "date",
-      key: "date",
-      render: (text) => formatDate(text),
-    },
+ 
     {
       title: language === "en" ? "Status" : "நிலை",
       key: "status",
@@ -142,19 +137,6 @@ const RejectedLicensesTable = ({  onViewDetails, language }) => {
   );
 };
 
-// RejectedLicensesTable.propTypes = {
-//   data: PropTypes.arrayOf(
-//     PropTypes.shape({
-//       licenseNumber: PropTypes.string.isRequired,
-//       owner: PropTypes.string.isRequired,
-//       location: PropTypes.string.isRequired,
-//       date: PropTypes.string.isRequired,
-//       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-//     })
-//   ).isRequired,
-//   onViewDetails: PropTypes.func.isRequired,
-//   language: PropTypes.oneOf(["en", "ta"]).isRequired,
-// };
 RejectedLicensesTable.propTypes = {
   onViewDetails: PropTypes.func.isRequired,
   language: PropTypes.oneOf(["en", "ta"]).isRequired,

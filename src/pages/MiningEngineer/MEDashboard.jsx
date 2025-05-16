@@ -72,9 +72,7 @@ const MEDashboard = () => {
   useEffect(() => {
     const fetchCounts = async () => {
       const data = await licenseCount();
-      // If API returns an array, get the first item, else use as is
       const counts = Array.isArray(data) ? data[0] : data;
-      console.log("Counts from API:", counts);
       setPendingAppointments(counts["Awaiting ME Scheduling"] ?? 0);
       setScheduledAppointments(counts["ME Appointment Scheduled"] ?? 0);
       setApprovedLicenses(counts["ME Approved"] ?? 0);
