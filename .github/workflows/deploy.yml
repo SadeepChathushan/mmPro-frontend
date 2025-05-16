@@ -1,0 +1,38 @@
+name: Deploy React App
+
+# Trigger the workflow on push to the `main` branch
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Runs on the latest Ubuntu version
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Node.js (adjust the version if needed)
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'  # Use the Node.js version your project requires
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: Build the React app (production build)
+      - name: Build React app
+        run: npm run build
+
+      # Step 5: Deploy the build to the server using rsync
+      - name: Deploy to server using rsync
+        run: |
+          rsync -avz --delete build/ username@slt.aasait.lk:/path/to/your/webserver/directory/build
+          ssh username@slt.aasait.lk "sudo systemctl restart nginx"
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # Use SSH private key from GitHub Secrets

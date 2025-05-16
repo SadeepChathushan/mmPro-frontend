@@ -11,6 +11,7 @@ import StatusActions from "./StatusActions";
 import {
   getMeAwatingList,
   scheduleMiningEngineerAppointmentDate,
+  meAppointments,
 } from "../../services/miningEngineerService";
 import ViewLicenseModal from "./ViewDetails";
 import "../../styles/MiningEngineer/AppointmentsTable.css";
@@ -34,8 +35,12 @@ const AppointmentsTable = ({
     const fetchAppointments = async () => {
       setLoading(true);
       try {
-        const data = await getMeAwatingList();
-        console.log("Fetched Appointments Data:", data);
+        let data = [];
+        if (activeTab === "pending") {
+          data = await getMeAwatingList();
+        } else if (activeTab === "scheduled") {
+          data = await meAppointments();
+        }
         setAppointments(
           data.map((item) => ({ ...item, tempDateString: null }))
         );
@@ -52,7 +57,6 @@ const AppointmentsTable = ({
         setLoading(false);
       }
     };
-
     fetchAppointments();
   }, [activeTab, language]);
 
@@ -64,12 +68,23 @@ const AppointmentsTable = ({
     );
   };
 
-  const handleConfirmDate = async (mining_number, dateString) => {
+  // Update the function signature to accept googleLocation
+  const handleConfirmDate = async (
+    mining_number,
+    dateString,
+    Google_location
+  ) => {
     if (dateString) {
       try {
+        // You can use googleLocation here if needed, e.g. log or send to API
+        // console.log("Google Location:", googleLocation);
+
         const result = await scheduleMiningEngineerAppointmentDate(
           mining_number,
-          dateString
+          dateString,
+          Google_location
+          // If your API expects googleLocation, add it as a third argument
+          // mining_number, dateString, googleLocation
         );
 
         if (result.success) {
@@ -81,6 +96,7 @@ const AppointmentsTable = ({
                     status: "ME Appointment Scheduled",
                     date: dateString,
                     tempDateString: null,
+                    Google_location: Google_location, // Optional: update local state
                   }
                 : item
             )
@@ -94,8 +110,9 @@ const AppointmentsTable = ({
               : "தேதி உறுதி செய்யப்பட்டு சந்திப்பு திட்டமிடப்பட்டது!"
           );
 
-          onConfirmScheduleDate(mining_number, dateString);
-          onDateChange && onDateChange(mining_number, null, dateString);
+          onConfirmScheduleDate(mining_number, dateString, Google_location);
+          onDateChange &&
+            onDateChange(mining_number, null, dateString, Google_location);
         } else {
           message.error(
             result.message ||
@@ -131,17 +148,14 @@ const AppointmentsTable = ({
     return current && current < moment().startOf("day");
   };
 
-  const filteredAppointments = appointments.filter((item) => {
-    if (activeTab === "pending") {
-      return item.status === "Awaiting ME Scheduling";
-    } else if (activeTab === "scheduled") {
-      return item.status === "ME Appointment Scheduled";
-    }
-    return true;
-  });
+  // // Common columns for both tabs
+  // const commonColumns = [
 
-  // Common columns for both tabs
-  const commonColumns = [
+  // ];
+
+  // Pending Tab Columns
+  const pendingColumns = [
+    // ...commonColumns,
     {
       title:
         language === "en"
@@ -152,6 +166,7 @@ const AppointmentsTable = ({
       dataIndex: "assigned_to",
       key: "mlOwner",
     },
+
     {
       title:
         language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்",
@@ -185,11 +200,6 @@ const AppointmentsTable = ({
         </Space>
       ),
     },
-  ];
-
-  // Pending Tab Columns
-  const pendingColumns = [
-    ...commonColumns,
     {
       title:
         language === "en"
@@ -225,7 +235,11 @@ const AppointmentsTable = ({
               <Button
                 type="primary"
                 onClick={() =>
-                  handleConfirmDate(record.mining_number, record.tempDateString)
+                  handleConfirmDate(
+                    record.mining_number,
+                    record.tempDateString,
+                    record.Google_location
+                  )
                 }
               >
                 {language === "en"
@@ -280,9 +294,54 @@ const AppointmentsTable = ({
     },
   ];
 
-  // Scheduled Tab Columns
-  const approvedColumns = [
-    ...commonColumns,
+  // Scheduled Tab Columns (with Scheduled Date)
+  const scheduledColumns = [
+    // ...commonColumns,
+
+    {
+      title:
+        language === "en"
+          ? "Mining Engineer"
+          : language === "si"
+          ? "ඇමතුම් හිමිකරු"
+          : "ML உரிமையாளர்",
+      dataIndex: "assigned_to",
+      key: "mlOwner",
+    },
+
+    {
+      title:
+        language === "en" ? "Location" : language === "si" ? "ස්ථානය" : "இடம்",
+      dataIndex: "Google_location",
+      key: "location",
+      render: (location) => (
+        <Space>
+          <EnvironmentOutlined
+            style={{
+              color: "#52c41a",
+              fontSize: "18px",
+              background: "#f6ffed",
+              padding: "4px",
+              borderRadius: "50%",
+            }}
+          />
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+              location
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#389e0d" }}
+          >
+            {language === "en"
+              ? "View on Map"
+              : language === "si"
+              ? "සිතියමේ පෙන්වන්න"
+              : "வரைபடத்தில் காண்க"}
+          </a>
+        </Space>
+      ),
+    },
     {
       title:
         language === "en"
@@ -293,17 +352,17 @@ const AppointmentsTable = ({
       dataIndex: "mining_number",
       key: "mining_number",
     },
-    // {
-    //   title:
-    //     language === "en"
-    //       ? "Scheduled Date"
-    //       : language === "si"
-    //       ? "නියමිත දිනය"
-    //       : "திட்டமிடப்பட்ட தேதி",
-    //   dataIndex: "date",
-    //   key: "date",
-    //   render: (date) => (date ? moment(date).format("YYYY-MM-DD") : "-"),
-    // },
+    {
+      title:
+        language === "en"
+          ? "Scheduled Date"
+          : language === "si"
+          ? "නියමිත දිනය"
+          : "திட்டமிடப்பட்ட தேதி",
+      dataIndex: "start_date",
+      key: "start_date",
+      render: (date) => (date ? moment(date).format("YYYY-MM-DD") : "-"),
+    },
     {
       title:
         language === "en"
@@ -321,7 +380,6 @@ const AppointmentsTable = ({
             onClick={() => {
               setSelectedLicense(record.id);
               setIsViewModalVisible(true);
-              // onViewDetails(record.id);
             }}
             className="view-details-btn"
           >
@@ -343,10 +401,20 @@ const AppointmentsTable = ({
     },
   ];
 
+  // Filter appointments for each tab
+  const filteredAppointments = appointments.filter((item) => {
+    if (activeTab === "pending") {
+      return item.status === "Awaiting ME Scheduling";
+    } else if (activeTab === "scheduled") {
+      return item.status === "ME Appointment Scheduled";
+    }
+    return true;
+  });
+
   return (
     <>
       <Table
-        columns={activeTab === "pending" ? pendingColumns : approvedColumns}
+        columns={activeTab === "pending" ? pendingColumns : scheduledColumns}
         dataSource={filteredAppointments}
         rowKey={(record) => record.id || record.mining_number}
         loading={loading}
@@ -366,7 +434,7 @@ const AppointmentsTable = ({
 };
 
 AppointmentsTable.propTypes = {
-  activeTab: PropTypes.oneOf(["pending", "approved"]).isRequired,
+  activeTab: PropTypes.oneOf(["pending", "scheduled"]).isRequired,
   onViewDetails: PropTypes.func.isRequired,
   onShowApproval: PropTypes.func.isRequired,
   onHold: PropTypes.func.isRequired,

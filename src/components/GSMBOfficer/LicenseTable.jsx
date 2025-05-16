@@ -109,11 +109,11 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
         icon={<span>👁️</span>}
         onClick={(e) => handleViewClick(e, record)}
       >
-         {language === "en"
-    ? "View"
-    : language === "si"
-    ? "බලන්න"
-    : "பார்க்க"}
+        {language === "en"
+          ? "View"
+          : language === "si"
+            ? "බලන්න"
+            : "பார்க்க"}
       </Button>
     </div>
   );
@@ -162,17 +162,17 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
                 status === "valid"
                   ? "green"
                   : status === "me_approved"
-                  ? "blue"
-                  : status === "pending"
-                  ? "orange"
-                  : "#333",
+                    ? "blue"
+                    : status === "pending"
+                      ? "orange"
+                      : "#333",
               fontWeight: 500,
             }}
           >
             {status
               ? status
-                  .replace(/_/g, " ")
-                  .replace(/\b\w/g, (c) => c.toUpperCase())
+                .replace(/_/g, " ")
+                .replace(/\b\w/g, (c) => c.toUpperCase())
               : "-"}
           </span>
         ),
@@ -370,9 +370,9 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
           >
             <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
           </Form.Item> */}
-          
+
           <Form.Item
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Mining License Number" : language === "si" ? "ඛණිජ බලපත්‍ර අංකය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Mining License Number" : language === "si" ? "ඛණිජ බලපත්‍ර අංකය" : "சுரங்க அனுமதி இலக்கம்" }</span>}
             name="license_number"
             style={{ marginBottom: "18px" }}
           >
@@ -380,7 +380,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
           </Form.Item>
 
           <Form.Item
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Valid From" : language === "si" ? "ආරම්භක දිනය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Valid From" : language === "si" ? "ආරම්භක දිනය" : " செல்லுபடியாகும் தொடக்க திகதி"}</span>}
             name="start_date"
             style={{ marginBottom: "18px" }}
           >
@@ -389,7 +389,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Valid To" : language === "si" ? "අවසන් දිනය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Valid To" : language === "si" ? "අවසන් දිනය" : "செல்லுபடியாகும் இறுதி திகதி "}</span>}
             name="due_date"
             style={{ marginBottom: "18px" }}
           >
@@ -398,7 +398,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Exploration Licence No" : language === "si" ? "ගවේෂණ බලපත්‍ර අංකය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Exploration Licence No" : language === "si" ? "ගවේෂණ බලපත්‍ර අංකය" : "ஆய்வு உரிம எண்"}</span>}
             name="exploration_licence_no"
             style={{ marginBottom: "18px" }}
           >
@@ -407,7 +407,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Land Name" : language === "si" ? "ඉඩම් නාමය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Land Name" : language === "si" ? "ඉඩම් නාමය" : "நிலத்தின் பெயர்"}</span>}
             name="land_name"
             style={{ marginBottom: "18px" }}
           >
@@ -416,7 +416,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-              label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Land Owner Name" : language === "si" ? "ඉඩම් හිමිකරු" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Land Owner Name" : language === "si" ? "ඉඩම් හිමිකරු" : "நில உரிமையாளர் பெயர்"}</span>}
             name="land_owner_name"
             style={{ marginBottom: "18px" }}
           >
@@ -425,7 +425,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Village Name" : language === "si" ? "ගම" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Village Name" : language === "si" ? "ගම" : "கிராமத்தின் பெயர்"}</span>}
             name="village_name"
             style={{ marginBottom: "18px" }}
           >
@@ -434,7 +434,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Grama Niladhari Division" : language === "si" ? "ග්‍රාම නිලධාරී වසම" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Grama Niladhari Division" : language === "si" ? "ග්‍රාම නිලධාරී වසම" : "கிராம அலுவலர் பிரிவு"}</span>}
             name="grama_niladhari_division"
             style={{ marginBottom: "18px" }}
           >
@@ -443,7 +443,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Divisional Secretary Division" : language === "si" ? "ප්‍රාදේශීය ලේකම් කොට්ඨාසය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Divisional Secretary Division" : language === "si" ? "ප්‍රාදේශීය ලේකම් කොට්ඨාසය" : "பிரதேச செயலாளர் பிரிவு"}</span>}
             name="divisional_secretary_division"
             style={{ marginBottom: "18px" }}
           >
@@ -452,7 +452,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Administrative District" : language === "si" ? "පරිපාලන දිස්ත්‍රික්කය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Administrative District" : language === "si" ? "පරිපාලන දිස්ත්‍රික්කය" : "நிர்வாக மாவட்டம்"}</span>}
             name="administrative_district"
             style={{ marginBottom: "18px" }}
           >
@@ -461,7 +461,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Mobile Number" : language === "si" ? "ජංගම දුරකථන අංකය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Mobile Number" : language === "si" ? "ජංගම දුරකථන අංකය" : "தொலைபேசி எண்"}</span>}
             name="mobile_number"
             style={{ marginBottom: "18px" }}
           >
@@ -478,7 +478,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
           {/* Capacity Information */}
           <Form.Item
 
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Capacity" : language === "si" ? "ධාරිතාවය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Capacity" : language === "si" ? "ධාරිතාවය" : "கொள்ளளவு"}</span>}
             name="capacity"
             style={{ marginBottom: "18px" }}
           >
@@ -487,7 +487,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Used" : language === "si" ? "භාවිතා කල ප්‍රමාණය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Used" : language === "si" ? "භාවිතා කල ප්‍රමාණය" : "பயன்படுத்தப்பட்டது"}</span>}
             name="used"
             style={{ marginBottom: "18px" }}
           >
@@ -496,7 +496,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Remaining" : language === "si" ? "ඉතිරිව ඇති ප්‍රමාණය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Remaining" : language === "si" ? "ඉතිරිව ඇති ප්‍රමාණය" : "மீதமுள்ளவை"}</span>}
             name="remaining"
             style={{ marginBottom: "18px" }}
           >
@@ -505,27 +505,27 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Royalty" : language === "si" ? "Royalty ගාස්තුව" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Royalty" : language === "si" ? "Royalty ගාස්තුව" : "Royalty கட்டணம்"}</span>}
             name="royalty"
             style={{ marginBottom: "18px" }}
           >
             <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
           </Form.Item>
-          
+
           <Form.Item
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Mining License Number" : language === "si" ? "ඛණිජ බලපත්‍ර අංකය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Mining License Number" : language === "si" ? "ඛණිජ බලපත්‍ර අංකය" : "சுரங்க உரிம எண்"}</span>}
             name="license_number"
             style={{ marginBottom: "18px" }}
           >
             <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
           </Form.Item>
-          
+
           {/* Document files with download options */}
-          {renderFileField("deed_and_survey_plan", language === "en" ? "Deed and Survey Plan" : language === "si" ? "ඔප්පුව සහ මැනුම් සැලැස්ම" : " ", currentRecord.deed_and_survey_plan)}
-          {renderFileField("economic_viability_report", language === "en" ? "Economic Viability Report" : language === "si" ? "ආර්ථික ප්‍රතිඵල වාර්තාව" : " ", currentRecord.economic_viability_report)}
-          {renderFileField("detailed_mine_restoration_plan", language === "en" ? "Mine Restoration Plan" : language === "si" ? "ඛණිජ ප්‍රතිසංස්කරණ සැලැස්ම" : " ", currentRecord.detailed_mine_restoration_plan)}
-          {renderFileField("payment_receipt", language === "en" ? "Payment Receipt" : language === "si" ? "බලපත්‍ර ගාස්තු ගෙවීම් රිසිට්පත" : " ", currentRecord.payment_receipt)}
-          {renderFileField("license_boundary_survey", language === "en" ? "License Boundary Survey" : language === "si" ? "බලපත්‍ර සීමා සමීක්ෂණය" : " ", currentRecord.license_boundary_survey)}
+          {renderFileField("deed_and_survey_plan", language === "en" ? "Deed and Survey Plan" : language === "si" ? "ඔප්පුව සහ මැනුම් සැලැස්ම" : "பத்திரம் மற்றும் கணக்கெடுப்பு திட்டம்", currentRecord.deed_and_survey_plan)}
+          {renderFileField("economic_viability_report", language === "en" ? "Economic Viability Report" : language === "si" ? "ආර්ථික ප්‍රතිඵල වාර්තාව" : "பொருளாதார நம்பகத்தன்மை அறிக்கை", currentRecord.economic_viability_report)}
+          {renderFileField("detailed_mine_restoration_plan", language === "en" ? "Mine Restoration Plan" : language === "si" ? "ඛණිජ ප්‍රතිසංස්කරණ සැලැස්ම" : "சுரங்க மறுசீரமைப்பு திட்டம்", currentRecord.detailed_mine_restoration_plan)}
+          {renderFileField("payment_receipt", language === "en" ? "Payment Receipt" : language === "si" ? "බලපත්‍ර ගාස්තු ගෙවීම් රිසිට්පත" : "பணம் செலுத்திய ரசீது", currentRecord.payment_receipt)}
+          {renderFileField("license_boundary_survey", language === "en" ? "License Boundary Survey" : language === "si" ? "බලපත්‍ර සීමා සමීක්ෂණය" : "உரிம எல்லை ஆய்வு", currentRecord.license_boundary_survey)}
         </Form>
       );
     };
@@ -552,9 +552,9 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
             <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
 
           </Form.Item> */}
-          
+
           <Form.Item
-          label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Status" : language === "si" ? "තත්වය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Status" : language === "si" ? "තත්වය" : "நிலை"}</span>}
 
             name="status"
             style={{ marginBottom: "18px" }}
@@ -564,7 +564,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-          label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Owner" : language === "si" ? "අයිතිකරු" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Owner" : language === "si" ? "අයිතිකරු" : "உரிமையாளர்"}</span>}
             name="author"
             style={{ marginBottom: "18px" }}
           >
@@ -572,15 +572,15 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
           </Form.Item>
 
           <Form.Item
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>Due Date</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Due Date" : language === "si" ? "" : "நிலுவைத் திகதி"}</span>}
             name="due_date"
             style={{ marginBottom: "18px" }}
           >
             <Input disabled style={{ backgroundColor: "#f9f9f9" }} />
-          </Form.Item> */}
-          
+          </Form.Item>
+
           <Form.Item
-          label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Lorry Number" : language === "si" ? "ලොරි අංකය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Lorry Number" : language === "si" ? "ලොරි අංකය" : "லாரி எண்"}</span>}
 
             name="lorry_number"
             style={{ marginBottom: "18px" }}
@@ -589,7 +589,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
           </Form.Item>
 
           <Form.Item
-          label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Driver Contact" : language === "si" ? "රියදුරුගේ දුරකථන අංකය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Driver Contact" : language === "si" ? "රියදුරුගේ දුරකථන අංකය" : "சாரதி தொடர்பு எண்"}</span>}
             name="driver_contact"
             style={{ marginBottom: "18px" }}
           >
@@ -598,7 +598,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Cubes" : language === "si" ? "ධාරිතාවය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Cubes" : language === "si" ? "ධාරිතාවය" : "கனசதுரம்"}</span>}
             name="cubes"
             style={{ marginBottom: "18px" }}
           >
@@ -607,7 +607,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-          label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Mining License Number" : language === "si" ? "බලපත්‍ර අංකය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Mining License Number" : language === "si" ? "බලපත්‍ර අංකය" : "சுரங்க உரிம எண்"}</span>}
             name="mining_license_number"
             style={{ marginBottom: "18px" }}
           >
@@ -616,7 +616,7 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
           <Form.Item
 
-          label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Destination" : language === "si" ? "ගමනාන්තය" : " "}</span>}
+            label={<span style={{ fontWeight: 500, fontSize: "16px" }}>{language === "en" ? "Destination" : language === "si" ? "ගමනාන්තය" : "பயண இலக்கு"}</span>}
             name="destination"
             style={{ marginBottom: "18px" }}
           >
@@ -669,9 +669,9 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
       <Modal
 
-        title={`${tracker === "ML" ? (language === "en" ? "Mining License Details" : language === "si" ? "ඛනිජ බලපත්‍රය විස්තර" : "") 
-          : tracker === "TPL" ? (language === "en" ? "Transport License Details" : language === "si" ? "ප්‍රවාහන බලපත්‍රය විස්තර" : "") 
-          : "License"} - ${currentRecord?.id || ""}`}
+        title={`${tracker === "ML" ? (language === "en" ? "Mining License Details" : language === "si" ? "ඛනිජ බලපත්‍රය විස්තර" : "சுரங்க உரிம விவரங்கள்")
+          : tracker === "TPL" ? (language === "en" ? "Transport License Details" : language === "si" ? "ප්‍රවාහන බලපත්‍රය විස්තර" : "போக்குவரத்து உரிம விவரங்கள்")
+            : "License"} - ${currentRecord?.id || ""}`}
 
         open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
