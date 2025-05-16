@@ -1,9 +1,10 @@
 // src/components/MiningEngineer/HoldConfirmation.jsx
-import { useState } from 'react';
-import PropTypes from 'prop-types';
-import { Modal, Button, Form, Input } from 'antd';
-import { PauseOutlined } from '@ant-design/icons';
+import { useState } from "react";
+import PropTypes from "prop-types";
+import { Modal, Button, Form, Input } from "antd";
+import { PauseOutlined } from "@ant-design/icons";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { miningEngineerHoldLicense } from "../../services/miningEngineerService";
 
 const HoldConfirmation = ({ onHold, recordId }) => {
   const { language } = useLanguage();
@@ -23,7 +24,7 @@ const HoldConfirmation = ({ onHold, recordId }) => {
       cancel: "Cancel",
       submit: "HOLD",
       fileError: "Please upload a PDF file only.",
-      fileSizeError: "File must be smaller than 5MB!"
+      fileSizeError: "File must be smaller than 5MB!",
     },
     si: {
       title: "හමුවීම තාවකාලිකව නවතන්න",
@@ -36,7 +37,7 @@ const HoldConfirmation = ({ onHold, recordId }) => {
       cancel: "අවලංගු කරන්න",
       submit: "ඉදිරිපත් කරන්න",
       fileError: "කරුණාකර PDF ගොනුවක් පමණක් උඩුගත කරන්න.",
-      fileSizeError: "ගොනුව MB 5 ට වඩා කුඩා විය යුතුය!"
+      fileSizeError: "ගොනුව MB 5 ට වඩා කුඩා විය යුතුය!",
     },
     ta: {
       title: "சந்திப்பை தற்காலிகமாக நிறுத்து",
@@ -49,8 +50,8 @@ const HoldConfirmation = ({ onHold, recordId }) => {
       cancel: "ரத்து செய்",
       submit: "சமர்ப்பிக்கவும்",
       fileError: "PDF கோப்பு மட்டுமே பதிவேற்றவும்.",
-      fileSizeError: "கோப்பு 5MB ஐ விட சிறியதாக இருக்க வேண்டும்!"
-    }
+      fileSizeError: "கோப்பு 5MB ஐ விட சிறியதாக இருக்க வேண்டும்!",
+    },
   };
 
   const t = translations[language] || translations.en;
@@ -65,43 +66,52 @@ const HoldConfirmation = ({ onHold, recordId }) => {
     setVisible(false);
   };
 
-  const handleSubmit = () => {
-    form.validateFields().then(values => {
-      const formData = new FormData();
-      formData.append('comment', values.comment);
-      if (fileList.length > 0) {
-        formData.append('document', fileList[0]);
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      const data = {
+        reason_for_hold: values.comment,
+        issue_id: recordId,
+      };
+      const result = await miningEngineerHoldLicense(data);
+      console.log("Reason for hold:", values.comment);
+      console.log("Record ID:", recordId);
+      console.log("Hold result:", result);
+      if (result.success) {
+        onHold(recordId, data);
+        handleCancel();
+      } else {
+        // Optionally show error to user
+        // message.error(result.message);
       }
-      
-      onHold(recordId, formData);
-      handleCancel();
-    });
+    } catch (error) {
+      // handle validation or API errors if needed
+    }
   };
-
   return (
     <>
-       <Button 
-        icon={<PauseOutlined />} 
+      <Button
+        icon={<PauseOutlined />}
         onClick={showModal}
-        style={{ color: '#faad14', borderColor: '#faad14' }}
-        >
-         {t.buttonText}
-       </Button>
+        style={{ color: "#faad14", borderColor: "#faad14" }}
+      >
+        {t.buttonText}
+      </Button>
 
       <Modal
         title={t.title}
         visible={visible}
         onCancel={handleCancel}
         footer={[
-          <Button 
-            key="submit" 
-            type="primary" 
+          <Button
+            key="submit"
+            type="primary"
             style={{
-              backgroundColor: '#CCC931',
-              borderColor: '#faad14',
-              display: 'block',
-              margin: '0 auto'
-            }}            
+              backgroundColor: "#CCC931",
+              borderColor: "#faad14",
+              display: "block",
+              margin: "0 auto",
+            }}
             onClick={handleSubmit}
           >
             {t.submit}
@@ -109,7 +119,25 @@ const HoldConfirmation = ({ onHold, recordId }) => {
         ]}
       >
         <p>{t.confirmText}</p>
-        
+        {/* <div style={{ marginBottom: 16 }}>
+          <p>
+            <strong>
+              {language === "en"
+                ? "Mining License No."
+                : language === "si"
+                ? "පතල් බලපත්‍ර අංකය"
+                : "சுரங்க உரிமம் எண்"}
+              :
+            </strong>{" "}
+            {mining_number}
+          </p>
+          <p>
+            <strong>ID:</strong> {recordId}
+          </p>
+        </div> */}
+        {/* <p>
+          <strong>ID:</strong> {recordId}
+        </p> */}
         <Form form={form} layout="vertical">
           <Form.Item
             name="comment"

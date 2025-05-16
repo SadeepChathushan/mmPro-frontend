@@ -21,48 +21,7 @@ const Appointments = ({ activeTab }) => {
   const { language } = useLanguage();
 
   const [appointments, setAppointments] = useState([
-    {
-      id: 2,
-      mlOwner: "Another Owner",
-      gsmbOfficer: "Jane Doe",
-      location: "Colombo",
-      cubeCount: 2000,
-      status: "approved",
-      date: "2023-06-20",
-      licenseDetails: {
-        status: "Scheduled",
-        explorationLicenseNo: "EX-2025-0002",
-        landName: "Blue Hills",
-        landOwner: "Kamal",
-        royalty: 2000,
-      },
-      locationDetails: {
-        village: "Colombo",
-        gramaNiladhariDivision: "GN Division 02",
-        divisionalSecretaryDivision: "Colombo",
-        district: "Colombo",
-      },
-      capacity: {
-        total: 3000,
-        used: 1000,
-        remaining: 2000,
-        monthCapacity: "Not specified",
-      },
-      timeline: {
-        startDate: "21/04/2025",
-        dueDate: "25/04/2025",
-        status: "On time",
-      },
-      contact: {
-        mobile: "771234568",
-      },
-      documents: {
-        restorationPlan: "/sample-docs/restoration-plan.jpg",
-        paymentReceipt: "/sample-docs/payment-receipt.jpg",
-        deedAndSurvey: "/sample-docs/deed-survey.jpg",
-        googleLocation: "https://maps.google.com/maps?q=6.2633...",
-      },
-    },
+
   ]);
 
   // Filter appointments based on active tab
@@ -155,7 +114,7 @@ const Appointments = ({ activeTab }) => {
   };
 
   // Put appointment on hold
-  const handleHold = (id) => {
+  const handleHold = () => {
     setAppointments(
       appointments.map((app) =>
         app.id === id
@@ -179,7 +138,6 @@ const Appointments = ({ activeTab }) => {
 
   // Reject appointment
   const handleReject = (mining_number, id) => {
-    console.log("Rejecting appointment:", { mining_number, id });
     setAppointments(
       appointments.map((app) =>
         app.id === id

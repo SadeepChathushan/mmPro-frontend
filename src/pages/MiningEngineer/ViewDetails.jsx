@@ -54,17 +54,13 @@ const ViewLicenseModal = ({ visible, onClose, selectedLicense, language }) => {
     if (visible && selectedLicense) {
       fetchDetails();
     } else if (!visible) {
-      // Clear state when modal is hidden
       setLicenseDetails(null);
       setError(null);
       setLoading(false);
     }
-    // Add selectedLicense to dependency array
-  }, [visible, selectedLicense, language]); // Added language to re-fetch if language changes (for error messages)
+  }, [visible, selectedLicense, language]);
 
-  // Early return if no ID is provided (though parent component MEDashboard seems to handle this)
   if (!selectedLicense && visible) {
-    // Check visible to avoid rendering empty modal briefly if !selectedLicense
     return (
       <Modal
         title={language === "en" ? "License Details" : "உரிம விவரங்கள்"}
@@ -251,14 +247,14 @@ const ViewLicenseModal = ({ visible, onClose, selectedLicense, language }) => {
                 ? "Attached Documents:"
                 : "இணைக்கப்பட்ட ஆவணங்கள்:"}
             </h4>
-            {licenseDetails?.documents ? (
+            {licenseDetails?.Deed_Plan || licenseDetails?.Detailed_Plan ? (
               <Space size="large" wrap>
                 <Button
                   type="link"
                   icon={<FilePdfOutlined />}
-                  href={licenseDetails.documents.deedAndSurveyPlan || "#"}
+                  href={licenseDetails.Deed_Plan || "#"}
                   target="_blank"
-                  disabled={!licenseDetails.documents.deedAndSurveyPlan}
+                  disabled={!licenseDetails.Deed_Plan}
                 >
                   {language === "en"
                     ? "Deed and Survey Plan"
@@ -267,9 +263,9 @@ const ViewLicenseModal = ({ visible, onClose, selectedLicense, language }) => {
                 <Button
                   type="link"
                   icon={<FilePdfOutlined />}
-                  href={licenseDetails.documents.mineRestorationPlan || "#"}
+                  href={licenseDetails.Detailed_Plan || "#"}
                   target="_blank"
-                  disabled={!licenseDetails.documents.mineRestorationPlan}
+                  disabled={!licenseDetails.Detailed_Plan}
                 >
                   {language === "en" ? "Detailed Plan" : "பாதுகாப்பு திட்டம்"}
                 </Button>
