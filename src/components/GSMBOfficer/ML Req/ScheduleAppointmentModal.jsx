@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, Form, Input, Button, DatePicker } from 'antd';
 import { useLanguage } from "../../../contexts/LanguageContext";
+import moment from 'moment';
 
 const { TextArea } = Input;
 
@@ -11,6 +12,8 @@ const ScheduleAppointmentModal = ({
   onSubmit,
   loading,
   form,
+  miningRequestId,
+  assignedToId,
   
 }) => {
   const { language } = useLanguage();
@@ -35,7 +38,7 @@ const ScheduleAppointmentModal = ({
           key="submit"
           type="primary"
           loading={loading}
-          onClick={onSubmit}
+          onClick={() => onSubmit({ miningRequestId, assignedToId })}
         >
 {language === "en"
     ? "Schedule"
@@ -53,7 +56,17 @@ const ScheduleAppointmentModal = ({
             ? ""
             : "சந்திப்புத் திகதி"}
           name="date"
-          rules={[{ required: true, message: language === "en" ? "Please select a date" : language === "si" ? "" : "தயவுசெய்து ஒரு திகதியை தேர்ந்தெடுக்கவும்" }]}
+          rules={[{ required: true, message: language === "en" ? "Please select a date" : language === "si" ? "" : "தயவுசெய்து ஒரு திகதியை தேர்ந்தெடுக்கவும்" },
+            {
+      validator: (_, value) => {
+        if (!value) return Promise.resolve(); // required rule handles empty
+        if (value.isBefore(moment(), 'day')) {
+          return Promise.reject(new Error(language === "en" ? "Date cannot be in the past" : language === "si" ? "" : "திகதி கடந்த காலம் இருக்க முடியாது"));
+        }
+        return Promise.resolve();
+      },
+    },
+          ]}
         >
           <DatePicker style={{ width: "100%" }} />
         </Form.Item>
