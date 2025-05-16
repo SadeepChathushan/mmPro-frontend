@@ -19,7 +19,7 @@ import {
   physicalMeeting,
 } from "../../services/officerService";
 import { notification } from "antd";
-
+import { DownloadOutlined } from '@ant-design/icons';
 import ScheduleAppointmentModal from "../GSMBOfficer/ML Req/ScheduleAppointmentModal";
 import PhysicalMeetingModal from "../GSMBOfficer/ML Req/PhysicalMeetingModal";
 import ValidateModal from "../GSMBOfficer/ML Req/ValidateModal";
@@ -619,6 +619,8 @@ const [scheduleModalVisible, setScheduleModalVisible] = React.useState(false);
     "deed_and_survey_plan",
     "payment_receipt",
     "google_location",
+    "economic_viability_report",
+    "license_boundary_survey",
   ];
 
   const renderModalContent = () => {
@@ -640,6 +642,15 @@ const [scheduleModalVisible, setScheduleModalVisible] = React.useState(false);
         return indexA - indexB;
       });
 
+      const handleDownload = (fileUrl, fileName) => {
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+
     return (
       <Form
         form={form}
@@ -659,6 +670,10 @@ const [scheduleModalVisible, setScheduleModalVisible] = React.useState(false);
             urlFields.includes(key) &&
             typeof value === "string" &&
             value.trim().startsWith("http");
+
+          const isGoogleLocation = key === "google_location";
+          const isFileUrl = isUrl && !isGoogleLocation;
+
           const displayValue =
             key === "created_on" && typeof value === "string"
               ? value.split("T")[0]
@@ -675,17 +690,27 @@ const [scheduleModalVisible, setScheduleModalVisible] = React.useState(false);
               key={key}
               style={{ marginBottom: 12 }}
             >
-              {isUrl ? (
-                <Link
-                  href={value}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  ellipsis
-                >
-                  {value}
-                </Link>
-              ) : (
+            {isGoogleLocation ? (
+              <a href={value} target="_blank" rel="noopener noreferrer">
+                {language === "en" ? "View Location" : language === "si" ? "ස්ථානය බලන්න" : "இருப்பிடத்தைப் பார்க்க"}
+              </a>
+            ) : isFileUrl ? (
+              <Button
+                type="primary"
+                icon={<DownloadOutlined />}
+                style={{ marginLeft: 10 }}
+                onClick={() =>
+                  handleDownload(
+                    value,
+                    `${label.replace(/\s+/g, "_")}_${currentRecord.id}`
+                  )
+                }
+              >
+                {language === "en" ? "Download" : language === "si" ? "බාගත කරන්න" : "பதிவிறக்க"}
+              </Button>
+            ) : (
                 <Input
+                  defaultValue={displayValue}
                   readOnly={!isEditable}
                   style={{
                     backgroundColor: isEditable ? "#fff" : "#f5f5f5",
