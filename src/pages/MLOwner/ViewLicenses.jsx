@@ -9,6 +9,7 @@ import {
   Space,
   Card,
   Empty,
+  Spin,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
@@ -26,6 +27,8 @@ const Licenses = () => {
   const [licenses, setLicenses] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [filteredLicenses, setFilteredLicenses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
 
   // Translations
   const translations = {
@@ -96,6 +99,9 @@ const Licenses = () => {
         setFilteredLicenses(mappedData); // Initialize filteredLicenses with all licenses
       } catch (error) {
         console.error("Failed to fetch licenses:", error);
+      }finally {
+        setLoading(false);
+        
       }
     };
     loadLicenses();
@@ -198,7 +204,12 @@ const Licenses = () => {
           />
         </Col>
       </Row>
-
+ {loading ? (
+          <div className="loading-container">
+            <Spin size="large" className="loading-icon" />
+          </div>
+        ) : (
+          <>
       {filteredLicenses.length === 0 ? (
         <div className="no-data-container">
           <Empty
@@ -300,6 +311,8 @@ const Licenses = () => {
           <FaArrowLeft className="mr-2" />
         </Button>
       </div>
+        </>
+       )}
     </div>
   );
 };
