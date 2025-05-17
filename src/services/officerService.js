@@ -593,4 +593,35 @@ export const physicalMeetingStatus = async (payload) => {
   }
 };
 
+// export const updateResolvedStatus = async (complaintId, newResolvedStatus, setComplaints) => {
+//   try {
+//     const username = "Dilmi_123";
+//     const password = "dIlmI@99";
+
+//     const payload = {
+//       issue: {
+//         // Directly update resolved field as string "1" or "0"
+//         resolved: newResolvedStatus ? "1" : "0",
+//       },
+//     };
+
+//     await axios.put(`/api/issues/${complaintId}.json`, payload, {
+//       headers: { "Content-Type": "application/json" },
+//       auth: { username, password },
+//     });
+
+//     message.success(`Complaint ${complaintId} marked as ${newResolvedStatus ? "resolved" : "not resolved"}`);
+
+//     // Update local state
+//     setComplaints((prevComplaints) =>
+//       prevComplaints.map((c) =>
+//         c.id === complaintId ? { ...c, resolved: newResolvedStatus ? "1" : "0" } : c
+//       )
+//     );
+//   } catch (err) {
+//     message.error(`Failed to update complaint ${complaintId}`);
+//     console.error(err);
+//   }
+// };
+
 export default officerService;
