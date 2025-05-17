@@ -19,7 +19,7 @@ import {
   physicalMeeting,
 } from "../../services/officerService";
 import { notification } from "antd";
-
+import { DownloadOutlined } from '@ant-design/icons';
 import ScheduleAppointmentModal from "../GSMBOfficer/ML Req/ScheduleAppointmentModal";
 import PhysicalMeetingModal from "../GSMBOfficer/ML Req/PhysicalMeetingModal";
 import ValidateModal from "../GSMBOfficer/ML Req/ValidateModal";
@@ -40,6 +40,10 @@ const RequestMiningTable = ({ searchText }) => {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [form] = Form.useForm();
   const [statusFilter, setStatusFilter] = useState(null);
+  const [selectedMiningRequestId, setSelectedMiningRequestId] = useState(null);
+  const [selectedAssignedToId, setSelectedAssignedToId] = useState(null);
+  const [selectedRecord, setSelectedRecord] = React.useState(null);
+const [scheduleModalVisible, setScheduleModalVisible] = React.useState(false);
   // const [searchText, setSearchText] = useState("");
 
   // States for modals
@@ -105,6 +109,8 @@ const RequestMiningTable = ({ searchText }) => {
     setCurrentRecord(record);
     appointmentForm.resetFields();
     setIsAppointmentModalVisible(true);
+     setSelectedRecord(record);
+  setScheduleModalVisible(true);
   };
 
   const handleUpdatePhysicalMeetingStatus = (record) => {
@@ -138,14 +144,16 @@ const RequestMiningTable = ({ searchText }) => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (formValues) => {
     try {
       setAppointmentLoading(true);
       const values = await appointmentForm.validateFields();
 
       const payload = {
-        mining_request_id: currentRecord?.id || "",
-        assigned_to_id: currentRecord?.assigned_to_details?.id || "",
+         mining_request_id: selectedRecord.id,
+    assigned_to_id: selectedRecord.assigned_to_id,
+        // mining_request_id: currentRecord?.id || "",
+        // assigned_to_id: currentRecord?.assigned_to_details?.id || "",
         physical_meeting_location: values.location,
         start_date: values.date.format("YYYY-MM-DD"),
         description: values.notes || "",
@@ -611,6 +619,8 @@ const RequestMiningTable = ({ searchText }) => {
     "deed_and_survey_plan",
     "payment_receipt",
     "google_location",
+    "economic_viability_report",
+    "license_boundary_survey",
   ];
 
   const renderModalContent = () => {
@@ -632,6 +642,15 @@ const RequestMiningTable = ({ searchText }) => {
         return indexA - indexB;
       });
 
+      const handleDownload = (fileUrl, fileName) => {
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+
     return (
       <Form
         form={form}
@@ -651,6 +670,10 @@ const RequestMiningTable = ({ searchText }) => {
             urlFields.includes(key) &&
             typeof value === "string" &&
             value.trim().startsWith("http");
+
+          const isGoogleLocation = key === "google_location";
+          const isFileUrl = isUrl && !isGoogleLocation;
+
           const displayValue =
             key === "created_on" && typeof value === "string"
               ? value.split("T")[0]
@@ -667,17 +690,27 @@ const RequestMiningTable = ({ searchText }) => {
               key={key}
               style={{ marginBottom: 12 }}
             >
-              {isUrl ? (
-                <Link
-                  href={value}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  ellipsis
-                >
-                  {value}
-                </Link>
-              ) : (
+            {isGoogleLocation ? (
+              <a href={value} target="_blank" rel="noopener noreferrer">
+                {language === "en" ? "View Location" : language === "si" ? "ස්ථානය බලන්න" : "இருப்பிடத்தைப் பார்க்க"}
+              </a>
+            ) : isFileUrl ? (
+              <Button
+                type="primary"
+                icon={<DownloadOutlined />}
+                style={{ marginLeft: 10 }}
+                onClick={() =>
+                  handleDownload(
+                    value,
+                    `${label.replace(/\s+/g, "_")}_${currentRecord.id}`
+                  )
+                }
+              >
+                {language === "en" ? "Download" : language === "si" ? "බාගත කරන්න" : "பதிவிறக்க"}
+              </Button>
+            ) : (
                 <Input
+                  defaultValue={displayValue}
                   readOnly={!isEditable}
                   style={{
                     backgroundColor: isEditable ? "#fff" : "#f5f5f5",
@@ -841,6 +874,9 @@ const RequestMiningTable = ({ searchText }) => {
         onSubmit={handleSubmit}
         loading={appointmentLoading}
         form={appointmentForm}
+        miningRequestId={selectedMiningRequestId}
+        assignedToId={selectedAssignedToId}
+        selectedRecord={selectedRecord}
       />
 
       <ConfirmationModal
