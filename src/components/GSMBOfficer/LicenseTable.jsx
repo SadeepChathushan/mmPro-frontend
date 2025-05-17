@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Table,
   Button,
@@ -30,6 +31,8 @@ import {
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import officerService from "../../services/officerService";
+// import { updateResolvedStatus } from "../../services/MLOService";
+
 import dayjs from "dayjs";
 
 const { Option } = Select;
@@ -50,6 +53,51 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
   const [editableFields] = useState({
     mobile_number: true,
   });
+  const [complaints, setComplaints] = useState([]);
+  
+
+
+  const updateResolvedStatus = async (complaintId, newResolvedStatus) => {
+  try {
+    const token = localStorage.getItem("USER_TOKEN");
+    if (!token) {
+  message.error("User not authenticated. Please log in again.");
+  return;
+}
+    console.log("Token being sent:", token);
+
+    const payload = {
+      resolved: newResolvedStatus ? "1" : "0",
+    };
+
+    const response = await axios.put(
+      `http://127.0.0.1:5000/gsmb-officer/complaint/${complaintId}/resolve`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json", // Add this explicitly
+        },
+      }
+    );
+
+    if (response.data.success) {
+      message.success(`Complaint ${complaintId} marked as resolved`);
+
+      setComplaints((prevComplaints) =>
+        prevComplaints.map((c) =>
+          c.id === complaintId ? { ...c, resolved: newResolvedStatus ? "1" : "0" } : c
+        )
+      );
+    } else {
+      message.error(response.data.message || "Failed to update complaint status.");
+    }
+  } catch (err) {
+    message.error(`Failed to update complaint ${complaintId}`);
+    console.error(err);
+  }
+};
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -75,6 +123,8 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
 
     fetchData();
   }, [tracker]);
+
+  
 
   const handleViewClick = async (e, record) => {
     e.preventDefault();
@@ -119,14 +169,11 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
   );
 
   const renderComplaintAction = (record) => (
-    <Checkbox
-      onChange={(e) => {
-        message.info(
-          `Complaint ${record.id} ${e.target.checked ? "marked" : "unmarked"}`
-        );
-      }}
-    />
-  );
+  <Checkbox
+    checked={record.resolved === "1"}
+    onChange={(e) => updateResolvedStatus(record.id, e.target.checked)}
+  />
+);
 
   const columns = {
     ML: [
@@ -212,11 +259,11 @@ const LicenseTable = ({ data, tracker, loading, searchText }) => {
       { title: language === "en" ? "Role" : language === "si" ? "භූමිකාව" : "பங்கு", dataIndex: "role", width: 120 },
 
       {
-        title: language === "en" ? "Resolved" : language === "si" ? "විසඳා ඇත" : "தீர்க்கப்பட்டது",
+    title: language === "en" ? "Resolved" : language === "si" ? "විසඳා ඇත" : "தீர்க்கப்பட்டது",
         width: 100,
         // fixed: "right",
-        render: (_, record) => renderComplaintAction(record),
-      },
+    render: (_, record) => renderComplaintAction(record),
+  },
     ],
     MEA: [
       { title: "ID", dataIndex: "id", width: 80 },
