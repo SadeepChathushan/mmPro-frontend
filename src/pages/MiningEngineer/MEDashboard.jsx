@@ -29,42 +29,42 @@ const MEDashboard = () => {
   const [licenseTrend] = useState("improving"); // Removed setLicenseTrend since it's unused
 
   const [licenses] = useState([
-    {
-      id: 1,
-      licenseNumber: "ML-2023-001",
-      owner: "Pasindu Lakshan",
-      businessName: "ABC Mining",
-      location: "Kaduwela",
-      type: "Quarry",
-      appliedDate: "2023-06-10",
-      date: "2023-06-15",
-      status: "approved",
-      rejectionReason: "",
-      documents: {
-        license: "/sample-docs/license1.pdf",
-        applicationForm: "/sample-docs/app1.pdf",
-        idProof: "/sample-docs/id1.pdf",
-        addressProof: "/sample-docs/address1.pdf",
-      },
-    },
-    {
-      id: 2,
-      licenseNumber: "ML-2023-002",
-      owner: "Another Owner",
-      businessName: "XYZ Minerals",
-      location: "Colombo",
-      type: "Metal",
-      appliedDate: "2023-06-15",
-      date: "2023-06-20",
-      status: "rejected",
-      rejectionReason: "Incomplete documentation",
-      documents: {
-        license: "/sample-docs/license2.pdf",
-        applicationForm: "/sample-docs/app2.pdf",
-        idProof: "/sample-docs/id2.pdf",
-        addressProof: "/sample-docs/address2.pdf",
-      },
-    },
+    // {
+    //   id: 1,
+    //   licenseNumber: "ML-2023-001",
+    //   owner: "Pasindu Lakshan",
+    //   businessName: "ABC Mining",
+    //   location: "Kaduwela",
+    //   type: "Quarry",
+    //   appliedDate: "2023-06-10",
+    //   date: "2023-06-15",
+    //   status: "approved",
+    //   rejectionReason: "",
+    //   documents: {
+    //     license: "/sample-docs/license1.pdf",
+    //     applicationForm: "/sample-docs/app1.pdf",
+    //     idProof: "/sample-docs/id1.pdf",
+    //     addressProof: "/sample-docs/address1.pdf",
+    //   },
+    // },
+    // {
+    //   id: 2,
+    //   licenseNumber: "ML-2023-002",
+    //   owner: "Another Owner",
+    //   businessName: "XYZ Minerals",
+    //   location: "Colombo",
+    //   type: "Metal",
+    //   appliedDate: "2023-06-15",
+    //   date: "2023-06-20",
+    //   status: "rejected",
+    //   rejectionReason: "Incomplete documentation",
+    //   documents: {
+    //     license: "/sample-docs/license2.pdf",
+    //     applicationForm: "/sample-docs/app2.pdf",
+    //     idProof: "/sample-docs/id2.pdf",
+    //     addressProof: "/sample-docs/address2.pdf",
+    //   },
+    // },
   ]);
 
   const [activeTab, setActiveTab] = useState("pending");
@@ -110,7 +110,7 @@ const MEDashboard = () => {
                     : "திட்டமிடல் காத்திருக்கிறது"
                 }
               />
-              <Progress
+              {/* <Progress
                 className="me-stat-card__progress"
                 percent={Math.round(
                   (pendingAppointments /
@@ -120,7 +120,7 @@ const MEDashboard = () => {
                 status="active"
                 strokeColor="#faad14"
                 strokeWidth={10}
-              />
+              /> */}
             </Card>
           </Col>
           <Col className="me-metrics-col" span={6}>
@@ -139,7 +139,7 @@ const MEDashboard = () => {
                     : "திட்டமிடப்பட்ட ஆய்வுகள்"
                 }
               />
-              <Progress
+              {/* <Progress
                 className="me-stat-card__progress"
                 percent={Math.round(
                   (scheduledAppointments /
@@ -149,7 +149,7 @@ const MEDashboard = () => {
                 status="active"
                 strokeColor="#3333C4"
                 strokeWidth={10}
-              />
+              /> */}
             </Card>
           </Col>
           <Col className="me-metrics-col" span={6}>
@@ -168,16 +168,7 @@ const MEDashboard = () => {
                     : `${licenseTrend} கடந்த மாதத்திலிருந்து`
                 }
               />
-              <Progress
-                className="me-stat-card__progress"
-                percent={Math.round(
-                  (approvedLicenses / (approvedLicenses + rejectedLicenses)) *
-                    100
-                )}
-                status={licenseTrend === "improving" ? "success" : "exception"}
-                strokeWidth={10}
-                format={(percent) => `${percent}% approval rate`}
-              />
+           
             </Card>
           </Col>
           <Col className="me-metrics-col" span={6}>
@@ -192,7 +183,7 @@ const MEDashboard = () => {
                 value={rejectedLicenses}
                 suffix={language === "en" ? "needs review" : "மறுபரிசீலனை தேவை"}
               />
-              <Progress
+              {/* <Progress
                 className="me-stat-card__progress"
                 percent={Math.round(
                   (rejectedLicenses / (approvedLicenses + rejectedLicenses)) *
@@ -201,7 +192,7 @@ const MEDashboard = () => {
                 status="exception"
                 strokeColor="#ff4d4f"
                 strokeWidth={10}
-              />
+              /> */}
             </Card>
           </Col>
         </Row>
